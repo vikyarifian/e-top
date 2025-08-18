@@ -1,0 +1,77 @@
+package ui
+
+// Dialog component
+templ Dialog(id, title string) {
+    <div id={ id } class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm hidden">
+        <div class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
+            <div class="flex flex-col space-y-1.5 text-center sm:text-left">
+                <h2 class="text-lg font-semibold">{ title }</h2>
+                <button onclick="closeDialog(this)" class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                    <i data-lucide="x" class="h-4 w-4"></i>
+                </button>
+            </div>
+            { children... }
+        </div>
+    </div>
+}
+
+// Task Dialog component
+templ TaskDialog(id, title string) {
+    @Dialog("task-dialog", "Create New Task") {
+        @TaskForm()
+    }
+    
+    <script>
+        // Show dialog
+        document.getElementById('task-dialog').classList.remove('hidden');
+        
+        // Close dialog function
+        function closeDialog(element) {
+            const dialog = element.closest('[id$="-dialog"]');
+            if (dialog) {
+                dialog.remove();
+            }
+        }
+    </script>
+}
+
+// Task Form component
+templ TaskForm() {
+    <form hx-post="/tasks" hx-swap="none" class="space-y-4">
+        <div class="space-y-2">
+            @Label("title", "Title")
+            @Input("text", "Enter task title", "title", "", nil)
+        </div>
+        
+        <div class="space-y-2">
+            @Label("description", "Description")
+            @Textarea("Enter task description", "description", "", nil)
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-2">
+                @Label("priority", "Priority")
+                @Select("priority", "", []SelectOption{
+                    {Value: "low", Label: "Low"},
+                    {Value: "medium", Label: "Medium"},
+                    {Value: "high", Label: "High"},
+                }, nil)
+            </div>
+            
+            <div class="space-y-2">
+                @Label("assignee", "Assignee")
+                @Input("text", "Enter assignee name", "assignee", "", nil)
+            </div>
+        </div>
+        
+        <div class="space-y-2">
+            @Label("due_date", "Due Date")
+            @Input("date", "", "due_date", "", nil)
+        </div>
+        
+        <div class="flex justify-end space-x-2 pt-4">
+            @Button("outline", "", "", "Cancel", templ.Attributes{"type": "button", "onclick": "closeDialog(this)"})
+            @Button("primary", "", "", "Create Task", templ.Attributes{"type": "submit"})
+        </div>
+    </form>
+}

@@ -1,0 +1,79 @@
+package pages
+
+import "etop/templates/layouts"
+import "etop/templates/components/ui"
+import "etop/templates/components"
+import "time"
+
+templ Dashboard() {
+    @layouts.Base() {
+        <div class="flex flex-col items-center">
+            <div class="text-blue-500 font-bold text-lg">Dashboard Page </div>
+            @ui.Button("destructive", "lg", "save", "Save", 
+                    templ.Attributes{
+                        "hx-target": "body",
+                        "hx-swap": "beforeend",
+                    })
+                    
+            @ui.Button("", "xs", "edit", "Edit", 
+                    templ.Attributes{
+                        "hx-target": "body",
+                        "hx-swap": "beforeend",
+                    }) 
+            @ui.Button("secondary", "sm", "edit", "Edit", 
+                    templ.Attributes{
+                        "hx-target": "body",
+                        "hx-swap": "beforeend",
+                    }) 
+            @ui.Button("outline", "sm", "save", "Save", 
+                    templ.Attributes{
+                        "hx-target": "body",
+                        "hx-swap": "beforeend",
+                    })
+            @ui.Button("ghost", "sm", "save", "Save", 
+                    templ.Attributes{
+                        "hx-target": "body",
+                        "hx-swap": "beforeend",
+                    })
+            @ui.Button("link", "", "save", "Save", 
+                    templ.Attributes{
+                        "hx-target": "body",
+                        "hx-swap": "beforeend",
+                    })
+            @ui.Button("muted", "sm", "save", "Save", 
+                    templ.Attributes{
+                        "hx-target": "body",
+                        "hx-swap": "beforeend",
+                    })
+            @ui.Button("teritary", "sm", "save", "Save", 
+                    templ.Attributes{
+                        "hx-target": "body",
+                        "hx-swap": "beforeend",
+                    })
+            @ui.Card("") {
+                @ui.CardHeader("") {
+                    @ui.CardTitle("") {
+                        <h3>Title card</h3>
+                    }
+                }
+                <div class="px-7">
+                    @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                </div>
+                @ui.CardContent("") {
+                    <p>Selamat datang</p>
+                }
+            }
+            @ui.Badge("todo", "", "Todo")
+            @ui.Badge("in-progress", "", "In Progress")
+            @ui.Badge("in-review", "", "In Review")
+            @ui.Badge("done", "", "Done")
+            @ui.Badge("close", "", "Close")
+            @ui.Badge("high", "", "high")
+            @ui.Badge("medium", "", "medium")
+            @ui.Badge("low", "", "low")
+            @ui.Checkbox("todo", "1", true, nil)
+            @ui.DatePicker("today", time.Now().Format("02-01-2006"), "Tanggal", nil)
+            @ui.TaskDialog("1", "ini dialog")
+        </div>
+    }
+}

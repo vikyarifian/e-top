@@ -1,0 +1,59 @@
+package layouts
+
+templ Base() {
+    <!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <title>eTop</title>
+			<link rel="stylesheet" href="/public/css/styles.css"/>
+			<script src="/public/js/htmx.min.js"></script>
+			<script src="/public/js/cdn.min.js" defer></script>
+            <script src="/public/js/lucide.js"></script>
+            <body>
+                { children... }
+                <!-- Scripts -->
+                <script>
+                    // Initialize Lucide icons
+                    lucide.createIcons();
+
+                    // Sidebar toggle functionality
+                    function toggleSidebar() {
+                        const sidebar = document.getElementById('sidebar');
+                        const mainContent = document.getElementById('main-content');
+                        const toggleBtn = document.getElementById('sidebar-toggle');
+                        
+                        sidebar.classList.toggle('w-64');
+                        sidebar.classList.toggle('w-16');
+                        mainContent.classList.toggle('ml-64');
+                        mainContent.classList.toggle('ml-16');
+                        
+                        // Toggle text visibility
+                        const textElements = sidebar.querySelectorAll('.sidebar-text');
+                        textElements.forEach(el => {
+                            el.classList.toggle('hidden');
+                        });
+                    }
+
+                    // Drag and drop functionality
+                    function initializeDragDrop() {
+                        // This would integrate with @hello-pangea/dnd
+                        // For now, we'll use a simple implementation
+                        console.log('Drag and drop initialized');
+                    }
+
+                    // Initialize everything
+                    document.addEventListener('DOMContentLoaded', function() {
+                        initializeDragDrop();
+                    });
+
+                    // HTMX events
+                    document.body.addEventListener('htmx:afterRequest', function(evt) {
+                        lucide.createIcons();
+                    });
+                </script>
+            </body>
+        </head>
+    </html>
+}

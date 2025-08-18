@@ -1,0 +1,13 @@
+package ui
+
+import "fmt"
+
+// Label Component
+templ Label(forId string, class string) {
+	<label
+		for={forId}
+		class={fmt.Sprintf("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 %s", class)}
+	>
+		{ children... }
+	</label>
+}

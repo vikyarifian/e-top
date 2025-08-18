@@ -1,0 +1,12 @@
+package ui
+
+import "fmt"
+
+// Separator Component
+templ Separator(orientation string, class string) {
+	if orientation == "vertical" {
+		<div class={fmt.Sprintf("h-full w-px bg-border %s", class)} role="separator"></div>
+	} else {
+		<div class={fmt.Sprintf("h-px w-full bg-border %s", class)} role="separator"></div>
+	}
+}

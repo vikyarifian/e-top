@@ -1,0 +1,39 @@
+package components
+
+import "fmt"
+
+// Dotted Separator
+templ DottedSeparator(class string, color string, height string, dotSize string, gapSize string, direction string) {
+    
+    if color == "" {
+        color = "#d4d4d8"
+    }
+
+    if direction == "" {
+        direction = "horizontal"
+    }
+
+    <div class={
+            class,
+            templ.KV("w-full flex items-center", direction == "horizontal"),
+            templ.KV("h-full flex flex-col items-center", direction == "vertical"),
+        }
+    >
+        <div class={
+                "",
+                templ.KV("flex-grow", direction == "horizontal"),
+                templ.KV("flex-grow-0", direction == "vertical"),
+            }
+            style={"background-image:radial-gradient(circle,"+color+" 25%,transparent 25%);background-position:center;",
+                    templ.KV(fmt.Sprintf("height:%s;", height), direction == "horizontal"),
+                    templ.KV("height:100%;", direction == "vertical"),
+                    templ.KV(fmt.Sprintf("width:%s;", height), direction == "vertical"),
+                    templ.KV("width:100%;", direction == "horizontal"),
+                    templ.KV("background-size:8px 2px;", direction == "horizontal"),
+                    templ.KV("background-size:2px 8px;", direction == "vertical"),
+                    templ.KV("background-repeat:repeat-x;", direction == "horizontal"),
+                    templ.KV("background-repeat:repeat-y;", direction == "vertical"),
+            }
+        />
+    </div>
+}

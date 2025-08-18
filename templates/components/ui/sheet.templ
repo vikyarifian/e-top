@@ -1,0 +1,17 @@
+package ui
+
+import "fmt"
+
+// Sheet Component (for sidebar)
+templ Sheet(open bool, class string) {
+	<div 
+		class={fmt.Sprintf("fixed inset-0 z-50 flex %s", class)}
+		if open {
+			style="display: flex;"
+		} else {
+			style="display: none;"
+		}
+	>
+		{ children... }
+	</div>
+}
