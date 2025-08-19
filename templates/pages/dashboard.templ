@@ -5,8 +5,8 @@ import "etop/templates/components/ui"
 import "etop/templates/components"
 import "time"
 
-templ Dashboard() {
-    @layouts.Base() {
+templ Dashboard2() {
+    @layouts.Layout() {
         <div class="flex flex-col items-center">
             <div class="text-blue-500 font-bold text-lg">Dashboard Page </div>
             @ui.Button("destructive", "lg", "save", "Save", 
@@ -74,7 +74,7 @@ templ Dashboard() {
             @ui.Badge("low", "", "low")
             @ui.Checkbox("todo", "1", true, nil)
             @ui.DatePicker("today", time.Now().Format("02-01-2006"), "Tanggal", nil)
-            @ui.TaskDialog("1", "ini dialog")
+            // @ui.TaskDialog("1", "ini dialog")
             @ui.Popover("Ini popover") {
                 <span>Ini popupnya</span>
             }
