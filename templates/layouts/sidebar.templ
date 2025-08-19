@@ -6,14 +6,14 @@ templ Sidebar() {
 	<div class="flex flex-col h-full">
 		<!-- Logo -->
 		<div class="h-16 flex items-center border-b border-border" :class="sidebarCollapsed && !isMobile ? 'px-4' : 'px-6'">
-			<div class="flex items-center gap-3" x-show="!sidebarCollapsed || isMobile">
-				<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-					<span class="text-primary-foreground font-bold">E</span>
+			<div class="flex items-center gap-1.5" x-show="!sidebarCollapsed || isMobile">
+				<div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+					<span class="text-3xl text-primary-foreground font-semibold" style="margin-top: -6px" >e</span>
 				</div>
-				<span class="font-bold text-xl">Top</span>
+				<span class="font-bold text-2xl pb-1.6 pt-0">top</span>
 			</div>
-			<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center" x-show="sidebarCollapsed && !isMobile">
-				<span class="text-primary-foreground font-bold">E</span>
+			<div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center"x-show="sidebarCollapsed && !isMobile">
+				<span class="text-3xl text-primary-foreground font-semibold" style="margin-top: -6px" >e</span>
 			</div>
 		</div>
 
