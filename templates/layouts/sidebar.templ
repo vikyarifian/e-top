@@ -1,5 +1,115 @@
 package layouts
 
-templ Sidebar(collapse bool) {
-    <div>Sidebar</div>
+import "etop/templates/components/ui"
+
+templ Sidebar(collapsed bool) {
+	<aside 
+		class="fixed left-0 top-0 h-full bg-card border-r border-border sidebar-transition z-50"
+		if collapsed {
+			style="width: 4rem;"
+		} else {
+			style="width: 16rem;"
+		}
+	>
+		<div class="flex flex-col h-full">
+			<!-- Logo/Brand -->
+			<div class="flex items-center p-4 border-b border-border">
+				if collapsed {
+					<div class="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+						<span class="text-primary-foreground font-bold">T</span>
+					</div>
+				} else {
+					<div class="flex items-center space-x-2">
+						<div class="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+							<span class="text-primary-foreground font-bold">T</span>
+						</div>
+						<span class="font-semibold text-lg">TaskFlow</span>
+					</div>
+				}
+			</div>
+			
+			<!-- Navigation -->
+			<nav class="flex-1 p-4 space-y-2">
+				@SidebarItem("/", "Dashboard", "home", false, collapsed)
+				@SidebarItem("/board", "Kanban Board", "columns", true, collapsed)
+				@SidebarItem("/tasks", "All Tasks", "list", false, collapsed)
+				@SidebarItem("/calendar", "Calendar", "calendar", false, collapsed)
+				@SidebarItem("/team", "Team", "users", false, collapsed)
+				@SidebarItem("/reports", "Reports", "chart", false, collapsed)
+			</nav>
+			
+			<!-- User Profile -->
+			<div class="p-4 border-t border-border">
+				if collapsed {
+					@ui.Avatar("md", "mx-auto") {
+						@ui.AvatarImage("https://github.com/shadcn.png", "User")
+						@ui.AvatarFallback("") {
+							U
+						}
+					}
+				} else {
+					<div class="flex items-center space-x-3">
+						@ui.Avatar("md", "") {
+							@ui.AvatarImage("https://github.com/shadcn.png", "John Doe")
+							@ui.AvatarFallback("") {
+								JD
+							}
+						}
+						<div class="flex-1 min-w-0">
+							<div class="font-medium">John Doe</div>
+							<div class="text-xs text-muted-foreground">Admin</div>
+						</div>
+					</div>
+				}
+			</div>
+			
+		</div>
+	</aside>
+}
+
+templ SidebarItem(href string, title string, icon string, active bool, collapsed bool) {
+	<a 
+		href={templ.URL(href)}
+		
+			if active {
+				class="flex items-center space-x-3 px-3 py-2 rounded-md bg-accent text-accent-foreground"
+			} else {
+				class="flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+			}
+		
+	>
+		@SidebarIcon(icon)
+		if !collapsed {
+			<span class="font-medium">{title}</span>
+		}
+	</a>
+}
+
+templ SidebarIcon(name string) {
+	switch name {
+	case "home":
+		<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+		</svg>
+	case "columns":
+		<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7"></path>
+		</svg>
+	case "list":
+		<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+		</svg>
+	case "calendar":
+		<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+		</svg>
+	case "users":
+		<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+		</svg>
+	case "chart":
+		<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+		</svg>
+	}
 }

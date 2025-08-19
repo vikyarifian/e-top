@@ -63,6 +63,7 @@ templ Dashboard() {
                     <p>Selamat datang</p>
                 }
             }
+            @ui.ScrollArea("vertical", "") 
             @ui.Badge("todo", "", "Todo")
             @ui.Badge("in-progress", "", "In Progress")
             @ui.Badge("in-review", "", "In Review")
@@ -74,6 +75,37 @@ templ Dashboard() {
             @ui.Checkbox("todo", "1", true, nil)
             @ui.DatePicker("today", time.Now().Format("02-01-2006"), "Tanggal", nil)
             @ui.TaskDialog("1", "ini dialog")
+            @ui.Popover("Ini popover") {
+                <span>Ini popupnya</span>
+            }
+            <div class="w-[20px]">
+                @ui.Select("pilih", "1", getPilihan(), nil)
+            </div>
+            @ui.Toast("1","warning","Warning","Awasss")
+
+            @ui.Table("border") {
+                @ui.TableHeader() {
+                    @ui.TableRow() {
+                        @ui.TableHead("satu") 
+                        @ui.TableHead("dua") 
+                    }
+                }
+                @ui.TableBody() {
+                    @ui.TableRow() {
+                        @ui.TableCell("1") 
+                        @ui.TableCell("22") 
+                    }
+                }
+            }
         </div>
     }
+}
+
+
+func getPilihan() []ui.SelectOption {
+	so := []ui.SelectOption{}
+	so = append(so, ui.SelectOption{Value: "1", Label: "Satu"})
+	so = append(so, ui.SelectOption{Value: "2", Label: "Dua"})
+
+	return so
 }
