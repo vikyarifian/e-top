@@ -1,0 +1,14 @@
+package ui
+
+import "fmt"
+
+// Scroll Area component
+templ ScrollArea(orientation string, class string) {
+    <div class={fmt.Sprintf("flex touch-none select-none transition-colors %s", class),
+                templ.KV("h-2.5 flex-col border-t border-t-transparent p-[1px]", orientation == "horizontal"),
+                templ.KV("h-full w-2.5 border-l border-l-transparent p-[1px]", orientation == "vertical"),}>
+        <div class="overflow-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
+            { children... }
+        </div>
+    </div>
+}

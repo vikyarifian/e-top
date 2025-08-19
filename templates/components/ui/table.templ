@@ -1,0 +1,42 @@
+package ui
+
+import "fmt"
+
+// Table components
+templ Table(class string) {
+    <div class="relative w-full overflow-auto %s">
+        <table class={fmt.Sprintf("w-full caption-bottom text-sm", class)}>
+            { children... }
+        </table>
+    </div>
+}
+
+templ TableHeader() {
+    <thead class="[&_tr]:border-b">
+        { children... }
+    </thead>
+}
+
+templ TableBody() {
+    <tbody class="[&_tr:last-child]:border-0">
+        { children... }
+    </tbody>
+}
+
+templ TableRow() {
+    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+        { children... }
+    </tr>
+}
+
+templ TableHead(text string) {
+    <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+        { text }
+    </th>
+}
+
+templ TableCell(text string) {
+    <td class="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
+        { text }
+    </td>
+}

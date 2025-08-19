@@ -1,0 +1,13 @@
+package ui
+
+// Popover component
+templ Popover(triggerText string) {
+    <div class="relative inline-block">
+        <button class="inline-flex items-center px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-md hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring">
+            { triggerText }
+        </button>
+        <div class="absolute z-10 w-64 p-4 mt-2 bg-popover border border-border rounded-md shadow-lg hidden">
+            { children... }
+        </div>
+    </div>
+}
