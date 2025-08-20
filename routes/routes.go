@@ -2,7 +2,6 @@ package routes
 
 import (
 	"etop/handlers"
-	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -30,11 +29,8 @@ func SetRoutes() {
 
 	r.HandleFunc("/public/", HandleStatic)
 
-	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, "Hello world")
-	})
-
-	r.HandleFunc("/dashboard", handlers.Make(handlers.HandleDashboard))
+	r.HandleFunc("/sign-in", handlers.Make(handlers.HandleSignIn))
+	r.HandleFunc("/", handlers.Make(handlers.HandleDashboard))
 	r.HandleFunc("/workspace-switcher", handlers.Make(handlers.WorkspaceSwitcher))
 
 	// Add CORS headers

@@ -1,0 +1,58 @@
+package ui
+
+import "slices"
+
+templ Form(action, method string, attrs templ.Attributes) {
+    <form 
+        hx-post={action} 
+        hx-target="this" 
+        hx-swap="outerHTML" 
+        method={method} 
+        class="space-y-6"
+        { attrs... }
+    >
+        { children... }
+    </form>
+}
+
+templ FormItem() {
+    <div class="space-y-2">
+        { children... }
+    </div>
+}
+
+templ FormLabel(forID, text string) {
+    <label for={forID} class="block text-sm font-medium text-foreground">
+        { text }
+    </label>
+}
+
+templ FormControl(id, name, typ, placeholder, value string, attrs templ.Attributes) {
+    if slices.Contains([]string{"text","email","password"}, typ) {
+        @Input(typ, placeholder, name, value, attrs)
+        // <input 
+        //     id={id} 
+        //     name={name} 
+        //     type={typ} 
+        //     value={value} 
+        //     placeholder={placeholder} 
+        //     class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm
+        //         ring-offset-background placeholder:text-muted-foreground
+        //         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+        //         disabled:cursor-not-allowed disabled:opacity-50"
+        //     { attrs... }
+        // />
+    } else {
+        <div>Belum ada</div>
+    }
+}
+
+templ FormDescription(text string) {
+    <p class="text-[0.8rem] text-muted-foreground">{text}</p>
+}
+
+templ FormMessage(attrs templ.Attributes, text string) {
+    <p class="text-[0.8rem] font-medium text-destructive" {attrs...}>
+        {text}
+    </p>
+}
