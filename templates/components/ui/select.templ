@@ -1,21 +1,87 @@
 package ui
 
+import (
+    "fmt"
+)
+
 // Select component
-templ Select(name, value string, options []SelectOption, attrs templ.Attributes) {
-    <select 
-        name={ name }
-        class="flex h-8 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-        { attrs... }
-    >
-        for _, option := range options {
-            <option value={ option.Value } selected?={ option.Value == value }>
-                { option.Label }
-            </option>
-        }
-    </select>
+templ Select(name, value string, class string, options []SelectOption, attrs templ.Attributes) {
+    <div class={fmt.Sprintf("w-64 %s", class)}>
+        <!-- Dropdown Wrapper -->
+        <div x-data="{ open: false, selected: { value: '', label: '', color: '' } }" class="relative">
+            <!-- Trigger -->
+            <button 
+                @click="open = !open" 
+                class="w-full flex justify-between items-center px-3 py-2 border rounded-md text-gray-600 bg-white hover:bg-gray-50 focus:outline-none"
+            >
+                <div class="flex items-center space-x-2">
+                    <div x-show="selected.label" class="w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold" :style="`background-color: ${selected.color}`">
+                        <span x-text="selected.label.slice(0,1)"></span>
+                    </div>
+                    <div x-show="selected.label === ''" class="w-4 h-4" data-lucide="list-checks" />
+                    <span x-text={fmt.Sprintf("selected.label || 'Select %s'",name)}></span>
+                </div>
+                <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            <!-- Dropdown -->
+            <div 
+                x-show="open" 
+                @click.away="open = false" 
+                class="absolute z-10 mt-1 w-full rounded-md border bg-white shadow-lg"
+            >
+                <div class="px-3 pt-2 pb-1 text-sm text-gray-400">{name}</div>
+                <ul class="max-h-60 overflow-auto">
+                    for _, item := range options {
+                        <li 
+                            class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 cursor-pointer" 
+                            @click={fmt.Sprintf("selected = { label: '%s', value: '%s', color: '%s' }; open = false",item.Label,item.Value,item.Color)}
+                        >
+                            <div class="w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold" style={fmt.Sprintf("background-color:%s", item.Color)}>{item.Label[0:1]}</div>
+                            <span>{item.Label}</span>
+                        </li>
+                    }
+                    // <li 
+                    //     class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 cursor-pointer" 
+                    //     @click="selected = { name: 'Banana', initial: 'B' }; open = false"
+                    // >
+                    //     <div class="w-6 h-6 rounded-full bg-yellow-500 text-black flex items-center justify-center text-xs font-semibold">B</div>
+                    //     <span>Banana</span>
+                    // </li>
+                    // <li 
+                    //     class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 cursor-pointer" 
+                    //     @click="selected = { name: 'Blueberry', initial: 'B' }; open = false"
+                    // >
+                    //     <div class="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-semibold">B</div>
+                    //     <span>Blueberry</span>
+                    // </li>
+                    // <li 
+                    //     class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 cursor-pointer" 
+                    //     @click="selected = { name: 'Grapes', initial: 'G' }; open = false"
+                    // >
+                    //     <div class="w-6 h-6 rounded-full bg-purple-600 text-white flex items-center justify-center text-xs font-semibold">G</div>
+                    //     <span>Grapes</span>
+                    // </li>
+                    // <li 
+                    //     class="flex items-center space-x-2 px-3 py-2 hover:bg-gray-100 cursor-pointer" 
+                    //     @click="selected = { name: 'Pineapple', initial: 'P' }; open = false"
+                    // >
+                    //     <div class="w-6 h-6 rounded-full bg-green-600 text-white flex items-center justify-center text-xs font-semibold">P</div>
+                    //     <span>Pineapple</span>
+                    // </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        lucide.createIcons();
+    </script>
 }
 
 type SelectOption struct {
     Value string
     Label string
+    Color string
 }

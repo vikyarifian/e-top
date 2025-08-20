@@ -1,7 +1,24 @@
 package layouts
 
+import "etop/models"
+
 templ Navigation() {
-    <ul className="flex flex-col">
-      
+    <ul class="space-y-2">
+        for _, menu := range models.GetMenu() {
+            <li>
+                <a 
+                    href={templ.SafeURL(menu.Href)}
+                    hx-get={menu.Href}
+                    hx-target="main"
+                    hx-push-url="true"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+                    :class="sidebarCollapsed && !isMobile ? 'justify-center' : ''"
+                    @click="if (isMobile) sidebarOpen = false"
+                >
+                    <div class="w-5 h-5" data-lucide={menu.Icon} />
+                    <span x-show="!sidebarCollapsed || isMobile">{menu.Label}</span>
+                </a>
+            </li>
+        }
     </ul>
 }

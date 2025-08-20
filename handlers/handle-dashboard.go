@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"etop/templates/layouts"
+	"etop/templates/pages"
+	"etop/utils"
 	"net/http"
 )
 
 func HandleDashboard(w http.ResponseWriter, r *http.Request) error {
-	return Render(w, r, layouts.Dashboard())
+	return utils.Render(w, r, pages.Dashboard())
 }

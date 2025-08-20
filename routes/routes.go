@@ -35,6 +35,7 @@ func SetRoutes() {
 	})
 
 	r.HandleFunc("/dashboard", handlers.Make(handlers.HandleDashboard))
+	r.HandleFunc("/workspace-switcher", handlers.Make(handlers.WorkspaceSwitcher))
 
 	// Add CORS headers
 	corsHandler := func(next http.Handler) http.Handler {

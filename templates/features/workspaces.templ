@@ -1,0 +1,7 @@
+package features
+
+import "etop/templates/components/ui"
+
+templ WorkspaceSwitcher(list []ui.SelectOption) {
+    @ui.Select("Workspaces", "", "min-w-[250px] h-12",  list, nil)
+}

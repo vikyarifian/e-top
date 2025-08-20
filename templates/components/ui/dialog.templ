@@ -51,7 +51,7 @@ templ TaskForm() {
         <div class="grid grid-cols-2 gap-4">
             <div class="space-y-2">
                 @Label("priority", "Priority")
-                @Select("priority", "", []SelectOption{
+                @Select("priority", "", "", []SelectOption{
                     {Value: "low", Label: "Low"},
                     {Value: "medium", Label: "Medium"},
                     {Value: "high", Label: "High"},

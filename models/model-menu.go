@@ -1,8 +1,20 @@
 package models
 
 type Menu struct {
-	Label      string
-	Href       string
-	Icon       string
-	ActiveIcon string
+	Label string
+	Href  string
+	Icon  string
+}
+
+func GetMenu() []Menu {
+	menus := []Menu{}
+	menus = append(menus, Menu{Label: "Dashboard", Href: "/", Icon: "home"})
+	menus = append(menus, Menu{Label: "Workspaces", Href: "/workspaces", Icon: "briefcase-business"})
+	// menus = append(menus, Menu{Label: "Workspaces", Href: "/workspaces", Icon: "monitor-check"})
+	menus = append(menus, Menu{Label: "My Tasks", Href: "/tasks", Icon: "list-checks"})
+	menus = append(menus, Menu{Label: "Members", Href: "/tasks", Icon: "users"})
+	menus = append(menus, Menu{Label: "Achieved", Href: "/achieve", Icon: "badge-check"})
+	menus = append(menus, Menu{Label: "Settings", Href: "/achieve", Icon: "settings"})
+
+	return menus
 }
