@@ -70,8 +70,8 @@ templ TaskForm() {
         </div>
         
         <div class="flex justify-end space-x-2 pt-4">
-            @Button("outline", "", "", "Cancel", templ.Attributes{"type": "button", "onclick": "closeDialog(this)"})
-            @Button("primary", "", "", "Create Task", templ.Attributes{"type": "submit"})
+            @Button("outline", "", "", "Cancel", "", templ.Attributes{"type": "button", "onclick": "closeDialog(this)"})
+            @Button("primary", "", "", "Create Task", "", templ.Attributes{"type": "submit"})
         </div>
     </form>
 }

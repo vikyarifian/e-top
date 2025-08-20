@@ -21,6 +21,12 @@ templ CardTitle(class string) {
 	</div>
 }
 
+templ CardDescription(class string) {
+	<div class={fmt.Sprintf("text-sm text-muted-foreground %s", class)}>
+		{ children... }
+	</div>
+}
+
 templ CardContent(class string) {
 	<div class={fmt.Sprintf("p-6 pt-0 %s", class)}>
 		{ children... }

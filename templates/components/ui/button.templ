@@ -1,10 +1,11 @@
 package ui
 
+import "fmt"
+
 // Button Component
-templ Button(variant, size, icon, text string, attrs templ.Attributes) {
+templ Button(variant, size, icon, text string, class string, attrs templ.Attributes) {
     <button 
-        class={
-            "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:bg-neutral-100 disabled:from-neutral-100 disabled:to-neutral-100 disabled:text-neutral-300 border border-neutral-200 shadow-sm [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+        class={fmt.Sprintf("inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:bg-neutral-100 disabled:from-neutral-100 disabled:to-neutral-100 disabled:text-neutral-300 border border-neutral-200 shadow-sm [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 %s", class) ,
             templ.KV("bg-gradient-to-b from-blue-600 to-blue-700 text-primary-foreground hover:from-blue-700 hover:to-blue-700 ", variant == "primary"),
             templ.KV("bg-gradient-to-b from-amber-600 to-amber-700 text-destructive-foreground hover:from-amber-700 hover:to-amber-700 ", variant == "destructive"),
             templ.KV("bg-white text-black hover:bg-neutral-100 ", variant == "secondary"),
