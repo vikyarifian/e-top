@@ -28,7 +28,13 @@ templ CardDescription(class string) {
 }
 
 templ CardContent(class string) {
-	<div class={fmt.Sprintf("p-6 pt-0 %s", class)}>
+	<div class={fmt.Sprintf("p-6 pt-4 %s", class)}>
+		{ children... }
+	</div>
+}
+
+templ CardFooter(class string) {
+	<div class={fmt.Sprintf("flex items-center p-6 pt-4 %s", class)}>
 		{ children... }
 	</div>
 }
