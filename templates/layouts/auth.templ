@@ -13,32 +13,37 @@ templ AuthLayout() {
             <script src="/public/js/lucide.js"></script>
 		</head>
 		<body 
-			class="min-h-screen bg-background text-foreground"
-			x-data="{ 
-				sidebarOpen: false, 
-				sidebarCollapsed: false, 
-				darkMode: localStorage.getItem('darkMode') === 'true' || false,
-				isMobile: window.innerWidth < 768
-			}"
-			x-init="
-				$watch('darkMode', val => {
-					localStorage.setItem('darkMode', val);
-					if (val) {
-						document.documentElement.classList.add('dark');
-					} else {
-						document.documentElement.classList.remove('dark');
-					}
-				});
-				if (darkMode) {
-					document.documentElement.classList.add('dark');
-				}
-				window.addEventListener('resize', () => {
-					isMobile = window.innerWidth < 768;
-					if (!isMobile) sidebarOpen = false;
-				});
-			"
 		>
-            { children... }
+			// class="min-h-screen bg-background text-foreground"
+			// x-data="{ 
+			// 	sidebarOpen: false, 
+			// 	sidebarCollapsed: false, 
+			// 	darkMode: localStorage.getItem('darkMode') === 'true' || false,
+			// 	isMobile: window.innerWidth < 768
+			// }"
+			// x-init="
+			// 	$watch('darkMode', val => {
+			// 		localStorage.setItem('darkMode', val);
+			// 		if (val) {
+			// 			document.documentElement.classList.add('dark');
+			// 		} else {
+			// 			document.documentElement.classList.remove('dark');
+			// 		}
+			// 	});
+			// 	if (darkMode) {
+			// 		document.documentElement.classList.add('dark');
+			// 	}
+			// 	window.addEventListener('resize', () => {
+			// 		isMobile = window.innerWidth < 768;
+			// 		if (!isMobile) sidebarOpen = false;
+			// 	});
+			// "
+			<div class="">
+            	{ children... }
+			</div>
+			<script>
+				lucide.createIcons();
+			</script>
         </body>
     </html>
 }

@@ -22,10 +22,15 @@ templ Button(variant, size, icon, text string, class string, attrs templ.Attribu
             templ.KV("h-8 w-8 ", size == "icon"),
         }
         { attrs... }
-    >
-        if icon != "" {
-            <i data-lucide={icon} class="w-4 h-4 mr-1"></i>
+    >   
+        if text != "" {
+            if icon != "" {
+                <i data-lucide={icon} class="w-4 h-4 mr-1"></i>
+            }
+            { text }
+        } else {
+            { children... }
+
         }
-        { text }
     </button>
 }
