@@ -1,7 +1,5 @@
 package layouts
 
-import "etop/templates/components/ui"
-
 templ AuthLayout() {
     <!DOCTYPE html>
 	<html lang="en">
@@ -43,57 +41,4 @@ templ AuthLayout() {
             { children... }
         </body>
     </html>
-}
-
-templ SignIn() {
-    @AuthLayout() {
-        <div class="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-4">
-            @ui.Card("max-w-md w-full shadow-xl") {
-                @ui.CardHeader("items-center justify-center") {
-                    @ui.CardTitle("") {
-                        <h4>Welcome back</h4>
-                    }
-                    @ui.CardDescription("") {
-                        Sign in to your account to continue
-                    }
-                }
-                @ui.CardContent("") {
-                    @ui.Form("/submit", "post", nil) {
-                        <div x-data="{ email: '', error: '' }">
-                            @ui.FormItem() {
-                                @ui.FormLabel("email", "Email Address")
-                                @ui.FormControl("email", "email", "email", "you@example.com", "", templ.Attributes{
-                                    "x-model": "email",
-                                    "@blur": "error = (!email.includes('@')) ? 'Email tidak valid' : ''",
-                                })
-                                @ui.FormMessage(templ.Attributes{
-                                        "x-show": "error != ''",
-                                        "x-text": "error",
-                                    },
-                                    "",
-                                )
-                            }
-                        </div>
-                        <div x-data="{ password: '', error: '' }">
-                            @ui.FormItem() {
-                                @ui.FormLabel("password", "Password")
-                                @ui.FormControl("password", "password", "password", "", "", templ.Attributes{
-                                    "x-model": "password",
-                                    "@blur": "error = (password.length < 6) ? 'Password minimal 6 karakter' : ''",
-                                })
-                                @ui.FormMessage(templ.Attributes{
-                                        "x-show": "error != ''",
-                                        "x-text": "error",
-                                    },
-                                    "",
-                                )
-                            }
-                        </div>
-                        
-                        @ui.Button("", "lg", "", "Sign In", "w-full", templ.Attributes{"type": "submit"})
-                    }
-                }
-            }
-        </div>
-    }
 }
