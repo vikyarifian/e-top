@@ -1,0 +1,84 @@
+package pages
+
+import (
+    "etop/templates/layouts"
+    "etop/templates/components/ui"
+)
+
+templ SignIn() {
+    @layouts.AuthLayout() {
+        <div class="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-4">
+            @ui.Card("max-w-md w-full shadow-xl") {
+                @ui.CardHeader("items-center justify-center") {
+                    @ui.CardTitle("") {
+                        <h4>Welcome back</h4>
+                    }
+                    @ui.CardDescription("") {
+                        Sign in to your account to continue
+                    }
+                }
+                @ui.CardContent("") {
+                    <div 
+                        x-data="{
+                                    email: '',
+                                    password: '',
+                                    emailError: '',
+                                    passwordError: '',
+                                    validateEmail() {
+                                        this.emailError = (!this.email.includes('@'))
+                                            ? 'Email not valid'
+                                            : '';
+                                    },
+                                    validatePassword() {
+                                        this.passwordError = (this.password.length < 6)
+                                            ? 'Minimum 6 characters'
+                                            : '';
+                                    },
+                                    validateForm() {
+                                        this.validateEmail();
+                                        this.validatePassword();
+                                        if (this.emailError || this.passwordError) return;
+                                        $el.querySelector('form').submit();
+                                    }
+                                }"
+                        
+                    >
+                        @ui.Form("/submit", "post", templ.Attributes{
+                            "hx-swap":"none", 
+                            "@submit.prevent":"validateForm",
+                        }) {
+                            @ui.FormItem() {
+                                @ui.FormLabel("email", "Email Address")
+                                @ui.FormControl("email", "email", "email", "you@example.com", "", templ.Attributes{
+                                    "x-model": "email",
+                                    "@blur": "validateEmail",
+                                })
+                                @ui.FormMessage(templ.Attributes{
+                                        "x-show": "emailError != ''",
+                                        "x-text": "emailError",
+                                    },
+                                    "",
+                                )
+                            }
+                            @ui.FormItem() {
+                                @ui.FormLabel("password", "Password")
+                                @ui.FormControl("password", "password", "password", "", "", templ.Attributes{
+                                    "x-model": "password",
+                                    "@blur": "validatePassword",
+                                })
+                                @ui.FormMessage(templ.Attributes{
+                                        "x-show": "passwordError != ''",
+                                        "x-text": "passwordError",
+                                    },
+                                    "",
+                                )
+                            }
+                            
+                            @ui.Button("", "lg", "", "Sign In", "w-full", templ.Attributes{"type": "submit"})
+                        }
+                    </div>
+                }
+            }
+        </div>
+    }
+}

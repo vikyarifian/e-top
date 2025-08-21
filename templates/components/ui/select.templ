@@ -26,7 +26,7 @@ templ Select(name, value string, class string, options []SelectOption, attrs tem
                         <span x-text="selected.label.slice(0,1)"></span>
                     </div>
                     <!-- Icon default -->
-                    <div x-show="selected.label === ''" class="w-4 h-4" data-lucide="list-checks" />
+                    <div x-show="selected.label === ''" class="w-4 h-4 ml-0" data-lucide="list-checks" />
                     <!-- Label -->
                     <span x-text={fmt.Sprintf("selected.label || 'Select %s'",name)}></span>
                 </div>

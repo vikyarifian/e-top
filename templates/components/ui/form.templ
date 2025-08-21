@@ -5,8 +5,6 @@ import "slices"
 templ Form(action, method string, attrs templ.Attributes) {
     <form 
         hx-post={action} 
-        hx-target="this" 
-        hx-swap="outerHTML" 
         method={method} 
         class="space-y-6"
         { attrs... }
@@ -42,9 +40,7 @@ templ FormControl(id, name, typ, placeholder, value string, attrs templ.Attribut
         //         disabled:cursor-not-allowed disabled:opacity-50"
         //     { attrs... }
         // />
-    } else {
-        <div>Belum ada</div>
-    }
+    } 
 }
 
 templ FormDescription(text string) {
