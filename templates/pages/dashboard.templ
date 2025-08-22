@@ -1,10 +1,10 @@
 package pages
 
-import "etop/templates/layouts"
+// import "etop/templates/layouts"
 
 // Dashboard Page
 templ Dashboard() {
-    @layouts.Layout() {
+    // @layouts.Layout() {
 	<div class="space-y-6"
 		x-data="{ pageTitle: 'Dashboard - etop' }" 
 		x-init="document.title = pageTitle; $watch('pageTitle', value => document.title = value);"
@@ -77,6 +77,6 @@ templ Dashboard() {
 			</div>
 		</div>
 	</div>
-    }
+    // }
 }
 

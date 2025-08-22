@@ -5,14 +5,14 @@ import (
     "etop/templates/components/ui"
 )
 
-templ SignIn() {
+templ SignUp() {
     @ui.Card("max-w-md w-full shadow-xl") {
         @ui.CardHeader("items-center justify-center") {
             @ui.CardTitle("text-center") {
-                <h4>Welcome back</h4>
+                <h4>Create an account</h4>
             }
             @ui.CardDescription("text-center") {
-                Sign in to your account to continue
+                By signing up, you agree to our Privacy Policy and Terms of Service
             }
         }
         <div class="mx-2">
@@ -22,11 +22,19 @@ templ SignIn() {
             <div 
                 x-init="document.title = pageTitle; $watch('pageTitle', value => document.title = value);"
                 x-data="{
-                            pageTitle: 'Sign In - etop',
+                            pageTitle: 'Sign Up - etop',
+                            name: '',
                             email: '',
                             password: '',
+                            password2: '',
+                            nameError: '',
                             emailError: '',
                             passwordError: '',
+                            validateName() {
+                                this.nameError = (this.name.trim() == '')
+                                    ? `Name can't empty`
+                                    : '';
+                            },
                             validateEmail() {
                                 this.emailError = (!this.email.includes('@'))
                                     ? 'Email not valid'
@@ -35,12 +43,16 @@ templ SignIn() {
                             validatePassword() {
                                 this.passwordError = (this.password.length < 8)
                                     ? 'Minimum 8 characters'
-                                    : '';
+                                    : ((this.password !== this.password2)
+                                                            ? 'Password not match'
+                                                            : '');
+                                
                             },
                             validateForm() {
+                                this.validateName();
                                 this.validateEmail();
                                 this.validatePassword();
-                                if (this.emailError || this.passwordError) return;
+                                if (this.emailName || this.emailError || this.passwordError) return;
                                 $el.querySelector('form').submit();
                             }
                         }"
@@ -50,6 +62,19 @@ templ SignIn() {
                     "hx-swap":"none", 
                     "@submit.prevent":"validateForm",
                 }) {
+                    @ui.FormItem() {
+                        @ui.FormLabel("name", "Full Name")
+                        @ui.FormControl("name", "name", "text", "John Doe", "", templ.Attributes{
+                            "x-model": "name",
+                            "@blur": "validateName",
+                        })
+                        @ui.FormMessage(templ.Attributes{
+                                "x-show": "nameError != ''",
+                                "x-text": "nameError",
+                            },
+                            "",
+                        )
+                    }
                     @ui.FormItem() {
                         @ui.FormLabel("email", "Email Address")
                         @ui.FormControl("email", "email", "email", "you@example.com", "", templ.Attributes{
@@ -67,6 +92,19 @@ templ SignIn() {
                         @ui.FormLabel("password", "Password")
                         @ui.FormControl("password", "password", "password", "********", "", templ.Attributes{
                             "x-model": "password",
+                            "@blur": "validatePassword",
+                        })
+                        // @ui.FormMessage(templ.Attributes{
+                        //         "x-show": "passwordError != ''",
+                        //         "x-text": "passwordError",
+                        //     },
+                        //     "",
+                        // )
+                    }
+                    @ui.FormItem() {
+                        @ui.FormLabel("password2", "Confirm Password")
+                        @ui.FormControl("password", "password2", "password", "********", "", templ.Attributes{
+                            "x-model": "password2",
                             "@blur": "validatePassword",
                         })
                         @ui.FormMessage(templ.Attributes{
@@ -94,12 +132,12 @@ templ SignIn() {
         @ui.CardFooter("items-center justify-center") {
             <div class="flex items-center justify-center">
                 <p class="text-sm text-muted-foreground">
-                    Don't have an account? 
+                    Already have an account? 
                     <span class="text-blue-700 cursor-pointer"
-                        hx-get="/sign-up-card"
+                        hx-get="/sign-in-card"
                         hx-target="#content"
                         hx-swap="true"
-                        hx-push-url="/sign-up">Sign Up</span>
+                        hx-push-url="/sign-in">Sign In</span>
                 </p>
             </div>
         }

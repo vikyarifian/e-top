@@ -29,7 +29,8 @@ func SetRoutes() {
 
 	r.HandleFunc("/public/", HandleStatic)
 
-	r.HandleFunc("/sign-in", handlers.Make(handlers.HandleSignIn))
+	r.HandleFunc("/sign-in-card", handlers.Make(handlers.HandleSignIn))
+	r.HandleFunc("/sign-up-card", handlers.Make(handlers.HandleSignUp))
 	r.HandleFunc("/", handlers.Make(handlers.HandleDashboard))
 	r.HandleFunc("/workspace-switcher", handlers.Make(handlers.WorkspaceSwitcher))
 
