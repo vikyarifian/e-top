@@ -4,8 +4,12 @@ import "slices"
 
 templ Form(action, method string, attrs templ.Attributes) {
     <form 
-        hx-post={action} 
-        method={method} 
+        if action != "" {
+            hx-post={action} 
+        }
+        if method != "" {
+            method={method} 
+        }
         class="space-y-6"
         { attrs... }
     >

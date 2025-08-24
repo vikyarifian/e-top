@@ -1,13 +1,17 @@
 package layouts
 
+import "etop/dto"
+
 // Base Layout
-templ Layout() {
+templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>etop</title>
+			<title>{title} - etop</title>
+			// <link rel="icon" href="/favicon.ico" type="image/x-icon">
+			<link rel="icon" href="data:,">
 			<link rel="stylesheet" href="/public/css/styles.css"/>
 			<script src="/public/js/htmx.min.js"></script>
 			<script src="/public/js/cdn.min.js" defer></script>
@@ -77,16 +81,27 @@ templ Layout() {
 
 				<!-- Main Content -->
 				<div class="flex-1 flex flex-col min-w-0">
-					@Header()
+					@Header(user)
 
 					<!-- Page Content -->
-					<main class="flex-1 p-6 overflow-y-auto" hx-target="this" hx-swap="innerHTML">
-						{ children...}
+					<main id="content" class="flex-1 p-6 overflow-y-auto">
+						for _, c := range content {
+							@c
+						}
 					</main>
 				</div>
 			</div>
 			<script>
+
 				lucide.createIcons();
+
+				document.body.addEventListener("htmx:afterSwap", (e) => {
+					if (e.detail.target.id === "content") {
+						const newTitle = document.querySelector("#content [data-title]")?.dataset.title;
+						if (newTitle) document.title = newTitle !== "" ? newTitle+" - etop" : "etop";
+					}
+				});
+				
 			</script>
 		</body>
 	</html>

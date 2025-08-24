@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"etop/auth"
 	"etop/handlers"
 	"log"
 	"log/slog"
@@ -28,11 +29,17 @@ func SetRoutes() {
 	r := http.NewServeMux()
 
 	r.HandleFunc("/public/", HandleStatic)
+	// r.Handle("/favicon.ico", http.FileServer(http.Dir("public")))
+	r.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent) // 204 No Content
+	})
 
-	r.HandleFunc("/sign-in-card", handlers.Make(handlers.HandleSignIn))
-	r.HandleFunc("/sign-up-card", handlers.Make(handlers.HandleSignUp))
-	r.HandleFunc("/", handlers.Make(handlers.HandleDashboard))
-	r.HandleFunc("/workspace-switcher", handlers.Make(handlers.WorkspaceSwitcher))
+	r.HandleFunc("/sign-in", handlers.Make(handlers.HandleSignIn))
+	r.HandleFunc("/sign-up", handlers.Make(handlers.HandleSignUp))
+	r.HandleFunc("/logout", handlers.Make(handlers.HandleLogout))
+
+	r.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleDashboard)))
+	r.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.WorkspaceSwitcher)))
 
 	// Add CORS headers
 	corsHandler := func(next http.Handler) http.Handler {

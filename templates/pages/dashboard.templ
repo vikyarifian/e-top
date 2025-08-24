@@ -1,17 +1,16 @@
 package pages
 
-// import "etop/templates/layouts"
+import "etop/dto"
 
 // Dashboard Page
-templ Dashboard() {
-    // @layouts.Layout() {
+templ Dashboard(userAuth dto.UserAuth) {
 	<div class="space-y-6"
 		x-data="{ pageTitle: 'Dashboard - etop' }" 
 		x-init="document.title = pageTitle; $watch('pageTitle', value => document.title = value);"
 	>
 		<div>
 			<h2 class="text-3xl font-bold tracking-tight">Dashboard</h2>
-			<p class="text-muted-foreground">Welcome to your dashboard</p>
+			<p class="text-muted-foreground">Welcome {userAuth.FullName} to your dashboard</p>
 		</div>
 
 		<!-- Stats Cards -->
@@ -77,6 +76,5 @@ templ Dashboard() {
 			</div>
 		</div>
 	</div>
-    // }
 }
 

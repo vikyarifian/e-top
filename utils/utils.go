@@ -1,14 +1,35 @@
 package utils
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/a-h/templ"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func Render(w http.ResponseWriter, r *http.Request, c templ.Component) error {
 	return c.Render(r.Context(), w)
+}
+
+var emailRe = regexp.MustCompile(`^[^\s@]+@[^\s@]+\.[^\s@]+$`)
+
+func IsEmailValidRegex(s string) bool {
+	return emailRe.MatchString(s)
+}
+
+func GenerateHash(input string) string {
+	hasher := sha256.New()
+	hasher.Write([]byte(input))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
 }
 
 func LetterToColor(letter string) string {
@@ -49,5 +70,5 @@ func LetterToColor(letter string) string {
 	if color, ok := colorMap[letter]; ok {
 		return color
 	}
-	return "black" // default if not A-Z
+	return "#3b82f6" // default if not A-Z
 }
