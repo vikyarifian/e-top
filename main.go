@@ -1,6 +1,7 @@
 package main
 
 import (
+	"etop/db"
 	"etop/routes"
 	"log"
 
@@ -13,6 +14,8 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+
+	db.PgSqlInit()
 
 	routes.SetRoutes()
 }

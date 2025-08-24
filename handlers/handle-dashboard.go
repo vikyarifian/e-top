@@ -1,11 +1,13 @@
 package handlers
 
 import (
+	"etop/auth"
 	"etop/templates/layouts"
-	"etop/utils"
+	"etop/templates/pages"
 	"net/http"
 )
 
 func HandleDashboard(w http.ResponseWriter, r *http.Request) error {
-	return utils.Render(w, r, layouts.AuthLayout("/sign-in", "/sign-in-card"))
+	user, _ := auth.GetAuth(w, r)
+	return layouts.Layout("Dashboard", user, pages.Dashboard(user)).Render(r.Context(), w)
 }
