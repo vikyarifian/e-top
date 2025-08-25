@@ -28,14 +28,14 @@ templ UserButton(name, email string) {
 		}
 
 		/* Panel dropdown */
-		@ui.DropdownContent("w-80", nil) {
+		@ui.DropdownContent("w-60", nil) {
 			<!-- header user info -->
 			<div class="flex flex-col items-center justify-center gap-2 p-4">
 				// <div class="size-14 rounded-full bg-neutral-200 border border-neutral-300 flex items-center justify-center">
 				// 	<span class="text-neutral-600 text-xl font-medium">{ string([]rune(name)[0]) }</span>
 				// </div>
 				<div class="flex flex-col items-center justify-center">
-					<p class="text-md font-semibold text-neutral-900">
+					<p class="text-md font-semibold">
 						{ name } 
 					</p>
 					<p class="text-sm text-neutral-500">

@@ -40,7 +40,7 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signin-error", "warning", "Error", "Email not valid!").Render(r.Context(), w)
 		}
 
-		if len(strings.Trim(password, " ")) < 6 {
+		if len(strings.Trim(password, " ")) < 8 {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("signin-error", "warning", "Error", "Password must be at least 8 characters!").Render(r.Context(), w)
 		}
@@ -134,7 +134,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signup-error", "warning", "Error", "Email already exist!").Render(r.Context(), w)
 		}
 
-		if len(strings.Trim(user.Password, " ")) < 6 {
+		if len(strings.Trim(user.Password, " ")) < 8 {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("signup-error", "warning", "Error", "Password must be at least 8 characters!").Render(r.Context(), w)
 		}
