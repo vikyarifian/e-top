@@ -46,7 +46,7 @@ func SendEmail(to, subject, body string) error {
 
 // Email verifikasi akun
 func SendVerificationEmail(user models.User, verifyURL string) error {
-	subject := `[etop] Verify Your Account`
+	subject := fmt.Sprintf(`[%s] Verify Your Account`, os.Getenv("APP_NAME"))
 
 	body := fmt.Sprintf(`
 	<!DOCTYPE html>
@@ -69,7 +69,7 @@ func SendVerificationEmail(user models.User, verifyURL string) error {
 	</head>
 	<body>
 	  <div class="container">
-		<h2>Welcome to etop 🚀</h2>
+		<h2>Welcome to %s 🚀</h2>
 		<p>Hi %s,</p>
 		<p>Thank you for signing up. Please confirm your email address to activate your account.</p>
 		<p style="text-align:center;">
@@ -84,7 +84,7 @@ func SendVerificationEmail(user models.User, verifyURL string) error {
 	  </div>
 	</body>
 	</html>
-	`, user.FullName, verifyURL, verifyURL, verifyURL)
+	`, os.Getenv("APP_NAME"), user.FullName, verifyURL, verifyURL, verifyURL)
 
 	return SendEmail(user.Email, subject, body)
 }

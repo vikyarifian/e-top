@@ -8,10 +8,7 @@ package layouts
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"etop/dto"
-	"os"
-)
+import "etop/dto"
 
 // Base Layout
 func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.Component {
@@ -42,26 +39,13 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 15, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 12, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " - ")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME"))
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 15, Col: 42}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</title><link rel=\"icon\" href=\"data:,\"><link rel=\"stylesheet\" href=\"/public/css/styles.css\"><script src=\"/public/js/htmx.min.js\"></script><script src=\"/public/js/cdn.min.js\" defer></script><script src=\"/public/js/lucide.js\"></script></head><body class=\"min-h-screen bg-background text-foreground\" x-data=\"{ \r\n\t\t\t\tsidebarOpen: false, \r\n\t\t\t\tsidebarCollapsed: false, \r\n\t\t\t\tdarkMode: localStorage.getItem('darkMode') === 'true' || false,\r\n\t\t\t\tisMobile: window.innerWidth < 768\r\n\t\t\t}\" x-init=\"\r\n\t\t\t\t$watch('darkMode', val => {\r\n\t\t\t\t\tlocalStorage.setItem('darkMode', val);\r\n\t\t\t\t\tif (val) {\r\n\t\t\t\t\t\tdocument.documentElement.classList.add('dark');\r\n\t\t\t\t\t} else {\r\n\t\t\t\t\t\tdocument.documentElement.classList.remove('dark');\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t\tif (darkMode) {\r\n\t\t\t\t\tdocument.documentElement.classList.add('dark');\r\n\t\t\t\t}\r\n\t\t\t\twindow.addEventListener('resize', () => {\r\n\t\t\t\t\tisMobile = window.innerWidth < 768;\r\n\t\t\t\t\tif (!isMobile) sidebarOpen = false;\r\n\t\t\t\t});\r\n\t\t\t\"><div class=\"flex h-screen\"><!-- Desktop Sidebar --><div class=\"hidden md:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out\" :class=\"sidebarCollapsed ? 'w-16' : 'w-64'\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, " - etop</title><link rel=\"icon\" href=\"data:,\"><link rel=\"stylesheet\" href=\"/public/css/styles.css\"><script src=\"/public/js/htmx.min.js\"></script><script src=\"/public/js/cdn.min.js\" defer></script><script src=\"/public/js/lucide.js\"></script><style>\r\n\t\t\t\t/* Text dengan background image (galaxy effect) */\r\n\t\t\t\t.galaxy-text {\r\n\t\t\t\t\tbackground: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1400&q=80');\r\n\t\t\t\t\t-webkit-background-clip: text;\r\n\t\t\t\t\t-webkit-text-fill-color: transparent;\r\n\t\t\t\t\tbackground-size: cover;\r\n\t\t\t\t\tbackground-position: center;\r\n\t\t\t\t}\r\n\t\t\t</style></head><body class=\"min-h-screen bg-background text-foreground\" x-data=\"{ \r\n\t\t\t\tsidebarOpen: false, \r\n\t\t\t\tsidebarCollapsed: false, \r\n\t\t\t\tdarkMode: localStorage.getItem('darkMode') === 'true' || false,\r\n\t\t\t\tisMobile: window.innerWidth < 768\r\n\t\t\t}\" x-init=\"\r\n\t\t\t\t$watch('darkMode', val => {\r\n\t\t\t\t\tlocalStorage.setItem('darkMode', val);\r\n\t\t\t\t\tif (val) {\r\n\t\t\t\t\t\tdocument.documentElement.classList.add('dark');\r\n\t\t\t\t\t} else {\r\n\t\t\t\t\t\tdocument.documentElement.classList.remove('dark');\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t\tif (darkMode) {\r\n\t\t\t\t\tdocument.documentElement.classList.add('dark');\r\n\t\t\t\t}\r\n\t\t\t\twindow.addEventListener('resize', () => {\r\n\t\t\t\t\tisMobile = window.innerWidth < 768;\r\n\t\t\t\t\tif (!isMobile) sidebarOpen = false;\r\n\t\t\t\t});\r\n\t\t\t\"><div class=\"flex h-screen\"><!-- Desktop Sidebar --><div class=\"hidden md:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out\" :class=\"sidebarCollapsed ? 'w-16' : 'w-64'\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -69,7 +53,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><!-- Mobile Sidebar Overlay --><div x-show=\"sidebarOpen && isMobile\" x-transition:enter=\"transition-opacity ease-linear duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition-opacity ease-linear duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\" class=\"fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden\" @click=\"sidebarOpen = false\"></div><!-- Mobile Sidebar --><div x-show=\"sidebarOpen && isMobile\" x-transition:enter=\"transition ease-in-out duration-300 transform\" x-transition:enter-start=\"-translate-x-full\" x-transition:enter-end=\"translate-x-0\" x-transition:leave=\"transition ease-in-out duration-300 transform\" x-transition:leave-start=\"translate-x-0\" x-transition:leave-end=\"-translate-x-full\" class=\"fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border md:hidden\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div><!-- Mobile Sidebar Overlay --><div x-show=\"sidebarOpen && isMobile\" x-transition:enter=\"transition-opacity ease-linear duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition-opacity ease-linear duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\" class=\"fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden\" @click=\"sidebarOpen = false\"></div><!-- Mobile Sidebar --><div x-show=\"sidebarOpen && isMobile\" x-transition:enter=\"transition ease-in-out duration-300 transform\" x-transition:enter-start=\"-translate-x-full\" x-transition:enter-end=\"translate-x-0\" x-transition:leave=\"transition ease-in-out duration-300 transform\" x-transition:leave-start=\"translate-x-0\" x-transition:leave-end=\"-translate-x-full\" class=\"fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border md:hidden\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -77,7 +61,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</div><!-- Main Content --><div class=\"flex-1 flex flex-col min-w-0\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</div><!-- Main Content --><div class=\"flex-1 flex flex-col min-w-0\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,7 +69,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Page Content --><main id=\"content\" class=\"flex-1 p-6 overflow-y-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<!-- Page Content --><main id=\"content\" class=\"flex-1 p-6 overflow-y-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,7 +79,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</main></div></div><script>\r\n\r\n\t\t\t\tlucide.createIcons();\r\n\r\n\t\t\t\tdocument.body.addEventListener(\"htmx:afterSwap\", (e) => {\r\n\t\t\t\t\tif (e.detail.target.id === \"content\") {\r\n\t\t\t\t\t\tconst newTitle = document.querySelector(\"#content [data-title]\")?.dataset.title;\r\n\t\t\t\t\t\tif (newTitle) document.title = newTitle !== \"\" ? newTitle+\" - etop\" : \"etop\";\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t\t\r\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</main></div></div><script>\r\n\r\n\t\t\t\tlucide.createIcons();\r\n\r\n\t\t\t\tdocument.addEventListener(\"DOMContentLoaded\", () => {\r\n\t\t\t\t\tlucide.createIcons(); // render awal\r\n\t\t\t\t});\r\n\r\n\t\t\t\tdocument.body.addEventListener(\"htmx:afterSwap\", (e) => {\r\n\t\t\t\t\tif (e.detail.target.id === \"content\") {\r\n\t\t\t\t\t\tconst newTitle = document.querySelector(\"#content [data-title]\")?.dataset.title;\r\n\t\t\t\t\t\tif (newTitle) document.title = newTitle !== \"\" ? newTitle+\" - etop\" : \"etop\";\r\n\t\t\t\t\t}\r\n\t\t\t\t\tlucide.createIcons();\r\n\t\t\t\t});\r\n\r\n\t\t\t\tdocument.body.addEventListener(\"htmx:afterOnLoad\", (e) => {\r\n\t\t\t\t\tif (e.detail.target.id === \"toaster\") {\r\n\t\t\t\t\t\tdocument.querySelector(\"#toaster\")\r\n\t\t\t\t\t\t\t.insertAdjacentHTML(\"beforeend\", e.detail.xhr.responseText);\t\t\t\t\t\t\r\n\t\t\t\t\t}\r\n\t\t\t\t\tlucide.createIcons();\r\n\t\t\t\t});\r\n\r\n\t\t\t\t\r\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -9,5 +9,24 @@ import (
 
 func HandleDashboard(w http.ResponseWriter, r *http.Request) error {
 	user, _ := auth.GetAuth(w, r)
-	return layouts.Layout("Dashboard", user, pages.Dashboard(user)).Render(r.Context(), w)
+	switch r.Method {
+	case http.MethodGet:
+		return layouts.Layout("Dashboard", user, pages.Dashboard(user)).Render(r.Context(), w)
+	case http.MethodPost:
+		return pages.Dashboard(user).Render(r.Context(), w)
+	default:
+		return nil
+	}
+}
+
+func HandleNotFound(w http.ResponseWriter, r *http.Request) error {
+	user, _ := auth.GetAuth(w, r)
+	switch r.Method {
+	case http.MethodGet:
+		return layouts.Layout("Not Found", user, pages.NotFound()).Render(r.Context(), w)
+	case http.MethodPost:
+		return pages.NotFound().Render(r.Context(), w)
+	default:
+		return nil
+	}
 }

@@ -1,9 +1,6 @@
 package layouts
 
-import (
-	"os"
-	"etop/dto"
-)
+import "etop/dto"
 
 // Base Layout
 templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
@@ -12,13 +9,23 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>{title} - {os.Getenv("APP_NAME")}</title>
+			<title>{title} - etop</title>
 			// <link rel="icon" href="/favicon.ico" type="image/x-icon">
 			<link rel="icon" href="data:,">
 			<link rel="stylesheet" href="/public/css/styles.css"/>
 			<script src="/public/js/htmx.min.js"></script>
 			<script src="/public/js/cdn.min.js" defer></script>
             <script src="/public/js/lucide.js"></script>
+			<style>
+				/* Text dengan background image (galaxy effect) */
+				.galaxy-text {
+					background: url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1400&q=80');
+					-webkit-background-clip: text;
+					-webkit-text-fill-color: transparent;
+					background-size: cover;
+					background-position: center;
+				}
+			</style>
 		</head>
 		<body 
 			class="min-h-screen bg-background text-foreground"
@@ -98,12 +105,26 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 
 				lucide.createIcons();
 
+				document.addEventListener("DOMContentLoaded", () => {
+					lucide.createIcons(); // render awal
+				});
+
 				document.body.addEventListener("htmx:afterSwap", (e) => {
 					if (e.detail.target.id === "content") {
 						const newTitle = document.querySelector("#content [data-title]")?.dataset.title;
 						if (newTitle) document.title = newTitle !== "" ? newTitle+" - etop" : "etop";
 					}
+					lucide.createIcons();
 				});
+
+				document.body.addEventListener("htmx:afterOnLoad", (e) => {
+					if (e.detail.target.id === "toaster") {
+						document.querySelector("#toaster")
+							.insertAdjacentHTML("beforeend", e.detail.xhr.responseText);						
+					}
+					lucide.createIcons();
+				});
+
 				
 			</script>
 		</body>
