@@ -1,0 +1,100 @@
+package pages
+
+import (
+    "etop/templates/components"
+    "etop/templates/components/ui"
+)
+
+templ ResendVerification() {
+    <div data-title="Resend Verification" class="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-6">
+        <div class="flex items-center mb-4">
+            <div class="w-14 h-14 bg-green-600 rounded-lg flex items-center justify-center px-5">
+                <span class="text-[48px] text-primary-foreground font-semibold" style="margin-top: -10px">e</span>
+            </div>
+            <span class="font-bold text-[46px] pb-2 pl-2.5 pt-0">top</span>
+        </div>
+        @ui.Card("max-w-md w-full shadow-xl") {
+            @ui.CardHeader("items-center justify-center") {
+                @ui.CardTitle("text-center") {
+                    <h4>Resend Verification</h4>
+                }
+                @ui.CardDescription("text-center") {
+                    Enter your email and we’ll send you a new verification link.
+                }
+            }
+            <div class="mx-2">
+                @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            </div>
+            @ui.CardContent("") {
+                <div 
+                    x-data="{
+                                email: '',
+                                emailError: '',
+                                validateEmail() {
+                                    this.emailError = (!this.email || this.email === '') 
+                                        ? 'Email is required'
+                                        : ((!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) 
+                                            ? 'Email not valid'
+                                            : '');
+                                },
+                                validateForm(e) {
+                                    e.preventDefault();
+                                    this.validateEmail();
+                                    if (this.emailError) {
+                                        return;
+                                    }
+                                },
+                                init() {
+                                    document.body.addEventListener('htmx:afterRequest', (evt) => {
+                                        if (evt.detail.successful && evt.detail.elt.id === 'resend-form') {
+                                            // Mungkin tampilkan toaster notifikasi sukses
+                                        }
+                                    })
+                                }
+                            }"
+                >
+                    @ui.Form("/resend-verification", "post", templ.Attributes{
+                        "id":"resend-form",
+                        "hx-target": "#toaster",
+                        "hx-swap": "beforeend",
+                        "hx-disabled-elt":"#resend-button",
+                        "@submit.prevent":"validateForm($event)",
+                    }) {
+                        @ui.FormItem() {
+                            @ui.FormLabel("email", "Email Address")
+                            @ui.FormControl("email", "email", "email", "you@example.com", "", templ.Attributes{
+                                "id": "email",
+                                "name": "email",
+                                "autocomplete":"email",
+                                "x-model": "email",
+                                "@blur": "validateEmail",
+                            })
+                            @ui.FormMessage(templ.Attributes{
+                                    "x-show": "emailError != ''",
+                                    "x-text": "emailError",
+                                },
+                                "",
+                            )
+                        }
+                        @ui.Button("resend-button", "", "lg", "", "Resend Verification Email", "w-full", templ.Attributes{"type": "submit",})
+                    }
+                </div>
+            }
+            <div class="mx-2">
+                @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            </div>
+            @ui.CardFooter("flex flex-row items-center justify-center") {
+                <div class="text-center items-center justify-center">
+                    <p class="text-sm text-muted-foreground">
+                        Already verified? 
+                        <span class="text-blue-700 cursor-pointer"
+                            hx-get="/sign-in"
+                            hx-target="#content"
+                            hx-swap="true"
+                            hx-push-url="true">Sign In</span>
+                    </p>
+                </div>
+            }
+        }
+    </div>
+}

@@ -1,19 +1,31 @@
 package layouts
 
+import (
+	"os"
+)
+
 templ AuthLayout(title string, content ...templ.Component) {
     <!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>{title} - etop</title>
+			<title>{title} - {os.Getenv("APP_NAME")}</title>
 			<link rel="icon" href="data:,">
 			<link rel="stylesheet" href="/public/css/styles.css"/>
 			<script src="/public/js/cdn.min.js" defer></script>
 			<script src="/public/js/htmx.min.js"></script>
             <script src="/public/js/lucide.js"></script>
 		</head>
-		<body>
+		<body x-data="{ init() {
+							document.body.addEventListener(`htmx:afterSwap`, (e) => {
+								if (e.detail.target.id === `content`) {
+									const newTitle = document.querySelector(`#content [data-title]`)?.dataset.title;
+									if (newTitle) document.title = newTitle !== `` ? newTitle : ``;
+								}
+							})
+						} 
+					}">
 			<div id="content">
 				for _, c := range content {
 					@c
@@ -27,12 +39,12 @@ templ AuthLayout(title string, content ...templ.Component) {
 					lucide.createIcons(); // render awal
 				});
 
-				document.body.addEventListener("htmx:afterSwap", (e) => {
-					if (e.detail.target.id === "content") {
-						const newTitle = document.querySelector("#content [data-title]")?.dataset.title;
-						if (newTitle) document.title = newTitle !== "" ? newTitle+" - etop" : "etop";
-					}
-				});
+				// document.body.addEventListener("htmx:afterSwap", (e) => {
+				// 	if (e.detail.target.id === "content") {
+				// 		const newTitle = document.querySelector("#content [data-title]")?.dataset.title;
+				// 		if (newTitle) document.title = newTitle !== `` ? newTitle : ``;
+				// 	}
+				// });
 
 				document.body.addEventListener("htmx:afterOnLoad", (e) => {
 					if (e.detail.target.id === "toaster") {
