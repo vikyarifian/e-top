@@ -18,8 +18,74 @@ templ SignUp() {
                 @ui.CardTitle("text-center") {
                     <h4>Create an account</h4>
                 }
-                @ui.CardDescription("text-center") {
-                    By signing up, you agree to our Privacy Policy and Terms of Service
+                @ui.CardDescription("flex flex-row flex-wrap items-center justify-center gap-1 text-center") {
+                    By signing up, you agree to our 
+                    <!-- Privacy -->
+                    @ui.DialogRoot("privacy-dialog", templ.Attributes{"class": "items-center justify-center"}) {
+                        @ui.DialogTrigger(templ.Attributes{"class": "text-primary underline"}) {
+                            <span>Privacy Policy</span>
+                        }
+                        @ui.DialogOverlay(nil)
+                        @ui.DialogContent(nil) {
+                            @ui.DialogHeader(nil) {
+                                @ui.DialogTitle(nil) { <span>Privacy Policy</span> }
+                                @ui.DialogDescription(nil) {
+                                    <span>How we collect, use, and protect your data.</span>
+                                }
+                            }
+                            <div class="prose prose-sm dark:prose-invert max-h-[60vh] overflow-y-auto text-left">
+                                <h3>Information We Collect</h3>
+                                <ul class="list-disc pl-5">
+                                    <li>Account info (name, email)</li>
+                                    <li>Usage data, cookies, device info</li>
+                                </ul>
+                                <h3 class="pt-2">How We Use Information</h3>
+                                <p>Service delivery, security, analytics, and communication.</p>
+                                <h3 class="pt-2">Data Protection</h3>
+                                <p>We apply reasonable safeguards, but no method is 100% secure.</p>
+                            </div>
+                            @ui.DialogFooter(nil) {
+                                @ui.DialogClose(templ.Attributes{
+                                    "class": "px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90",
+                                }) { <span>Close</span> }
+                            }
+                        }
+                    }
+                    and 
+                    <!-- Terms of Service -->
+                    @ui.DialogRoot("terms-dialog", templ.Attributes{"class": "items-center justify-center"}) {
+                        @ui.DialogTrigger(templ.Attributes{"class": "text-primary underline cursor-pointer"}) {
+                            <span>Terms of Service</span>
+                        }
+                        @ui.DialogOverlay(nil)
+                        @ui.DialogContent(nil) {
+                            @ui.DialogHeader(nil) {
+                                @ui.DialogTitle(nil) { <span>Terms of Service</span> }
+                                @ui.DialogDescription(nil) {
+                                    <span>Our rules and conditions for using this service.</span>
+                                }
+                            }
+                            <div class="prose prose-sm dark:prose-invert max-h-[60vh] overflow-y-auto text-left">
+                                <h3>Acceptance of Terms</h3>
+                                <p>By using our services, you agree to be bound by these terms.</p>
+
+                                <h3 class="pt-2">User Responsibilities</h3>
+                                <ul class="list-disc pl-5">
+                                    <li>You must provide accurate information.</li>
+                                    <li>You are responsible for your account security.</li>
+                                    <li>You must comply with applicable laws.</li>
+                                </ul>
+
+                                <h3 class="pt-2">Limitations of Liability</h3>
+                                <p>We are not liable for damages arising from misuse of our services.</p>
+                            </div>
+                            @ui.DialogFooter(nil) {
+                                @ui.DialogClose(templ.Attributes{
+                                    "class": "px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90",
+                                }) { <span>Close</span> }
+                            }
+                        }
+                    }
                 }
             }
             <div class="mx-2">
@@ -183,5 +249,7 @@ templ SignUp() {
                 </div>
             }
         }
+        
+
     </div>
 }

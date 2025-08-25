@@ -6,7 +6,7 @@ templ Dropdown(id string) {
         x-data="{ open: false, subOpen: false, radioValue: '', checks: {}, toggle() { this.open = !this.open }, close() { this.open = false; this.subOpen = false } }"
         @keydown.escape.stop="close()"
         @click.outside="close()"
-        class="relative"
+        class="outline-none relative"
         id={id}
     >
         { children... }
@@ -19,13 +19,13 @@ templ DropdownTrigger(attrs templ.Attributes) {
         type="button"
         @click.stop="toggle()"
         :aria-expanded="open"
-        class="flex cursor-pointer select-none items-center gap-2 rounded-md px-2.5 py-1.5 text-sm outline-none"
+        class="flex cursor-pointer select-none items-center gap-1 rounded-md p-2 text-sm outline-none"
         { attrs... }
     >
         { children... }
-        <svg class="ml-1 size-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />
-        </svg>
+        // <svg class="ml-1 size-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        //     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />
+        // </svg>
     </button>
 }
 
@@ -38,7 +38,7 @@ templ DropdownContent(class string, attrs templ.Attributes) {
         class={"z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin] ", class}
         style="position:absolute; right:0; margin-top:0.25rem;"
-        @click="/* biarkan item yang menutup */"
+        @click=""
         { attrs... }
     >
         { children... }

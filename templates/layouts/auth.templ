@@ -22,7 +22,10 @@ templ AuthLayout(title string, content ...templ.Component) {
 			<div id="toaster"></div> 
 			<script>
 
-				lucide.createIcons();
+				// lucide.createIcons();
+				document.addEventListener("DOMContentLoaded", () => {
+					lucide.createIcons(); // render awal
+				});
 
 				document.body.addEventListener("htmx:afterSwap", (e) => {
 					if (e.detail.target.id === "content") {
@@ -31,13 +34,12 @@ templ AuthLayout(title string, content ...templ.Component) {
 					}
 				});
 
-				document.body.addEventListener("htmx:responseError", (e) => {
-					// Get fragment response error
-					if (e.detail.xhr.responseText) {
+				document.body.addEventListener("htmx:afterOnLoad", (e) => {
+					if (e.detail.target.id === "toaster") {
 						document.querySelector("#toaster")
-							.insertAdjacentHTML("beforeend", e.detail.xhr.responseText);
-						lucide.createIcons();
+							.insertAdjacentHTML("beforeend", e.detail.xhr.responseText);						
 					}
+					lucide.createIcons();
 				});
 
 			</script>

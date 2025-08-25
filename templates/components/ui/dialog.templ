@@ -1,77 +1,168 @@
 package ui
 
+// Root: bungkus semua primitive di dalam ini
+// - open state dikelola Alpine: open: false|true
+// - attrs opsional untuk menambah kelas/atribut ekstra di root (mis. class)
 // Dialog component
-templ Dialog(id, title string) {
-    <div id={ id } class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm hidden">
-        <div class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg">
-            <div class="flex flex-col space-y-1.5 text-center sm:text-left">
-                <h2 class="text-lg font-semibold">{ title }</h2>
-                <button onclick="closeDialog(this)" class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                    <i data-lucide="x" class="h-4 w-4"></i>
-                </button>
-            </div>
-            { children... }
-        </div>
-    </div>
+templ DialogRoot(id string, attrs templ.Attributes) {
+	<div
+		id={id}
+		x-data="{ open: false }"
+		@open-dialog.window="if ($event.detail.id === '{id}') open = true"
+		@close-dialog.window="if ($event.detail.id === '{id}') open = false"
+		{attrs...}
+	>
+		{ children... }
+	</div>
 }
 
-// Task Dialog component
-templ TaskDialog(id, title string) {
-    @Dialog("task-dialog", "Create New Task") {
-        @TaskForm()
-    }
+// Trigger: tombol/pemicu untuk buka dialog (harus di dalam Root)
+templ DialogTrigger(attrs templ.Attributes) {
+	<button
+		type="button"
+		@click="open = true"
+		{attrs...}
+	>
+		{ children... }
+	</button>
+}
+
+templ ExternalTrigger(targetID string, attrs templ.Attributes) {
+	<button
+		type="button"
+		@click="$dispatch('open-dialog', { id: '{targetID}' })"
+		{attrs...}
+	>
+		{ children... }
+	</button>
+}
+
+// Overlay: backdrop gelap ala shadcn
+templ DialogOverlay(attrs templ.Attributes) {
+	<div
+		x-show="open"
+		x-transition.opacity
+		:data-state="open ? 'open' : 'closed'"
+		class="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+		{attrs...}
+	></div>
+}
+
+// Content: kotak dialog di tengah layar
+templ DialogContent(attrs templ.Attributes) {
+	<div
+		x-show="open"
+		x-transition
+		:data-state="open ? 'open' : 'closed'"
+		class="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4
+               border bg-background p-6 shadow-lg duration-200
+               data-[state=open]:animate-in data-[state=closed]:animate-out
+               data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0
+               data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95
+               data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%]
+               data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]
+               sm:rounded-lg"
+		role="dialog"
+		aria-modal="true"
+		@click.outside="open = false"
+		{attrs...}
+	>
+		{ children... }
+
+		<!-- Close (pojok kanan atas) -->
+		<button
+			type="button"
+			@click="open = false"
+			class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100
+                   focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none
+                   data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+			aria-label="Close"
+		>
+			<i data-lucide="x" class="h-4 w-4"></i>
+			<span class="sr-only">Close</span>
+		</button>
+	</div>
+}
+
+// Header/Footer/Title/Description: util layout seperti shadcn
+templ DialogHeader(attrs templ.Attributes) {
+	<div class="flex flex-col space-y-1.5 text-center sm:text-left" {attrs...}>{ children... }</div>
+}
+
+templ DialogFooter(attrs templ.Attributes) {
+	<div class="flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2" {attrs...}>{ children... }</div>
+}
+
+templ DialogTitle(attrs templ.Attributes) {
+	<h2 class="text-lg font-semibold leading-none tracking-tight" {attrs...}>{ children... }</h2>
+}
+
+templ DialogDescription(attrs templ.Attributes) {
+	<p class="text-sm text-muted-foreground" {attrs...}>{ children... }</p>
+}
+
+// DialogClose: tombol tutup (biasanya di footer)
+templ DialogClose(attrs templ.Attributes) {
+	<button type="button" @click="open = false" {attrs...}>{ children... }</button>
+}
+
+// // Task Dialog component
+// templ TaskDialog(id, title string) {
+//     @Dialog("task-dialog", "Create New Task") {
+//         @TaskForm()
+//     }
     
-    <script>
-        // Show dialog
-        document.getElementById('task-dialog').classList.remove('hidden');
+//     <script>
+//         // Show dialog
+//         document.getElementById('task-dialog').classList.remove('hidden');
         
-        // Close dialog function
-        function closeDialog(element) {
-            const dialog = element.closest('[id$="-dialog"]');
-            if (dialog) {
-                dialog.remove();
-            }
-        }
-    </script>
-}
+//         // Close dialog function
+//         function closeDialog(element) {
+//             const dialog = element.closest('[id$="-dialog"]');
+//             if (dialog) {
+//                 dialog.remove();
+//             }
+//         }
+//     </script>
+// }
 
-// Task Form component
-templ TaskForm() {
-    <form hx-post="/tasks" hx-swap="none" class="space-y-4">
-        <div class="space-y-2">
-            @Label("title", "Title")
-            @Input("text", "Enter task title", "title", "", nil)
-        </div>
+// // Task Form component
+// templ TaskForm() {
+//     <form hx-post="/tasks" hx-swap="none" class="space-y-4">
+//         <div class="space-y-2">
+//             @Label("title", "Title")
+//             @Input("text", "Enter task title", "title", "", nil)
+//         </div>
         
-        <div class="space-y-2">
-            @Label("description", "Description")
-            @Textarea("Enter task description", "description", "", nil)
-        </div>
+//         <div class="space-y-2">
+//             @Label("description", "Description")
+//             @Textarea("Enter task description", "description", "", nil)
+//         </div>
         
-        <div class="grid grid-cols-2 gap-4">
-            <div class="space-y-2">
-                @Label("priority", "Priority")
-                @Select("priority", "", "", []SelectOption{
-                    {Value: "low", Label: "Low"},
-                    {Value: "medium", Label: "Medium"},
-                    {Value: "high", Label: "High"},
-                }, nil)
-            </div>
+//         <div class="grid grid-cols-2 gap-4">
+//             <div class="space-y-2">
+//                 @Label("priority", "Priority")
+//                 @Select("priority", "", "", []SelectOption{
+//                     {Value: "low", Label: "Low"},
+//                     {Value: "medium", Label: "Medium"},
+//                     {Value: "high", Label: "High"},
+//                 }, nil)
+//             </div>
             
-            <div class="space-y-2">
-                @Label("assignee", "Assignee")
-                @Input("text", "Enter assignee name", "assignee", "", nil)
-            </div>
-        </div>
+//             <div class="space-y-2">
+//                 @Label("assignee", "Assignee")
+//                 @Input("text", "Enter assignee name", "assignee", "", nil)
+//             </div>
+//         </div>
         
-        <div class="space-y-2">
-            @Label("due_date", "Due Date")
-            @Input("date", "", "due_date", "", nil)
-        </div>
+//         <div class="space-y-2">
+//             @Label("due_date", "Due Date")
+//             @Input("date", "", "due_date", "", nil)
+//         </div>
         
-        <div class="flex justify-end space-x-2 pt-4">
-            @Button("close-dialog", "outline", "", "", "Cancel", "", templ.Attributes{"type": "button", "onclick": "closeDialog(this)"})
-            @Button("submit-dialog", "primary", "", "", "Create Task", "", templ.Attributes{"type": "submit"})
-        </div>
-    </form>
-}
+//         <div class="flex justify-end space-x-2 pt-4">
+//             @Button("close-dialog", "outline", "", "", "Cancel", "", templ.Attributes{"type": "button", "onclick": "closeDialog(this)"})
+//             @Button("submit-dialog", "primary", "", "", "Create Task", "", templ.Attributes{"type": "submit"})
+//         </div>
+//     </form>
+// }
