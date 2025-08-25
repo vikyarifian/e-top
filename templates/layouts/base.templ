@@ -1,6 +1,9 @@
 package layouts
 
-import "etop/dto"
+import (
+	"os"
+	"etop/dto"
+)
 
 // Base Layout
 templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
@@ -9,7 +12,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>{title} - etop</title>
+			<title>{title} - {os.Getenv("APP_NAME")}</title>
 			// <link rel="icon" href="/favicon.ico" type="image/x-icon">
 			<link rel="icon" href="data:,">
 			<link rel="stylesheet" href="/public/css/styles.css"/>

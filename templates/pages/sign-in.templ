@@ -122,8 +122,8 @@ templ SignIn() {
             <div class="mx-2">
                 @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             </div>
-            @ui.CardFooter("items-center justify-center") {
-                <div class="flex items-center justify-center">
+            @ui.CardFooter("flex flex-row items-center justify-center") {
+                <div class="text-center items-center justify-center">
                     <p class="text-sm text-muted-foreground">
                         Don't have an account? 
                         <span class="text-blue-700 cursor-pointer"
@@ -131,6 +131,14 @@ templ SignIn() {
                             hx-target="#content"
                             hx-swap="true"
                             hx-push-url="true">Sign Up</span>
+                    </p>
+                    <p class="text-sm text-muted-foreground">
+                        Didn't receive the verification email? 
+                        <span class="text-blue-700 cursor-pointer"
+                            hx-get="/resend-verification"
+                            hx-target="#content"
+                            hx-swap="true"
+                            hx-push-url="true">Resend</span>
                     </p>
                 </div>
             }

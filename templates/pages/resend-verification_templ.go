@@ -13,7 +13,7 @@ import (
 	"etop/templates/components/ui"
 )
 
-func SignIn() templ.Component {
+func ResendVerification() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,7 +34,7 @@ func SignIn() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-title=\"Sign In\" class=\"min-h-screen flex flex-col items-center justify-center bg-muted/40 p-6\"><div class=\"flex items-center mb-4\"><div class=\"w-14 h-14 bg-green-600 rounded-lg flex items-center justify-center px-5\"><span class=\"text-[48px] text-primary-foreground font-semibold\" style=\"margin-top: -10px\">e</span></div><span class=\"font-bold text-[46px] pb-2 pl-2.5 pt-0\">top</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-title=\"Resend Verification\" class=\"min-h-screen flex flex-col items-center justify-center bg-muted/40 p-6\"><div class=\"flex items-center mb-4\"><div class=\"w-14 h-14 bg-green-600 rounded-lg flex items-center justify-center px-5\"><span class=\"text-[48px] text-primary-foreground font-semibold\" style=\"margin-top: -10px\">e</span></div><span class=\"font-bold text-[46px] pb-2 pl-2.5 pt-0\">top</span></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -74,7 +74,7 @@ func SignIn() templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<h4>Welcome back</h4>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<h4>Resend Verification</h4>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -100,7 +100,7 @@ func SignIn() templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "Sign in to your account to continue")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "Enter your email and we’ll send you a new verification link.")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -140,7 +140,7 @@ func SignIn() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div x-data=\"{\r\n                                email: '',\r\n                                password: '',\r\n                                emailError: '',\r\n                                passwordError: '',\r\n                                validateEmail() {\r\n                                    this.emailError = (!this.email || this.email === '') \r\n                                        ? 'Email is required'\r\n                                        : ((!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(this.email)) \r\n                                            ? 'Email not valid'\r\n                                            : '');\r\n                                },\r\n                                validatePassword() {\r\n                                    this.passwordError = (this.password.length < 8)\r\n                                        ? 'Password must be at least 8 characters'\r\n                                        : '';\r\n                                },\r\n                                validateForm(e) {\r\n                                    e.preventDefault();\r\n                                    this.validateEmail();\r\n                                    this.validatePassword();\r\n                                    \r\n                                    if (this.emailError || this.passwordError) {\r\n                                        return; \r\n                                    }\r\n                                },\r\n                                init() {\r\n                                    document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                                        if (evt.detail.successful && evt.detail.elt.id === 'signin-form') {\r\n                                            // window.location.href = '/';\r\n                                        }\r\n                                    })\r\n                                }\r\n                            }\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div x-data=\"{\r\n                                email: '',\r\n                                emailError: '',\r\n                                validateEmail() {\r\n                                    this.emailError = (!this.email || this.email === '') \r\n                                        ? 'Email is required'\r\n                                        : ((!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(this.email)) \r\n                                            ? 'Email not valid'\r\n                                            : '');\r\n                                },\r\n                                validateForm(e) {\r\n                                    e.preventDefault();\r\n                                    this.validateEmail();\r\n                                    if (this.emailError) {\r\n                                        return;\r\n                                    }\r\n                                },\r\n                                init() {\r\n                                    document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                                        if (evt.detail.successful && evt.detail.elt.id === 'resend-form') {\r\n                                            // Mungkin tampilkan toaster notifikasi sukses\r\n                                        }\r\n                                    })\r\n                                }\r\n                            }\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -209,110 +209,23 @@ func SignIn() templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Var9 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-						templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-						templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-						if !templ_7745c5c3_IsBuffer {
-							defer func() {
-								templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-								if templ_7745c5c3_Err == nil {
-									templ_7745c5c3_Err = templ_7745c5c3_BufErr
-								}
-							}()
-						}
-						ctx = templ.InitializeContext(ctx)
-						templ_7745c5c3_Err = ui.FormLabel("password", "Password").Render(ctx, templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, " ")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = ui.FormControl("password", "password", "password", "********", "", templ.Attributes{
-							"id":      "password",
-							"name":    "password",
-							"x-model": "password",
-							"@blur":   "validatePassword",
-						}).Render(ctx, templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " ")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = ui.FormMessage(templ.Attributes{
-							"x-show": "passwordError != ''",
-							"x-text": "passwordError",
-						},
-							"",
-						).Render(ctx, templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						return nil
-					})
-					templ_7745c5c3_Err = ui.FormItem().Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, " ")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = ui.Button("signin-button", "", "lg", "", "Sign In", "w-full", templ.Attributes{"type": "submit"}).Render(ctx, templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, " <div class=\"mx-2\">")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal").Render(ctx, templ_7745c5c3_Buffer)
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Var10 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-						templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-						templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-						if !templ_7745c5c3_IsBuffer {
-							defer func() {
-								templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-								if templ_7745c5c3_Err == nil {
-									templ_7745c5c3_Err = templ_7745c5c3_BufErr
-								}
-							}()
-						}
-						ctx = templ.InitializeContext(ctx)
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16px\" height=\"16px\" viewBox=\"-3 0 262 262\" preserveAspectRatio=\"xMidYMid\"><path d=\"M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027\" fill=\"#4285F4\"></path> <path d=\"M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1\" fill=\"#34A853\"></path> <path d=\"M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782\" fill=\"#FBBC05\"></path> <path d=\"M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251\" fill=\"#EB4335\"></path></svg> Login with Google")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						return nil
-					})
-					templ_7745c5c3_Err = ui.Button("google-button", "secondary", "lg", "", "", "w-full", templ.Attributes{"type": "button"}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var10), templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = ui.Button("resend-button", "", "lg", "", "Resend Verification Email", "w-full", templ.Attributes{"type": "submit"}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					return nil
 				})
-				templ_7745c5c3_Err = ui.Form("/sign-in", "post", templ.Attributes{
-					"id":              "signin-form",
+				templ_7745c5c3_Err = ui.Form("/resend-verification", "post", templ.Attributes{
+					"id":              "resend-form",
 					"hx-target":       "#toaster",
 					"hx-swap":         "beforeend",
-					"hx-disabled-elt": "#signin-button,#google-button",
-					"x-ref":           "form",
+					"hx-disabled-elt": "#resend-button",
 					"@submit.prevent": "validateForm($event)",
 				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var7), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -322,7 +235,7 @@ func SignIn() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, " <div class=\"mx-2\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " <div class=\"mx-2\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -330,11 +243,11 @@ func SignIn() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var11 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var9 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -346,13 +259,13 @@ func SignIn() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<div class=\"text-center items-center justify-center\"><p class=\"text-sm text-muted-foreground\">Don't have an account?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/sign-up\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Sign Up</span></p><p class=\"text-sm text-muted-foreground\">Didn't receive the verification email?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/resend-verification\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Resend</span></p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<div class=\"text-center items-center justify-center\"><p class=\"text-sm text-muted-foreground\">Already verified?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/sign-in\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Sign In</span></p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.CardFooter("flex flex-row items-center justify-center").Render(templ.WithChildren(ctx, templ_7745c5c3_Var11), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.CardFooter("flex flex-row items-center justify-center").Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -362,7 +275,7 @@ func SignIn() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -9,6 +9,7 @@ import (
 	"etop/templates/pages"
 	"etop/utils"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -51,21 +52,17 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signin-error", "warning", "Error", "Can't find account!").Render(r.Context(), w)
 		}
 
-		if bcrypt.CompareHashAndPassword([]byte(strings.Trim(user.Password, " ")), []byte(password)) == nil {
-			// userAuth := dto.UserAuth{
-			// 	Username: user.Username,
-			// 	Email:    user.Email,
-			// 	FullName: user.FullName,
-			// 	Level:    user.Level,
-			// 	IsAuth:   true,
-			// }
+		if !user.VerifiedEmail {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("signin-error", "warning", "Error", "Email verification required! Please check your mail box").Render(r.Context(), w)
+		}
 
+		if bcrypt.CompareHashAndPassword([]byte(strings.Trim(user.Password, " ")), []byte(password)) == nil {
 			tokenString, err := auth.GenerateToken(user)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
-				return ui.Toast("signin-error", "warning", "Error", "Bad Credentials!").Render(r.Context(), w)
+				return ui.Toast("signin-error", "error", "Error", "Bad Credentials!").Render(r.Context(), w)
 			} else {
-				// userAuth.Token = tokenString
 				http.SetCookie(w, &http.Cookie{
 					Name:     "session_token",
 					Value:    tokenString,
@@ -131,7 +128,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 		var count int64
 		if db.PgSql.Where("email=? or username=?", user.Email, user.Username).First(&user).Count(&count); count > 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("signup-error", "warning", "Error", "Email already exist!").Render(r.Context(), w)
+			return ui.Toast("signup-error", "warning", "Error", "Email already in use!").Render(r.Context(), w)
 		}
 
 		if len(strings.Trim(user.Password, " ")) < 8 {
@@ -150,6 +147,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 
 		user.ID = idHash
 		user.Password = string(passHash)
+		user.VerifiedEmail = false
 		user.CreatedAt = &t
 		user.CreatedBy = user.ID
 		user.UpdatedAt = &t
@@ -161,12 +159,95 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signup-error", "error", "Error", err.Error()).Render(r.Context(), w)
 		}
 
-		return ui.Toast("login-success", "success", "Success", "Register success! Go to login form.").Render(r.Context(), w)
+		url := os.Getenv("APP_URL")
+		if os.Getenv("APP_ENV") == "dev" {
+			url += os.Getenv("APP_PORT")
+		}
+		utils.SendVerificationEmail(user, url+"/verify-email?id="+user.ID)
+
+		return ui.Toast("login-success", "success", "Success", "Register success! Please check your email for verification.").Render(r.Context(), w)
 	default:
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return nil
 	}
 
+}
+
+func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case http.MethodGet:
+		return layouts.AuthLayout("Resend Verification", pages.ResendVerification()).Render(r.Context(), w)
+	case http.MethodPost:
+		var user models.User
+
+		r.ParseForm()
+		user.Username = r.FormValue("email")
+		user.Email = r.FormValue("email")
+
+		if !utils.IsEmailValidRegex(user.Email) || len(strings.Trim(user.Email, " ")) < 1 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("resend-error", "warning", "Error", "Email not valid!").Render(r.Context(), w)
+		}
+
+		err := db.PgSql.Where("username=? or email=?", user.Email, user.Email).First(&user).Error
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("resend-error", "warning", "Error", "Can't find account!").Render(r.Context(), w)
+		}
+
+		if user.VerifiedEmail {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("resend-error", "warning", "Error", "Your account already verified. You can sign in to continue.").Render(r.Context(), w)
+		}
+
+		url := os.Getenv("APP_URL")
+		if os.Getenv("APP_ENV") == "dev" {
+			url += os.Getenv("APP_PORT")
+		}
+		utils.SendVerificationEmail(user, url+"/verify-email?id="+user.ID)
+
+		return ui.Toast("resend-success", "success", "Success", "Email resend! Please check your email for verification.").Render(r.Context(), w)
+	default:
+		w.WriteHeader(http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return nil
+	}
+}
+
+func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case http.MethodGet:
+		var count int64
+		var user models.User
+
+		id := r.URL.Query().Get("id")
+
+		if db.PgSql.Where("id=?", id).First(&user).Count(&count); count > 0 {
+			if user.VerifiedEmail {
+				return layouts.AuthLayout("Verify Email", pages.VerifyEmail("verified")).Render(r.Context(), w)
+			}
+
+			t := time.Now()
+			user.VerifiedEmail = true
+			user.UpdatedAt = &t
+
+			err := db.PgSql.Save(&user).Error
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return layouts.AuthLayout("Verify Email", pages.VerifyEmail("error")).Render(r.Context(), w)
+			}
+
+			return layouts.AuthLayout("Verify Email", pages.VerifyEmail("success")).Render(r.Context(), w)
+		}
+
+		w.WriteHeader(http.StatusSeeOther)
+		return layouts.AuthLayout("Verify Email", pages.VerifyEmail("not-found")).Render(r.Context(), w)
+
+	default:
+		w.WriteHeader(http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return nil
+	}
 }
 
 func HandleLogout(w http.ResponseWriter, r *http.Request) error {

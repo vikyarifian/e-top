@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"etop/models"
 	"fmt"
 	"net/smtp"
 	"os"
@@ -44,8 +45,8 @@ func SendEmail(to, subject, body string) error {
 }
 
 // Email verifikasi akun
-func SendVerificationEmail(to, verifyURL string) error {
-	subject := `[[etop]] Verify Your Account`
+func SendVerificationEmail(user models.User, verifyURL string) error {
+	subject := `[etop] Verify Your Account`
 
 	body := fmt.Sprintf(`
 	<!DOCTYPE html>
@@ -69,10 +70,10 @@ func SendVerificationEmail(to, verifyURL string) error {
 	<body>
 	  <div class="container">
 		<h2>Welcome to etop 🚀</h2>
-		<p>Hi there,</p>
+		<p>Hi %s,</p>
 		<p>Thank you for signing up. Please confirm your email address to activate your account.</p>
 		<p style="text-align:center;">
-		  <a href="%s" class="btn">Verify My Account</a>
+		  <a href="%s" class="btn" style="color: white; text-decoration:none;">Verify My Account</a>
 		</p>
 		<p>If the button doesn’t work, copy and paste this link into your browser:</p>
 		<p><a href="%s">%s</a></p>
@@ -83,7 +84,7 @@ func SendVerificationEmail(to, verifyURL string) error {
 	  </div>
 	</body>
 	</html>
-	`, verifyURL, verifyURL, verifyURL)
+	`, user.FullName, verifyURL, verifyURL, verifyURL)
 
-	return SendEmail(to, subject, body)
+	return SendEmail(user.Email, subject, body)
 }

@@ -34,6 +34,8 @@ func SetRoutes() {
 		w.WriteHeader(http.StatusNoContent) // 204 No Content
 	})
 
+	r.HandleFunc("/verify-email", handlers.Make(handlers.HandleVerifyEmail))
+	r.HandleFunc("/resend-verification", handlers.Make(handlers.HandleResendVerification))
 	r.HandleFunc("/sign-in", handlers.Make(handlers.HandleSignIn))
 	r.HandleFunc("/sign-up", handlers.Make(handlers.HandleSignUp))
 	r.HandleFunc("/logout", handlers.Make(handlers.HandleLogout))
