@@ -17,7 +17,12 @@ templ AuthLayout(title string, content ...templ.Component) {
 			<script src="/public/js/htmx.min.js"></script>
             <script src="/public/js/lucide.js"></script>
 		</head>
-		<body x-data="{ init() {
+		<body x-data="{ 
+						sidebarOpen: false, 
+						sidebarCollapsed: false, 
+						darkMode: localStorage.getItem('darkMode') === 'true' || false,
+						isMobile: window.innerWidth < 768,
+						init() {
 							document.body.addEventListener(`htmx:afterSwap`, (e) => {
 								if (e.detail.target.id === `content`) {
 									const newTitle = document.querySelector(`#content [data-title]`)?.dataset.title;
@@ -25,7 +30,8 @@ templ AuthLayout(title string, content ...templ.Component) {
 								}
 							})
 						} 
-					}">
+					}"
+			>
 			<div id="content">
 				for _, c := range content {
 					@c

@@ -52,12 +52,13 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signin-error", "warning", "Error", "Can't find account!").Render(r.Context(), w)
 		}
 
-		if !user.VerifiedEmail {
-			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("signin-error", "warning", "Error", "Email verification required! Please check your mail box").Render(r.Context(), w)
-		}
-
 		if bcrypt.CompareHashAndPassword([]byte(strings.Trim(user.Password, " ")), []byte(password)) == nil {
+
+			if !user.VerifiedEmail {
+				w.WriteHeader(http.StatusBadRequest)
+				return ui.Toast("signin-error", "warning", "Error", "Email verification required! Please check your mail box").Render(r.Context(), w)
+			}
+
 			tokenString, err := auth.GenerateToken(user)
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
@@ -82,11 +83,15 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signin-error", "warning", "Error", "Invalid password!").Render(r.Context(), w)
 		}
 	default:
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		w.Header().Set("HX-Redirect", "/")
+		w.WriteHeader(http.StatusSeeOther)
+		w.Write([]byte(`<script>window.location.href = "/";</script>`))
 		return nil
 	}
 
+	w.Header().Set("HX-Redirect", "/")
 	w.WriteHeader(http.StatusSeeOther)
+	w.Write([]byte(`<script>window.location.href = "/";</script>`))
 	return nil
 
 }
@@ -176,6 +181,13 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case http.MethodGet:
+		cookie, err := r.Cookie("session_token")
+		if err == nil && cookie != nil {
+			if _, err := auth.ValidateJWT(cookie.Value); err == nil {
+				http.Redirect(w, r, "/", http.StatusSeeOther)
+				return nil
+			}
+		}
 		return layouts.AuthLayout("Resend Verification", pages.ResendVerification()).Render(r.Context(), w)
 	case http.MethodPost:
 		var user models.User
@@ -217,6 +229,14 @@ func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case http.MethodGet:
+		cookie, err := r.Cookie("session_token")
+		if err == nil && cookie != nil {
+			if _, err := auth.ValidateJWT(cookie.Value); err == nil {
+				http.Redirect(w, r, "/", http.StatusSeeOther)
+				return nil
+			}
+		}
+
 		var count int64
 		var user models.User
 
@@ -244,8 +264,8 @@ func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 		return layouts.AuthLayout("Verify Email", pages.VerifyEmail("not-found")).Render(r.Context(), w)
 
 	default:
-		w.WriteHeader(http.StatusSeeOther)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		w.Header().Set("HX-Refresh", "true")
+		w.WriteHeader(http.StatusOK)
 		return nil
 	}
 }

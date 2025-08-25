@@ -5,8 +5,12 @@ package layouts
 
 //lint:file-ignore SA4006 This context is only used if a nested component is present.
 
-import "github.com/a-h/templ"
-import templruntime "github.com/a-h/templ/runtime"
+import (
+	"os"
+
+	"github.com/a-h/templ"
+	templruntime "github.com/a-h/templ/runtime"
+)
 
 // Sidebar Layout
 func Sidebar() templ.Component {
@@ -30,7 +34,33 @@ func Sidebar() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col h-full\"><!-- Logo --><div class=\"h-16 min-h-16 flex items-center border-b border-border\" :class=\"sidebarCollapsed && !isMobile ? 'px-4' : 'px-6'\"><div class=\"flex items-center gap-1.5\" x-show=\"!sidebarCollapsed || isMobile\"><div class=\"w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center\"><span class=\"text-3xl text-primary-foreground font-semibold\" style=\"margin-top: -6px\">e</span></div><span class=\"font-bold text-2xl pb-1.6 pt-0\">top</span></div><div class=\"w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center\" x-show=\"sidebarCollapsed && !isMobile\"><span class=\"text-3xl text-primary-foreground font-semibold\" style=\"margin-top: -6px\">e</span></div></div><!-- Navigation --><nav class=\"flex-1\" :class=\"sidebarCollapsed && !isMobile ? 'p-2' : 'p-4'\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col h-full\"><!-- Logo --><div class=\"h-16 min-h-16 flex items-center border-b border-border\" :class=\"sidebarCollapsed && !isMobile ? 'px-4' : 'px-6'\"><div class=\"flex items-center gap-1.5\" x-show=\"!sidebarCollapsed || isMobile\"><div class=\"w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center\"><span class=\"text-3xl text-primary-foreground font-semibold\" style=\"margin-top: -6px\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var2 string
+		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME")[0:1])
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/sidebar.templ`, Line: 11, Col: 119}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</span></div><span class=\"font-bold text-2xl pb-1.6 pt-0\">top</span></div><div class=\"w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center\" x-show=\"sidebarCollapsed && !isMobile\"><span class=\"text-3xl text-primary-foreground font-semibold\" style=\"margin-top: -6px\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var3 string
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME")[0:1])
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/sidebar.templ`, Line: 16, Col: 118}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</span></div></div><!-- Navigation --><nav class=\"flex-1\" :class=\"sidebarCollapsed && !isMobile ? 'p-2' : 'p-4'\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -38,7 +68,7 @@ func Sidebar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</nav></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "</nav></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

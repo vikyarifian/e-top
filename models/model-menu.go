@@ -8,7 +8,7 @@ type Menu struct {
 
 func GetMenu() []Menu {
 	menus := []Menu{}
-	menus = append(menus, Menu{Label: "Dashboard", Href: "/", Icon: "home"})
+	menus = append(menus, Menu{Label: "Dashboard", Href: "/dashboard", Icon: "home"})
 	menus = append(menus, Menu{Label: "Workspaces", Href: "/workspaces", Icon: "briefcase-business"})
 	// menus = append(menus, Menu{Label: "Workspaces", Href: "/workspaces", Icon: "monitor-check"})
 	menus = append(menus, Menu{Label: "My Tasks", Href: "/tasks", Icon: "layout-list"})

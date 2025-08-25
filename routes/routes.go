@@ -10,6 +10,17 @@ import (
 	"strings"
 )
 
+// helper buat cek status
+type responseRecorder struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+func (r *responseRecorder) WriteHeader(code int) {
+	r.statusCode = code
+	r.ResponseWriter.WriteHeader(code)
+}
+
 // Static file handler
 func HandleStatic(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/public/")
@@ -26,22 +37,30 @@ func HandleStatic(w http.ResponseWriter, r *http.Request) {
 
 func SetRoutes() {
 
-	r := http.NewServeMux()
+	mux := http.NewServeMux()
 
-	r.HandleFunc("/public/", HandleStatic)
-	// r.Handle("/favicon.ico", http.FileServer(http.Dir("public")))
-	r.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/public/", HandleStatic)
+	// mux.Handle("/favicon.ico", http.FileServer(http.Dir("public")))
+	mux.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent) // 204 No Content
 	})
 
-	r.HandleFunc("/verify-email", handlers.Make(handlers.HandleVerifyEmail))
-	r.HandleFunc("/resend-verification", handlers.Make(handlers.HandleResendVerification))
-	r.HandleFunc("/sign-in", handlers.Make(handlers.HandleSignIn))
-	r.HandleFunc("/sign-up", handlers.Make(handlers.HandleSignUp))
-	r.HandleFunc("/logout", handlers.Make(handlers.HandleLogout))
+	mux.HandleFunc("/sign-in", handlers.Make(handlers.HandleSignIn))
+	mux.HandleFunc("/sign-up", handlers.Make(handlers.HandleSignUp))
+	mux.HandleFunc("/logout", handlers.Make(handlers.HandleLogout))
 
-	r.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleDashboard)))
-	r.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.WorkspaceSwitcher)))
+	mux.HandleFunc("/dashboard", auth.RequireAuth(handlers.Make(handlers.HandleDashboard)))
+	mux.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.WorkspaceSwitcher)))
+
+	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			auth.RequireAuth(handlers.Make(handlers.HandleDashboard))(w, r)
+			return
+		}
+		auth.RequireAuth(handlers.Make(handlers.HandleNotFound))(w, r)
+	})
 
 	// Add CORS headers
 	corsHandler := func(next http.Handler) http.Handler {
@@ -63,7 +82,7 @@ func SetRoutes() {
 
 	slog.Info("Server started", "listenAddr", listenAddr)
 
-	if err := http.ListenAndServe(listenAddr, corsHandler(r)); err != nil {
+	if err := http.ListenAndServe(listenAddr, corsHandler(mux)); err != nil {
 		log.Fatal("Server failed to start:", err)
 	}
 }
