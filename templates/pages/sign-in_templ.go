@@ -377,7 +377,7 @@ func SignIn() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"text-center items-center justify-center\"><p class=\"text-sm text-muted-foreground\">Don't have an account?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/sign-up\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Sign Up</span></p><p class=\"text-sm text-muted-foreground\">Didn't receive the verification email?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/resend-verification\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Resend</span></p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"text-center items-center justify-center\"><p class=\"text-sm text-muted-foreground\">Don't have an account?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/sign-up\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Sign Up</span></p><p class=\"text-sm text-muted-foreground\">Didn't receive the verification email?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/resend-verification\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Resend</span></p><p class=\"text-sm text-muted-foreground\">Forgot Password?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/forgot-password\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Reset</span></p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

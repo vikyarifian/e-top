@@ -50,7 +50,7 @@ func SetRoutes() {
 	mux.HandleFunc("/auth/google", handlers.Make(handlers.HandleLoginGoogle))
 	mux.HandleFunc("/auth/google/callback", handlers.Make(handlers.HandleCallbackGoogle))
 	mux.HandleFunc("/resend-verification", handlers.Make(handlers.HandleResendVerification))
-	mux.HandleFunc("/send-reset-password", handlers.Make(handlers.HandleResendVerification))
+	mux.HandleFunc("/forgot-password", handlers.Make(handlers.HandleForgotPassword))
 	mux.HandleFunc("/verify-email", handlers.Make(handlers.HandleVerifyEmail))
 	mux.HandleFunc("/logout", handlers.Make(handlers.HandleLogout))
 

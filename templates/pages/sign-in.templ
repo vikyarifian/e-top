@@ -143,6 +143,14 @@ templ SignIn() {
                             hx-swap="true"
                             hx-push-url="true">Resend</span>
                     </p>
+                    <p class="text-sm text-muted-foreground">
+                        Forgot Password? 
+                        <span class="text-blue-700 cursor-pointer"
+                            hx-get="/forgot-password"
+                            hx-target="#content"
+                            hx-swap="true"
+                            hx-push-url="true">Reset</span>
+                    </p>
                 </div>
             }
         }

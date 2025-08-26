@@ -3,6 +3,7 @@ package utils
 import (
 	"etop/models"
 	"fmt"
+	"log/slog"
 	"net/smtp"
 	"os"
 )
@@ -39,6 +40,7 @@ func SendEmail(to, subject, body string) error {
 	// Send
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{to}, []byte(message))
 	if err != nil {
+		slog.Info(err.Error())
 		return err
 	}
 	return nil
@@ -85,6 +87,51 @@ func SendVerificationEmail(user models.User, verifyURL string) error {
 	</body>
 	</html>
 	`, os.Getenv("APP_NAME"), user.FullName, verifyURL, verifyURL, verifyURL)
+
+	return SendEmail(user.Email, subject, body)
+}
+
+func ResetPasswordEmail(user models.User, resetURL string) error {
+	subject := fmt.Sprintf(`[%s] Reset Your Password`, os.Getenv("APP_NAME"))
+
+	body := fmt.Sprintf(`
+		<!DOCTYPE html>
+		<html>
+		<head>
+		<meta charset="UTF-8">
+		<style>
+			body { font-family: Arial, sans-serif; background:#f9fafb; color:#111; }
+			.container { max-width:600px; margin:auto; background:white; padding:20px; border-radius:8px; }
+			.btn {
+			display:inline-block; 
+			padding:10px 20px; 
+			background:#2563eb; 
+			color:white; 
+			text-decoration:none; 
+			border-radius:6px;
+			}
+			.footer { font-size:12px; color:#555; margin-top:20px; }
+		</style>
+		</head>
+		<body>
+		<div class="container">
+			<h2>Password Reset Request 🔑</h2>
+			<p>Hi %s,</p>
+			<p>We received a request to reset your password for your <b>%s</b> account.</p>
+			<p>Please click the button below to set a new password. 
+			This link is valid for <b>5 minutes</b> only.</p>
+			<p style="text-align:center;">
+			<a href="%s" class="btn">Reset My Password</a>
+			</p>
+			<p>If the button doesn’t work, copy and paste this link into your browser:</p>
+			<p><a href="%s">%s</a></p>
+			<div class="footer">
+			<p>© 2025 %s IT Department. All rights reserved.</p>
+			<p>If you didn’t request a password reset, you can safely ignore this email.</p>
+			</div>
+		</div>
+		</body>
+		</html>`, user.FullName, os.Getenv("APP_NAME"), resetURL, resetURL, resetURL, os.Getenv("APP_NAME"))
 
 	return SendEmail(user.Email, subject, body)
 }

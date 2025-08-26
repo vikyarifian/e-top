@@ -18,13 +18,13 @@ type User struct {
 }
 
 type ResetPassword struct {
-	ID        int       `gorm:"column:no;primaryKey" json:"-,omitempty" form:"-"`
-	Email     string    `gorm:"column:email;unique" json:"email,omitempty" form:"email"`
-	TokenHash string    `gorm:"column:token_hash;size:64;not null;index:idx_tokenhash"`
-	Used      bool      `gorm:"default:false;not null"`
-	ExpiresAt time.Time `gorm:"column:expires_at;type:TIMESTAMP" json:"expires_at,omitempty" form:"expires_at"`
-	CreatedAt time.Time `gorm:"column:created_by;type:TIMESTAMP" json:"created_by,omitempty" form:"created_by"`
-	UpdatedAt time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
+	ID        int        `gorm:"column:id;primaryKey" json:"-,omitempty" form:"-"`
+	Email     string     `gorm:"column:email;unique" json:"email,omitempty" form:"email"`
+	TokenHash string     `gorm:"column:token_hash;size:64;not null;index:idx_tokenhash"`
+	Used      int        `gorm:"column:used;default:0;not null"`
+	ExpiresAt *time.Time `gorm:"column:expires_at;type:TIMESTAMP" json:"expires_at,omitempty" form:"expires_at"`
+	CreatedAt *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
+	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
 }
 
 // CREATE TABLE users (
@@ -42,11 +42,11 @@ type ResetPassword struct {
 //     updated_by VARCHAR(128) DEFAULT ''
 // );
 
-// CREATE TABLE reset_password (
+// CREATE TABLE reset_passwords (
 //     id SERIAL PRIMARY KEY,
 //     email VARCHAR(50) NOT NULL DEFAULT ' ',
-//     token_hash VARCHAR(64) NOT NULL DEFAULT ' ',
-//     used BOOLEAN NOT NULL DEFAULT false,
+//     token_hash VARCHAR(128) NOT NULL DEFAULT ' ',
+//     used INTEGER NOT NULL DEFAULT 0,
 //     expires_at TIMESTAMP DEFAULT NOW(),
 //     created_at TIMESTAMP DEFAULT NOW(),
 //     updated_at TIMESTAMP DEFAULT NOW()
