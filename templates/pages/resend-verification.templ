@@ -3,30 +3,31 @@ package pages
 import (
     "etop/templates/components"
     "etop/templates/components/ui"
-    "os"
 )
 
 templ ResendVerification() {
-    <div data-title="Resend Verification" class="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-6">
-        <div class="flex items-center mb-4">
-            <div class="w-14 h-14 bg-green-600 rounded-lg flex items-center justify-center px-5">
-                <span class="text-[48px] text-primary-foreground font-semibold" style="margin-top: -10px">{os.Getenv("APP_NAME")[0:1]}</span>
-            </div>
-            <span class="font-bold text-[46px] pb-2 pl-2.5 pt-0">{os.Getenv("APP_NAME")[1:len(os.Getenv("APP_NAME"))]}</span>
-        </div>
-        @ui.Card("max-w-md w-full shadow-xl") {
-            @ui.CardHeader("items-center justify-center") {
-                @ui.CardTitle("text-center") {
+    <div data-title="Resend Verification" x-data="{showForm:true,showSuccess:false,showError:false}" class="flex flex-col items-center justify-start bg-muted/40" style="min-height: 80vh;">
+        @ui.Card("max-w-md w-full shadow-xl", templ.Attributes{"x-show":"showSuccess"}) {
+            @components.CardStatus(200, "Email Verification Sent", "If your email is registered, you will receive a verification link.", "circle-check-big",
+				ui.Button("success", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"}))
+        }
+        @ui.Card("max-w-md w-full shadow-xl", templ.Attributes{"x-show":"showError"}) {
+            @components.CardStatus(400, "Resent Verification Failed", "Sorry, we're cannot send verification email at this time, try again later", "circle-x",
+				ui.Button("error", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"}))
+        }
+        @ui.Card("max-w-md w-full shadow-xl", templ.Attributes{"x-show":"showForm"}) {
+            @ui.CardHeader("items-center justify-center", nil) {
+                @ui.CardTitle("text-center", nil) {
                     <h4>Resend Verification</h4>
                 }
-                @ui.CardDescription("text-center") {
+                @ui.CardDescription("text-center", nil) {
                     Enter your email and we’ll send you a new verification link.
                 }
             }
             <div class="mx-2">
                 @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             </div>
-            @ui.CardContent("") {
+            @ui.CardContent("", nil) {
                 <div 
                     x-data="{
                                 email: '',
@@ -47,8 +48,20 @@ templ ResendVerification() {
                                 },
                                 init() {
                                     document.body.addEventListener('htmx:afterRequest', (evt) => {
-                                        if (evt.detail.successful && evt.detail.elt.id === 'resend-form') {
-                                            // 
+                                        if (evt.detail.elt.id === 'resend-form' && evt.detail.xhr.status==400) {
+                                            
+                                        }
+                                        if (evt.detail.elt.id === 'resend-form' && evt.detail.xhr.status==200) {
+                                            this.email = '';
+                                            this.showForm = false;
+                                            this.showSuccess = true;
+                                            this.showError = false;
+                                        }
+                                        if (evt.detail.elt.id === 'resend-form' & evt.detail.xhr.status==500) {
+                                            this.email = '';
+                                            this.showForm = false;
+                                            this.showSuccess = false;
+                                            this.showError = true;
                                         }
                                     })
                                 }
@@ -84,7 +97,7 @@ templ ResendVerification() {
             <div class="mx-2">
                 @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             </div>
-            @ui.CardFooter("flex flex-row items-center justify-center") {
+            @ui.CardFooter("flex flex-row items-center justify-center", nil) {
                 <div class="text-center items-center justify-center">
                     <p class="text-sm text-muted-foreground">
                         Already verified? 

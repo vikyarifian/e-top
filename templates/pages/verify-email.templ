@@ -2,57 +2,13 @@ package pages
 
 import (
     "etop/templates/components/ui"
-    "os"
 )
 
-templ VerifyEmail(status string) {
-    <div data-title="Verify Email" class="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-6">
-        <div class="flex items-center mb-4">
-            <div class="w-14 h-14 bg-green-600 rounded-lg flex items-center justify-center px-5">
-                <span class="text-[48px] text-primary-foreground font-semibold" style="margin-top: -10px">{os.Getenv("APP_NAME")[0:1]}</span>
-            </div>
-            <span class="font-bold text-[46px] pb-2 pl-2.5 pt-0">{os.Getenv("APP_NAME")[1:len(os.Getenv("APP_NAME"))]}</span>
-        </div>
-        @ui.Card("max-w-md w-full shadow-xl") {
-            @ui.CardHeader("items-center justify-center") {
-                @ui.CardTitle("text-center") {
-                    switch status {
-                    case "verified":
-                        <h4 class="pt-4">Email Already Verified</h4>
-	                case "success":
-                        <div class="flex justify-center mb-4">
-                            <i data-lucide="party-popper" class="w-16 h-16 text-pink-500"></i>
-                        </div>
-                        <h4>Email Verified Successfully</h4>
-	                case "not-found":
-                        <div class="flex justify-center mb-4">
-                            <i data-lucide="ban" class="w-16 h-16 text-red-500"></i>
-                        </div>
-                        <h4>Account not found</h4>
-                    default:
-                        <div class="flex justify-center mb-4">
-                            <i data-lucide="ban" class="w-16 h-16 text-red-500"></i>
-                        </div>
-                        <h4>Something went wrong</h4>
-                    }
-                }
-            }
-            @ui.CardContent("") {
-                if status=="success" {
-                    <p class="flex flex-row items-center justify-center text-center text-gray-600 mb-1">
-                        Your account has been successfully verified. You can now sign in to continue.
-                    </p>
-                }
-                if status=="verified" {
-                    <p class="flex flex-row items-center justify-center text-center text-gray-600 mb-1">
-                        Your account already verified. You can sign in to continue.
-                    </p>
-                }
-            }
-            @ui.CardFooter("flex flex-row items-center justify-center") {
-                <div class="flex items-center justify-center">
-                    @ui.Button("signin-button", "", "lg", "", "Sign In", "w-full", templ.Attributes{"type": "button", "hx-get":"/sign-in", "hx-target":"#content", "hx-swap":"true", "hx-push-url":"true"}) 
-                </div>
+templ VerifyEmail(content ...templ.Component) {
+    <div data-title="Verify Email" class="flex flex-col items-center justify-start bg-muted/40" style="min-height: 80vh;">
+        @ui.Card("max-w-md w-full shadow-xl", nil) {
+            for _, c := range content {
+                @c
             }
         }
     </div>

@@ -1,0 +1,9 @@
+package components
+
+templ Href(link string, content ...templ.Component) {
+    <a href={link}>
+        for _, c := range content {
+            @c
+        }
+    </a>
+}
