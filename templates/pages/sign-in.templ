@@ -3,30 +3,23 @@ package pages
 import (
     "etop/templates/components"
     "etop/templates/components/ui"
-    "os"
 )
 
 templ SignIn() {
-    <div data-title="Sign In" class="min-h-screen flex flex-col items-center justify-center bg-muted/40 p-6">
-        <div class="flex items-center mb-4">
-            <div class="w-14 h-14 bg-green-600 rounded-lg flex items-center justify-center px-5">
-                <span class="text-[48px] text-primary-foreground font-semibold" style="margin-top: -10px">{os.Getenv("APP_NAME")[0:1]}</span>
-            </div>
-            <span class="font-bold text-[46px] pb-2 pl-2.5 pt-0">{os.Getenv("APP_NAME")[1:len(os.Getenv("APP_NAME"))]}</span>
-        </div>
-        @ui.Card("max-w-md w-full shadow-xl") {
-            @ui.CardHeader("items-center justify-center") {
-                @ui.CardTitle("text-center") {
+    <div data-title="Sign In" class="flex flex-col items-center justify-start bg-muted/40" style="min-height: 80vh;">
+        @ui.Card("max-w-md w-full shadow-xl", nil) {
+            @ui.CardHeader("items-center justify-center", nil) {
+                @ui.CardTitle("text-center", nil) {
                     <h4>Welcome back</h4>
                 }
-                @ui.CardDescription("text-center") {
+                @ui.CardDescription("text-center", nil) {
                     Sign in to your account to continue
                 }
             }
             <div class="mx-2">
                 @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             </div>
-            @ui.CardContent("") {
+            @ui.CardContent("", nil) {
                 <div 
                     x-data="{
                                 email: '',
@@ -105,9 +98,7 @@ templ SignIn() {
                         }
                         
                         @ui.Button("signin-button", "", "lg", "", "Sign In", "w-full", templ.Attributes{"type": "submit",})
-                        <div class="mx-2">
-                            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
-                        </div>
+                        <div class="mx-2" />
                         <a href="/auth/google">
                             @ui.Button("google-button", "secondary", "lg", "", "", "w-full", templ.Attributes{"type": "button",}) {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="-3 0 262 262" preserveAspectRatio="xMidYMid">
@@ -125,7 +116,7 @@ templ SignIn() {
             <div class="mx-2">
                 @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             </div>
-            @ui.CardFooter("flex flex-row items-center justify-center") {
+            @ui.CardFooter("flex flex-row items-center justify-center", nil) {
                 <div class="text-center items-center justify-center">
                     <p class="text-sm text-muted-foreground">
                         Don't have an account? 

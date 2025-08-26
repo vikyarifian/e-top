@@ -22,7 +22,7 @@ type ResetPassword struct {
 	Email     string     `gorm:"column:email;unique" json:"email,omitempty" form:"email"`
 	TokenHash string     `gorm:"column:token_hash;size:64;not null;index:idx_tokenhash"`
 	Used      int        `gorm:"column:used;default:0;not null"`
-	ExpiresAt *time.Time `gorm:"column:expires_at;type:TIMESTAMP" json:"expires_at,omitempty" form:"expires_at"`
+	ExpiresAt time.Time  `gorm:"column:expires_at;type:TIMESTAMP" json:"expires_at" form:"expires_at"`
 	CreatedAt *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
 }

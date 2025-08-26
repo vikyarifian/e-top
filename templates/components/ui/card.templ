@@ -3,38 +3,38 @@ package ui
 import "fmt"
 
 // Card Component
-templ Card(class string) {
-	<div class={fmt.Sprintf("rounded-lg border bg-card text-card-foreground shadow-sm %s", class)}>
+templ Card(class string, attrs templ.Attributes) {
+	<div class={fmt.Sprintf("rounded-lg border bg-card text-card-foreground shadow-sm %s", class)} {attrs...}>
 		{ children... }
 	</div>
 }
 
-templ CardHeader(class string) {
-	<div class={fmt.Sprintf("flex flex-col space-y-1.5 p-6 %s", class)}>
+templ CardHeader(class string, attrs templ.Attributes) {
+	<div class={fmt.Sprintf("flex flex-col space-y-1.5 p-6 %s", class)} {attrs...}>
 		{ children... }
 	</div>
 }
 
-templ CardTitle(class string) {
-	<div class={fmt.Sprintf("text-2xl font-semibold leading-none tracking-tight %s", class)}>
+templ CardTitle(class string, attrs templ.Attributes) {
+	<div class={fmt.Sprintf("text-2xl font-semibold leading-none tracking-tight %s", class)} {attrs...}>
 		{ children... }
 	</div>
 }
 
-templ CardDescription(class string) {
-	<div class={fmt.Sprintf("text-sm text-muted-foreground %s", class)}>
+templ CardDescription(class string, attrs templ.Attributes) {
+	<div class={fmt.Sprintf("text-sm text-muted-foreground %s", class)} {attrs...}>
 		{ children... }
 	</div>
 }
 
-templ CardContent(class string) {
-	<div class={fmt.Sprintf("p-6 pt-4 %s", class)}>
+templ CardContent(class string, attrs templ.Attributes) {
+	<div class={fmt.Sprintf("p-6 pt-4 %s", class)} {attrs...}>
 		{ children... }
 	</div>
 }
 
-templ CardFooter(class string) {
-	<div class={fmt.Sprintf("flex items-center p-6 pt-4 %s", class)}>
+templ CardFooter(class string, attrs templ.Attributes) {
+	<div class={fmt.Sprintf("flex items-center p-6 pt-4 %s", class)} {attrs...}>
 		{ children... }
 	</div>
 }

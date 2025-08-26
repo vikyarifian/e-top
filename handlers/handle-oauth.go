@@ -7,6 +7,8 @@ import (
 	"etop/db"
 	"etop/dto"
 	"etop/models"
+	"etop/templates/components"
+	"etop/templates/components/ui"
 	"etop/templates/layouts"
 	"etop/templates/pages"
 	"etop/utils"
@@ -16,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/a-h/templ"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -27,7 +30,7 @@ func OAthConfig() {
 	if strings.Trim(os.Getenv("APP_ENV"), " ") != "dev" {
 		port = ""
 	}
-	println(strings.Trim(os.Getenv("APP_URL"), " ") + port + strings.Trim(os.Getenv("GOOGLE_REDIRECT_URI"), " "))
+
 	OAuthConf = &oauth2.Config{
 		RedirectURL:  strings.Trim(os.Getenv("APP_URL"), " ") + port + strings.Trim(os.Getenv("GOOGLE_REDIRECT_URI"), " "),
 		ClientID:     strings.Trim(os.Getenv("GOOGLE_CLIENT_ID"), " "),
@@ -50,20 +53,26 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 	code := r.URL.Query().Get("code")
 	if code == "" {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return layouts.AuthLayout("Sign In", pages.VerifyEmail("error")).Render(r.Context(), w)
+		return layouts.AuthLayout("Verify Email", pages.VerifyEmail(
+			components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
+				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 	}
 
 	tokenGoogle, err := OAuthConf.Exchange(context.Background(), code)
 	if err != nil {
 		http.Error(w, "Failed to exchange token", http.StatusUnauthorized)
-		return layouts.AuthLayout("Sign In", pages.VerifyEmail("error")).Render(r.Context(), w)
+		return layouts.AuthLayout("Verify Email", pages.VerifyEmail(
+			components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
+				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 	}
 
 	client := OAuthConf.Client(context.Background(), tokenGoogle)
 	resp, err := client.Get("https://openidconnect.googleapis.com/v1/userinfo")
 	if err != nil {
 		http.Error(w, "Failed to fetch user info", http.StatusUnauthorized)
-		return layouts.AuthLayout("Sign In", pages.VerifyEmail("error")).Render(r.Context(), w)
+		return layouts.AuthLayout("Verify Email", pages.VerifyEmail(
+			components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
+				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 	}
 	defer resp.Body.Close()
 
@@ -81,7 +90,7 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 
 	var count int64
 	if db.PgSql.Where("email=? or username=?", userInfo.Email, userInfo.Email).First(&user).Count(&count); count == 0 {
-		t := time.Now()
+		t := time.Now().UTC()
 		idHash := utils.GenerateHash(user.Email)
 		parts := strings.Split(userInfo.Email, "@")
 		passHash, _ := utils.HashPassword(parts[0])
@@ -101,7 +110,9 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 		err := db.PgSql.Create(&user).Error
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			return layouts.AuthLayout("Sign In", pages.VerifyEmail("error")).Render(r.Context(), w)
+			return layouts.AuthLayout("Verify Email", pages.VerifyEmail(
+				components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
+					ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 		}
 	}
 
@@ -110,7 +121,9 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 	tokenString, err := auth.GenerateToken(user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		return layouts.AuthLayout("Sign In", pages.VerifyEmail("error")).Render(r.Context(), w)
+		return layouts.AuthLayout("Verify Email", pages.VerifyEmail(
+			components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
+				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 	} else {
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_token",
@@ -118,7 +131,7 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 			Path:     "/",
 			HttpOnly: true,
 			Secure:   false, // set true kalau pakai https
-			Expires:  time.Now().Add(24 * time.Hour),
+			Expires:  time.Now().UTC().Add(24 * time.Hour),
 		})
 
 		w.Header().Set("HX-Redirect", "/")
