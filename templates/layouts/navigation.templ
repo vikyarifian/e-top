@@ -1,6 +1,9 @@
 package layouts
 
-import "etop/models"
+import (
+    "etop/templates/components/ui"
+    "etop/models"
+)
 
 templ Navigation() {
     <ul class="space-y-2">
@@ -14,9 +17,12 @@ templ Navigation() {
                     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
                     :class="sidebarCollapsed && !isMobile ? 'justify-center' : ''"
                     @click="if (isMobile) sidebarOpen = false"
-                >
-                    <div class="w-5 h-5" data-lucide={menu.Icon} />
+                >                  
+                    <div x-show="!sidebarCollapsed || isMobile" class="w-5 h-5" data-lucide={menu.Icon} />
                     <span x-show="!sidebarCollapsed || isMobile">{menu.Label}</span>
+                    @ui.Tooltip(menu.Label, "mt-0 ml-4", templ.Attributes{}) {
+                        <div class="w-5 h-5" data-lucide={menu.Icon} x-show="sidebarCollapsed && !isMobile" />
+                    }  
                 </a>
             </li>
         }

@@ -1,0 +1,26 @@
+package ui
+
+templ Tooltip(text string, class string, attrs templ.Attributes) {
+	<div x-data="{ open: false }" class="relative">
+		<!-- Trigger -->
+		<div 
+			@mouseenter="open = true" 
+			@mouseleave="open = false" 
+			@focus="open = true" 
+			@blur="open = false"            
+		>
+			{ children... }
+		</div>
+
+		<!-- Tooltip -->
+		<div 
+			x-show="open" 
+			x-transition 
+			class={"absolute z-50 px-2 py-1 text-sm rounded-md shadow-md bg-accent", class}
+            style="min-width:80px;"
+            { attrs... }
+		>
+			{text}
+		</div>
+	</div>
+}

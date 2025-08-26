@@ -33,7 +33,7 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 		var user models.User
 
 		r.ParseForm()
-		user.Email = r.FormValue("email")
+		user.Email = strings.ToLower(r.FormValue("email"))
 		password := r.FormValue("password")
 
 		if !utils.IsEmailValidRegex(user.Email) || len(strings.Trim(user.Email, " ")) < 1 {
@@ -41,9 +41,9 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signin-error", "warning", "Error", "Email not valid!").Render(r.Context(), w)
 		}
 
-		if len(strings.Trim(password, " ")) < 8 {
+		if len(strings.Trim(password, " ")) < 6 {
 			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("signin-error", "warning", "Error", "Password must be at least 8 characters!").Render(r.Context(), w)
+			return ui.Toast("signin-error", "warning", "Error", "Password must be at least 6 characters!").Render(r.Context(), w)
 		}
 
 		err := db.PgSql.Where("username=? or email=?", user.Email, user.Email).First(&user).Error
@@ -113,10 +113,10 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 		var user models.User
 
 		r.ParseForm()
-		user.Username = r.FormValue("email")
+		user.Username = strings.ToLower(r.FormValue("email"))
 		user.Password = r.FormValue("password")
 		pass2 := r.FormValue("password2")
-		user.Email = r.FormValue("email")
+		user.Email = strings.ToLower(r.FormValue("email"))
 		user.FullName = r.FormValue("full_name")
 		user.Level = "USER"
 
@@ -136,9 +136,9 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signup-error", "warning", "Error", "Email already in use!").Render(r.Context(), w)
 		}
 
-		if len(strings.Trim(user.Password, " ")) < 8 {
+		if len(strings.Trim(user.Password, " ")) < 6 {
 			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("signup-error", "warning", "Error", "Password must be at least 8 characters!").Render(r.Context(), w)
+			return ui.Toast("signup-error", "warning", "Error", "Password must be at least 6 characters!").Render(r.Context(), w)
 		}
 
 		if strings.Trim(user.Password, " ") != strings.Trim(pass2, " ") {

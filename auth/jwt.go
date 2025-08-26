@@ -79,13 +79,13 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
-			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+			http.Redirect(w, r, "/sign-in", http.StatusTemporaryRedirect)
 			return
 		}
 
 		claims, err := ValidateJWT(cookie.Value)
 		if err != nil {
-			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+			http.Redirect(w, r, "/sign-in", http.StatusTemporaryRedirect)
 			return
 		}
 
