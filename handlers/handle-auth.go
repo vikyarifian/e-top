@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -219,6 +220,160 @@ func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 		utils.SendVerificationEmail(user, url+"/verify-email?id="+user.ID)
 
 		return ui.Toast("resend-success", "success", "Success", "Email resend! Please check your email for verification.").Render(r.Context(), w)
+	default:
+		w.WriteHeader(http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return nil
+	}
+}
+
+func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case http.MethodGet:
+		cookie, err := r.Cookie("session_token")
+		if err == nil && cookie != nil {
+			if _, err := auth.ValidateJWT(cookie.Value); err == nil {
+				http.Redirect(w, r, "/", http.StatusSeeOther)
+				return nil
+			}
+		}
+
+		var resetPass models.ResetPassword
+		param := "Reset"
+		token := r.URL.Query().Get("token")
+		if token == "" {
+			param = "Forgot"
+		} else {
+			var count int64
+			if db.PgSql.Where("token_hash=? AND used=0 AND expires_at > ? ", token, time.Now()).First(&resetPass).Count(&count); count == 0 {
+				param = "Error"
+			}
+		}
+
+		return layouts.AuthLayout("Forgot Password", pages.ForgotPassword(param, token)).Render(r.Context(), w)
+	case http.MethodPost:
+		var user models.User
+		var resetPass models.ResetPassword
+		var newResetPass models.ResetPassword
+
+		r.ParseForm()
+		user.Username = r.FormValue("email")
+		user.Email = r.FormValue("email")
+
+		if !utils.IsEmailValidRegex(user.Email) || len(strings.Trim(user.Email, " ")) < 1 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("forgot-error", "warning", "Error", "Email not valid!").Render(r.Context(), w)
+		}
+
+		err := db.PgSql.Where("username=? or email=?", user.Email, user.Email).First(&user).Error
+		if err != nil {
+			// w.WriteHeader(http.StatusBadRequest)
+			// return ui.Toast("forgot-error", "warning", "Error", "Can't find account!").Render(r.Context(), w)
+			return ui.Toast("forgot-success", "success", "Success", "If your email is registered, you will receive a reset link.").Render(r.Context(), w)
+		}
+
+		var count int64
+		t := time.Now()
+		if db.PgSql.Where("email=?", user.Email).Order("created_at desc").First(&resetPass).Count(&count); count > 0 {
+			if resetPass.ExpiresAt != nil {
+				if t.After(*resetPass.ExpiresAt) {
+					// w.WriteHeader(http.StatusBadRequest)
+					// return ui.Toast("forgot-error", "warning", "Error", "Reset password already requested. Please wait a few minutes.").Render(r.Context(), w)
+					return ui.Toast("forgot-success", "success", "Success", "If your email is registered, you will receive a reset link.").Render(r.Context(), w)
+				}
+			}
+		}
+
+		rawToken := uuid.New().String()
+		hashedToken, _ := bcrypt.GenerateFromPassword([]byte(rawToken), bcrypt.DefaultCost)
+
+		newResetPass.Email = user.Email
+		newResetPass.TokenHash = string(hashedToken)
+		newResetPass.Used = 0
+		expiresAt := t.Add(15 * time.Minute)
+		newResetPass.ExpiresAt = &expiresAt
+		newResetPass.CreatedAt = &t
+		newResetPass.UpdatedAt = &t
+
+		if err = db.PgSql.Create(&newResetPass).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("forgot-error", "error", "Error", err.Error()).Render(r.Context(), w)
+		}
+
+		url := os.Getenv("APP_URL")
+		if os.Getenv("APP_ENV") == "dev" {
+			url += os.Getenv("APP_PORT")
+		}
+		utils.ResetPasswordEmail(user, url+"/forgot-password?token="+newResetPass.TokenHash)
+
+		return ui.Toast("forgot-success", "success", "Success", "If your email is registered, you will receive a reset link.").Render(r.Context(), w)
+
+	case http.MethodPut:
+		var user models.User
+		var resetPass models.ResetPassword
+
+		r.ParseForm()
+		token := r.FormValue("token")
+		user.Password = r.FormValue("password")
+		pass2 := r.FormValue("password2")
+
+		if len(strings.Trim(user.Password, " ")) < 6 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("forgot-error", "warning", "Error", "Password must be at least 6 characters!").Render(r.Context(), w)
+		}
+
+		if strings.Trim(user.Password, " ") != strings.Trim(pass2, " ") {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("forgot-error", "warning", "Error", "Password not match!").Render(r.Context(), w)
+		}
+
+		err := db.PgSql.Where("token_hash=? AND used = 0 AND expires_at > ?", token, time.Now()).First(&resetPass).Error
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("resend-error", "warning", "Error", "Invaid or expired request!").Render(r.Context(), w)
+		}
+
+		var count int64
+		if db.PgSql.Where("email=? or username=?", resetPass.Email, resetPass.Email).First(&user).Count(&count); count == 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("forgot-error", "warning", "Error", "Can't find account!").Render(r.Context(), w)
+		}
+
+		if bcrypt.CompareHashAndPassword([]byte(strings.Trim(user.Password, " ")), []byte(pass2)) == nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("forgot-error", "warning", "Error", "New password must be different from the last one!").Render(r.Context(), w)
+		}
+
+		t := time.Now()
+		passHash, _ := utils.HashPassword(pass2)
+
+		user.Password = string(passHash)
+		user.UpdatedAt = &t
+
+		err = db.PgSql.Save(&user).Error
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("forgot-error", "error", "Error", err.Error()).Render(r.Context(), w)
+		}
+
+		resetPass.Used = 1
+		if err = db.PgSql.Save(&resetPass).Error; err != nil {
+			println(err.Error())
+		}
+
+		if !user.VerifiedEmail {
+
+			url := os.Getenv("APP_URL")
+			if os.Getenv("APP_ENV") == "dev" {
+				url += os.Getenv("APP_PORT")
+			}
+			utils.SendVerificationEmail(user, url+"/verify-email?id="+user.ID)
+
+			return ui.Toast("forgot-success", "success", "Success", "Reset password success! Please check your email for verification.").Render(r.Context(), w)
+		}
+
+		return ui.Toast("forgot-success", "success", "Success", "Reset password success! You can sign in to continue.").Render(r.Context(), w)
+
 	default:
 		w.WriteHeader(http.StatusSeeOther)
 		http.Redirect(w, r, "/", http.StatusSeeOther)

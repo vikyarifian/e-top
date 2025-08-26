@@ -5,7 +5,11 @@ import "slices"
 templ Form(action, method string, attrs templ.Attributes) {
     <form 
         if action != "" {
-            hx-post={action} 
+            if method == "post" {
+                hx-post={action} 
+            } else {
+                hx-put={action} 
+            }
         }
         if method != "" {
             method={method} 
