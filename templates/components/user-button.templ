@@ -48,7 +48,7 @@ templ UserButton(name, email string) {
 			<div class="-mx-1 my-1 h-px border-t border-dotted border-neutral-300"></div>
 
 			<!-- Logout -->
-			@ui.DropdownItem(false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer", templ.Attributes{
+			@ui.DropdownItem(false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer ", templ.Attributes{
 				"hx-post": "/logout",
 				"hx-target": "body",
 				"hx-swap": "none",

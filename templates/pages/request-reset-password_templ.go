@@ -14,7 +14,7 @@ import (
 	"os"
 )
 
-func ResendVerification() templ.Component {
+func RequestResetPassword() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -35,14 +35,14 @@ func ResendVerification() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-title=\"Resend Verification\" class=\"min-h-screen flex flex-col items-center justify-center bg-muted/40 p-6\"><div class=\"flex items-center mb-4\"><div class=\"w-14 h-14 bg-green-600 rounded-lg flex items-center justify-center px-5\"><span class=\"text-[48px] text-primary-foreground font-semibold\" style=\"margin-top: -10px\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-title=\"Reset Password\" class=\"min-h-screen flex flex-col items-center justify-center bg-muted/40 p-6\"><div class=\"flex items-center mb-4\"><div class=\"w-14 h-14 bg-green-600 rounded-lg flex items-center justify-center px-5\"><span class=\"text-[48px] text-primary-foreground font-semibold\" style=\"margin-top: -10px\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME")[0:1])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/resend-verification.templ`, Line: 13, Col: 133}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/request-reset-password.templ`, Line: 13, Col: 133}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -55,7 +55,7 @@ func ResendVerification() templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME")[1:len(os.Getenv("APP_NAME"))])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/resend-verification.templ`, Line: 15, Col: 117}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/request-reset-password.templ`, Line: 15, Col: 117}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -101,7 +101,7 @@ func ResendVerification() templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<h4>Resend Verification</h4>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<h4>Reset Password</h4>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -127,7 +127,7 @@ func ResendVerification() templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "Enter your email and we’ll send you a new verification link.")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "Enter your email and we’ll send you a reset password link.")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -242,7 +242,7 @@ func ResendVerification() templ.Component {
 					}
 					return nil
 				})
-				templ_7745c5c3_Err = ui.Form("/resend-verification", "post", templ.Attributes{
+				templ_7745c5c3_Err = ui.Form("/send-reset-password", "post", templ.Attributes{
 					"id":              "resend-form",
 					"hx-target":       "#toaster",
 					"hx-swap":         "beforeend",
@@ -286,7 +286,7 @@ func ResendVerification() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"text-center items-center justify-center\"><p class=\"text-sm text-muted-foreground\">Already verified?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/sign-in\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Sign In</span></p></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<div class=\"text-center items-center justify-center\"><p class=\"text-sm text-muted-foreground\">Already reset?  <span class=\"text-blue-700 cursor-pointer\" hx-get=\"/sign-in\" hx-target=\"#content\" hx-swap=\"true\" hx-push-url=\"true\">Sign In</span></p></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

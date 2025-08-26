@@ -116,8 +116,8 @@ templ SignUp() {
                                             : '');
                                 },
                                 validatePassword() {
-                                    this.passwordError = (this.password.length < 8)
-                                        ? 'Password must be at least 8 characters'
+                                    this.passwordError = (this.password.length < 6)
+                                        ? 'Password must be at least 6 characters'
                                         : '';
                                 },
                                 validatePassword2() {

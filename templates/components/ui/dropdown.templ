@@ -60,10 +60,11 @@ templ DropdownSeparator(attrs templ.Attributes) {
 // Item (biasa). Bisa diberi hx-* untuk action htmx.
 templ DropdownItem(inset bool, disabled bool, class string, attrs templ.Attributes) {
     <dev
-        class={ "relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-left outline-none transition-colors focus:bg-neutral-100 dark:focus:bg-neutral-800",
+        class={ "relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-left outline-none transition-colors dark:hover:bg-accent hover:bg-red-100",
+                class,
                 templ.KV("pl-8", inset),
                 templ.KV("pointer-events-none opacity-50", disabled),
-                class }
+                }
         { attrs... }
         :disabled={ disabled }
         @click="if (!($el.hasAttribute('hx-get')||$el.hasAttribute('hx-post')||$el.hasAttribute('hx-patch')||$el.hasAttribute('hx-put')||$el.hasAttribute('hx-delete'))) { close() }"

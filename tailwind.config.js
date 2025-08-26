@@ -69,4 +69,9 @@ module.exports = {
       },
     },
   },
+  plugins: [
+    function({ addVariant }) {
+      addVariant('dark-hover', ['.dark &:hover']);
+    }
+  ]
 }
