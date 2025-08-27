@@ -1,33 +1,35 @@
 package ui
 
-import "fmt"
+import (
+    "etop/utils"
+)
 
 // Avatar Component
-templ Avatar(size string, class string, attrs templ.Attributes) {
-	<div class={fmt.Sprintf("relative flex shrink-0 overflow-hidden rounded-full %s %s", getAvatarSize(size), class)} {attrs...}>
-		{ children... }
+templ Avatar(text string, size string, class string, attrs templ.Attributes) {
+	<div class="flex items-center">
+		<div class={"rounded-full flex items-center justify-center",
+					class,
+					utils.TailwindForUsername(text),
+					templ.KV("h-4 w-4", size == "xxs"),
+					templ.KV("h-6 w-6", size == "xs"),
+					templ.KV("h-8 w-8", size == "sm"),
+					templ.KV("h-10 w-10", size == "md"),
+					templ.KV("h-12 w-12", size == "lg"),
+					templ.KV("h-10 w-10", size == "")
+				}
+			{attrs...}
+		>
+			<span class="text-sm font-medium text-primary-foreground">{ string([]rune(text)[0]) }</span>
+		</div>
 	</div>
 }
 
 templ AvatarImage(src string, alt string, class string, attrs templ.Attributes) {
-	<img class={"aspect-square h-full w-full", class} src={src} alt={alt} {attrs...}/>
+	<img class={"aspect-square", class} src={src} alt={alt} {attrs...}/>
 }
 
 templ AvatarFallback(class string, attrs templ.Attributes) {
-	<div class={"flex h-full w-full items-center justify-center rounded-full bg-muted ", class} {attrs...}>
+	<div class={"flex items-center justify-center rounded-full bg-muted ", class} {attrs...}>
 		{ children... }
 	</div>
-}
-
-func getAvatarSize(size string) string {
-	switch size {
-	case "sm":
-		return "h-8 w-8"
-	case "md":
-		return "h-10 w-10"
-	case "lg":
-		return "h-12 w-12"
-	default:
-		return "h-10 w-10"
-	}
 }

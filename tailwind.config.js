@@ -2,7 +2,8 @@
 module.exports = {
   content: [
     "./templates/**/*.{go,html,templ}",
-    "./public/js/**/*.js"
+    "./public/js/**/*.js",
+    "./utils/**/*.txt",
   ],
   theme: {
     container: {
@@ -74,5 +75,5 @@ module.exports = {
     function({ addVariant }) {
       addVariant('dark-hover', ['.dark &:hover']);
     }
-  ]
+  ], 
 }

@@ -6,7 +6,7 @@ import (
 )
 
 templ SignIn() {
-    <div data-title="Sign In" class="flex flex-col items-center justify-start bg-muted/40" style="min-height: 80vh;">
+    <div data-title="Sign In" class="flex flex-col items-center justify-start" style="min-height: 80vh;">
         @ui.Card("max-w-md w-full shadow-xl", nil) {
             @ui.CardHeader("items-center justify-center", nil) {
                 @ui.CardTitle("text-center", nil) {
@@ -60,7 +60,7 @@ templ SignIn() {
                     @ui.Form("/sign-in", "post", "", templ.Attributes{
                         "id":"signin-form",
                         "hx-target": "#toaster",
-                        "hx-swap": "beforeend",
+                        "hx-swap": "innerHtml",
                         "hx-disabled-elt":"#signin-button,#google-button,#email,#password",
                         "x-ref": "form",
                         "@submit.prevent":"validateForm($event)",
@@ -87,7 +87,7 @@ templ SignIn() {
                                     hx-get="/forgot-password"
                                     hx-target="#content"
                                     hx-swap="true"
-                                    hx-push-url="true">@ui.FormLabel("forgot", "Forgot Password?", "text-blue-700 cursor-pointer", nil)</span>
+                                    hx-push-url="true">@ui.FormLabel("password", "Forgot Password?", "text-blue-700 cursor-pointer", nil)</span>
                             </div>                            
                             @ui.FormControl("password", "password", "password", "********", "", "", templ.Attributes{
                                 "id": "password",
@@ -104,7 +104,7 @@ templ SignIn() {
                         
                         @ui.Button("signin-button", "", "lg", "", "Sign In", "w-full", templ.Attributes{"type": "submit",})
                         <div class="mx-2" />
-                        <a href="/auth/google">
+                        @components.Href("/auth/google", "") {
                             @ui.Button("google-button", "secondary", "lg", "", "", "w-full", templ.Attributes{"type": "button",}) {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="-3 0 262 262" preserveAspectRatio="xMidYMid">
                                     <path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4"/>
@@ -114,7 +114,7 @@ templ SignIn() {
                                 </svg>
                                 Login with Google
                             }
-                        </a>
+                        }
                     }
                 </div>
             }

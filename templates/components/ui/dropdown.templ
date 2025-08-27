@@ -1,11 +1,13 @@
 package ui
 
+import "fmt"
+
 // id opsional; berguna jika ada banyak dropdown di halaman
 templ Dropdown(id string, class string, attrs templ.Attributes) {
     <div
-        x-data="{ open: false, subOpen: false, radioValue: '', checks: {}, toggle() { this.open = !this.open }, close() { this.open = false; this.subOpen = false } }"
-        @keydown.escape.stop="close()"
-        @click.outside="close()"
+        x-data={fmt.Sprintf("{ id: '%s', subOpen: false, radioValue: '', checks: {} }",id)}
+        @keydown.escape.stop="$store.dropdown.close()"
+        @click.outside="$store.dropdown.close()"
         class={"outline-none relative", class}
         id={id}
         {attrs...}
@@ -18,8 +20,8 @@ templ Dropdown(id string, class string, attrs templ.Attributes) {
 templ DropdownTrigger(class string, attrs templ.Attributes) {
     <button
         type="button"
-        @click.stop="toggle()"
-        :aria-expanded="open"
+        @click.stop="$store.dropdown.toggle(id)"
+        :aria-expanded="$store.dropdown.isOpen(id)"
         class={"flex cursor-pointer select-none items-center gap-1 rounded-md p-2 text-sm outline-none",class}
         {attrs...}
     >
@@ -33,7 +35,7 @@ templ DropdownTrigger(class string, attrs templ.Attributes) {
 // Content (menu panel)
 templ DropdownContent(class string, attrs templ.Attributes) {
     <div
-        x-show="open"
+        x-show="$store.dropdown.isOpen(id)"
         x-transition.opacity
         x-transition.scale.origin.top.right
         class={"z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
@@ -55,7 +57,7 @@ templ DropdownLabel(inset bool, class string, attrs templ.Attributes) {
 
 // Separator
 templ DropdownSeparator(class string, attrs templ.Attributes) {
-    <div class={"-mx-1 my-1 h-px bg-neutral-200 dark:bg-neutral-800 ", class} {attrs...}></div>
+    <div class={"-mx-1 my-1 h-px border-t border-dotted border-neutral-300 ", class} {attrs...}></div>
 }
 
 // Item (biasa). Bisa diberi hx-* untuk action htmx.
