@@ -119,9 +119,9 @@ func ResetPasswordEmail(user models.User, resetURL string) error {
 			<p>Hi %s,</p>
 			<p>We received a request to reset your password for your <b>%s</b> account.</p>
 			<p>Please click the button below to set a new password. 
-			This link is valid for <b>5 minutes</b> only.</p>
+			This link is valid for <b>15 minutes</b> only.</p>
 			<p style="text-align:center;">
-			<a href="%s" class="btn">Reset My Password</a>
+			<a href="%s" class="btn" style="color: white; text-decoration:none;">Reset My Password</a>
 			</p>
 			<p>If the button doesn’t work, copy and paste this link into your browser:</p>
 			<p><a href="%s">%s</a></p>

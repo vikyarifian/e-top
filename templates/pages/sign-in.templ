@@ -57,7 +57,7 @@ templ SignIn() {
                             }"
                     
                 >
-                    @ui.Form("/sign-in", "post", templ.Attributes{
+                    @ui.Form("/sign-in", "post", "", templ.Attributes{
                         "id":"signin-form",
                         "hx-target": "#toaster",
                         "hx-swap": "beforeend",
@@ -65,35 +65,40 @@ templ SignIn() {
                         "x-ref": "form",
                         "@submit.prevent":"validateForm($event)",
                     }) {
-                        @ui.FormItem() {
-                            @ui.FormLabel("email", "Email Address")
-                            @ui.FormControl("email", "email", "email", "you@example.com", "", templ.Attributes{
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("email", "Email Address", "", nil)
+                            @ui.FormControl("email", "email", "email", "you@example.com", "", "", templ.Attributes{
                                 "id": "email",
                                 "name": "email",
                                 "autocomplete":"email",
                                 "x-model": "email",
                                 "@blur": "validateEmail",
                             })
-                            @ui.FormMessage(templ.Attributes{
+                            @ui.FormMessage("", "", templ.Attributes{
                                     "x-show": "emailError != ''",
                                     "x-text": "emailError",
                                 },
-                                "",
                             )
                         }
-                        @ui.FormItem() {
-                            @ui.FormLabel("password", "Password")
-                            @ui.FormControl("password", "password", "password", "********", "", templ.Attributes{
+                        @ui.FormItem("", nil) {
+                            <div class="flex flex-row justify-between w-full">
+                                <div class="">@ui.FormLabel("password", "Password", "", nil)</div>
+                                <span 
+                                    hx-get="/forgot-password"
+                                    hx-target="#content"
+                                    hx-swap="true"
+                                    hx-push-url="true">@ui.FormLabel("forgot", "Forgot Password?", "text-blue-700 cursor-pointer", nil)</span>
+                            </div>                            
+                            @ui.FormControl("password", "password", "password", "********", "", "", templ.Attributes{
                                 "id": "password",
                                 "name": "password",
                                 "x-model": "password",
                                 "@blur": "validatePassword",
                             })
-                            @ui.FormMessage(templ.Attributes{
+                            @ui.FormMessage("", "", templ.Attributes{
                                     "x-show": "passwordError != ''",
                                     "x-text": "passwordError",
                                 },
-                                "",
                             )
                         }
                         
@@ -133,14 +138,6 @@ templ SignIn() {
                             hx-target="#content"
                             hx-swap="true"
                             hx-push-url="true">Resend</span>
-                    </p>
-                    <p class="text-sm text-muted-foreground">
-                        Forgot Password? 
-                        <span class="text-blue-700 cursor-pointer"
-                            hx-get="/forgot-password"
-                            hx-target="#content"
-                            hx-swap="true"
-                            hx-push-url="true">Reset</span>
                     </p>
                 </div>
             }

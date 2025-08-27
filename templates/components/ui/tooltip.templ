@@ -9,7 +9,7 @@ templ Tooltip(text string, class string, attrs templ.Attributes) {
 			@focus="open = true" 
 			@blur="open = false"            
 		>
-			{ children... }
+			{children...}
 		</div>
 
 		<!-- Tooltip -->
@@ -18,7 +18,7 @@ templ Tooltip(text string, class string, attrs templ.Attributes) {
 			x-transition 
 			class={"absolute z-50 px-2 py-1 text-sm rounded-md shadow-md bg-accent", class}
             style="min-width:80px;"
-            { attrs... }
+            {attrs...}
 		>
 			{text}
 		</div>

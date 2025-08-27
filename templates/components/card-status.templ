@@ -2,13 +2,12 @@ package components
 
 import (
     "etop/templates/components/ui"
-    "fmt"
 )
 
 func getColorStatus(status int) string {
-    color := "green"
+    color := "text-green-500"
     if status>200 {
-        color = "red"
+        color = "text-red-500"
     } 
     return color
 }
@@ -16,7 +15,7 @@ func getColorStatus(status int) string {
 templ CardStatus(status int, title string, description string, icon string, content ...templ.Component) {
     @ui.CardHeader("items-center justify-center", nil) {
         if icon != "" {
-            <div class="w-16 h-16 mb-4" style={fmt.Sprintf("color:%s",getColorStatus(status))} data-lucide={icon} />
+            <div class={"w-16 h-16 mb-4 ", getColorStatus(status)} data-lucide={icon} />
         }
         @ui.CardTitle("text-center", nil) {
             <h4>{title}</h4>

@@ -3,18 +3,18 @@ package ui
 import "fmt"
 
 // Avatar Component
-templ Avatar(size string, class string) {
-	<div class={fmt.Sprintf("relative flex shrink-0 overflow-hidden rounded-full %s %s", getAvatarSize(size), class)}>
+templ Avatar(size string, class string, attrs templ.Attributes) {
+	<div class={fmt.Sprintf("relative flex shrink-0 overflow-hidden rounded-full %s %s", getAvatarSize(size), class)} {attrs...}>
 		{ children... }
 	</div>
 }
 
-templ AvatarImage(src string, alt string) {
-	<img class="aspect-square h-full w-full" src={src} alt={alt}/>
+templ AvatarImage(src string, alt string, class string, attrs templ.Attributes) {
+	<img class={"aspect-square h-full w-full", class} src={src} alt={alt} {attrs...}/>
 }
 
-templ AvatarFallback(class string) {
-	<div class={fmt.Sprintf("flex h-full w-full items-center justify-center rounded-full bg-muted %s", class)}>
+templ AvatarFallback(class string, attrs templ.Attributes) {
+	<div class={"flex h-full w-full items-center justify-center rounded-full bg-muted ", class} {attrs...}>
 		{ children... }
 	</div>
 }

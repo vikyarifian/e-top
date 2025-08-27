@@ -67,27 +67,26 @@ templ ResendVerification() {
                                 }
                             }"
                 >
-                    @ui.Form("/resend-verification", "post", templ.Attributes{
+                    @ui.Form("/resend-verification", "post", "", templ.Attributes{
                         "id":"resend-form",
                         "hx-target": "#toaster",
                         "hx-swap": "beforeend",
                         "hx-disabled-elt":"#resend-button",
                         "@submit.prevent":"validateForm($event)",
                     }) {
-                        @ui.FormItem() {
-                            @ui.FormLabel("email", "Email Address")
-                            @ui.FormControl("email", "email", "email", "you@example.com", "", templ.Attributes{
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("email", "Email Address", "", nil)
+                            @ui.FormControl("email", "email", "email", "you@example.com", "", "", templ.Attributes{
                                 "id": "email",
                                 "name": "email",
                                 "autocomplete":"email",
                                 "x-model": "email",
                                 "@blur": "validateEmail",
                             })
-                            @ui.FormMessage(templ.Attributes{
+                            @ui.FormMessage("", "", templ.Attributes{
                                     "x-show": "emailError != ''",
                                     "x-text": "emailError",
                                 },
-                                "",
                             )
                         }
                         @ui.Button("resend-button", "", "lg", "", "Resend Verification Email", "w-full", templ.Attributes{"type": "submit",})

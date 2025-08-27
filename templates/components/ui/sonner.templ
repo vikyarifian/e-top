@@ -1,9 +1,10 @@
 package ui
 
 // Sonner (Toast) component
-templ Toast(id, typ, title, description string) {
+templ Toast(id, typ, title, description string, class string, attrs templ.Attributes) {
     <div class={
             "fixed top-4 right-4 z-50 w-full max-w-sm rounded-lg border p-4 shadow-lg transition-all",
+            class,
             templ.KV("bg-background border-border", typ == "default"),
             templ.KV("bg-destructive text-destructive-foreground border-destructive", typ == "error"),
             templ.KV("bg-green-600 text-white border-green-600", typ == "success"),
@@ -11,6 +12,7 @@ templ Toast(id, typ, title, description string) {
         }
         id={id} 
         x-init="setTimeout(() => $el.remove(), 5000)" 
+        {attrs...}
     >
         <div class="flex items-start gap-3">
             if typ == "success" {

@@ -1,15 +1,16 @@
 package ui
 
 // Checkbox component
-templ Checkbox(name, value string, checked bool, attrs templ.Attributes) {
+templ Checkbox(id string, name string, value string, checked bool, class string, attrs templ.Attributes) {
     <div class="flex items-center space-x-2">
         <input 
+            id={id}
             type="checkbox"
-            name={ name }
-            value={ value }
-            checked?={ checked }
-            class="h-4 w-4 rounded border border-input text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
-            { attrs... }
+            name={name}
+            value={value}
+            checked?={checked}
+            class={"h-4 w-4 rounded border border-input text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2 ", class}
+            {attrs...}
         />
     </div>
 }

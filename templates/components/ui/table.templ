@@ -1,42 +1,40 @@
 package ui
 
-import "fmt"
-
 // Table components
-templ Table(class string) {
-    <div class="relative w-full overflow-auto %s">
-        <table class={fmt.Sprintf("w-full caption-bottom text-sm", class)}>
-            { children... }
+templ Table(class string, attrs templ.Attributes) {
+    <div class="relative w-full overflow-auto">
+        <table class={"w-full caption-bottom text-sm", class} {attrs...}>
+            {children...}
         </table>
     </div>
 }
 
-templ TableHeader() {
-    <thead class="[&_tr]:border-b">
-        { children... }
+templ TableHeader(class string, attrs templ.Attributes) {
+    <thead class={"[&_tr]:border-b", class} {attrs...}>
+        {children...}
     </thead>
 }
 
-templ TableBody() {
-    <tbody class="[&_tr:last-child]:border-0">
-        { children... }
+templ TableBody(class string, attrs templ.Attributes) {
+    <tbody class={"[&_tr:last-child]:border-0", class} {attrs...}>
+        {children...}
     </tbody>
 }
 
-templ TableRow() {
-    <tr class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-        { children... }
+templ TableRow(class string, attrs templ.Attributes) {
+    <tr class={"border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", class} {attrs...}>
+        {children...}
     </tr>
 }
 
-templ TableHead(text string) {
-    <th class="h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
-        { text }
+templ TableHead(text string, class string, attrs templ.Attributes) {
+    <th class={"h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]", class} {attrs...}>
+        {text}
     </th>
 }
 
-templ TableCell(text string) {
-    <td class="p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]">
-        { text }
+templ TableCell(text string, class string, attrs templ.Attributes) {
+    <td class={"p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]", class} {attrs...}>
+        {text}
     </td>
 }

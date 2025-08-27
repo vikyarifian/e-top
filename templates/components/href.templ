@@ -1,7 +1,7 @@
 package components
 
 templ Href(link string, content ...templ.Component) {
-    <a href={link}>
+    <a href={templ.SafeURL(link)}>
         for _, c := range content {
             @c
         }
