@@ -6,7 +6,7 @@ import (
 )
 
 templ ResendVerification() {
-    <div data-title="Resend Verification" x-data="{showForm:true,showSuccess:false,showError:false}" class="flex flex-col items-center justify-start bg-muted/40" style="min-height: 80vh;">
+    <div data-title="Resend Verification" x-data="{showForm:true,showSuccess:false,showError:false}" class="flex flex-col items-center justify-start" style="min-height: 80vh;">
         @ui.Card("max-w-md w-full shadow-xl", templ.Attributes{"x-show":"showSuccess"}) {
             @components.CardStatus(200, "Email Verification Sent", "If your email is registered, you will receive a verification link.", "circle-check-big",
 				ui.Button("success", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"}))
@@ -70,7 +70,7 @@ templ ResendVerification() {
                     @ui.Form("/resend-verification", "post", "", templ.Attributes{
                         "id":"resend-form",
                         "hx-target": "#toaster",
-                        "hx-swap": "beforeend",
+                        "hx-swap": "innerHtml",
                         "hx-disabled-elt":"#resend-button,#email",
                         "@submit.prevent":"validateForm($event)",
                     }) {

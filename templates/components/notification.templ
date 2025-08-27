@@ -2,7 +2,6 @@ package components
 
 import (
     "etop/templates/components/ui"
-
 )
 
 type Notif struct {
@@ -11,40 +10,91 @@ type Notif struct {
 }
 
 templ Notification(notif []Notif) {
-    @ui.Dropdown("notifMenu", "", nil) {
-		@ui.DropdownTrigger("notifMenu", "", templ.Attributes{
+    @ui.Dropdown("notifButton", "", nil) {
+		@ui.DropdownTrigger("flex items-center p-2 rounded-md hover:bg-accent", templ.Attributes{
 		}) {
-            <button 
-                class="p-2 rounded-md hover:bg-accent"
-            >
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                </svg>
-            </button>
+			<div data-lucide="bell" class="w-6 h-6"  stroke="currentColor" />
 		}
 
 		/* Panel dropdown */
-		@ui.DropdownContent("notifMenu", "w-60", nil) {
-			<!-- header user info -->
-			<div class="flex flex-col items-center justify-center gap-2 p-4">
-				<div class="flex flex-col items-center justify-center">
-					<p class="text-md font-semibold">
-						Halo
-					</p>
-					<p class="text-sm text-neutral-500">
-						Semua
-					</p>
-				</div>
-			</div>
+		@ui.DropdownContent("w-64", nil) {
+			@ui.DropdownLabel(false, "flex items-center justify-center font-sm", nil) {
+                Notifications
+            }
 
-			<!-- dotted separator -->
-			<div class="-mx-1 my-1 h-px border-t border-dotted border-neutral-300"></div>
+            @ui.DropdownSeparator("", nil)
 
-			<!-- Logout -->
-			@ui.DropdownItem("notifMenu", false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100", nil) {
-				<i data-lucide="log-out" class="w-4 h-4"></i>
-				Log out
+            // Item 1 - Pesan Baru
+            @ui.DropdownItem(false, false, "", nil) {
+                <div class="flex gap-2 items-start">
+					@ui.Avatar("Andi", "xs", "mt-0.5", nil) 
+                    <div class="flex flex-col text-sm">
+                        <span class="font-medium">Andi</span>
+                        <span class="text-xs opacity-70">sent you a message last year last year</span>
+                        <span class="text-xs opacity-50">2 min ago</span>
+                    </div>
+                </div>
 			}
+			@ui.DropdownItem(false, false, "", nil) {
+				<div class="flex gap-2 items-start">
+					@ui.Avatar("Bdu", "xs", "mt-0.5", nil) 
+                    <div class="flex flex-col text-sm">
+                        <span class="font-medium">Bdu</span>
+                        <span class="text-xs opacity-70">sent you a message yesterday sent you a message yesterday</span>
+                        <span class="text-xs opacity-50">2 min ago</span>
+                    </div>
+                </div>
+			}
+			@ui.DropdownItem(false, false, "", nil) {
+				<div class="flex gap-2 items-start">
+					@ui.Avatar("Cahy", "xs", "mt-0.5", nil) 
+                    <div class="flex flex-col text-sm">
+                        <span class="font-medium">Cahy</span>
+                        <span class="text-xs opacity-70">sent you a message please reply</span>
+                        <span class="text-xs opacity-50">2 min ago</span>
+                    </div>
+                </div>
+            }
+
+            // Item 2 - System Update
+            @ui.DropdownItem(false, false, "", nil) {
+                <div class="flex gap-3 items-start">
+                    <div class="size-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col text-sm">
+                        <span class="font-medium">System Update</span>
+                        <span class="text-xs opacity-70">Version 2.1 installed</span>
+                        <span class="text-xs opacity-50">10 min ago</span>
+                    </div>
+                </div>
+            }
+
+            // Item 3 - Reminder
+            @ui.DropdownItem(false, false, "", nil) {
+                <div class="flex gap-3 items-start">
+                    <div class="size-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col text-sm">
+                        <span class="font-medium">Meeting Reminder</span>
+                        <span class="text-xs opacity-70">Project kickoff at 3:00 PM</span>
+                        <span class="text-xs opacity-50">30 min ago</span>
+                    </div>
+                </div>
+            }
+
+            @ui.DropdownSeparator("", nil)
+
+            @ui.DropdownItem(false, false, "justify-center text-blue-600 font-sm cursor-pointer", nil) {
+                View all notifications
+            }
 		}
 	}
 }

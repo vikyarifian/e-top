@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
@@ -32,7 +34,7 @@ func HashPassword(password string) (string, error) {
 	return string(bytes), err
 }
 
-func LetterToColor(letter string) string {
+func LetterToColorHex(letter string) string {
 	// Define a map of letters to CSS colors
 	colorMap := map[string]string{
 		"A": "#ef4444", // red-500
@@ -63,7 +65,6 @@ func LetterToColor(letter string) string {
 		"Z": "#fde047", // yellow-400
 	}
 
-	// Normalize to uppercase
 	letter = string(strings.ToUpper(string(letter))[0])
 
 	// Get color or return a default
@@ -71,4 +72,95 @@ func LetterToColor(letter string) string {
 		return color
 	}
 	return "#3b82f6" // default if not A-Z
+}
+
+func LetterToColor(letter string) string {
+	// Peta huruf ke Tailwind class (dengan dark mode)
+	colorMap := map[string]string{
+		"A": "bg-red-500 dark:bg-gray-500 text-white",
+		"B": "bg-blue-500 dark:bg-gray-500 text-white",
+		"C": "bg-green-500 dark:bg-gray-500 text-white",
+		"D": "bg-yellow-500 dark:bg-gray-500 text-black",
+		"E": "bg-purple-500 dark:bg-gray-500 text-white",
+		"F": "bg-pink-500 dark:bg-gray-500 text-white",
+		"G": "bg-indigo-500 dark:bg-gray-500 text-white",
+		"H": "bg-teal-500 dark:bg-gray-500 text-white",
+		"I": "bg-cyan-500 dark:bg-gray-500 text-white",
+		"J": "bg-lime-500 dark:bg-gray-500 text-black",
+		"K": "bg-amber-500 dark:bg-gray-500 text-black",
+		"L": "bg-orange-500 dark:bg-gray-500 text-white",
+		"M": "bg-emerald-500 dark:bg-gray-500 text-white",
+		"N": "bg-fuchsia-500 dark:bg-gray-500 text-white",
+		"O": "bg-rose-500 dark:bg-gray-500 text-white",
+		"P": "bg-sky-500 dark:bg-gray-500 text-white",
+		"Q": "bg-violet-500 dark:bg-gray-500 text-white",
+		"R": "bg-stone-500 dark:bg-gray-500 text-white",
+		"S": "bg-zinc-500 dark:bg-gray-500 text-white",
+		"T": "bg-neutral-500 dark:bg-gray-500 text-white",
+		"U": "bg-slate-500 dark:bg-gray-500 text-white",
+		"V": "bg-gray-500 dark:bg-gray-500 text-white",
+		"W": "bg-blue-400 dark:bg-gray-500 text-white",
+		"X": "bg-red-400 dark:bg-gray-500 text-white",
+		"Y": "bg-green-400 dark:bg-gray-500 text-white",
+		"Z": "bg-yellow-400 dark:bg-gray-500 text-black",
+	}
+
+	// Normalisasi ke uppercase dan ambil huruf pertama
+	letter = strings.ToUpper(string(letter[0]))
+
+	// Kembalikan class Tailwind
+	if color, ok := colorMap[letter]; ok {
+		return color
+	}
+	return "bg-blue-500 dark:bg-gray-500 text-white" // default
+}
+
+var baseColors = []string{
+	"red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan", "sky",
+	"blue", "indigo", "violet", "purple", "fuchsia", "pink", "rose",
+	"slate", "gray", "zinc", "neutral", "stone",
+}
+
+var shades = []int{300, 400, 500, 600, 700}
+
+func GenerateBuckets() []string {
+	var buckets []string
+	for _, c := range baseColors {
+		for _, s := range shades {
+			text := "text-black"
+			if s >= 500 {
+				text = "text-white"
+			}
+			class := "bg-" + c + "-" + fmt.Sprint(s) + " " + text +
+				" dark:bg-gray-500 dark:text-white"
+			buckets = append(buckets, class)
+		}
+	}
+	return buckets
+}
+
+// TailwindForUsername memilih warna sesuai username
+func TailwindForUsername(username string) string {
+	if username == "" {
+		return "bg-gray-400 text-black dark:bg-gray-500 dark:text-white"
+	}
+	var tailwindBuckets = GenerateBuckets()
+
+	hash := sha1.Sum([]byte(username))
+	idx := int(hash[0]) % len(tailwindBuckets)
+	return tailwindBuckets[idx]
+}
+
+func ColorForLetter(letter string) string {
+	if letter == "" {
+		return "bg-gray-500 text-white dark:bg-gray-700"
+	}
+
+	hash := sha256.Sum256([]byte(letter))
+	hexStr := hex.EncodeToString(hash[:])
+
+	// ambil 6 karakter pertama → hex warna
+	colorHex := hexStr[0:6]
+
+	return fmt.Sprintf("#%s", colorHex)
 }

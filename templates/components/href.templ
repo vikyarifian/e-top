@@ -1,9 +1,7 @@
 package components
 
-templ Href(link string, content ...templ.Component) {
-    <a href={templ.SafeURL(link)}>
-        for _, c := range content {
-            @c
-        }
+templ Href(link string, class string) {
+    <a href={templ.SafeURL(link)} class={class}>
+        {children...}
     </a>
 }

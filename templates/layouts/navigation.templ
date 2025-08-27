@@ -20,10 +20,21 @@ templ Navigation() {
                 >                  
                     <div x-show="!sidebarCollapsed || isMobile" class="w-5 h-5" data-lucide={menu.Icon} />
                     <span x-show="!sidebarCollapsed || isMobile">{menu.Label}</span>
-                    @ui.Tooltip(menu.Label, "mt-0 ml-4", templ.Attributes{}) {
-                        <div class="w-5 h-5" data-lucide={menu.Icon} x-show="sidebarCollapsed && !isMobile" />
-                    }  
                 </a>
+                @ui.Tooltip(menu.Label, "mt-0 ml-4", templ.Attributes{}) {
+                    <a 
+                        x-show="sidebarCollapsed && !isMobile" 
+                        hx-post={menu.Href}
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                        :class="sidebarCollapsed && !isMobile ? 'justify-center' : ''"
+                        @click="if (isMobile) sidebarOpen = false"
+                    >                  
+                        <div class="w-5 h-5" data-lucide={menu.Icon} />
+                    </a>
+                }  
             </li>
         }
     </ul>
