@@ -4,8 +4,8 @@ import (
     "fmt"
 )
 
-templ Select(name, value string, class string, options []SelectOption, attrs templ.Attributes) {
-    <div class={fmt.Sprintf("w-64 %s", class)}>
+templ Select(name string, value string, options []SelectOption, class string, attrs templ.Attributes) {
+    <div class={fmt.Sprintf("w-64 %s", class)} {attrs...}>
         <!-- Dropdown Wrapper -->
         <div x-data="{ open: false, selected: { value: '', label: '', color: '' } }" class="relative">
             

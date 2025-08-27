@@ -19,15 +19,15 @@ templ SignUp() {
                 @ui.CardDescription("flex flex-row flex-wrap items-center justify-center gap-1 text-center", nil) {
                     By signing up, you agree to our 
                     <!-- Privacy -->
-                    @ui.DialogRoot("privacy-dialog", templ.Attributes{"class": "items-center justify-center"}) {
-                        @ui.DialogTrigger(templ.Attributes{"class": "text-primary underline"}) {
+                    @ui.DialogRoot("privacy-dialog", "items-center justify-center", nil) {
+                        @ui.DialogTrigger("text-primary underline", nil) {
                             <span>Privacy Policy</span>
                         }
-                        @ui.DialogOverlay(nil)
-                        @ui.DialogContent(nil) {
-                            @ui.DialogHeader(nil) {
-                                @ui.DialogTitle(nil) { <span>Privacy Policy</span> }
-                                @ui.DialogDescription(nil) {
+                        @ui.DialogOverlay("", nil)
+                        @ui.DialogContent("", nil) {
+                            @ui.DialogHeader("", nil) {
+                                @ui.DialogTitle("", nil) { <span>Privacy Policy</span> }
+                                @ui.DialogDescription("", nil) {
                                     <span>How we collect, use, and protect your data.</span>
                                 }
                             }
@@ -42,24 +42,22 @@ templ SignUp() {
                                 <h3 class="pt-2">Data Protection</h3>
                                 <p>We apply reasonable safeguards, but no method is 100% secure.</p>
                             </div>
-                            @ui.DialogFooter(nil) {
-                                @ui.DialogClose(templ.Attributes{
-                                    "class": "px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90",
-                                }) { <span>Close</span> }
+                            @ui.DialogFooter("", nil) {
+                                @ui.DialogClose("px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90", nil) { <span>Close</span> }
                             }
                         }
                     }
                     and 
                     <!-- Terms of Service -->
-                    @ui.DialogRoot("terms-dialog", templ.Attributes{"class": "items-center justify-center"}) {
-                        @ui.DialogTrigger(templ.Attributes{"class": "text-primary underline cursor-pointer"}) {
+                    @ui.DialogRoot("terms-dialog", "items-center justify-center", nil) {
+                        @ui.DialogTrigger("text-primary underline cursor-pointer", nil) {
                             <span>Terms of Service</span>
                         }
-                        @ui.DialogOverlay(nil)
-                        @ui.DialogContent(nil) {
-                            @ui.DialogHeader(nil) {
-                                @ui.DialogTitle(nil) { <span>Terms of Service</span> }
-                                @ui.DialogDescription(nil) {
+                        @ui.DialogOverlay("", nil)
+                        @ui.DialogContent("", nil) {
+                            @ui.DialogHeader("", nil) {
+                                @ui.DialogTitle("", nil) { <span>Terms of Service</span> }
+                                @ui.DialogDescription("", nil) {
                                     <span>Our rules and conditions for using this service.</span>
                                 }
                             }
@@ -77,10 +75,8 @@ templ SignUp() {
                                 <h3 class="pt-2">Limitations of Liability</h3>
                                 <p>We are not liable for damages arising from misuse of our services.</p>
                             </div>
-                            @ui.DialogFooter(nil) {
-                                @ui.DialogClose(templ.Attributes{
-                                    "class": "px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90",
-                                }) { <span>Close</span> }
+                            @ui.DialogFooter("", nil) {
+                                @ui.DialogClose("px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90", nil) { <span>Close</span> }
                             }
                         }
                     }
@@ -148,7 +144,7 @@ templ SignUp() {
                             }"
                     
                 >
-                    @ui.Form("/sign-up", "post", templ.Attributes{
+                    @ui.Form("/sign-up", "post", "", templ.Attributes{
                         "id":"signup-form",
                         "hx-target": "#toaster",
                         "hx-swap": "beforeend",
@@ -156,64 +152,60 @@ templ SignUp() {
                         "x-ref": "form",
                         "@submit.prevent":"validateForm($event)",
                     }) {
-                        @ui.FormItem() {
-                            @ui.FormLabel("full_name", "Full Name")
-                            @ui.FormControl("full_name", "full_name", "text", "John Doe", "", templ.Attributes{
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("full_name", "Full Name", "", nil)
+                            @ui.FormControl("full_name", "full_name", "text", "John Doe", "", "", templ.Attributes{
                                 "id": "full_name",
                                 "name": "full_name",
                                 "autocomplete":"name",
                                 "x-model": "full_name",
                                 "@blur": "validateName",
                             })
-                            @ui.FormMessage(templ.Attributes{
+                            @ui.FormMessage("", "", templ.Attributes{
                                     "x-show": "nameError != ''",
                                     "x-text": "nameError",
                                 },
-                                "",
                             )
                         }
-                        @ui.FormItem() {
-                            @ui.FormLabel("email", "Email Address")
-                            @ui.FormControl("email", "email", "email", "you@example.com", "", templ.Attributes{
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("email", "Email Address", "", nil)
+                            @ui.FormControl("email", "email", "email", "you@example.com", "", "", templ.Attributes{
                                 "id": "email",
                                 "name": "email",
                                 "autocomplete":"email",
                                 "x-model": "email",
                                 "@blur": "validateEmail",
                             })
-                            @ui.FormMessage(templ.Attributes{
+                            @ui.FormMessage("", "", templ.Attributes{
                                     "x-show": "emailError != ''",
                                     "x-text": "emailError",
                                 },
-                                "",
                             )
                         }
-                        @ui.FormItem() {
-                            @ui.FormLabel("password", "Password")
-                            @ui.FormControl("password", "password", "password", "********", "", templ.Attributes{
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("password", "Password", "", nil)
+                            @ui.FormControl("password", "password", "password", "********", "", "", templ.Attributes{
                                 "id": "password",
                                 "x-model": "password",
                                 "@blur": "validatePassword",
                             })
-                            @ui.FormMessage(templ.Attributes{
+                            @ui.FormMessage("", "", templ.Attributes{
                                     "x-show": "passwordError != ''",
                                     "x-text": "passwordError",
                                 },
-                                "",
                             )
                         }
-                        @ui.FormItem() {
-                            @ui.FormLabel("password2", "Confirm Password")
-                            @ui.FormControl("password", "password2", "password", "********", "", templ.Attributes{
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("password2", "Confirm Password", "", nil)
+                            @ui.FormControl("password", "password2", "password", "********", "", "", templ.Attributes{
                                 "id": "password2",
                                 "x-model": "password2",
                                 "@blur": "validatePassword2",
                             })
-                            @ui.FormMessage(templ.Attributes{
+                            @ui.FormMessage("", "", templ.Attributes{
                                     "x-show": "passwordError2 != ''",
                                     "x-text": "passwordError2",
                                 },
-                                "",
                             )
                         }
                         

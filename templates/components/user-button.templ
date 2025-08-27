@@ -10,9 +10,9 @@ import (
 templ UserButton(name, email string) {
 
 
-	@ui.Dropdown("user-menu") {
+	@ui.Dropdown("user-menu", "", nil) {
 		/* Trigger: avatar kecil bulat */
-		@ui.DropdownTrigger(templ.Attributes{
+		@ui.DropdownTrigger("", templ.Attributes{
 			// NB: komponen Trigger sudah punya kelas default sendiri.
 			// Jangan kirim "class" lagi agar tidak duplikat attribute.
 			// Biar tombol terlihat bulat, kita bungkus avatar di dalamnya.

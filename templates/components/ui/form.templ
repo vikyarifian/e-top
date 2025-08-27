@@ -2,61 +2,61 @@ package ui
 
 import "slices"
 
-templ Form(action, method string, attrs templ.Attributes) {
+templ Form(action string, method string, class string, attrs templ.Attributes) {
     <form 
-        if action != "" {
-            if method == "post" {
-                hx-post={action} 
-            } else {
-                hx-put={action} 
-            }
+        if method == "post" {
+            hx-post={action} 
         }
+        if method == "put" {
+            hx-put={action} 
+        }
+        if method == "get"{
+            hx-get={action}
+        }
+        if method == "delete"{
+            hx-delete={action}
+        }
+        if method == "patch"{
+            hx-patch={action}
+        }
+        
         if method != "" {
             method={method} 
         }
-        class="space-y-6"
-        { attrs... }
+        class={"space-y-6 ", class}
+        {attrs...}
     >
-        { children... }
+        {children...}
     </form>
 }
 
-templ FormItem() {
-    <div class="space-y-2">
-        { children... }
+templ FormItem(class string, attrs templ.Attributes) {
+    <div class={"space-y-2 ", class} {attrs...}>
+        {children...}
     </div>
 }
 
-templ FormLabel(forID, text string) {
-    <label for={forID} class="block text-sm font-medium text-foreground">
-        { text }
+templ FormLabel(forID, text string, class string, attrs templ.Attributes) {
+    <label for={forID} class={"block text-sm font-medium", class} {attrs...}>
+        {text}
     </label>
 }
 
-templ FormControl(id, name, typ, placeholder, value string, attrs templ.Attributes) {
+templ FormControl(id, name, typ, placeholder, value string, class string, attrs templ.Attributes) {
     if slices.Contains([]string{"text","email","password"}, typ) {
-        @Input(typ, placeholder, name, value, attrs)
-        // <input 
-        //     id={id} 
-        //     name={name} 
-        //     type={typ} 
-        //     value={value} 
-        //     placeholder={placeholder} 
-        //     class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm
-        //         ring-offset-background placeholder:text-muted-foreground
-        //         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
-        //         disabled:cursor-not-allowed disabled:opacity-50"
-        //     { attrs... }
-        // />
-    } 
+        @Input(typ, placeholder, name, class, value, attrs)
+    }
+    if typ == "date" {
+        @DatePicker(id, name, value, placeholder, class, attrs)
+    }
 }
 
-templ FormDescription(text string) {
-    <p class="text-[0.8rem] text-muted-foreground">{text}</p>
+templ FormDescription(text string, class string, attrs templ.Attributes) {
+    <p class={"text-[0.8rem] text-muted-foreground ", class} {attrs...}>{text}</p>
 }
 
-templ FormMessage(attrs templ.Attributes, text string) {
-    <p class="text-[0.8rem] font-medium text-destructive" {attrs...}>
+templ FormMessage(text string, class string, attrs templ.Attributes) {
+    <p class={"text-[0.8rem] font-medium text-destructive ", class} {attrs...}>
         {text}
     </p>
 }

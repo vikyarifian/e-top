@@ -1,40 +1,38 @@
 package ui
 
-import "fmt"
-
 // Card Component
 templ Card(class string, attrs templ.Attributes) {
-	<div class={fmt.Sprintf("rounded-lg border bg-card text-card-foreground shadow-sm %s", class)} {attrs...}>
+	<div class={"rounded-lg border bg-card text-card-foreground shadow-sm ", class} {attrs...}>
 		{ children... }
 	</div>
 }
 
 templ CardHeader(class string, attrs templ.Attributes) {
-	<div class={fmt.Sprintf("flex flex-col space-y-1.5 p-6 %s", class)} {attrs...}>
+	<div class={"flex flex-col space-y-1.5 p-6 ", class} {attrs...}>
 		{ children... }
 	</div>
 }
 
 templ CardTitle(class string, attrs templ.Attributes) {
-	<div class={fmt.Sprintf("text-2xl font-semibold leading-none tracking-tight %s", class)} {attrs...}>
+	<div class={"text-2xl font-semibold leading-none tracking-tight ", class} {attrs...}>
 		{ children... }
 	</div>
 }
 
 templ CardDescription(class string, attrs templ.Attributes) {
-	<div class={fmt.Sprintf("text-sm text-muted-foreground %s", class)} {attrs...}>
+	<div class={"text-sm text-muted-foreground ", class} {attrs...}>
 		{ children... }
 	</div>
 }
 
 templ CardContent(class string, attrs templ.Attributes) {
-	<div class={fmt.Sprintf("p-6 pt-4 %s", class)} {attrs...}>
+	<div class={"p-6 pt-4 ", class} {attrs...}>
 		{ children... }
 	</div>
 }
 
 templ CardFooter(class string, attrs templ.Attributes) {
-	<div class={fmt.Sprintf("flex items-center p-6 pt-4 %s", class)} {attrs...}>
+	<div class={"flex items-center p-6 pt-4 ", class} {attrs...}>
 		{ children... }
 	</div>
 }

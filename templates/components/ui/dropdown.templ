@@ -1,28 +1,29 @@
 package ui
 
 // id opsional; berguna jika ada banyak dropdown di halaman
-templ Dropdown(id string) {
+templ Dropdown(id string, class string, attrs templ.Attributes) {
     <div
         x-data="{ open: false, subOpen: false, radioValue: '', checks: {}, toggle() { this.open = !this.open }, close() { this.open = false; this.subOpen = false } }"
         @keydown.escape.stop="close()"
         @click.outside="close()"
-        class="outline-none relative"
+        class={"outline-none relative", class}
         id={id}
+        {attrs...}
     >
         { children... }
     </div>
 }
 
 // Trigger
-templ DropdownTrigger(attrs templ.Attributes) {
+templ DropdownTrigger(class string, attrs templ.Attributes) {
     <button
         type="button"
         @click.stop="toggle()"
         :aria-expanded="open"
-        class="flex cursor-pointer select-none items-center gap-1 rounded-md p-2 text-sm outline-none"
-        { attrs... }
+        class={"flex cursor-pointer select-none items-center gap-1 rounded-md p-2 text-sm outline-none",class}
+        {attrs...}
     >
-        { children... }
+        {children...}
         // <svg class="ml-1 size-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
         //     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />
         // </svg>
@@ -39,22 +40,22 @@ templ DropdownContent(class string, attrs templ.Attributes) {
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin] ", class}
         style="position:absolute; right:0; margin-top:0.25rem;"
         @click=""
-        { attrs... }
+        {attrs...}
     >
         { children... }
     </div>
 }
 
 // Label
-templ DropdownLabel(inset bool, attrs templ.Attributes) {
-    <div class={ "px-2 py-1.5 text-sm font-semibold", templ.KV("pl-8", inset) } { attrs... }>
-        { children... }
+templ DropdownLabel(inset bool, class string, attrs templ.Attributes) {
+    <div class={"px-2 py-1.5 text-sm font-semibold", class, templ.KV("pl-8", inset)} {attrs...}>
+        {children...}
     </div>
 }
 
 // Separator
-templ DropdownSeparator(attrs templ.Attributes) {
-    <div class="-mx-1 my-1 h-px bg-neutral-200 dark:bg-neutral-800" { attrs... }></div>
+templ DropdownSeparator(class string, attrs templ.Attributes) {
+    <div class={"-mx-1 my-1 h-px bg-neutral-200 dark:bg-neutral-800 ", class} {attrs...}></div>
 }
 
 // Item (biasa). Bisa diberi hx-* untuk action htmx.
@@ -65,77 +66,78 @@ templ DropdownItem(inset bool, disabled bool, class string, attrs templ.Attribut
                 templ.KV("pl-8", inset),
                 templ.KV("pointer-events-none opacity-50", disabled),
                 }
-        { attrs... }
-        :disabled={ disabled }
+        {attrs...}
+        :disabled={disabled}
         @click="if (!($el.hasAttribute('hx-get')||$el.hasAttribute('hx-post')||$el.hasAttribute('hx-patch')||$el.hasAttribute('hx-put')||$el.hasAttribute('hx-delete'))) { close() }"
     >
-        { children... }
+        {children...}
     </dev>
 }
 
 // Checkbox item
-templ DropdownCheckboxItem(key string, checked bool, attrs templ.Attributes) {
+templ DropdownCheckboxItem(key string, checked bool, class string, attrs templ.Attributes) {
     <button
         type="button"
         class="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-left outline-none transition-colors focus:bg-neutral-100 dark:focus:bg-neutral-800"
         @click="checks['`+ key +`'] = !checks['`+ key +`']"
-        { attrs... }
+        {attrs...}
     >
         <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
             <template x-if={"checks['"+ key +"']"}>
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg class={"h-4 w-4", class} viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                 </svg>
             </template>
         </span>
-        { children... }
+        {children...}
     </button>
 }
 
 // Radio group (set context via name). Value saat ini disimpan di Alpine: radioValue
-templ DropdownRadioGroup(initial string) {
-    <div x-init={"radioValue = '"+ initial +"'"} role="group">
-        { children... }
+templ DropdownRadioGroup(initial string, class string, attrs templ.Attributes) {
+    <div x-init={"radioValue = '"+ initial +"'"} role="group" class={class} {attrs...}>
+        {children...}
     </div>
 }
 
 // Radio item
-templ DropdownRadioItem(value string, attrs templ.Attributes) {
+templ DropdownRadioItem(value string, class string, attrs templ.Attributes) {
     <button
         type="button"
         class="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-left outline-none transition-colors focus:bg-neutral-100 dark:focus:bg-neutral-800"
         @click={"radioValue = '"+ value +"'"}
-        { attrs... }
+        {attrs...}
     >
         <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
             <template x-if={"radioValue === '"+ value +"'"} >
-                <svg class="h-2 w-2" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>
+                <svg class={"h-2 w-2 ", class} viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="4"/></svg>
             </template>
         </span>
-        { children... }
+        {children...}
     </button>
 }
 
 // Submenu wrapper (untuk akses variabel subOpen yang terpisah per-sub)
-templ DropdownSub() {
-    <div x-data="{ subOpen: false }" class="relative">
-        { children... }
+templ DropdownSub(class string, attrs templ.Attributes) {
+    <div x-data="{ subOpen: false }" class={"relative ", class} {attrs...}>
+        {children...}
     </div>
 }
 
 // Sub trigger
-templ DropdownSubTrigger(inset bool, attrs templ.Attributes) {
+templ DropdownSubTrigger(inset bool, class string, attrs templ.Attributes) {
     <button
         type="button"
         @mouseenter="subOpen = true"
         @mouseleave="subOpen = false"
         @click="subOpen = !subOpen"
         class={ "flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-left outline-none focus:bg-neutral-100 data-[state=open]:bg-neutral-100 dark:focus:bg-neutral-800",
+                class,
                 templ.KV("pl-8", inset),
                 }
-        { attrs... } 
+        {attrs...} 
     >
-        { children... }
+        {children...}
         <svg class="ml-auto size-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 18 6-6-6-6"/>
         </svg>
@@ -143,24 +145,24 @@ templ DropdownSubTrigger(inset bool, attrs templ.Attributes) {
 }
 
 // Sub content
-templ DropdownSubContent(attrs templ.Attributes) {
+templ DropdownSubContent(class string, attrs templ.Attributes) {
     <div
         x-show="subOpen"
         x-transition.opacity
         x-transition.scale.origin.top.left
         @mouseenter="subOpen = true"
         @mouseleave="subOpen = false"
-        class="absolute top-0 left-full z-50 min-w-[8rem] overflow-hidden rounded-md border bg-white p-1 text-sm shadow-lg dark:bg-neutral-900 dark:border-neutral-800"
+        class={"absolute top-0 left-full z-50 min-w-[8rem] overflow-hidden rounded-md border bg-white p-1 text-sm shadow-lg dark:bg-neutral-900 dark:border-neutral-800 ", class}
         style="margin-left:0.25rem"
-        { attrs... }
+        {attrs...}
     >
-        { children... }
+        {children...}
     </div>
 }
 
 // Shortcut (kanan item)
-templ DropdownShortcut(attrs templ.Attributes) {
-    <span class="ml-auto text-xs tracking-widest opacity-60" { attrs... }>
-        { children... }
+templ DropdownShortcut(class string, attrs templ.Attributes) {
+    <span class={"ml-auto text-xs tracking-widest opacity-60 ", class} {attrs...}>
+        {children...}
     </span>
 }
