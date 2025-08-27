@@ -71,7 +71,7 @@ templ ResendVerification() {
                         "id":"resend-form",
                         "hx-target": "#toaster",
                         "hx-swap": "beforeend",
-                        "hx-disabled-elt":"#resend-button",
+                        "hx-disabled-elt":"#resend-button,#email",
                         "@submit.prevent":"validateForm($event)",
                     }) {
                         @ui.FormItem("", nil) {

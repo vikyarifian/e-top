@@ -5,10 +5,11 @@ templ Toast(id, typ, title, description string, class string, attrs templ.Attrib
     <div class={
             "fixed top-4 right-4 z-50 w-full max-w-sm rounded-lg border p-4 shadow-lg transition-all",
             class,
-            templ.KV("bg-background border-border", typ == "default"),
-            templ.KV("bg-destructive text-destructive-foreground border-destructive", typ == "error"),
-            templ.KV("bg-green-600 text-white border-green-600", typ == "success"),
-            templ.KV("bg-yellow-600 text-white border-yellow-600", typ == "warning"),
+            templ.KV("bg-background text-foreground border-border", typ == "default"),
+            templ.KV("bg-background text-foreground border-border", typ == ""),
+            templ.KV("bg-gray-200 text-gray-800 border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700", typ == "error"),
+            templ.KV("bg-green-100 text-green-800 border-green-300 dark:bg-gray-400 dark:text-gray-900 dark:border-gray-600", typ == "success"),
+            templ.KV("bg-yellow-600 text-white border-yellow-600 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700", typ == "warning"),
         }
         id={id} 
         x-init="setTimeout(() => $el.remove(), 5000)" 
@@ -26,7 +27,9 @@ templ Toast(id, typ, title, description string, class string, attrs templ.Attrib
             }
             
             <div class="flex-1">
-                // <h4 class="font-medium">{ title }</h4>
+                if title != "" {
+                    <h4 class="font-medium">{ title }</h4>
+                }
                 if description != "" {
                     <p class="text-sm opacity-90">{ description }</p>
                 }

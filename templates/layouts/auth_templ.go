@@ -33,7 +33,7 @@ func AuthLayout(title string, content ...templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html lang=\"en\" class=\"dark\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -59,14 +59,14 @@ func AuthLayout(title string, content ...templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</title><link rel=\"icon\" href=\"data:,\"><link rel=\"stylesheet\" href=\"/public/css/styles.css\"><script src=\"/public/js/cdn.min.js\" defer></script><script src=\"/public/js/htmx.min.js\"></script><script src=\"/public/js/lucide.js\"></script></head><body x-data=\"{ \r\n\t\t\t\t\t\tsidebarOpen: false, \r\n\t\t\t\t\t\tsidebarCollapsed: false, \r\n\t\t\t\t\t\tdarkMode: localStorage.getItem(&#39;darkMode&#39;) === &#39;true&#39; || false,\r\n\t\t\t\t\t\tisMobile: window.innerWidth &lt; 768,\r\n\t\t\t\t\t\tinit() {\r\n\t\t\t\t\t\t\tdocument.body.addEventListener(`htmx:afterSwap`, (e) =&gt; {\r\n\t\t\t\t\t\t\t\tif (e.detail.target.id === `content`) {\r\n\t\t\t\t\t\t\t\t\tconst newTitle = document.querySelector(`#content [data-title]`)?.dataset.title;\r\n\t\t\t\t\t\t\t\t\tif (newTitle) document.title = newTitle !== `` ? newTitle : ``;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t} \r\n\t\t\t\t\t}\"><div id=\"content\" class=\"min-h-screen\"><div class=\"flex items-end justify-center bg-muted/40 pb-4\" style=\"min-height: 20vh;\"><div class=\"w-14 h-14 bg-green-600 rounded-lg flex items-end justify-center px-5\"><span class=\"text-[48px] text-primary-foreground font-semibold\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</title><link rel=\"icon\" href=\"data:,\"><link rel=\"stylesheet\" href=\"/public/css/styles.css\"><script src=\"/public/js/cdn.min.js\" defer></script><script src=\"/public/js/htmx.min.js\"></script><script src=\"/public/js/lucide.js\"></script></head><body x-data=\"{ \r\n\t\t\t\t\t\tsidebarOpen: false, \r\n\t\t\t\t\t\tsidebarCollapsed: false, \r\n\t\t\t\t\t\tdarkMode: localStorage.getItem(&#39;darkMode&#39;) === &#39;true&#39; || false,\r\n\t\t\t\t\t\tisMobile: window.innerWidth &lt; 768,\r\n\t\t\t\t\t\tinit() {\r\n\t\t\t\t\t\t\tdocument.body.addEventListener(`htmx:afterSwap`, (e) =&gt; {\r\n\t\t\t\t\t\t\t\tif (e.detail.target.id === `content`) {\r\n\t\t\t\t\t\t\t\t\tconst newTitle = document.querySelector(`#content [data-title]`)?.dataset.title;\r\n\t\t\t\t\t\t\t\t\tif (newTitle) document.title = newTitle !== `` ? newTitle : ``;\r\n\t\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t\t})\r\n\t\t\t\t\t\t} \r\n\t\t\t\t\t}\" x-init=\"\r\n\t\t\t\t\t\t$watch(&#39;darkMode&#39;, val =&gt; {\r\n\t\t\t\t\t\t\tlocalStorage.setItem(&#39;darkMode&#39;, val);\r\n\t\t\t\t\t\t\tif (val) {\r\n\t\t\t\t\t\t\t\tdocument.documentElement.classList.add(&#39;dark&#39;);\r\n\t\t\t\t\t\t\t} else {\r\n\t\t\t\t\t\t\t\tdocument.documentElement.classList.remove(&#39;dark&#39;);\r\n\t\t\t\t\t\t\t}\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t\tif (darkMode) {\r\n\t\t\t\t\t\t\tdocument.documentElement.classList.add(&#39;dark&#39;);\r\n\t\t\t\t\t\t}\r\n\t\t\t\t\t\twindow.addEventListener(&#39;resize&#39;, () =&gt; {\r\n\t\t\t\t\t\t\tisMobile = window.innerWidth &lt; 768;\r\n\t\t\t\t\t\t\tif (!isMobile) sidebarOpen = false;\r\n\t\t\t\t\t\t});\r\n\t\t\t\t\t\"><div id=\"content\" class=\"min-h-screen\"><div class=\"flex items-end justify-end bg-muted/40 p-1\" style=\"min-height: 1vh;\"><!-- Dark Mode Toggle --><button @click=\"darkMode = !darkMode\" class=\"p-1 rounded-md hover:bg-accent\"><svg x-show=\"!darkMode\" class=\"w-7 h-7\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\"></path></svg> <svg x-show=\"darkMode\" class=\"w-7 h-7\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z\"></path></svg></button></div><div class=\"flex items-end justify-center bg-muted/40 pb-4\" style=\"min-height: 10vh;\"><div class=\"w-14 h-14 bg-green-600 dark:bg-gray-600 rounded-lg flex items-end justify-center px-5\"><span class=\"text-[48px] text-primary-foreground font-semibold\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME")[0:1])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/auth.templ`, Line: 38, Col: 97}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/auth.templ`, Line: 69, Col: 97}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -79,13 +79,13 @@ func AuthLayout(title string, content ...templ.Component) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME")[1:len(os.Getenv("APP_NAME"))])
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/auth.templ`, Line: 40, Col: 125}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/auth.templ`, Line: 71, Col: 125}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span><div class=\"flex items-center gap-4\"></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

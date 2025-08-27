@@ -33,10 +33,11 @@ func Toast(id, typ, title, description string, class string, attrs templ.Attribu
 		var templ_7745c5c3_Var2 = []any{
 			"fixed top-4 right-4 z-50 w-full max-w-sm rounded-lg border p-4 shadow-lg transition-all",
 			class,
-			templ.KV("bg-background border-border", typ == "default"),
-			templ.KV("bg-destructive text-destructive-foreground border-destructive", typ == "error"),
-			templ.KV("bg-green-600 text-white border-green-600", typ == "success"),
-			templ.KV("bg-yellow-600 text-white border-yellow-600", typ == "warning"),
+			templ.KV("bg-background text-foreground border-border", typ == "default"),
+			templ.KV("bg-background text-foreground border-border", typ == ""),
+			templ.KV("bg-gray-200 text-gray-800 border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700", typ == "error"),
+			templ.KV("bg-green-100 text-green-800 border-green-300 dark:bg-gray-400 dark:text-gray-900 dark:border-gray-600", typ == "success"),
+			templ.KV("bg-yellow-600 text-white border-yellow-600 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700", typ == "warning"),
 		}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
@@ -62,7 +63,7 @@ func Toast(id, typ, title, description string, class string, attrs templ.Attribu
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/sonner.templ`, Line: 13, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/sonner.templ`, Line: 14, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -105,26 +106,45 @@ func Toast(id, typ, title, description string, class string, attrs templ.Attribu
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if description != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<p class=\"text-sm opacity-90\">")
+		if title != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<h4 class=\"font-medium\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(description)
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/sonner.templ`, Line: 31, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/sonner.templ`, Line: 31, Col: 51}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</h4>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</div><button onclick=\"this.parentElement.parentElement.remove()\" class=\"opacity-70 hover:opacity-100\"><i data-lucide=\"x\" class=\"w-4 h-4\"></i></button></div></div>")
+		if description != "" {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<p class=\"text-sm opacity-90\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(description)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/sonner.templ`, Line: 34, Col: 63}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</p>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</div><button onclick=\"this.parentElement.parentElement.remove()\" class=\"opacity-70 hover:opacity-100\"><i data-lucide=\"x\" class=\"w-4 h-4\"></i></button></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

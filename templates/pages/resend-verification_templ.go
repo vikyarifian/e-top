@@ -264,7 +264,7 @@ func ResendVerification() templ.Component {
 					"id":              "resend-form",
 					"hx-target":       "#toaster",
 					"hx-swap":         "beforeend",
-					"hx-disabled-elt": "#resend-button",
+					"hx-disabled-elt": "#resend-button,#email",
 					"@submit.prevent": "validateForm($event)",
 				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {

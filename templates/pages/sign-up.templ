@@ -148,14 +148,14 @@ templ SignUp() {
                         "id":"signup-form",
                         "hx-target": "#toaster",
                         "hx-swap": "beforeend",
-                        "hx-disabled-elt":"#signup-button,#google-button",
+                        "hx-disabled-elt":"#signup-button,#google-button,#fullname,#email,#password,#password2",
                         "x-ref": "form",
                         "@submit.prevent":"validateForm($event)",
                     }) {
                         @ui.FormItem("", nil) {
                             @ui.FormLabel("full_name", "Full Name", "", nil)
-                            @ui.FormControl("full_name", "full_name", "text", "John Doe", "", "", templ.Attributes{
-                                "id": "full_name",
+                            @ui.FormControl("fullname", "full_name", "text", "John Doe", "", "", templ.Attributes{
+                                "id": "fullname",
                                 "name": "full_name",
                                 "autocomplete":"name",
                                 "x-model": "full_name",

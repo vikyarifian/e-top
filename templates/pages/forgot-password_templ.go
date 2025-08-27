@@ -278,7 +278,7 @@ func SendResetPassword() templ.Component {
 				"id":              "send-form",
 				"hx-target":       "#card-content",
 				"hx-swap":         "innerHtml",
-				"hx-disabled-elt": "#send-button",
+				"hx-disabled-elt": "#send-button,#email",
 				"@submit.prevent": "validateForm($event)",
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
@@ -609,7 +609,7 @@ func ResetPassword(token string) templ.Component {
 				"hx-put":          "/forgot-password",
 				"hx-target":       "#toaster",
 				"hx-swap":         "beforeend",
-				"hx-disabled-elt": "#reset-button",
+				"hx-disabled-elt": "#reset-button,#password,#password2",
 				"@submit.prevent": "validateForm($event)",
 			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var17), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {

@@ -6,7 +6,7 @@ import (
 
 templ AuthLayout(title string, content ...templ.Component) {
     <!DOCTYPE html>
-	<html lang="en">
+	<html lang="en" class="dark">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -31,13 +31,46 @@ templ AuthLayout(title string, content ...templ.Component) {
 							})
 						} 
 					}"
+				x-init="
+						$watch('darkMode', val => {
+							localStorage.setItem('darkMode', val);
+							if (val) {
+								document.documentElement.classList.add('dark');
+							} else {
+								document.documentElement.classList.remove('dark');
+							}
+						});
+						if (darkMode) {
+							document.documentElement.classList.add('dark');
+						}
+						window.addEventListener('resize', () => {
+							isMobile = window.innerWidth < 768;
+							if (!isMobile) sidebarOpen = false;
+						});
+					"
 			>
 			<div id="content" class="min-h-screen">
-				<div class="flex items-end justify-center bg-muted/40 pb-4" style="min-height: 20vh;">
-					<div class="w-14 h-14 bg-green-600 rounded-lg flex items-end justify-center px-5">
+				<div class="flex items-end justify-end bg-muted/40 p-1" style="min-height: 1vh;">
+					<!-- Dark Mode Toggle -->
+					<button 
+						@click="darkMode = !darkMode"
+						class="p-1 rounded-md hover:bg-accent"
+					>
+						<svg x-show="!darkMode" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+						</svg>
+						<svg x-show="darkMode" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+						</svg>
+					</button>
+				</div>
+				<div class="flex items-end justify-center bg-muted/40 pb-4" style="min-height: 10vh;">
+					<div class="w-14 h-14 bg-green-600 dark:bg-gray-600 rounded-lg flex items-end justify-center px-5">
 						<span class="text-[48px] text-primary-foreground font-semibold">{os.Getenv("APP_NAME")[0:1]}</span>
 					</div>
 					<span class="font-bold text-[46px] pl-2" style="padding-top: 10px;">{os.Getenv("APP_NAME")[1:len(os.Getenv("APP_NAME"))]}</span>
+					<div class="flex items-center gap-4">
+				</div>
 				</div>
 				for _, c := range content {
 					@c
