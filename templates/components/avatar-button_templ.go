@@ -16,7 +16,7 @@ import (
 )
 
 // UserButton — dropdown user menu with avatar + logout
-func UserButton(name, email string) templ.Component {
+func AvatarButton(name, email string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -68,7 +68,7 @@ func UserButton(name, email string) templ.Component {
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("background-color: %s;", utils.LetterToColor(name[0:1])))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/user-button.templ`, Line: 15, Col: 158}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/avatar-button.templ`, Line: 16, Col: 158}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -81,7 +81,7 @@ func UserButton(name, email string) templ.Component {
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(string([]rune(name)[0]))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/user-button.templ`, Line: 16, Col: 103}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/avatar-button.templ`, Line: 17, Col: 103}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -93,7 +93,7 @@ func UserButton(name, email string) templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.DropdownTrigger("", templ.Attributes{}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.DropdownTrigger("avatarButton", "", templ.Attributes{}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -120,7 +120,7 @@ func UserButton(name, email string) templ.Component {
 				var templ_7745c5c3_Var7 string
 				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/user-button.templ`, Line: 27, Col: 12}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/avatar-button.templ`, Line: 28, Col: 12}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -133,7 +133,7 @@ func UserButton(name, email string) templ.Component {
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(email)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/user-button.templ`, Line: 30, Col: 13}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/avatar-button.templ`, Line: 31, Col: 13}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -161,7 +161,7 @@ func UserButton(name, email string) templ.Component {
 					}
 					return nil
 				})
-				templ_7745c5c3_Err = ui.DropdownItem(false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100", templ.Attributes{
+				templ_7745c5c3_Err = ui.DropdownItem("avatarButton", false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100", templ.Attributes{
 					"hx-post":   "/logout",
 					"hx-target": "body",
 					"hx-swap":   "none",
@@ -171,13 +171,13 @@ func UserButton(name, email string) templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.DropdownContent("w-60", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var6), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.DropdownContent("avatarButton", "w-60", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var6), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = ui.Dropdown("user-menu", "", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ui.Dropdown("avatarButton", "", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

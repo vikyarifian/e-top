@@ -118,6 +118,17 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 					lucide.createIcons();
 				});
 
+				document.addEventListener('alpine:init', () => {
+					Alpine.store('dropdown', {
+						open: null,
+						toggle(id) {
+							this.open = (this.open === id) ? null : id
+						},
+						close() {
+							this.open = null
+						}
+					})
+				});
 				
 			</script>
 		</body>

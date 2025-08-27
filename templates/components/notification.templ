@@ -1,0 +1,50 @@
+package components
+
+import (
+    "etop/templates/components/ui"
+
+)
+
+type Notif struct {
+    Title string
+    Content string
+}
+
+templ Notification(notif []Notif) {
+    @ui.Dropdown("notifMenu", "", nil) {
+		@ui.DropdownTrigger("notifMenu", "", templ.Attributes{
+		}) {
+            <button 
+                class="p-2 rounded-md hover:bg-accent"
+            >
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                </svg>
+            </button>
+		}
+
+		/* Panel dropdown */
+		@ui.DropdownContent("notifMenu", "w-60", nil) {
+			<!-- header user info -->
+			<div class="flex flex-col items-center justify-center gap-2 p-4">
+				<div class="flex flex-col items-center justify-center">
+					<p class="text-md font-semibold">
+						Halo
+					</p>
+					<p class="text-sm text-neutral-500">
+						Semua
+					</p>
+				</div>
+			</div>
+
+			<!-- dotted separator -->
+			<div class="-mx-1 my-1 h-px border-t border-dotted border-neutral-300"></div>
+
+			<!-- Logout -->
+			@ui.DropdownItem("notifMenu", false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100", nil) {
+				<i data-lucide="log-out" class="w-4 h-4"></i>
+				Log out
+			}
+		}
+	}
+}
