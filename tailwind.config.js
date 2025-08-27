@@ -69,11 +69,7 @@ module.exports = {
       },
     },
   },
-  // safelist: [
-  //   {
-  //     pattern: /text-(.*)/, // generate semua text-*
-  //   },
-  // ],
+  darkMode: "class",
   plugins: [
     function({ addVariant }) {
       addVariant('dark-hover', ['.dark &:hover']);

@@ -563,8 +563,8 @@ func SignUp() templ.Component {
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						templ_7745c5c3_Err = ui.FormControl("full_name", "full_name", "text", "John Doe", "", "", templ.Attributes{
-							"id":           "full_name",
+						templ_7745c5c3_Err = ui.FormControl("fullname", "full_name", "text", "John Doe", "", "", templ.Attributes{
+							"id":           "fullname",
 							"name":         "full_name",
 							"autocomplete": "name",
 							"x-model":      "full_name",
@@ -783,7 +783,7 @@ func SignUp() templ.Component {
 					"id":              "signup-form",
 					"hx-target":       "#toaster",
 					"hx-swap":         "beforeend",
-					"hx-disabled-elt": "#signup-button,#google-button",
+					"hx-disabled-elt": "#signup-button,#google-button,#fullname,#email,#password,#password2",
 					"x-ref":           "form",
 					"@submit.prevent": "validateForm($event)",
 				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var24), templ_7745c5c3_Buffer)

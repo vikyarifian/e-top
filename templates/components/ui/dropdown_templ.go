@@ -356,7 +356,7 @@ func DropdownItem(inset bool, disabled bool, class string, attrs templ.Attribute
 			templ_7745c5c3_Var17 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var18 = []any{"relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-left outline-none transition-colors dark:hover:bg-accent hover:bg-red-100",
+		var templ_7745c5c3_Var18 = []any{"relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-left outline-none transition-colors",
 			class,
 			templ.KV("pl-8", inset),
 			templ.KV("pointer-events-none opacity-50", disabled),

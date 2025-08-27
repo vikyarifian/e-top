@@ -311,7 +311,7 @@ func SignIn() templ.Component {
 					"id":              "signin-form",
 					"hx-target":       "#toaster",
 					"hx-swap":         "beforeend",
-					"hx-disabled-elt": "#signin-button,#google-button",
+					"hx-disabled-elt": "#signin-button,#google-button,#email,#password",
 					"x-ref":           "form",
 					"@submit.prevent": "validateForm($event)",
 				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var7), templ_7745c5c3_Buffer)

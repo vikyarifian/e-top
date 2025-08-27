@@ -5,9 +5,9 @@ import (
 )
 
 func getColorStatus(status int) string {
-    color := "text-green-500"
+    color := "text-green-600 dark:text-gray-100"
     if status>200 {
-        color = "text-red-500"
+        color = "text-red-500 dark:text-gray-500"
     } 
     return color
 }

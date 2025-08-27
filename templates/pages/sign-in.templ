@@ -61,7 +61,7 @@ templ SignIn() {
                         "id":"signin-form",
                         "hx-target": "#toaster",
                         "hx-swap": "beforeend",
-                        "hx-disabled-elt":"#signin-button,#google-button",
+                        "hx-disabled-elt":"#signin-button,#google-button,#email,#password",
                         "x-ref": "form",
                         "@submit.prevent":"validateForm($event)",
                     }) {
