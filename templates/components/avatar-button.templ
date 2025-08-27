@@ -6,10 +6,11 @@ import (
 
     "fmt"
 )
+
 // UserButton — dropdown user menu with avatar + logout
-templ UserButton(name, email string) {
-	@ui.Dropdown("user-menu", "", nil) {
-		@ui.DropdownTrigger("", templ.Attributes{
+templ AvatarButton(name, email string) {
+	@ui.Dropdown("avatarButton", "", nil) {
+		@ui.DropdownTrigger("avatarButton", "", templ.Attributes{
 		}) {
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-full flex items-center justify-center" style={fmt.Sprintf("background-color: %s;", utils.LetterToColor(name[0:1]))}>
@@ -19,7 +20,7 @@ templ UserButton(name, email string) {
 		}
 
 		/* Panel dropdown */
-		@ui.DropdownContent("w-60", nil) {
+		@ui.DropdownContent("avatarButton", "w-60", nil) {
 			<!-- header user info -->
 			<div class="flex flex-col items-center justify-center gap-2 p-4">
 				<div class="flex flex-col items-center justify-center">
@@ -36,7 +37,7 @@ templ UserButton(name, email string) {
 			<div class="-mx-1 my-1 h-px border-t border-dotted border-neutral-300"></div>
 
 			<!-- Logout -->
-			@ui.DropdownItem(false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100", templ.Attributes{
+			@ui.DropdownItem("avatarButton", false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100", templ.Attributes{
 				"hx-post": "/logout",
 				"hx-target": "body",
 				"hx-swap": "none",
