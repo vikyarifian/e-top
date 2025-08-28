@@ -5,7 +5,7 @@ import (
 )
 
 // Sidebar Layout
-templ Sidebar() {
+templ Sidebar(mobile bool) {
 	<div class="flex flex-col h-full">
 		<!-- Logo -->
 		<div class="h-16 min-h-16 flex items-center border-b border-border" :class="sidebarCollapsed && !isMobile ? 'px-4' : 'px-6'">
@@ -19,7 +19,9 @@ templ Sidebar() {
 				<span class="text-3xl text-primary-foreground font-semibold" style="margin-top: -6px" >{os.Getenv("APP_NAME")[0:1]}</span>
 			</div>
 		</div>
-		<div id="workspace-switcher-mobile" x-show="isMobile" class="p-2 pb-0" />
+		if mobile {
+			<div id="workspace-switcher-mobile" x-show="isMobile" class="p-2 pb-0" />
+		}
 		<!-- Navigation -->
 		<nav class="flex-1" :class="sidebarCollapsed && !isMobile ? 'p-2' : 'p-4'" :class="isMobile ? 'pt-0' : '' ">
 			@Navigation()

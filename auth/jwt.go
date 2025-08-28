@@ -36,13 +36,11 @@ func GetAuth(w http.ResponseWriter, r *http.Request) (dto.UserAuth, error) {
 
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
-		http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
 		return user, err
 	}
 
 	claims, err := ValidateJWT(cookie.Value)
 	if err != nil {
-		http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
 		return user, err
 	}
 
@@ -79,13 +77,19 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
-			http.Redirect(w, r, "/sign-in", http.StatusTemporaryRedirect)
+			// w.WriteHeader(http.StatusUnauthorized)
+			// w.Header().Set("HX-Redirect", "/sign-in")
+			// http.Redirect(w, r, "/sign-in", http.StatusUnauthorized)
+			http.Redirect(w, r, "/sign-in", http.StatusFound)
 			return
 		}
 
 		claims, err := ValidateJWT(cookie.Value)
 		if err != nil {
-			http.Redirect(w, r, "/sign-in", http.StatusTemporaryRedirect)
+			// w.WriteHeader(http.StatusUnauthorized)
+			// w.Header().Set("HX-Redirect", "/sign-in")
+			// http.Redirect(w, r, "/sign-in", http.StatusUnauthorized)
+			http.Redirect(w, r, "/sign-in", http.StatusFound)
 			return
 		}
 

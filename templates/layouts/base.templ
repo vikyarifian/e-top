@@ -22,6 +22,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		</head>
 		<body 
 			class="min-h-screen bg-background text-foreground"
+			 :class="darkMode ? 'dark' : ''"
 			x-data="{ 
 				sidebarOpen: false, 
 				sidebarCollapsed: false, 
@@ -48,6 +49,26 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		>
 			<div class="flex h-screen">
 				
+				<!-- Desktop Sidebar -->
+				<div 
+					class="hidden md:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out"
+					:class="sidebarCollapsed ? 'w-16' : 'w-64'"
+				>
+					@Sidebar(false)
+				</div>
+
+				<!-- Main Content -->
+				<div class="flex-1 flex flex-col min-w-0">
+					@Header(user)
+
+					<!-- Page Content -->
+					<main id="content" class="flex-1 p-6 overflow-y-auto">
+						for _, c := range content {
+							@c
+						}
+					</main>
+				</div>
+				
 				<!-- Mobile Sidebar Overlay -->
 				<div 
 					x-show="sidebarOpen && isMobile"
@@ -72,29 +93,11 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 					x-transition:leave-end="-translate-x-full"
 					class="fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border md:hidden"
 				>
-					@Sidebar()
+					@Sidebar(true)
 				</div>
 
-				<!-- Desktop Sidebar -->
-				<div 
-					class="hidden md:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out"
-					:class="sidebarCollapsed ? 'w-16' : 'w-64'"
-				>
-					@Sidebar()
-				</div>
-
-				<!-- Main Content -->
-				<div class="flex-1 flex flex-col min-w-0">
-					@Header(user)
-
-					<!-- Page Content -->
-					<main id="content" class="flex-1 p-6 overflow-y-auto">
-						for _, c := range content {
-							@c
-						}
-					</main>
-				</div>
 			</div>
+
 			<script>
 
 				lucide.createIcons();

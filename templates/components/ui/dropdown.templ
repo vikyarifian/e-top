@@ -5,9 +5,10 @@ import "fmt"
 // id opsional; berguna jika ada banyak dropdown di halaman
 templ Dropdown(id string, class string, attrs templ.Attributes) {
     <div
-        x-data={fmt.Sprintf("{ id: '%s', subOpen: false, radioValue: '', checks: {} }",id)}
+        x-data={fmt.Sprintf("{ id: '%s', open: false, subOpen: false, activeSub: null, radioValue: '', checks: {} }",id)}
         @keydown.escape.stop="$store.dropdown.close()"
         @click.outside="$store.dropdown.close()"
+        x-effect="if(!$store.dropdown.isOpen(id)) activeSub=null"
         class={"outline-none relative", class}
         id={id}
         {attrs...}
@@ -41,7 +42,7 @@ templ DropdownContent(class string, attrs templ.Attributes) {
         class={"z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-dropdown-menu-content-transform-origin] ", class}
         style="position:absolute; right:0; margin-top:0.25rem;"
-        @click=""
+        @click="subOpen=false"
         {attrs...}
     >
         { children... }
@@ -62,7 +63,7 @@ templ DropdownSeparator(class string, attrs templ.Attributes) {
 
 // Item (biasa). Bisa diberi hx-* untuk action htmx.
 templ DropdownItem(inset bool, disabled bool, class string, attrs templ.Attributes) {
-    <dev
+    <div
         class={ "relative flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-left outline-none transition-colors",
                 class,
                 templ.KV("pl-8", inset),
@@ -70,10 +71,19 @@ templ DropdownItem(inset bool, disabled bool, class string, attrs templ.Attribut
                 }
         {attrs...}
         :disabled={disabled}
-        @click="if (!($el.hasAttribute('hx-get')||$el.hasAttribute('hx-post')||$el.hasAttribute('hx-patch')||$el.hasAttribute('hx-put')||$el.hasAttribute('hx-delete'))) { close() }"
+        @click="
+                !($el.hasAttribute('hx-get') 
+                    || $el.hasAttribute('hx-post') 
+                    || $el.hasAttribute('hx-patch') 
+                    || $el.hasAttribute('hx-put') 
+                    || $el.hasAttribute('hx-delete')
+                )
+                ? ($el.closest('[data-subcontent]') ? activeSub = null : open = false)
+                : null
+                "
     >
         {children...}
-    </dev>
+    </div>
 }
 
 // Checkbox item
@@ -121,18 +131,19 @@ templ DropdownRadioItem(value string, class string, attrs templ.Attributes) {
 
 // Submenu wrapper (untuk akses variabel subOpen yang terpisah per-sub)
 templ DropdownSub(class string, attrs templ.Attributes) {
-    <div x-data="{ subOpen: false }" class={"relative ", class} {attrs...}>
+    <div 
+        class={"relative ", class} 
+        {attrs...}
+    >
         {children...}
     </div>
 }
 
 // Sub trigger
-templ DropdownSubTrigger(inset bool, class string, attrs templ.Attributes) {
+templ DropdownSubTrigger(subId string, inset bool, class string, attrs templ.Attributes) {
     <button
         type="button"
-        @mouseenter="subOpen = true"
-        @mouseleave="subOpen = false"
-        @click="subOpen = !subOpen"
+        @click.stop={fmt.Sprintf("activeSub === '%s' ? activeSub=null : activeSub='%s'", subId, subId)}
         class={ "flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-left outline-none focus:bg-neutral-100 data-[state=open]:bg-neutral-100 dark:focus:bg-neutral-800",
                 class,
                 templ.KV("pl-8", inset),
@@ -140,21 +151,20 @@ templ DropdownSubTrigger(inset bool, class string, attrs templ.Attributes) {
         {attrs...} 
     >
         {children...}
-        <svg class="ml-auto size-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 18 6-6-6-6"/>
-        </svg>
+        // <svg class="ml-auto size-4 opacity-70" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        //     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 18 6-6-6-6"/>
+        // </svg>
     </button>
 }
 
 // Sub content
-templ DropdownSubContent(class string, attrs templ.Attributes) {
+templ DropdownSubContent(subId string, class string, attrs templ.Attributes) {
     <div
-        x-show="subOpen"
+        x-show={fmt.Sprintf("activeSub === '%s'", subId)}
         x-transition.opacity
         x-transition.scale.origin.top.left
-        @mouseenter="subOpen = true"
-        @mouseleave="subOpen = false"
-        class={"absolute top-0 left-full z-50 min-w-[8rem] overflow-hidden rounded-md border bg-white p-1 text-sm shadow-lg dark:bg-neutral-900 dark:border-neutral-800 ", class}
+        data-subcontent="true"
+        class={"absolute top-0 right-full z-50 min-w-[8rem] overflow-hidden rounded-md border bg-white p-1 text-sm shadow-lg dark:bg-neutral-900 dark:border-neutral-800 ", class}
         style="margin-left:0.25rem"
         {attrs...}
     >

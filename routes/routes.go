@@ -60,7 +60,10 @@ func SetRoutes() {
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/" {
+		if r.URL.Path == "/" || r.URL.Path == "" {
+			if _, err := auth.GetAuth(w, r); err != nil {
+				http.Redirect(w, r, "/sign-in", http.StatusFound)
+			}
 			auth.RequireAuth(handlers.Make(handlers.HandleDashboard))(w, r)
 			return
 		}

@@ -17,7 +17,7 @@ templ Notification(notif []Notif) {
 		}
 
 		/* Panel dropdown */
-		@ui.DropdownContent("w-64", nil) {
+		@ui.DropdownContent("w-96", nil) {
 			@ui.DropdownLabel(false, "flex items-center justify-center font-sm", nil) {
                 Notifications
             }
@@ -25,39 +25,14 @@ templ Notification(notif []Notif) {
             @ui.DropdownSeparator("", nil)
 
             // Item 1 - Pesan Baru
-            @ui.DropdownItem(false, false, "", nil) {
-                <div class="flex gap-2 items-start">
-					@ui.Avatar("Andi", "xs", "mt-0.5", nil) 
-                    <div class="flex flex-col text-sm">
-                        <span class="font-medium">Andi</span>
-                        <span class="text-xs opacity-70">sent you a message last year last year</span>
-                        <span class="text-xs opacity-50">2 min ago</span>
-                    </div>
-                </div>
-			}
-			@ui.DropdownItem(false, false, "", nil) {
-				<div class="flex gap-2 items-start">
-					@ui.Avatar("Bdu", "xs", "mt-0.5", nil) 
-                    <div class="flex flex-col text-sm">
-                        <span class="font-medium">Bdu</span>
-                        <span class="text-xs opacity-70">sent you a message yesterday sent you a message yesterday</span>
-                        <span class="text-xs opacity-50">2 min ago</span>
-                    </div>
-                </div>
-			}
-			@ui.DropdownItem(false, false, "", nil) {
-				<div class="flex gap-2 items-start">
-					@ui.Avatar("Cahy", "xs", "mt-0.5", nil) 
-                    <div class="flex flex-col text-sm">
-                        <span class="font-medium">Cahy</span>
-                        <span class="text-xs opacity-70">sent you a message please reply</span>
-                        <span class="text-xs opacity-50">2 min ago</span>
-                    </div>
-                </div>
-            }
+            @NotifContent("qw"," Andi", "Andi", "sent you a message last year last year")
+			@NotifContent("wq", "Bdu", "Bdu", "sent you a message yesterday sent you a message yesterday")
+			@NotifContent("as", "Cahy", "Cahy", "sent you a message please reply")
+            
+            @ui.DropdownSeparator("", nil)
 
             // Item 2 - System Update
-            @ui.DropdownItem(false, false, "", nil) {
+            @ui.DropdownItem(false, false, "hover:bg-accent", nil) {
                 <div class="flex gap-3 items-start">
                     <div class="size-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
                         <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,7 +49,7 @@ templ Notification(notif []Notif) {
             }
 
             // Item 3 - Reminder
-            @ui.DropdownItem(false, false, "", nil) {
+            @ui.DropdownItem(false, false, "hover:bg-accent", nil) {
                 <div class="flex gap-3 items-start">
                     <div class="size-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
                         <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,4 +72,26 @@ templ Notification(notif []Notif) {
             }
 		}
 	}
+}
+
+templ NotifContent(id string, from string, title string, message string) {
+    @ui.DropdownItem(false, false, "hover:bg-accent", nil) {
+        <div class="flex gap-2 items-start w-full">
+            @ui.Avatar(from, "xs", "mt-0.5", nil) 
+            <div class="flex flex-col text-sm">
+                <span class="font-medium">{title}</span>
+                <span class="text-xs opacity-70">{message}</span>
+                <span class="text-xs opacity-50">2 min ago</span>
+            </div>
+            @ui.DropdownSub("ml-auto flex items-center", nil) {
+                @ui.DropdownSubTrigger("sub"+id, false, "p-1", nil) {
+                    <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
+                }
+                @ui.DropdownSubContent("sub"+id, "", nil) {
+                    <div>Hide this</div>
+                    <div>Nonactive all</div>
+                }
+            }
+        </div>
+    }
 }
