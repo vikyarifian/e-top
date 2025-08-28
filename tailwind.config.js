@@ -71,6 +71,9 @@ module.exports = {
     },
   },
   darkMode: "class",
+  safelist: [
+    { pattern: /^(w|h)-(0|px|full|screen|\d+)$/ },
+  ],
   plugins: [
     function({ addVariant }) {
       addVariant('dark-hover', ['.dark &:hover']);

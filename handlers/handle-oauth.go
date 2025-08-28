@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"etop/auth"
 	"etop/db"
-	"etop/dto"
 	"etop/models"
 	"etop/templates/components"
 	"etop/templates/components/ui"
@@ -50,6 +49,11 @@ func HandleLoginGoogle(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
+
+	if _, err := auth.GetAuth(w, r); err == nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+
 	code := r.URL.Query().Get("code")
 	if code == "" {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -89,8 +93,8 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 	_ = json.Unmarshal(body, &userInfo)
 
 	var count int64
+	t := time.Now().UTC()
 	if db.PgSql.Where("email=? or username=?", userInfo.Email, userInfo.Email).First(&user).Count(&count); count == 0 {
-		t := time.Now().UTC()
 		idHash := utils.GenerateHash(user.Email)
 		parts := strings.Split(userInfo.Email, "@")
 		passHash, _ := utils.HashPassword(parts[0])
@@ -116,14 +120,22 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
+	user.VerifiedEmail = true
+	user.UpdatedAt = &t
+	user.UpdatedBy = user.ID
+
+	err = db.PgSql.Save(&user).Error
+
 	time.Sleep(1 * time.Second)
 
 	tokenString, err := auth.GenerateToken(user)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		return layouts.AuthLayout("Verify Email", pages.VerifyEmail(
+
+		return layouts.AuthLayout("Error", pages.VerifyEmail(
 			components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
 				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
+
 	} else {
 		http.SetCookie(w, &http.Cookie{
 			Name:     "session_token",
@@ -134,15 +146,18 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 			Expires:  time.Now().UTC().Add(24 * time.Hour),
 		})
 
-		w.Header().Set("HX-Redirect", "/")
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		w.WriteHeader(http.StatusOK)
-	}
-	userAuth := dto.UserAuth{
-		Username: user.Username,
-		Email:    user.Email,
-		FullName: user.FullName,
+		http.Redirect(w, r, "/", http.StatusFound)
+
+		// userAuth := dto.UserAuth{
+		// 	Username: user.Username,
+		// 	Email:    user.Email,
+		// 	FullName: user.FullName,
+		// 	Level:    user.Level,
+		// 	IsAuth:   true,
+		// }
+
+		return nil
+		// layouts.Layout("Dashboard", userAuth, pages.Dashboard(userAuth)).Render(r.Context(), w)
 	}
 
-	return layouts.Layout("Dashboard", userAuth, pages.Dashboard(userAuth)).Render(r.Context(), w)
 }

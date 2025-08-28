@@ -21,16 +21,12 @@ import (
 
 func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 
+	if _, err := auth.GetAuth(w, r); err == nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+
 	switch r.Method {
 	case http.MethodGet:
-		cookie, err := r.Cookie("session_token")
-		if err == nil && cookie != nil {
-			if _, err := auth.ValidateJWT(cookie.Value); err == nil {
-				http.Redirect(w, r, "/", http.StatusSeeOther)
-				return nil
-			}
-		}
-
 		return layouts.AuthLayout("Sign In", pages.SignIn()).Render(r.Context(), w)
 	case http.MethodPost:
 		var user models.User
@@ -86,31 +82,20 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signin-error", "warning", "", "Invalid password!", "", nil).Render(r.Context(), w)
 		}
 	default:
-		w.Header().Set("HX-Redirect", "/")
-		w.WriteHeader(http.StatusSeeOther)
-		w.Write([]byte(`<script>window.location.href = "/";</script>`))
 		return nil
 	}
 
-	w.Header().Set("HX-Redirect", "/")
-	w.WriteHeader(http.StatusSeeOther)
-	w.Write([]byte(`<script>window.location.href = "/";</script>`))
 	return nil
 
 }
 
 func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
+	if _, err := auth.GetAuth(w, r); err == nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
 
 	switch r.Method {
 	case http.MethodGet:
-		cookie, err := r.Cookie("session_token")
-		if err == nil && cookie != nil {
-			if _, err := auth.ValidateJWT(cookie.Value); err == nil {
-				http.Redirect(w, r, "/", http.StatusSeeOther)
-				return nil
-			}
-		}
-
 		return layouts.AuthLayout("Sign Up", pages.SignUp()).Render(r.Context(), w)
 	case http.MethodPost:
 		var user models.User
@@ -175,22 +160,19 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 
 		return ui.Toast("login-success", "success", "", "Register success! Please check your email for verification.", "", nil).Render(r.Context(), w)
 	default:
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return nil
 	}
 
 }
 
 func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
+
+	if _, err := auth.GetAuth(w, r); err == nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+
 	switch r.Method {
 	case http.MethodGet:
-		cookie, err := r.Cookie("session_token")
-		if err == nil && cookie != nil {
-			if _, err := auth.ValidateJWT(cookie.Value); err == nil {
-				http.Redirect(w, r, "/", http.StatusSeeOther)
-				return nil
-			}
-		}
 		return layouts.AuthLayout("Resend Verification", pages.ResendVerification()).Render(r.Context(), w)
 	case http.MethodPost:
 		var user models.User
@@ -222,22 +204,18 @@ func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 
 		return ui.Toast("resend-success", "success", "", "If your email is registered, you will receive a verification link.", "", nil).Render(r.Context(), w)
 	default:
-		w.WriteHeader(http.StatusSeeOther)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return nil
 	}
 }
 
 func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
+
+	if _, err := auth.GetAuth(w, r); err == nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+
 	switch r.Method {
 	case http.MethodGet:
-		cookie, err := r.Cookie("session_token")
-		if err == nil && cookie != nil {
-			if _, err := auth.ValidateJWT(cookie.Value); err == nil {
-				http.Redirect(w, r, "/", http.StatusSeeOther)
-				return nil
-			}
-		}
 
 		var resetPass models.ResetPassword
 		param := "Reset"
@@ -376,22 +354,17 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 		return ui.Toast("forgot-success", "success", "", "Reset password success! You can sign in to continue.", "", nil).Render(r.Context(), w)
 
 	default:
-		w.WriteHeader(http.StatusSeeOther)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return nil
 	}
 }
 
 func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
+	if _, err := auth.GetAuth(w, r); err == nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+	}
+
 	switch r.Method {
 	case http.MethodGet:
-		cookie, err := r.Cookie("session_token")
-		if err == nil && cookie != nil {
-			if _, err := auth.ValidateJWT(cookie.Value); err == nil {
-				http.Redirect(w, r, "/", http.StatusSeeOther)
-				return nil
-			}
-		}
 
 		var count int64
 		var user models.User
@@ -428,8 +401,7 @@ func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 
 	default:
-		w.Header().Set("HX-Refresh", "true")
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusSeeOther)
 		w.Header().Set("HX-Redirect", "/")
 		return nil
 	}
@@ -445,5 +417,6 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) error {
 	time.Sleep(1 * time.Second)
 	w.Header().Set("HX-Redirect", "/")
 	w.WriteHeader(http.StatusOK)
+	http.Redirect(w, r, "/", http.StatusFound)
 	return nil
 }
