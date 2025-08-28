@@ -1,11 +1,15 @@
 package pages
 
-import "etop/dto"
+import (
+	"etop/dto"
+	"fmt"
+	"os"
+)
 
 // Dashboard Page
 templ Dashboard(userAuth dto.UserAuth) {
 	<div class="space-y-6"
-		x-data="{ pageTitle: 'Dashboard - etop' }" 
+		x-data={fmt.Sprintf("{ pageTitle: 'Dashboard - %s' }", os.Getenv("APP_NAME"))}
 		x-init="document.title = pageTitle; $watch('pageTitle', value => document.title = value);"
 	>
 		<div>

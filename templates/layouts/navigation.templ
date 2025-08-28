@@ -3,6 +3,7 @@ package layouts
 import (
     "etop/templates/components/ui"
     "etop/models"
+    
 )
 
 templ Navigation() {
@@ -14,6 +15,7 @@ templ Navigation() {
                     hx-target="#content"
                     hx-swap="innerHTML"
                     hx-push-url="true"
+                    hx-indicator=".htmx-loader,.loaded-content"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
                     :class="sidebarCollapsed && !isMobile ? 'justify-center' : ''"
                     @click="if (isMobile) sidebarOpen = false"
@@ -28,6 +30,7 @@ templ Navigation() {
                         hx-target="#content"
                         hx-swap="innerHTML"
                         hx-push-url="true"
+                        hx-indicator=".htmx-loader,.loaded-content"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
                         :class="sidebarCollapsed && !isMobile ? 'justify-center' : ''"
                         @click="if (isMobile) sidebarOpen = false"

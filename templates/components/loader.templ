@@ -1,0 +1,12 @@
+package components
+
+templ Loader(id string) {
+    <div id={id}
+        x-transition.opacity
+        class="relative w-full min-h-[80vh] htmx-loader htmx-indicator "
+    >
+        <div class="absolute inset-0 flex items-center justify-center">
+            <svg data-lucide="loader" class="w-5 h-5 animate-spin block mx-auto"></svg>
+        </div>
+    </div>
+}

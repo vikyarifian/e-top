@@ -5,7 +5,7 @@ import "fmt"
 // id opsional; berguna jika ada banyak dropdown di halaman
 templ Dropdown(id string, class string, attrs templ.Attributes) {
     <div
-        x-data={fmt.Sprintf("{ id: '%s', open: false, subOpen: false, activeSub: null, radioValue: '', checks: {} }",id)}
+        x-data={fmt.Sprintf("{ id: '%s', isOpen: false, subOpen: false, activeSub: null, radioValue: '', checks: {} }",id)}
         @keydown.escape.stop="$store.dropdown.close()"
         @click.outside="$store.dropdown.close()"
         x-effect="if(!$store.dropdown.isOpen(id)) activeSub=null"
@@ -144,7 +144,7 @@ templ DropdownSubTrigger(subId string, inset bool, class string, attrs templ.Att
     <button
         type="button"
         @click.stop={fmt.Sprintf("activeSub === '%s' ? activeSub=null : activeSub='%s'", subId, subId)}
-        class={ "flex w-full cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-left outline-none focus:bg-neutral-100 data-[state=open]:bg-neutral-100 dark:focus:bg-neutral-800",
+        class={ "flex w-full cursor-default select-none items-center gap-1 rounded-sm px-1 py-0.5 text-left outline-none cursor-pointer focus:bg-neutral-100 data-[state=open]:bg-neutral-100 dark:focus:bg-neutral-800",
                 class,
                 templ.KV("pl-8", inset),
                 }
