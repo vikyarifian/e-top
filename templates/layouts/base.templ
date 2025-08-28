@@ -1,6 +1,10 @@
 package layouts
 
-import "etop/dto"
+import (
+	"etop/dto"
+	"os"
+	"etop/templates/components"
+)
 
 // Base Layout
 templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
@@ -9,7 +13,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>{title} - etop</title>
+			<title>{title} - {os.Getenv("APP_NAME")}</title>
 			// <link rel="icon" href="/favicon.ico" type="image/x-icon">
 			<link rel="icon" href="data:,">
 			<link rel="stylesheet" href="/public/css/styles.css"/>
@@ -62,10 +66,13 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 					@Header(user)
 
 					<!-- Page Content -->
-					<main id="content" class="flex-1 p-6 overflow-y-auto">
-						for _, c := range content {
-							@c
-						}
+					<main class="flex-1 p-6 overflow-y-auto">
+						@components.Loader("loader")
+						<div id="content" class="mx-auto container px-2 sm:px-6 lg:px-8 py-0 md:py-8 w-full h-full loaded-content" >
+							for _, c := range content {
+								@c
+							}
+						</div>
 					</main>
 				</div>
 				
@@ -97,43 +104,44 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 				</div>
 
 			</div>
-
-			<script>
-
-				lucide.createIcons();
-
-				document.addEventListener("DOMContentLoaded", () => {
-					lucide.createIcons(); // render awal
-				});
-
-				document.body.addEventListener("htmx:afterSwap", (e) => {
-					if (e.detail.target.id === "content") {
-						const newTitle = document.querySelector("#content [data-title]")?.dataset.title;
-						if (newTitle) document.title = newTitle !== "" ? newTitle+" - etop" : "etop";
-					}
-					lucide.createIcons();
-				});
-
-				document.body.addEventListener("htmx:afterOnLoad", (e) => {
-					if (e.detail.target.id === "toaster") {
-						document.querySelector("#toaster")
-							.insertAdjacentHTML("beforeend", e.detail.xhr.responseText);						
-					}
-					lucide.createIcons();
-				});
-
-				document.addEventListener('alpine:init', () => {
-					Alpine.store('dropdown', {
-						openId: null,
-						isOpen(id) { return this.openId === id },
-						toggle(id) { this.openId = this.openId === id ? null : id },
-						close() { this.openId = null }
-					})
-				});
-				
-			</script>
+			@BaseScript(os.Getenv("APP_NAME"))
 		</body>
 	</html>
 }
 
 
+script BaseScript(appName string) {
+	document.addEventListener("DOMContentLoaded", () => {
+		lucide.createIcons();
+	});
+
+	// or htmx:afterOnLoad
+	document.body.addEventListener("htmx:afterSwap", (e) => {
+		if (e.detail.target.id === "content") {
+			const newTitle = document.querySelector("#content [data-title]")?.dataset.title;
+			if (newTitle) document.title = newTitle !== "" ? newTitle+" - "+appName : appName;
+		}
+		
+		if (e.detail.target.id === "toaster") {
+			document.querySelector("#toaster")
+				.insertAdjacentHTML("beforeend", e.detail.xhr.responseText);						
+		}
+		lucide.createIcons();
+	});
+
+	document.body.addEventListener("htmx:responseError", function(e) {
+		if (e.detail.target.id === "content") {
+			document.querySelector("#toaster")
+				.insertAdjacentHTML("beforeend", e.detail.xhr.responseText);
+		}
+	});
+
+	document.addEventListener("alpine:init", () => {
+		Alpine.store("dropdown", {
+			openId: null,
+			isOpen(id) { return this.openId === id },
+			toggle(id) { this.openId = this.openId === id ? null : id },
+			close() { this.openId = null }
+		})
+	});
+}

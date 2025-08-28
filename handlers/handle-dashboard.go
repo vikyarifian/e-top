@@ -18,20 +18,3 @@ func HandleDashboard(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	}
 }
-
-func HandleNotFound(w http.ResponseWriter, r *http.Request) error {
-
-	user, err := auth.GetAuth(w, r)
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusFound)
-	}
-
-	switch r.Method {
-	case http.MethodGet:
-		return layouts.Layout("Not Found", user, pages.NotFound()).Render(r.Context(), w)
-	case http.MethodPost:
-		return pages.NotFound().Render(r.Context(), w)
-	default:
-		return nil
-	}
-}

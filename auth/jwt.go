@@ -77,19 +77,15 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
-			// w.WriteHeader(http.StatusUnauthorized)
-			// w.Header().Set("HX-Redirect", "/sign-in")
-			// http.Redirect(w, r, "/sign-in", http.StatusUnauthorized)
-			http.Redirect(w, r, "/sign-in", http.StatusFound)
+			w.Header().Set("HX-Redirect", "/")
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
 		claims, err := ValidateJWT(cookie.Value)
 		if err != nil {
-			// w.WriteHeader(http.StatusUnauthorized)
-			// w.Header().Set("HX-Redirect", "/sign-in")
-			// http.Redirect(w, r, "/sign-in", http.StatusUnauthorized)
-			http.Redirect(w, r, "/sign-in", http.StatusFound)
+			w.Header().Set("HX-Redirect", "/")
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 

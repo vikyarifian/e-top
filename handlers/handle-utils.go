@@ -3,6 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"etop/auth"
+	"etop/templates/layouts"
+	"etop/templates/pages"
 	"log/slog"
 	"net/http"
 )
@@ -45,3 +48,21 @@ var (
 	ErrForbidden    = errors.New("forbidden")
 	ErrNotFound     = errors.New("not found")
 )
+
+func HandleNotFound(w http.ResponseWriter, r *http.Request) error {
+
+	user, err := auth.GetAuth(w, r)
+	if err != nil {
+		w.Header().Set("HX-Redirect", "/")
+		w.WriteHeader(http.StatusSeeOther)
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		return layouts.Layout("Not Found", user, pages.NotFound()).Render(r.Context(), w)
+	case http.MethodPost:
+		return pages.NotFound().Render(r.Context(), w)
+	default:
+		return nil
+	}
+}

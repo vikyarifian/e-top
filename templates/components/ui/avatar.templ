@@ -3,6 +3,7 @@ package ui
 import (
     "etop/utils"
 	"fmt"
+	"strings"
 )
 
 // Avatar Component
@@ -18,10 +19,10 @@ templ Avatar(text string, size string, class string, attrs templ.Attributes) {
 					templ.KV("h-12 w-12", size == "lg"),
 					templ.KV("h-10 w-10", size == "")
 				}
-			:class={fmt.Sprintf("darkMode ? 'dark:bg-gray-500 dark:text-white' : '%s'",utils.TailwindForUsername(text))}
+			:class={fmt.Sprintf("darkMode ? 'dark:bg-gray-500 dark:text-white' : '%s'",utils.TailwindForUsername(strings.Trim(text," ")))}
 			{attrs...}
 		>
-			<span class="text-sm font-medium text-primary-foreground">{ string([]rune(text)[0]) }</span>
+			<span class="text-sm font-medium text-primary-foreground">{ strings.Trim(strings.ToUpper(text[0:1])," ") }</span>
 		</div>
 	</div>
 }

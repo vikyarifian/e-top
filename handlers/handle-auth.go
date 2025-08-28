@@ -22,7 +22,8 @@ import (
 func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 
 	if _, err := auth.GetAuth(w, r); err == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		w.Header().Set("HX-Redirect", "/")
+		w.WriteHeader(http.StatusSeeOther)
 	}
 
 	switch r.Method {
@@ -75,6 +76,7 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 				time.Sleep(1 * time.Second)
 				w.Header().Set("HX-Redirect", "/")
 				w.WriteHeader(http.StatusOK)
+				return nil
 			}
 
 		} else {
@@ -85,13 +87,12 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	}
 
-	return nil
-
 }
 
 func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 	if _, err := auth.GetAuth(w, r); err == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		w.Header().Set("HX-Redirect", "/")
+		w.WriteHeader(http.StatusSeeOther)
 	}
 
 	switch r.Method {
@@ -168,7 +169,8 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 
 	if _, err := auth.GetAuth(w, r); err == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		w.Header().Set("HX-Redirect", "/")
+		w.WriteHeader(http.StatusSeeOther)
 	}
 
 	switch r.Method {
@@ -211,7 +213,8 @@ func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 
 	if _, err := auth.GetAuth(w, r); err == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		w.Header().Set("HX-Redirect", "/")
+		w.WriteHeader(http.StatusSeeOther)
 	}
 
 	switch r.Method {
@@ -360,7 +363,8 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 
 func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 	if _, err := auth.GetAuth(w, r); err == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		w.Header().Set("HX-Redirect", "/")
+		w.WriteHeader(http.StatusSeeOther)
 	}
 
 	switch r.Method {
@@ -401,8 +405,6 @@ func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 
 	default:
-		w.WriteHeader(http.StatusSeeOther)
-		w.Header().Set("HX-Redirect", "/")
 		return nil
 	}
 }
@@ -416,7 +418,6 @@ func HandleLogout(w http.ResponseWriter, r *http.Request) error {
 	})
 	time.Sleep(1 * time.Second)
 	w.Header().Set("HX-Redirect", "/")
-	w.WriteHeader(http.StatusOK)
-	http.Redirect(w, r, "/", http.StatusFound)
+	w.WriteHeader(http.StatusSeeOther)
 	return nil
 }

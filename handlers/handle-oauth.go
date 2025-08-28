@@ -124,7 +124,7 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 	user.UpdatedAt = &t
 	user.UpdatedBy = user.ID
 
-	err = db.PgSql.Save(&user).Error
+	db.PgSql.Save(&user)
 
 	time.Sleep(1 * time.Second)
 
