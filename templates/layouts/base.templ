@@ -68,7 +68,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 					<!-- Page Content -->
 					<main class="flex-1 p-6 overflow-y-auto">
 						@components.Loader("loader")
-						<div id="content" class="mx-auto container px-2 sm:px-6 lg:px-8 py-0 md:py-8 w-full h-full loaded-content" >
+						<div id="content" class="w-full h-full loaded-content" >
 							for _, c := range content {
 								@c
 							}

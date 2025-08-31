@@ -3,7 +3,7 @@ package models
 import "time"
 
 type User struct {
-	No            int        `gorm:"column:no;primaryKey" json:"-,omitempty" form:"-"`
+	No            int        `gorm:"column:no;primaryKey" json:"-" form:"-"`
 	ID            string     `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
 	Username      string     `gorm:"column:username;unique" json:"username,omitempty" form:"username"`
 	FullName      string     `gorm:"column:full_name;" json:"full_name,omitempty" form:"full_name"`
@@ -28,13 +28,13 @@ type ResetPassword struct {
 }
 
 // CREATE TABLE users (
-//     no SERIAL PRIMARY KEY,
-//     id VARCHAR(128) NOT NULL DEFAULT '00000000000000',
+//     no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     id VARCHAR(255) UNIQUE NOT NULL DEFAULT '00000000000000',
 //     username VARCHAR(50) UNIQUE NOT NULL DEFAULT ' ',
-//     full_name VARCHAR(50) NOT NULL DEFAULT ' ',
-//     email VARCHAR(50) NOT NULL DEFAULT ' ',
-//     password VARCHAR(128) UNIQUE NOT NULL DEFAULT ' ',
-//     level VARCHAR(10) NOT NULL DEFAULT 'USER',
+//     full_name VARCHAR(255) NOT NULL DEFAULT ' ',
+//     email VARCHAR(255) NOT NULL DEFAULT ' ',
+//     password TEXT NOT NULL,
+//     level VARCHAR(25) NOT NULL DEFAULT 'USER',
 //     verified_email BOOLEAN NOT NULL DEFAULT false,
 //     created_at TIMESTAMP DEFAULT NOW(),
 //     created_by VARCHAR(128) DEFAULT '',
@@ -43,9 +43,9 @@ type ResetPassword struct {
 // );
 
 // CREATE TABLE reset_passwords (
-//     id SERIAL PRIMARY KEY,
-//     email VARCHAR(50) NOT NULL DEFAULT ' ',
-//     token_hash VARCHAR(128) NOT NULL DEFAULT ' ',
+//     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     email VARCHAR(255) NOT NULL DEFAULT ' ',
+//     token_hash VARCHAR(255) NOT NULL DEFAULT ' ',
 //     used INTEGER NOT NULL DEFAULT 0,
 //     expires_at TIMESTAMP DEFAULT NOW(),
 //     created_at TIMESTAMP DEFAULT NOW(),
