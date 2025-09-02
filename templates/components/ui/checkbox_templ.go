@@ -117,4 +117,16 @@ func Checkbox(id string, name string, value string, checked bool, class string, 
 	})
 }
 
+//	templ Checkbox(id, name, value, class string, attrs templ.Attributes) {
+//		<label class="inline-flex items-center space-x-2">
+//			<input
+//				id={id}
+//				type="checkbox"
+//				name={name}
+//				value={value}
+//				class={"h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500", class}
+//				{attrs...}
+//			/>
+//		</label>
+//	}
 var _ = templruntime.GeneratedTemplate

@@ -70,7 +70,7 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 					Path:     "/",
 					HttpOnly: true,
 					Secure:   false, // set true kalau pakai https
-					Expires:  time.Now().UTC().Add(24 * time.Hour),
+					Expires:  time.Now().Add(24 * time.Hour),
 				})
 
 				time.Sleep(1 * time.Second)
@@ -135,7 +135,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signup-error", "warning", "", "Password not match!", "", nil).Render(r.Context(), w)
 		}
 
-		t := time.Now().UTC()
+		t := time.Now()
 		idHash := utils.GenerateHash(user.Email)
 		passHash, _ := utils.HashPassword(user.Password)
 
@@ -227,14 +227,14 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 			param = "Forgot"
 		} else {
 			var count int64
-			if db.PgSql.Where("token_hash=? AND used=0 AND expires_at > ? ", token, time.Now().UTC()).First(&resetPass).Count(&count); count == 0 {
+			if db.PgSql.Where("token_hash=? AND used=0 AND expires_at > ? ", token, time.Now()).First(&resetPass).Count(&count); count == 0 {
 				param = "Error"
 			}
 		}
 
 		return layouts.AuthLayout(param+" Password", pages.ForgotPassword(param, token)).Render(r.Context(), w)
 	case http.MethodPost:
-		t := time.Now().UTC()
+		t := time.Now()
 		var user models.User
 		var resetPass models.ResetPassword
 		var newResetPass models.ResetPassword
@@ -254,8 +254,8 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 				ui.Button("success", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})).Render(r.Context(), w)
 		}
 
-		if err = db.PgSql.Where("email=? AND expires_at > ?", user.Email, time.Now().UTC()).Order("expires_at desc").First(&resetPass).Error; err == nil {
-			if time.Now().UTC().After(resetPass.ExpiresAt) {
+		if err = db.PgSql.Where("email=? AND expires_at > ?", user.Email, time.Now()).Order("expires_at desc").First(&resetPass).Error; err == nil {
+			if time.Now().After(resetPass.ExpiresAt) {
 				return components.CardStatus(200, "Reset Password Sent", "If your email is registered, you will receive a reset link.", "circle-check-big",
 					ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})).Render(r.Context(), w)
 
@@ -309,7 +309,7 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("forgot-error", "warning", "", "Password not match!", "", nil).Render(r.Context(), w)
 		}
 
-		err := db.PgSql.Where("token_hash=? AND used = 0 AND expires_at > ?", token, time.Now().UTC()).First(&resetPass).Error
+		err := db.PgSql.Where("token_hash=? AND used = 0 AND expires_at > ?", token, time.Now()).First(&resetPass).Error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return ui.Toast("resend-error", "warning", "", "Invaid or expired request!", "", nil).Render(r.Context(), w)
@@ -326,7 +326,7 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("forgot-error", "warning", "", "New password must be different from the last one!", "", nil).Render(r.Context(), w)
 		}
 
-		t := time.Now().UTC()
+		t := time.Now()
 		passHash, _ := utils.HashPassword(pass2)
 
 		user.Password = string(passHash)
@@ -382,7 +382,7 @@ func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 						ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 			}
 
-			t := time.Now().UTC()
+			t := time.Now()
 			user.VerifiedEmail = true
 			user.UpdatedAt = &t
 

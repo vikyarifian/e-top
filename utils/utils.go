@@ -24,9 +24,9 @@ func IsEmailValidRegex(s string) bool {
 }
 
 func GenerateHash(input string) string {
-	hasher := sha256.New()
-	hasher.Write([]byte(input))
-	return hex.EncodeToString(hasher.Sum(nil))
+	input = strings.TrimSpace(input)
+	sum := sha256.Sum256([]byte(input))
+	return hex.EncodeToString(sum[:]) // 64 karakter hex
 }
 
 func HashPassword(password string) (string, error) {

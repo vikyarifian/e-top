@@ -59,7 +59,7 @@ func Select(name string, value string, options []SelectOption, class string, att
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "><!-- Dropdown Wrapper --><div x-data=\"{ open: false, selected: { value: '', label: '', color: '' } }\" class=\"relative\"><!-- Trigger --><button @click=\"open = !open\" class=\"w-full flex justify-between items-center px-3 py-2 \r\n                        border rounded-md \r\n                        bg-background text-foreground border-border \r\n                        hover:bg-accent hover:text-accent-foreground\r\n                        focus:outline-none transition-colors\"><div class=\"flex items-center space-x-2\"><!-- Avatar warna kecil --><div x-show=\"selected.value !== ''\" class=\"w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold\" :class=\"selected.color\"><span x-text=\"selected.label.slice(0,1)\"></span></div><!-- Icon default --><div x-show=\"selected.value === ''\" class=\"w-4 h-4 ml-0\" data-lucide=\"list-checks\"></div><!-- Label --><span x-text=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "><!-- Dropdown Wrapper --><div x-data=\"{ openSelect: false, selected: { value: '', label: '', color: '' } }\" class=\"relative\"><!-- Trigger --><button @click=\"openSelect = !openSelect\" class=\"w-full flex justify-between items-center px-3 py-2 \r\n                        border rounded-md \r\n                        bg-background text-foreground border-border \r\n                        hover:bg-accent hover:text-accent-foreground\r\n                        focus:outline-none transition-colors\"><div class=\"flex items-center space-x-2\"><!-- Avatar warna kecil --><div x-show=\"selected.value !== ''\" class=\"w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold\" :class=\"selected.color\"><span x-text=\"selected.label.slice(0,1)\"></span></div><!-- Icon default --><div x-show=\"selected.value === ''\" class=\"w-4 h-4 ml-0\" data-lucide=\"list-checks\"></div><!-- Label --><span x-text=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -72,7 +72,7 @@ func Select(name string, value string, options []SelectOption, class string, att
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"></span></div><svg class=\"w-4 h-4 text-muted-foreground\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 9l-7 7-7-7\"></path></svg></button><!-- Dropdown --><div x-show=\"open\" @click.away=\"open = false\" class=\"absolute z-10 mt-1 w-full rounded-md border shadow-lg bg-popover border-border text-popover-foreground\"><div class=\"px-3 pt-2 pb-1 text-sm text-muted-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"></span></div><svg class=\"w-4 h-4 text-muted-foreground\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 9l-7 7-7-7\"></path></svg></button><!-- Dropdown --><div x-show=\"openSelect\" @click.away=\"openSelect = false\" class=\"absolute z-10 mt-1 w-full rounded-md border shadow-lg bg-popover border-border text-popover-foreground\"><div class=\"px-3 pt-2 pb-1 text-sm text-muted-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,9 +95,9 @@ func Select(name string, value string, options []SelectOption, class string, att
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("selected = { label: '%s', value: '%s', color: '%s' }; open = false", item.Label, item.Value, item.Color))
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("selected = { label: '%s', value: '%s', color: '%s' }; openSelect = false", item.Label, item.Value, item.Color))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/select.templ`, Line: 51, Col: 150}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/select.templ`, Line: 51, Col: 156}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -156,6 +156,14 @@ func Select(name string, value string, options []SelectOption, class string, att
 				return templ_7745c5c3_Err
 			}
 		}
+		templ_7745c5c3_Err = Separator("horizontal", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templ_7745c5c3_Var1.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "</ul></div></div></div><script>\r\n        lucide.createIcons();\r\n    </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -163,6 +171,17 @@ func Select(name string, value string, options []SelectOption, class string, att
 		return nil
 	})
 }
+
+// templ Select(id, name, class string, attrs templ.Attributes) {
+// 	<select
+// 		id={id}
+// 		name={name}
+// 		class={"flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", class}
+// 		{attrs...}
+// 	>
+// 		<slot></slot>
+// 	</select>
+// }
 
 type SelectOption struct {
 	Value string

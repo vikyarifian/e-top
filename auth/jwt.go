@@ -18,6 +18,7 @@ var jwtKey = []byte(os.Getenv("JWT_KEY"))
 // GenerateToken for JWT user
 func GenerateToken(user models.User) (string, error) {
 	claims := jwt.MapClaims{
+		"id":        user.ID,
 		"username":  user.Username,
 		"full_name": user.FullName,
 		"email":     user.Email,
@@ -45,6 +46,7 @@ func GetAuth(w http.ResponseWriter, r *http.Request) (dto.UserAuth, error) {
 	}
 
 	user = dto.UserAuth{
+		ID:       fmt.Sprintf("%s", claims["id"]),
 		Username: fmt.Sprintf("%s", claims["username"]),
 		Email:    fmt.Sprintf("%s", claims["email"]),
 		FullName: cases.Title(language.English, cases.Compact).String(fmt.Sprintf("%s", claims["full_name"])),

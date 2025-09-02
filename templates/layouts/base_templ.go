@@ -11,6 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"etop/dto"
 	"etop/templates/components"
+	"etop/templates/features"
 	"os"
 )
 
@@ -43,7 +44,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 16, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 17, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -56,7 +57,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 16, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 17, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -108,6 +109,10 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = features.CreateWorkspace("", nil).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = BaseScript(os.Getenv("APP_NAME")).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
@@ -122,8 +127,8 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 
 func BaseScript(appName string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_BaseScript_f3b2`,
-		Function: `function __templ_BaseScript_f3b2(appName){document.addEventListener("DOMContentLoaded", () => {
+		Name: `__templ_BaseScript_e778`,
+		Function: `function __templ_BaseScript_e778(appName){document.addEventListener("DOMContentLoaded", () => {
 		lucide.createIcons();
 	});
 
@@ -154,11 +159,17 @@ func BaseScript(appName string) templ.ComponentScript {
 			isOpen(id) { return this.openId === id },
 			toggle(id) { this.openId = this.openId === id ? null : id },
 			close() { this.openId = null }
-		})
+		});
+		Alpine.store('modal', {
+			openId: null,
+			open(id) { this.openId = id },
+			close() { this.openId = null },
+			isOpen(id) { return this.openId === id }
+		});
 	});
 }`,
-		Call:       templ.SafeScript(`__templ_BaseScript_f3b2`, appName),
-		CallInline: templ.SafeScriptInline(`__templ_BaseScript_f3b2`, appName),
+		Call:       templ.SafeScript(`__templ_BaseScript_e778`, appName),
+		CallInline: templ.SafeScriptInline(`__templ_BaseScript_e778`, appName),
 	}
 }
 
