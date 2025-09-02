@@ -30,7 +30,7 @@ type ResetPassword struct {
 // CREATE TABLE users (
 //     no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 //     id VARCHAR(255) UNIQUE NOT NULL DEFAULT '00000000000000',
-//     username VARCHAR(50) UNIQUE NOT NULL DEFAULT ' ',
+//     username VARCHAR(255) UNIQUE NOT NULL DEFAULT ' ',
 //     full_name VARCHAR(255) NOT NULL DEFAULT ' ',
 //     email VARCHAR(255) NOT NULL DEFAULT ' ',
 //     password TEXT NOT NULL,

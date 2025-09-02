@@ -20,8 +20,8 @@ templ AvatarButton(name, email string) {
 		/* Panel dropdown */
 		@ui.DropdownContent("w-60", nil) {
 			<!-- header user info -->
-			<div class="flex flex-col items-center justify-center gap-2 p-4">
-				<div class="flex flex-col items-center justify-center">
+			<div class="flex flex-col items-start justify-start gap-2 p-4">
+				<div class="flex flex-col items-start justify-start">
 					<p class="text-md font-semibold">
 						{ name } 
 					</p>
@@ -32,9 +32,26 @@ templ AvatarButton(name, email string) {
 			</div>
 
 			@ui.DropdownSeparator("", nil)
+			@ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+				"hx-post": "/profile",
+				"hx-target": "#content",
+				"hx-swap": "innerHtml",
+			}) {
+				<i data-lucide="user" class="w-4 h-4"></i>
+				Profile
+			}
+			@ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+				"hx-post": "/settings",
+				"hx-target": "#content",
+				"hx-swap": "innerHtml",
+			}) {
+				<i data-lucide="settings" class="w-4 h-4"></i>
+				Settings
+			}
+			@ui.DropdownSeparator("", nil)
 
 			<!-- Logout -->
-			@ui.DropdownItem(false, false, "h-10 flex items-center justify-center text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100", templ.Attributes{
+			@ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100", templ.Attributes{
 				"hx-post": "/logout",
 				"hx-target": "body",
 				"hx-swap": "none",

@@ -4,6 +4,7 @@ import (
 	"etop/dto"
 	"os"
 	"etop/templates/components"
+	"etop/templates/features"
 )
 
 // Base Layout
@@ -104,7 +105,9 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 				</div>
 
 			</div>
+			@features.CreateWorkspace("", nil) 
 			@BaseScript(os.Getenv("APP_NAME"))
+			
 		</body>
 	</html>
 }
@@ -142,6 +145,12 @@ script BaseScript(appName string) {
 			isOpen(id) { return this.openId === id },
 			toggle(id) { this.openId = this.openId === id ? null : id },
 			close() { this.openId = null }
-		})
+		});
+		Alpine.store('modal', {
+			openId: null,
+			open(id) { this.openId = id },
+			close() { this.openId = null },
+			isOpen(id) { return this.openId === id }
+		});
 	});
 }

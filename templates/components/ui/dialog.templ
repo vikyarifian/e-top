@@ -7,9 +7,9 @@ package ui
 templ DialogRoot(id string, class string, attrs templ.Attributes) {
 	<div
 		id={id}
-		x-data="{ open: false }"
-		@open-dialog.window="if ($event.detail.id === '{id}') open = true"
-		@close-dialog.window="if ($event.detail.id === '{id}') open = false"
+		x-data="{ openDialog: false }"
+		@openDialog-dialog.window="if ($event.detail.id === '{id}') openDialog = true"
+		@close-dialog.window="if ($event.detail.id === '{id}') openDialog = false"
 		class={class}
 		{attrs...}
 	>
@@ -21,7 +21,7 @@ templ DialogRoot(id string, class string, attrs templ.Attributes) {
 templ DialogTrigger(class string, attrs templ.Attributes) {
 	<button
 		type="button"
-		@click="open = true"
+		@click="openDialog = true"
 		class={class}
 		{attrs...}
 	>
@@ -32,7 +32,7 @@ templ DialogTrigger(class string, attrs templ.Attributes) {
 templ ExternalTrigger(targetID string, class string, attrs templ.Attributes) {
 	<button
 		type="button"
-		@click="$dispatch('open-dialog', { id: '{targetID}' })"
+		@click="$dispatch('openDialog-dialog', { id: '{targetID}' })"
 		class={class}
 		{attrs...}
 	>
@@ -43,10 +43,10 @@ templ ExternalTrigger(targetID string, class string, attrs templ.Attributes) {
 // Overlay: backdrop gelap ala shadcn
 templ DialogOverlay(class string, attrs templ.Attributes) {
 	<div
-		x-show="open"
+		x-show="openDialog"
 		x-transition.opacity
-		:data-state="open ? 'open' : 'closed'"
-		class={"fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 ", class}
+		:data-state="openDialog ? 'openDialog' : 'closed'"
+		class={"fixed inset-0 z-50 bg-black/80 data-[state=openDialog]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=openDialog]:fade-in-0 ", class}
 		{attrs...}
 	></div>
 }
@@ -54,13 +54,13 @@ templ DialogOverlay(class string, attrs templ.Attributes) {
 // Content: kotak dialog di tengah layar
 templ DialogContent(class string, attrs templ.Attributes) {
 	<div
-		x-show="open"
+		x-show="openDialog"
 		x-transition
-		:data-state="open ? 'open' : 'closed'"
-		class={"fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg ", class}
+		:data-state="openDialog ? 'openDialog' : 'closed'"
+		class={"fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=openDialog]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=openDialog]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=openDialog]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=openDialog]:slide-in-from-left-1/2 data-[state=openDialog]:slide-in-from-top-[48%] sm:rounded-lg ", class}
 		role="dialog"
 		aria-modal="true"
-		@click.outside="open = false"
+		@click.outside="openDialog = false"
 		{attrs...}
 	>
 		{children...}
@@ -68,10 +68,10 @@ templ DialogContent(class string, attrs templ.Attributes) {
 		<!-- Close (pojok kanan atas) -->
 		<button
 			type="button"
-			@click="open = false"
+			@click="openDialog = false"
 			class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100
                    focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none
-                   data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+                   data-[state=openDialog]:bg-accent data-[state=openDialog]:text-muted-foreground"
 			aria-label="Close"
 		>
 			<i data-lucide="x" class="h-4 w-4"></i>
@@ -99,5 +99,5 @@ templ DialogDescription(class string, attrs templ.Attributes) {
 
 // DialogClose: tombol tutup (biasanya di footer)
 templ DialogClose(class string, attrs templ.Attributes) {
-	<button type="button" @click="open = false" class={class} {attrs...}>{children...}</button>
+	<button type="button" @click="openDialog = false" class={class} {attrs...}>{children...}</button>
 }

@@ -93,9 +93,10 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 	_ = json.Unmarshal(body, &userInfo)
 
 	var count int64
-	t := time.Now().UTC()
+	t := time.Now()
 	if db.PgSql.Where("email=? or username=?", userInfo.Email, userInfo.Email).First(&user).Count(&count); count == 0 {
-		idHash := utils.GenerateHash(user.Email)
+		idHash := utils.GenerateHash(userInfo.Email)
+		println(idHash)
 		parts := strings.Split(userInfo.Email, "@")
 		passHash, _ := utils.HashPassword(parts[0])
 
@@ -118,13 +119,14 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 				components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
 					ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 		}
+	} else {
+		t := time.Now()
+		user.VerifiedEmail = true
+		user.UpdatedAt = &t
+		user.UpdatedBy = user.ID
+
+		db.PgSql.Save(&user)
 	}
-
-	user.VerifiedEmail = true
-	user.UpdatedAt = &t
-	user.UpdatedBy = user.ID
-
-	db.PgSql.Save(&user)
 
 	time.Sleep(1 * time.Second)
 
@@ -143,7 +145,7 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 			Path:     "/",
 			HttpOnly: true,
 			Secure:   false, // set true kalau pakai https
-			Expires:  time.Now().UTC().Add(24 * time.Hour),
+			Expires:  time.Now().Add(24 * time.Hour),
 		})
 
 		http.Redirect(w, r, "/", http.StatusFound)

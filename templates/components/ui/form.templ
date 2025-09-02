@@ -49,6 +49,118 @@ templ FormControl(id, name, typ, placeholder, value string, class string, attrs 
     if typ == "date" {
         @DatePicker(id, name, value, placeholder, class, attrs)
     }
+    if typ == "textarea" {
+        @Textarea(id, name, placeholder, value, class, attrs)
+    }
+    if typ == "checkbox" {
+		<label class="inline-flex items-center space-x-2">
+    		<input 
+    			id={id}
+    			type="checkbox"
+    			name={name}
+    			value={value}
+    			class={"h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500", class}
+    			{attrs...}
+    		/>
+    	</label>
+	}
+	if typ == "radio" {
+		@Radio(id, name, value, class, attrs)
+	}
+	if typ == "select" {
+		<select 
+            id={id}
+            name={name}
+            class={"flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", class}
+            {attrs...}
+        >
+            <slot></slot>
+        </select>
+	}
+	if typ == "file" {
+		@FileInput(id, name, class, attrs)
+	}
+	if typ == "switch" {
+		@Switch(id, name, value, class, attrs)
+	}
+}
+
+templ ColorPicker(name string, options []string, selected string, class string, attrs templ.Attributes) {
+    <div class={"flex items-center space-x-3", class} {attrs...}>
+        for _, color := range options {
+            <label class="relative">
+                <input 
+                    type="radio"
+                    name={name}
+                    value={color}
+                    checked={color == selected}
+                    class="sr-only"
+                />
+                <span 
+                    class={"h-8 w-8 rounded-full cursor-pointer border-2 border-transparent flex items-center justify-center"}
+                    style={"background-color:" + color}
+                >
+                    if color == selected {
+                        <span class="h-3 w-3 rounded-full bg-white"></span>
+                    }
+                </span>
+            </label>
+        }
+    </div>
+}
+
+templ RadioGroup(id string, name string, options []string, selected string, class string, attrs templ.Attributes) {
+    <div class={"space-y-2", class} {attrs...}>
+        for _, opt := range options { 
+            <label class="flex items-center space-x-2">
+                <input 
+                    type="radio"
+                    name={name}
+                    value={opt}
+                    checked={opt == selected}
+                    class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span class="text-sm">{opt}</span>
+            </label>
+        }
+    </div>
+}
+
+templ Radio(id, name, value, class string, attrs templ.Attributes) {
+	<label class="inline-flex items-center space-x-2">
+		<input 
+			id={id}
+			type="radio"
+			name={name}
+			value={value}
+			class={"h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500", class}
+			{attrs...}
+		/>
+	</label>
+}
+
+templ FileInput(id, name, class string, attrs templ.Attributes) {
+	<input 
+		id={id}
+		type="file"
+		name={name}
+		class={"block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none", class}
+		{attrs...}
+	/>
+}
+
+templ Switch(id, name, value, class string, attrs templ.Attributes) {
+	<label class="relative inline-flex items-center cursor-pointer">
+		<input 
+			id={id}
+			type="checkbox"
+			name={name}
+			value={value}
+			class="sr-only peer"
+			{attrs...}
+		/>
+		<div class={"w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full", class}></div>
+	</label>
 }
 
 templ FormDescription(text string, class string, attrs templ.Attributes) {
