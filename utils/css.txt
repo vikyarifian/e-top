@@ -109,3 +109,4 @@ bg-stone-400
 bg-stone-500
 bg-stone-600
 bg-stone-700
+border-blue

@@ -79,7 +79,7 @@ templ Select(name string, value string, options []SelectOption, class string, at
 // }
 
 type SelectOption struct {
-    Value string
-    Label string
-    Color string
+	Value string `json:"value"`
+	Label string `json:"label"`
+	Color string `json:"color"`
 }

@@ -4,6 +4,7 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -12,6 +13,11 @@ import (
 	"github.com/a-h/templ"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func MustJSON(v any) []byte {
+	b, _ := json.Marshal(v)
+	return b
+}
 
 func Render(w http.ResponseWriter, r *http.Request, c templ.Component) error {
 	return c.Render(r.Context(), w)
