@@ -1,57 +1,121 @@
 package features
 
-import "etop/templates/components/ui"
-import "etop/templates/components"
+import (
+    "etop/templates/components"
+    "etop/templates/components/ui"
+    "etop/utils"
 
-templ WorkspaceSwitcher(list []ui.SelectOption) {
-    @ui.Select("Workspace", "", list, "w-full h-12", nil) {
-        <li 
-            @click="$store.modal.open('demoModal')"
-            class="flex items-center space-x-2 px-3 py-2 cursor-pointer" 
-        >
-                <div data-lucide="circle-plus" />
-            <span>Create Workspace</span>
-        </li>        
-    }
-    
+    "fmt"
+    "strings"
+)
+
+templ WorkspaceSwitcher(options []ui.SelectOption) {
+    <div 
+		x-data={fmt.Sprintf("workspaceSwitcher(%s)", string(utils.MustJSON(options[0])))}
+		class="relative w-full"
+	>
+		<input type="hidden" name="workspaceId" x-model="selected.value">
+
+		<!-- Trigger -->
+		<button 
+			@click="openSelect = !openSelect" 
+			class="w-full flex justify-between items-center px-3 py-2 
+				   border rounded-md 
+				   bg-background text-foreground border-border 
+				   hover:bg-accent hover:text-accent-foreground
+				   focus:outline-none transition-colors"
+		>
+			<div class="flex items-center space-x-2">
+				<div x-show="selected.value"
+                    :class="`w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold ${selected.color}`">
+                    <span x-text="selected.label ? selected.label.slice(0,1).toUpperCase() : ''"></span>
+                </div>
+				<div x-show="!selected.value" class="w-4 h-4 ml-0" data-lucide="list-checks"></div>
+				<span x-text="selected.label || 'Select Workspace'"></span>
+			</div>
+			<svg class="w-4 h-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" 
+				viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+			</svg>
+		</button>
+
+		<!-- Dropdown -->
+		<div x-show="openSelect" @click.away="openSelect = false"
+			class="absolute z-10 mt-1 w-full rounded-md border shadow-lg 
+				   bg-popover border-border text-popover-foreground">
+			<div class="px-3 pt-2 pb-1 text-sm text-muted-foreground">Workspace</div>
+			<ul class="max-h-60 overflow-auto">
+				for _, item := range options {
+					<li 
+						class="flex items-center space-x-2 px-3 py-2 cursor-pointer 
+							   hover:bg-accent hover:text-accent-foreground"
+						@click={fmt.Sprintf("selectWorkspace({ value: '%s', label: '%s', color: '%s' })", item.Value, item.Label, item.Color)}
+					>
+						<div class={"w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold " , item.Color}>
+							{strings.ToUpper(item.Label[0:1])}
+						</div>
+						<span>{item.Label}</span>
+					</li>
+				}
+				@ui.Separator("horizontal", "", nil)
+				<li 
+					@click="$store.modal.open('create-workspace-modal')" 
+					class="flex items-center space-x-2 px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground">
+					<div data-lucide="circle-plus"></div>
+					<span>Create Workspace</span>
+				</li>
+			</ul>
+		</div>
+	</div>
 }
 
 templ CreateWorkspace(class string, attrs templ.Attributes) {
-    @components.ResponsiveModal("workspace-modal", "Create Workspace", class) {
+    @components.ResponsiveModal("create-workspace-modal", "Create Workspace", class) {
         <div
             x-data="{
                         name: '',
                         description: '',
+                        color: '',
                         nameError: '',
                         descriptionError : '',
                         colorError: '',
                         validateName() {
-                            this.nameError = (this.name.length < 0)
+                            this.nameError = (this.name.trim() === '')
                                 ? 'Name is required'
+                                : '';
+                        },
+                        validateColor() {
+                            this.colorError = (this.color.trim() === '')
+                                ? 'Color is required'
                                 : '';
                         },
                         validateForm(e) {
                             e.preventDefault();
                             this.validateName();
+                            //this.validateColor();
                             
-                            if (this.nameError) {
+                            if (this.nameError || this.validateColor()) {
                                 return; 
                             }
                         },
                         init() {
                             document.body.addEventListener('htmx:afterRequest', (evt) => {
                                 if (evt.detail.successful && evt.detail.elt.id === 'create-workspace-form') {
-                                    
+                                    $store.modal.close('create-workspace-modal');
+                                    this.name = '';
+                                    this.description = '';
+                                    this.color = '';
+                                    htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})
                                 }
                             })
                         }
                     }"
         >
-            @ui.Form("/create-workspace", "post", "", templ.Attributes{
+            @ui.Form("/workspace", "post", "", templ.Attributes{
                     "id":"create-workspace-form",
                     "hx-target": "#toaster",
                     "hx-swap": "innerHtml",
-                    "hx-disabled-elt":"#create-button,#name,#description",
+                    "hx-disabled-elt":"#create-button,#name,#description,#colorOption",
                     "x-ref": "form",
                     "@submit.prevent":"validateForm($event)",
             }) {
@@ -59,7 +123,7 @@ templ CreateWorkspace(class string, attrs templ.Attributes) {
                     @ui.FormLabel("name", "Name", "", nil)
                     @ui.FormControl("name", "name", "text", "Workspace Name", "", "", templ.Attributes{
                         "id": "name",
-                        "name": "Name",
+                        "name": "name",
                         "autocomplete":"name",
                         "x-model": "name",
                         "@blur": "validateName",
@@ -85,49 +149,40 @@ templ CreateWorkspace(class string, attrs templ.Attributes) {
                     )
                 }
                 @ui.FormItem("", nil) {
-                    @ui.FormLabel("color", "Color", "", nil)
-                    <div 
+                    @ui.FormLabel("", "Color", "", nil)
+                    <div id="colorOption"
                         x-data="{ 
-                            colors: [
-                                { name: 'blue',  class: 'bg-blue-500 dark:bg-blue-400' },
-                                { name: 'red',   class: 'bg-red-500 dark:bg-red-400' },
-                                { name: 'yellow',class: 'bg-yellow-500 dark:bg-yellow-400' },
-                                { name: 'green', class: 'bg-green-500 dark:bg-green-400' },
-                                { name: 'purple',class: 'bg-purple-500 dark:bg-purple-400' },
-                                { name: 'orange',class: 'bg-orange-500 dark:bg-orange-400' },
-                                { name: 'teal',  class: 'bg-teal-500 dark:bg-teal-400' }
-                            ], 
-                            selectedColor: null 
+                            selectedColor: '' 
                         }"
                         class="flex items-center space-x-3 mt-2"
                     >
-                        <template x-for="color in colors" :key="color.name">
+                        <template x-for="color in colorOptions" :key="color.name">
                             <button 
                                 type="button"
-                                class="h-8 w-8 rounded-full border-2 transition"
+                                class="h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
                                 :class="[
                                     color.class, 
-                                    selectedColor === color.name ? 'border-black dark:border-white scale-110' : 'border-transparent'
+                                    selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'
                                 ]"
-                                @click="selectedColor = color.name"
-                                :title="color.name"
+                                @click="selectedColor = color.class;"
+                                :title="color.class"
                             ></button>
                         </template>
 
                         <!-- Hidden input buat form -->
-                        <input type="hidden" name="color" :value="selectedColor">
+                        <input type="hidden" id="color" name="color" x-model="color" :value="selectedColor">
+                        @ui.FormMessage("", "", templ.Attributes{
+                                "x-show": "selectedColor === ''",
+                                "x-text": "colorError",
+                            },
+                        )
                     </div>
-
-                    // @ui.FormControl("color", "color", "radio", "Workspace Color", "", "", templ.Attributes{
-                    //     "id": "color",
-                    //     "name": "color",
-                    //     "x-model": "color",
-                    // })
-                    @ui.FormMessage("", "", templ.Attributes{
-                            "x-show": "colorError != ''",
-                            "x-text": "colorError",
-                        },
-                    )
+                    <div class="pt-4 pb-4">
+                        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                    </div>
+                    <div class="flex justify-end items-end">
+                        @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+                    </div>
                 }
             }
         </div>

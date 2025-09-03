@@ -56,6 +56,7 @@ func SetRoutes() {
 
 	mux.HandleFunc("/dashboard", auth.RequireAuth(handlers.Make(handlers.HandleDashboard)))
 	mux.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.WorkspaceSwitcher)))
+	mux.HandleFunc("/workspace", auth.RequireAuth(handlers.Make(handlers.HandleWorkspace)))
 
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
 

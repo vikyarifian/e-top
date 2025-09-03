@@ -32,6 +32,7 @@ templ AuthLayout(title string, content ...templ.Component) {
 						} 
 					}"
 				x-init="
+						localStorage.removeItem('currentWorkspace');
 						$watch('darkMode', val => {
 							localStorage.setItem('darkMode', val);
 							if (val) {

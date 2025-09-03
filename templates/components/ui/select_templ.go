@@ -184,9 +184,9 @@ func Select(name string, value string, options []SelectOption, class string, att
 // }
 
 type SelectOption struct {
-	Value string
-	Label string
-	Color string
+	Value string `json:"value"`
+	Label string `json:"label"`
+	Color string `json:"color"`
 }
 
 var _ = templruntime.GeneratedTemplate

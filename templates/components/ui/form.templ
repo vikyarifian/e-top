@@ -37,7 +37,11 @@ templ FormItem(class string, attrs templ.Attributes) {
 }
 
 templ FormLabel(forID, text string, class string, attrs templ.Attributes) {
-    <label for={forID} class={"block text-sm font-medium", class} {attrs...}>
+    <label 
+        if forID !="" {
+            for={forID} 
+        }
+        class={"block text-sm font-medium", class} {attrs...}>
         {text}
     </label>
 }

@@ -3,8 +3,12 @@ package layouts
 import (
 	"etop/dto"
 	"os"
+	"fmt"
+	
 	"etop/templates/components"
 	"etop/templates/features"
+	"etop/models"
+	"etop/utils"
 )
 
 // Base Layout
@@ -28,12 +32,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		<body 
 			class="min-h-screen bg-background text-foreground"
 			 :class="darkMode ? 'dark' : ''"
-			x-data="{ 
-				sidebarOpen: false, 
-				sidebarCollapsed: false, 
-				darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false),
-				isMobile: window.innerWidth < 768
-			}"
+			x-data={fmt.Sprintf("{ sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s,}", string(utils.MustJSON(models.GetColorOptions())))}
 			x-init="
 				$watch('darkMode', val => {
 					localStorage.setItem('darkMode', val);
@@ -47,8 +46,14 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 					document.documentElement.classList.add('dark');
 				}
 				window.addEventListener('resize', () => {
+					let currentSize = isMobile;
 					isMobile = window.innerWidth < 768;
 					if (!isMobile) sidebarOpen = false;
+					
+					if (currentSize != isMobile) {
+						htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})
+					}
+					
 				});
 			"
 		>
@@ -107,19 +112,57 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 			</div>
 			@features.CreateWorkspace("", nil) 
 			@BaseScript(os.Getenv("APP_NAME"))
-			
+			<div id="toaster"></div> 
+			<script>
+				function workspaceSwitcher(defaultWs) {
+					return {
+						openSelect: false,
+						selected: { value: "", label: "", color: "" },
+						init() {
+							// initial
+							this.loadFromStorage(defaultWs);
+
+							// listen kalau ada perubahan dari luar (tab lain / script lain)
+							window.addEventListener("storage", (e) => {
+								if (e.key === "currentWorkspace") {
+									this.loadFromStorage(defaultWs);
+								}
+							});
+						},
+						loadFromStorage(fallback) {
+							let saved = localStorage.getItem("currentWorkspace");
+							if (saved) {
+								try { this.selected = JSON.parse(saved); } 
+								catch(e) { this.selected = fallback; }
+							} else {
+								this.selected = fallback;
+								localStorage.setItem("currentWorkspace", JSON.stringify(fallback));
+							}
+						},
+						selectWorkspace(ws) {
+							this.selected = ws;
+							localStorage.setItem("currentWorkspace", JSON.stringify(ws));
+							this.openSelect = false;
+						}
+					}
+				}
+				
+				lucide.createIcons();
+			</script>
 		</body>
 	</html>
 }
 
 
 script BaseScript(appName string) {
+
+	
 	document.addEventListener("DOMContentLoaded", () => {
 		lucide.createIcons();
 	});
 
-	// or htmx:afterOnLoad
-	document.body.addEventListener("htmx:afterSwap", (e) => {
+	// or htmx:afterSwap
+	document.body.addEventListener("htmx:afterOnLoad", (e) => {
 		if (e.detail.target.id === "content") {
 			const newTitle = document.querySelector("#content [data-title]")?.dataset.title;
 			if (newTitle) document.title = newTitle !== "" ? newTitle+" - "+appName : appName;
@@ -132,6 +175,14 @@ script BaseScript(appName string) {
 		lucide.createIcons();
 	});
 
+	document.body.addEventListener("htmx:afterOnLoad", (e) => {
+		if (e.detail.target.id === "toaster") {
+			document.querySelector("#toaster")
+				.insertAdjacentHTML("beforeend", e.detail.xhr.responseText);						
+		}
+		lucide.createIcons();
+	});
+	
 	document.body.addEventListener("htmx:responseError", function(e) {
 		if (e.detail.target.id === "content") {
 			document.querySelector("#toaster")
@@ -152,5 +203,12 @@ script BaseScript(appName string) {
 			close() { this.openId = null },
 			isOpen(id) { return this.openId === id }
 		});
+		Alpine.store("workspace", {
+			current: localStorage.getItem("workspace") || "",
+			set(val) {
+				this.current = val
+				localStorage.setItem("workspace", val)
+			}
+		})
 	});
 }

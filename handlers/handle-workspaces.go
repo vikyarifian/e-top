@@ -23,10 +23,13 @@ func GetWorkspaces() []models.Workspace {
 }
 
 func WorkspaceSwitcher(w http.ResponseWriter, r *http.Request) error {
-	ws := GetWorkspaces()
+	user, _ := auth.GetAuth(w, r)
+	var ws []models.Workspace
+	db.PgSql.Where("id in (SELECT workspace_id FROM workspace_members WHERE user_id=?)", user.ID).Order("no").Find(&ws)
+	// ws := GetWorkspaces()
 	list := []ui.SelectOption{}
 	for _, w := range ws {
-		list = append(list, ui.SelectOption{Label: w.Name, Value: w.ID, Color: utils.LetterToColor(w.Name[0:1])})
+		list = append(list, ui.SelectOption{Label: w.Name, Value: w.ID, Color: w.Color})
 	}
 
 	return utils.Render(w, r, features.WorkspaceSwitcher(list))
