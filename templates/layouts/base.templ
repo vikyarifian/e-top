@@ -209,6 +209,24 @@ script BaseScript(appName string) {
 				this.current = val
 				localStorage.setItem("workspace", val)
 			}
+		});
+		Alpine.store("navigation", {
+			currentPath: window.location.pathname,
+			setPath(path) {
+				this.currentPath = path
+			}
+		})
+
+		// Update kalau user pakai tombol back/forward
+		window.addEventListener("popstate", () => {
+			Alpine.store("navigation").setPath(window.location.pathname)
+		})
+
+		// Update kalau htmx ganti url
+		document.body.addEventListener("htmx:afterSwap", (e) => {
+			if (e.detail.target.id === "content") {
+				Alpine.store("navigation").setPath(window.location.pathname)
+			}
 		})
 	});
 }

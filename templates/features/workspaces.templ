@@ -26,12 +26,12 @@ templ WorkspaceSwitcher(options []ui.SelectOption) {
 				   focus:outline-none transition-colors"
 		>
 			<div class="flex items-center space-x-2">
-				<div x-show="selected.value"
+				<div x-show="selected.value && selected.value !== ' ' "
                     :class="`w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold ${selected.color}`">
-                    <span x-text="selected.label ? selected.label.slice(0,1).toUpperCase() : ''"></span>
+                    <span x-text="selected.label && selected.label !== ' ' ? selected.label.slice(0,1).toUpperCase() : ''"></span>
                 </div>
-				<div x-show="!selected.value" class="w-4 h-4 ml-0" data-lucide="list-checks"></div>
-				<span x-text="selected.label || 'Select Workspace'"></span>
+				<div x-show="!selected.value || selected.value === ' ' " class="w-4 h-4 ml-0" data-lucide="list-checks"></div>
+				<span x-text="selected.label && selected.label !== ' ' ?  selected.label : 'Select Workspace'"></span>
 			</div>
 			<svg class="w-4 h-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" 
 				viewBox="0 0 24 24" stroke="currentColor">
@@ -46,16 +46,18 @@ templ WorkspaceSwitcher(options []ui.SelectOption) {
 			<div class="px-3 pt-2 pb-1 text-sm text-muted-foreground">Workspace</div>
 			<ul class="max-h-60 overflow-auto">
 				for _, item := range options {
-					<li 
-						class="flex items-center space-x-2 px-3 py-2 cursor-pointer 
-							   hover:bg-accent hover:text-accent-foreground"
-						@click={fmt.Sprintf("selectWorkspace({ value: '%s', label: '%s', color: '%s' })", item.Value, item.Label, item.Color)}
-					>
-						<div class={"w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold " , item.Color}>
-							{strings.ToUpper(item.Label[0:1])}
-						</div>
-						<span>{item.Label}</span>
-					</li>
+                    if item.Value != " " {
+                        <li 
+                            class="flex items-center space-x-2 px-3 py-2 cursor-pointer 
+                                hover:bg-accent hover:text-accent-foreground"
+                            @click={fmt.Sprintf("selectWorkspace({ value: '%s', label: '%s', color: '%s' })", item.Value, item.Label, item.Color)}
+                        >
+                            <div class={"w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold " , item.Color}>
+                                {strings.ToUpper(item.Label[0:1])}
+                            </div>
+                            <span>{item.Label}</span>
+                        </li>
+                    }
 				}
 				@ui.Separator("horizontal", "", nil)
 				<li 

@@ -26,6 +26,9 @@ func WorkspaceSwitcher(w http.ResponseWriter, r *http.Request) error {
 	user, _ := auth.GetAuth(w, r)
 	var ws []models.Workspace
 	db.PgSql.Where("id in (SELECT workspace_id FROM workspace_members WHERE user_id=?)", user.ID).Order("no").Find(&ws)
+	if len(ws) == 0 {
+		ws = append(ws, models.Workspace{ID: " ", Name: " "})
+	}
 	// ws := GetWorkspaces()
 	list := []ui.SelectOption{}
 	for _, w := range ws {
