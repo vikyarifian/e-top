@@ -144,8 +144,8 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 
 func BaseScript(appName string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_BaseScript_a732`,
-		Function: `function __templ_BaseScript_a732(appName){document.addEventListener("DOMContentLoaded", () => {
+		Name: `__templ_BaseScript_ae11`,
+		Function: `function __templ_BaseScript_ae11(appName){document.addEventListener("DOMContentLoaded", () => {
 		lucide.createIcons();
 	});
 
@@ -197,11 +197,29 @@ func BaseScript(appName string) templ.ComponentScript {
 				this.current = val
 				localStorage.setItem("workspace", val)
 			}
+		});
+		Alpine.store("navigation", {
+			currentPath: window.location.pathname,
+			setPath(path) {
+				this.currentPath = path
+			}
+		})
+
+		// Update kalau user pakai tombol back/forward
+		window.addEventListener("popstate", () => {
+			Alpine.store("navigation").setPath(window.location.pathname)
+		})
+
+		// Update kalau htmx ganti url
+		document.body.addEventListener("htmx:afterSwap", (e) => {
+			if (e.detail.target.id === "content") {
+				Alpine.store("navigation").setPath(window.location.pathname)
+			}
 		})
 	});
 }`,
-		Call:       templ.SafeScript(`__templ_BaseScript_a732`, appName),
-		CallInline: templ.SafeScriptInline(`__templ_BaseScript_a732`, appName),
+		Call:       templ.SafeScript(`__templ_BaseScript_ae11`, appName),
+		CallInline: templ.SafeScriptInline(`__templ_BaseScript_ae11`, appName),
 	}
 }
 

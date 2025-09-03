@@ -51,75 +51,77 @@ func WorkspaceSwitcher(options []ui.SelectOption) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"relative w-full\"><input type=\"hidden\" name=\"workspaceId\" x-model=\"selected.value\"><!-- Trigger --><button @click=\"openSelect = !openSelect\" class=\"w-full flex justify-between items-center px-3 py-2 \r\n\t\t\t\t   border rounded-md \r\n\t\t\t\t   bg-background text-foreground border-border \r\n\t\t\t\t   hover:bg-accent hover:text-accent-foreground\r\n\t\t\t\t   focus:outline-none transition-colors\"><div class=\"flex items-center space-x-2\"><div x-show=\"selected.value\" :class=\"`w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold ${selected.color}`\"><span x-text=\"selected.label ? selected.label.slice(0,1).toUpperCase() : ''\"></span></div><div x-show=\"!selected.value\" class=\"w-4 h-4 ml-0\" data-lucide=\"list-checks\"></div><span x-text=\"selected.label || 'Select Workspace'\"></span></div><svg class=\"w-4 h-4 text-muted-foreground\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 9l-7 7-7-7\"></path></svg></button><!-- Dropdown --><div x-show=\"openSelect\" @click.away=\"openSelect = false\" class=\"absolute z-10 mt-1 w-full rounded-md border shadow-lg \r\n\t\t\t\t   bg-popover border-border text-popover-foreground\"><div class=\"px-3 pt-2 pb-1 text-sm text-muted-foreground\">Workspace</div><ul class=\"max-h-60 overflow-auto\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"relative w-full\"><input type=\"hidden\" name=\"workspaceId\" x-model=\"selected.value\"><!-- Trigger --><button @click=\"openSelect = !openSelect\" class=\"w-full flex justify-between items-center px-3 py-2 \r\n\t\t\t\t   border rounded-md \r\n\t\t\t\t   bg-background text-foreground border-border \r\n\t\t\t\t   hover:bg-accent hover:text-accent-foreground\r\n\t\t\t\t   focus:outline-none transition-colors\"><div class=\"flex items-center space-x-2\"><div x-show=\"selected.value && selected.value !== ' ' \" :class=\"`w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold ${selected.color}`\"><span x-text=\"selected.label && selected.label !== ' ' ? selected.label.slice(0,1).toUpperCase() : ''\"></span></div><div x-show=\"!selected.value || selected.value === ' ' \" class=\"w-4 h-4 ml-0\" data-lucide=\"list-checks\"></div><span x-text=\"selected.label && selected.label !== ' ' ?  selected.label : 'Select Workspace'\"></span></div><svg class=\"w-4 h-4 text-muted-foreground\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M19 9l-7 7-7-7\"></path></svg></button><!-- Dropdown --><div x-show=\"openSelect\" @click.away=\"openSelect = false\" class=\"absolute z-10 mt-1 w-full rounded-md border shadow-lg \r\n\t\t\t\t   bg-popover border-border text-popover-foreground\"><div class=\"px-3 pt-2 pb-1 text-sm text-muted-foreground\">Workspace</div><ul class=\"max-h-60 overflow-auto\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, item := range options {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<li class=\"flex items-center space-x-2 px-3 py-2 cursor-pointer \r\n\t\t\t\t\t\t\t   hover:bg-accent hover:text-accent-foreground\" @click=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("selectWorkspace({ value: '%s', label: '%s', color: '%s' })", item.Value, item.Label, item.Color))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 52, Col: 123}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var4 = []any{"w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold ", item.Color}
-			templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var5 string
-			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var4).String())
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 1, Col: 0}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var6 string
-			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(item.Label[0:1]))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 55, Col: 40}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><span>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var7 string
-			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(item.Label)
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 57, Col: 23}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></li>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
+			if item.Value != " " {
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<li class=\"flex items-center space-x-2 px-3 py-2 cursor-pointer \r\n                                hover:bg-accent hover:text-accent-foreground\" @click=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var3 string
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("selectWorkspace({ value: '%s', label: '%s', color: '%s' })", item.Value, item.Label, item.Color))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 53, Col: 145}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var4 = []any{"w-6 h-6 rounded-md text-white flex items-center justify-center text-xs font-semibold ", item.Color}
+				templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var4...)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<div class=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var5 string
+				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(templ.CSSClasses(templ_7745c5c3_Var4).String())
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 1, Col: 0}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var6 string
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(item.Label[0:1]))
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 56, Col: 65}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div><span>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var7 string
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(item.Label)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 58, Col: 45}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</span></li>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 		}
 		templ_7745c5c3_Err = ui.Separator("horizontal", "", nil).Render(ctx, templ_7745c5c3_Buffer)

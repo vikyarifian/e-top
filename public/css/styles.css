@@ -2366,6 +2366,10 @@ video {
   color: rgb(202 138 4 / var(--tw-text-opacity));
 }
 
+.text-accent-foreground {
+  color: hsl(var(--accent-foreground));
+}
+
 .underline {
   text-decoration-line: underline;
 }
