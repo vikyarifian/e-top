@@ -1,14 +1,6 @@
 package handlers
 
 import (
-	"etop/auth"
-	"etop/db"
-	"etop/models"
-	"etop/templates/components"
-	"etop/templates/components/ui"
-	"etop/templates/layouts"
-	"etop/templates/pages"
-	"etop/utils"
 	"net/http"
 	"os"
 	"strings"
@@ -17,13 +9,25 @@ import (
 	"github.com/a-h/templ"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+
+	"etop/auth"
+	"etop/db"
+	"etop/models"
+	"etop/templates/components"
+	"etop/templates/components/ui"
+	"etop/templates/layouts"
+	"etop/templates/pages"
+	"etop/utils"
 )
 
 func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 
 	if _, err := auth.GetAuth(w, r); err == nil {
-		w.Header().Set("HX-Redirect", "/")
-		w.WriteHeader(http.StatusSeeOther)
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/dashboard")
+		} else {
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		}
 	}
 
 	switch r.Method {
@@ -91,8 +95,11 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 
 func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 	if _, err := auth.GetAuth(w, r); err == nil {
-		w.Header().Set("HX-Redirect", "/")
-		w.WriteHeader(http.StatusSeeOther)
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/dashboard")
+		} else {
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		}
 	}
 
 	switch r.Method {
@@ -169,8 +176,11 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 
 	if _, err := auth.GetAuth(w, r); err == nil {
-		w.Header().Set("HX-Redirect", "/")
-		w.WriteHeader(http.StatusSeeOther)
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/dashboard")
+		} else {
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		}
 	}
 
 	switch r.Method {
@@ -213,8 +223,11 @@ func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 
 	if _, err := auth.GetAuth(w, r); err == nil {
-		w.Header().Set("HX-Redirect", "/")
-		w.WriteHeader(http.StatusSeeOther)
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/dashboard")
+		} else {
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		}
 	}
 
 	switch r.Method {
@@ -363,8 +376,11 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 
 func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 	if _, err := auth.GetAuth(w, r); err == nil {
-		w.Header().Set("HX-Redirect", "/")
-		w.WriteHeader(http.StatusSeeOther)
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/dashboard")
+		} else {
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		}
 	}
 
 	switch r.Method {

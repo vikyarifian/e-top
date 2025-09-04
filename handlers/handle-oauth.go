@@ -3,14 +3,6 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"etop/auth"
-	"etop/db"
-	"etop/models"
-	"etop/templates/components"
-	"etop/templates/components/ui"
-	"etop/templates/layouts"
-	"etop/templates/pages"
-	"etop/utils"
 	"io"
 	"net/http"
 	"os"
@@ -20,6 +12,15 @@ import (
 	"github.com/a-h/templ"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+
+	"etop/auth"
+	"etop/db"
+	"etop/models"
+	"etop/templates/components"
+	"etop/templates/components/ui"
+	"etop/templates/layouts"
+	"etop/templates/pages"
+	"etop/utils"
 )
 
 var OAuthConf *oauth2.Config
@@ -43,6 +44,13 @@ func OAthConfig() {
 }
 
 func HandleLoginGoogle(w http.ResponseWriter, r *http.Request) error {
+	if _, err := auth.GetAuth(w, r); err == nil {
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/dashboard")
+		} else {
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		}
+	}
 	url := OAuthConf.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	return nil
@@ -51,7 +59,11 @@ func HandleLoginGoogle(w http.ResponseWriter, r *http.Request) error {
 func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 
 	if _, err := auth.GetAuth(w, r); err == nil {
-		http.Redirect(w, r, "/", http.StatusFound)
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/dashboard")
+		} else {
+			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		}
 	}
 
 	code := r.URL.Query().Get("code")

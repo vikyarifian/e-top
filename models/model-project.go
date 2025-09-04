@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Project struct {
 	No          int             `gorm:"column:no;primaryKey" json:"-" form:"-"`
@@ -9,7 +11,7 @@ type Project struct {
 	Description string          `gorm:"column:description" json:"description,omitempty" form:"description"`
 	WorkspaceID string          `gorm:"column:workspace_id;not null;index" json:"workspace_id" form:"workspace_id"`
 	Workspace   Workspace       `gorm:"foreignKey:WorkspaceID;references:ID" json:"workspace,omitempty"`
-	Status      string          `gorm:"column:status;default:'Planning'" json:"status" form:"status"`
+	Status      string          `gorm:"column:status;default:'PLANNING'" json:"status" form:"status"`
 	StartDate   *time.Time      `gorm:"column:start_date;type:DATE" json:"start_date,omitempty" form:"start_date"`
 	DueDate     *time.Time      `gorm:"column:due_date;type:DATE" json:"due_date,omitempty" form:"due_date"`
 	Progress    int             `gorm:"column:progress;default:0" json:"progress" form:"progress"`

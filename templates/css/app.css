@@ -65,6 +65,14 @@
     background-position: center;
 }
 
+.locked-text {
+    background: url('/public/img/lock.jpg'); /* ganti dengan path gambar gembok */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: cover;
+    background-position: center;
+}
+
 .htmx-loader {
   display: none;
 }
@@ -84,4 +92,20 @@
 
 .htmx-request.loaded-content {
   display: none;
+}
+
+/* Scrollbar ala shadcn */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--border));
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--muted-foreground));
 }

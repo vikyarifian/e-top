@@ -12,8 +12,8 @@ import (
 	"etop/templates/components/ui"
 )
 
-// NotFound Page
-func NotFound() templ.Component {
+// Forbidden Page
+func Forbidden() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -34,7 +34,7 @@ func NotFound() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" data-title=\"404 Page Not Found\"><div><h2 class=\"text-3xl font-bold tracking-tight\">Oops!</h2><p class=\"text-muted-foreground\">Sorry, the page you are looking for could not be found.</p></div><!-- Action --><div class=\"text-card-foreground p-6\"><div class=\"flex flex-col items-center justify-start\"><!-- Big Oops --><h1 class=\"galaxy-text font-extrabold mb-4 text-8xl sm:text-[96px] lg:text-[120px] leading-none tracking-tight dark:opacity-50\">404</h1><!-- Subtitle --><p class=\"text-gray-500 max-w-lg text-center mb-6\">The page you are looking for might have been removed,<br>had its name changed, or is temporarily unavailable.</p>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"space-y-6\" data-title=\"403 Forbidden\"><div><h2 class=\"text-3xl font-bold tracking-tight\">Access Denied</h2><p class=\"text-muted-foreground\">Sorry, you don’t have permission to access this page.</p></div><!-- Action --><div class=\"text-card-foreground p-6\"><div class=\"flex flex-col items-center justify-start\"><!-- Big 403 --><h1 class=\"locked-text font-extrabold mb-4 text-8xl sm:text-[96px] lg:text-[120px] leading-none tracking-tight dark:opacity-50\">403</h1><!-- Subtitle --><p class=\"text-gray-500 max-w-lg text-center mb-6\">You might not have the necessary privileges to view this resource.<br>Please contact your administrator if you believe this is a mistake.</p>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

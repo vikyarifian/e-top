@@ -1,0 +1,32 @@
+package pages
+
+import (
+    "etop/templates/components/ui"
+)
+
+// Forbidden Page
+templ Forbidden() {
+	<div class="space-y-6" data-title="403 Forbidden">
+        <div>
+			<h2 class="text-3xl font-bold tracking-tight">Access Denied</h2>
+			<p class="text-muted-foreground">Sorry, you don’t have permission to access this page.</p>
+		</div>
+		
+		<!-- Action -->
+        <div class="text-card-foreground p-6">
+			<div class="flex flex-col items-center justify-start">  
+                <!-- Big 403 -->
+                <h1 class="locked-text font-extrabold mb-4 text-8xl sm:text-[96px] lg:text-[120px] leading-none tracking-tight dark:opacity-50">403</h1>
+
+                <!-- Subtitle -->
+                <p class="text-gray-500 max-w-lg text-center mb-6">
+                    You might not have the necessary privileges to view this resource.<br>
+                    Please contact your administrator if you believe this is a mistake.
+                </p>
+				
+				@ui.Button("back-dasboard", "outline", "", "", "Back to Dashboard", "", 
+                    templ.Attributes{"type": "button","hx-post":"/","hx-target":"#content","hx-swap":"innerHTML","hx-push-url":"true"})
+			</div>
+		</div>
+	</div>
+}

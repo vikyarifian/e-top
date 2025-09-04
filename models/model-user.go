@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type User struct {
 	No            int        `gorm:"column:no;primaryKey" json:"-" form:"-"`
