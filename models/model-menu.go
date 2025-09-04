@@ -14,7 +14,7 @@ func GetMenu() []Menu {
 	menus = append(menus, Menu{Label: "My Tasks", Href: "/tasks", Icon: "layout-list"})
 	menus = append(menus, Menu{Label: "Members", Href: "/members", Icon: "users"})
 	menus = append(menus, Menu{Label: "Achieved", Href: "/achieve", Icon: "badge-check"})
-	menus = append(menus, Menu{Label: "Settings", Href: "/achieve", Icon: "settings"})
+	menus = append(menus, Menu{Label: "Settings", Href: "/settings", Icon: "settings"})
 
 	return menus
 }

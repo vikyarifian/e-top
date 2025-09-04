@@ -8,7 +8,9 @@ package ui
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Button Component
 func Button(id string, variant, size, icon, text string, class string, attrs templ.Attributes) templ.Component {
@@ -66,7 +68,7 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 8, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 10, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -106,7 +108,7 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(icon)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 36, Col: 36}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 38, Col: 36}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -124,7 +126,7 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 38, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 40, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

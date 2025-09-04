@@ -1,0 +1,18 @@
+package components
+
+import (
+    // "strings"
+
+	// "etop/templates/components/ui"
+)
+
+templ NoData(title string, description string, attrs templ.Attributes) {
+    <div class="col-span-full text-center py-12 2xl:py-24 bg-muted/40 rounded-lg gap-2">
+        <svg data-lucide="layout-grid" class="size-12 mx-auto text-muted-foreground" />
+        <h4 class="mt-2 text-sm">{title}</h4>
+        <p class="mt-1 text-muted-foreground max-w-sm mx-auto text-xs">
+            {description}
+        </p>
+        <div {attrs...} class="mt-2">{children...}</div> 
+    </div>
+} 

@@ -9,8 +9,9 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"etop/templates/components/ui"
 	"fmt"
+
+	"etop/templates/components/ui"
 )
 
 func ResponsiveModal(id string, title string, class string) templ.Component {
@@ -41,7 +42,7 @@ func ResponsiveModal(id string, title string, class string) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$store.modal.isOpen('%s')", id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modal.templ`, Line: 10, Col: 54}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modal.templ`, Line: 11, Col: 54}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -63,7 +64,7 @@ func ResponsiveModal(id string, title string, class string) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("$store.modal.isOpen('%s')", id))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modal.templ`, Line: 18, Col: 53}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modal.templ`, Line: 19, Col: 53}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -129,7 +130,7 @@ func ResponsiveModal(id string, title string, class string) templ.Component {
 					var templ_7745c5c3_Var9 string
 					templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modal.templ`, Line: 26, Col: 18}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/modal.templ`, Line: 27, Col: 18}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 					if templ_7745c5c3_Err != nil {

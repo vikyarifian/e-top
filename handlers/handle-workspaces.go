@@ -1,16 +1,21 @@
 package handlers
 
 import (
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
 	"etop/auth"
 	"etop/db"
 	"etop/models"
 	"etop/templates/components/ui"
 	"etop/templates/features"
+	"etop/templates/layouts"
+	"etop/templates/pages"
 	"etop/utils"
-	"net/http"
-	"strconv"
-	"strings"
-	"time"
+
+	"gorm.io/gorm"
 )
 
 func GetWorkspaces() []models.Workspace {
@@ -29,7 +34,7 @@ func WorkspaceSwitcher(w http.ResponseWriter, r *http.Request) error {
 	if len(ws) == 0 {
 		ws = append(ws, models.Workspace{ID: " ", Name: " "})
 	}
-	// ws := GetWorkspaces()
+
 	list := []ui.SelectOption{}
 	for _, w := range ws {
 		list = append(list, ui.SelectOption{Label: w.Name, Value: w.ID, Color: w.Color})
@@ -38,23 +43,89 @@ func WorkspaceSwitcher(w http.ResponseWriter, r *http.Request) error {
 	return utils.Render(w, r, features.WorkspaceSwitcher(list))
 }
 
+func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
+	user, _ := auth.GetAuth(w, r)
+	switch r.Method {
+	case http.MethodGet:
+		id := r.URL.Query().Get("id")
+		if strings.Trim(id, " ") != "" {
+			var ws models.Workspace
+			if err := db.PgSql.Where("id=?", id).
+				Preload("Members", func(db *gorm.DB) *gorm.DB {
+					return db.Preload("User")
+				}).Preload("Projects").Order("no").First(&ws).Error; err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
+			}
+			authorized := false
+			for _, member := range ws.Members {
+				if member.UserID == user.ID {
+					authorized = true
+					break
+				}
+			}
+			if !authorized {
+				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
+			}
+			return layouts.Layout("Workspace", user, features.Workspace(ws)).Render(r.Context(), w)
+		}
+
+		var ws []models.Workspace
+		db.PgSql.Where("id in (SELECT workspace_id FROM workspace_members WHERE user_id=?)", user.ID).
+			Preload("Members", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).Order("no").Find(&ws)
+		return layouts.Layout("Workspaces", user, features.Workspaces(ws)).Render(r.Context(), w)
+	case http.MethodPost:
+		id := r.URL.Query().Get("id")
+		if strings.Trim(id, " ") != "" {
+			var ws models.Workspace
+			if err := db.PgSql.Where("id=?", id).
+				Preload("Members", func(db *gorm.DB) *gorm.DB {
+					return db.Preload("User")
+				}).Preload("Projects").Order("no").First(&ws).Error; err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				// return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
+				return pages.NotFound().Render(r.Context(), w)
+			}
+			authorized := false
+			for _, member := range ws.Members {
+				if member.UserID == user.ID {
+					authorized = true
+					break
+				}
+			}
+			if !authorized {
+				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
+			}
+			return features.Workspace(ws).Render(r.Context(), w)
+		}
+
+		var ws []models.Workspace
+		db.PgSql.Where("id in (SELECT workspace_id FROM workspace_members WHERE user_id=?)", user.ID).Preload("Members").Order("no").Find(&ws)
+		return features.Workspaces(ws).Render(r.Context(), w)
+	default:
+		return nil
+	}
+}
+
 func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case http.MethodGet:
-		var workspace models.Workspace
-		id := r.URL.Query().Get("id")
-		user, _ := auth.GetAuth(w, r)
+		// var workspace models.Workspace
+		// id := r.URL.Query().Get("id")
+		// user, _ := auth.GetAuth(w, r)
 
-		if err := db.PgSql.Where("id=?", id).First(&workspace).Error; err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
-		}
+		// if err := db.PgSql.Where("id=?", id).First(&workspace).Error; err != nil {
+		// 	w.WriteHeader(http.StatusBadRequest)
+		// 	return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
+		// }
 
-		var member models.WorkspaceMember
-		if err := db.PgSql.Where("id=? AND user_id=?", workspace.ID, user.ID).First(&member).Error; err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("workspace-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
-		}
+		// var member models.WorkspaceMember
+		// if err := db.PgSql.Where("id=? AND user_id=?", workspace.ID, user.ID).First(&member).Error; err != nil {
+		// 	w.WriteHeader(http.StatusBadRequest)
+		// 	return ui.Toast("workspace-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
+		// }
 
 		return nil
 	case http.MethodPost:
@@ -108,6 +179,20 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 		r.ParseForm()
 
 		workspace.ID = r.FormValue("id")
+
+		user, _ := auth.GetAuth(w, r)
+		t := time.Now()
+		if err := db.PgSql.Where("id=?", workspace.ID).First(&workspace).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("workspace-error", "warning", "", "Workspace is not found!", "", nil).Render(r.Context(), w)
+		}
+
+		var member models.WorkspaceMember
+		if err := db.PgSql.Where("id=? AND user_id=?", workspace.ID, user.ID).First(&member).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("workspace-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
+		}
+
 		workspace.Name = r.FormValue("name")
 		workspace.Description = r.FormValue("description")
 		workspace.Color = r.FormValue("color")
@@ -120,19 +205,6 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 		if len(strings.Trim(workspace.Color, " ")) < 1 {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("workspace-error", "warning", "", "Color is required!", "", nil).Render(r.Context(), w)
-		}
-
-		user, _ := auth.GetAuth(w, r)
-		t := time.Now()
-		if err := db.PgSql.Where("id=?", workspace.ID).First(&workspace).Error; err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("workspace-error", "warning", "", "Color is required!", "", nil).Render(r.Context(), w)
-		}
-
-		var member models.WorkspaceMember
-		if err := db.PgSql.Where("id=? AND user_id=?", workspace.ID, user.ID).First(&member).Error; err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("workspace-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
 		}
 
 		if strings.ToUpper(strings.Trim(member.Role, " ")) != "ADMIN" {

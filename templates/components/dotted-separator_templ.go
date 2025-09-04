@@ -8,7 +8,9 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Dotted Separator
 func DottedSeparator(class string, color string, height string, dotSize string, gapSize string, direction string) templ.Component {
@@ -106,7 +108,7 @@ func DottedSeparator(class string, color string, height string, dotSize string, 
 			templ.KV("background-repeat:repeat-y;", direction == "vertical"),
 		)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/dotted-separator.templ`, Line: 36, Col: 12}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/dotted-separator.templ`, Line: 38, Col: 12}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {

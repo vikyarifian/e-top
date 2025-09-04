@@ -9,10 +9,10 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"etop/dto"
 	"fmt"
 	"os"
 
+	"etop/dto"
 	"etop/models"
 	"etop/templates/components"
 	"etop/templates/features"
@@ -80,7 +80,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" x-init=\"\r\n\t\t\t\t$watch('darkMode', val => {\r\n\t\t\t\t\tlocalStorage.setItem('darkMode', val);\r\n\t\t\t\t\tif (val) {\r\n\t\t\t\t\t\tdocument.documentElement.classList.add('dark');\r\n\t\t\t\t\t} else {\r\n\t\t\t\t\t\tdocument.documentElement.classList.remove('dark');\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t\tif (darkMode) {\r\n\t\t\t\t\tdocument.documentElement.classList.add('dark');\r\n\t\t\t\t}\r\n\t\t\t\twindow.addEventListener('resize', () => {\r\n\t\t\t\t\tlet currentSize = isMobile;\r\n\t\t\t\t\tisMobile = window.innerWidth < 768;\r\n\t\t\t\t\tif (!isMobile) sidebarOpen = false;\r\n\t\t\t\t\t\r\n\t\t\t\t\tif (currentSize != isMobile) {\r\n\t\t\t\t\t\thtmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})\r\n\t\t\t\t\t}\r\n\t\t\t\t\t\r\n\t\t\t\t});\r\n\t\t\t\"><div class=\"flex h-screen\"><!-- Desktop Sidebar --><div class=\"hidden md:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out\" :class=\"sidebarCollapsed ? 'w-16' : 'w-64'\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\" x-init=\"\r\n\t\t\t\t$watch('darkMode', val => {\r\n\t\t\t\t\tlocalStorage.setItem('darkMode', val);\r\n\t\t\t\t\tif (val) {\r\n\t\t\t\t\t\tdocument.documentElement.classList.add('dark');\r\n\t\t\t\t\t} else {\r\n\t\t\t\t\t\tdocument.documentElement.classList.remove('dark');\r\n\t\t\t\t\t}\r\n\t\t\t\t});\r\n\t\t\t\tif (darkMode) {\r\n\t\t\t\t\tdocument.documentElement.classList.add('dark');\r\n\t\t\t\t}\r\n\t\t\t\twindow.addEventListener('resize', () => {\r\n\t\t\t\t\tlet currentSize = isMobile;\r\n\t\t\t\t\tisMobile = window.innerWidth < 768;\r\n\t\t\t\t\tif (!isMobile) sidebarOpen = false;\r\n\t\t\t\t\t\r\n\t\t\t\t\tif (currentSize != isMobile) {\r\n\t\t\t\t\t\thtmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml', indicator: 'false'})\r\n\t\t\t\t\t}\r\n\t\t\t\t\t\r\n\t\t\t\t});\r\n\t\t\t\"><div class=\"flex h-screen\"><!-- Desktop Sidebar --><div class=\"hidden md:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out\" :class=\"sidebarCollapsed ? 'w-16' : 'w-64'\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

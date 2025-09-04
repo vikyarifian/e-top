@@ -1,8 +1,6 @@
 package auth
 
 import (
-	"etop/dto"
-	"etop/models"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,6 +9,9 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"etop/dto"
+	"etop/models"
 )
 
 var jwtKey = []byte(os.Getenv("JWT_KEY"))
@@ -79,15 +80,21 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
-			w.Header().Set("HX-Redirect", "/")
-			w.WriteHeader(http.StatusUnauthorized)
+			if r.Header.Get("HX-Request") == "true" {
+				w.Header().Set("HX-Redirect", "/sign-in")
+			} else {
+				http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+			}
 			return
 		}
 
 		claims, err := ValidateJWT(cookie.Value)
 		if err != nil {
-			w.Header().Set("HX-Redirect", "/")
-			w.WriteHeader(http.StatusUnauthorized)
+			if r.Header.Get("HX-Request") == "true" {
+				w.Header().Set("HX-Redirect", "/sign-in")
+			} else {
+				http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+			}
 			return
 		}
 

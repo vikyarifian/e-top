@@ -1,13 +1,14 @@
 package routes
 
 import (
-	"etop/auth"
-	"etop/handlers"
 	"log"
 	"log/slog"
 	"net/http"
 	"os"
 	"strings"
+
+	"etop/auth"
+	"etop/handlers"
 )
 
 // helper buat cek status
@@ -57,6 +58,7 @@ func SetRoutes() {
 	mux.HandleFunc("/dashboard", auth.RequireAuth(handlers.Make(handlers.HandleDashboard)))
 	mux.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.WorkspaceSwitcher)))
 	mux.HandleFunc("/workspace", auth.RequireAuth(handlers.Make(handlers.HandleWorkspace)))
+	mux.HandleFunc("/workspaces", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaces)))
 
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
 
@@ -89,7 +91,7 @@ func SetRoutes() {
 
 	listenAddr := os.Getenv("APP_PORT")
 
-	slog.Info("Server started", "listenAddr", listenAddr)
+	slog.Info("Server Started", "ListenAddr", listenAddr)
 
 	if err := http.ListenAndServe(listenAddr, corsHandler(mux)); err != nil {
 		log.Fatal("Server failed to start:", err)

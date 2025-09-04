@@ -3,11 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"log/slog"
+	"net/http"
+
 	"etop/auth"
 	"etop/templates/layouts"
 	"etop/templates/pages"
-	"log/slog"
-	"net/http"
 )
 
 type HTTPHandler func(w http.ResponseWriter, r *http.Request) error
@@ -50,11 +51,13 @@ var (
 )
 
 func HandleNotFound(w http.ResponseWriter, r *http.Request) error {
-
 	user, err := auth.GetAuth(w, r)
 	if err != nil {
-		w.Header().Set("HX-Redirect", "/")
-		w.WriteHeader(http.StatusSeeOther)
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/sign-in")
+		} else {
+			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+		}
 	}
 
 	switch r.Method {
@@ -62,6 +65,26 @@ func HandleNotFound(w http.ResponseWriter, r *http.Request) error {
 		return layouts.Layout("Not Found", user, pages.NotFound()).Render(r.Context(), w)
 	case http.MethodPost:
 		return pages.NotFound().Render(r.Context(), w)
+	default:
+		return nil
+	}
+}
+
+func HandleForbidden(w http.ResponseWriter, r *http.Request) error {
+	user, err := auth.GetAuth(w, r)
+	if err != nil {
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/sign-in")
+		} else {
+			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+		}
+	}
+
+	switch r.Method {
+	case http.MethodGet:
+		return layouts.Layout("Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
+	case http.MethodPost:
+		return pages.Forbidden().Render(r.Context(), w)
 	default:
 		return nil
 	}

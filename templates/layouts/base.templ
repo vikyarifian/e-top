@@ -1,14 +1,14 @@
 package layouts
 
 import (
-	"etop/dto"
 	"os"
 	"fmt"
-	
-	"etop/templates/components"
-	"etop/templates/features"
-	"etop/models"
+
+	"etop/dto"
 	"etop/utils"
+	"etop/models"
+	"etop/templates/features"
+	"etop/templates/components"
 )
 
 // Base Layout
@@ -51,7 +51,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 					if (!isMobile) sidebarOpen = false;
 					
 					if (currentSize != isMobile) {
-						htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})
+						htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml', indicator: 'false'})
 					}
 					
 				});

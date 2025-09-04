@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Workspace struct {
 	No          int               `gorm:"column:no;primaryKey" json:"-" form:"-"`
@@ -9,6 +11,7 @@ type Workspace struct {
 	Description string            `gorm:"column:description;" json:"description" form:"description"`
 	Color       string            `gorm:"column:color;" json:"color" form:"color"`
 	Members     []WorkspaceMember `gorm:"foreignKey:WorkspaceID;references:ID" json:"members"`
+	Projects    []Project         `gorm:"foreignKey:WorkspaceID;references:ID" json:"projects"`
 	CreatedAt   *time.Time        `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
 	CreatedBy   string            `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
 	UpdatedAt   *time.Time        `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`

@@ -1,29 +1,33 @@
 package layouts
 
 import (
-    "etop/templates/components/ui"
+    "fmt"
+
     "etop/models"
-    
+    "etop/templates/components/ui"
 )
 
 templ Navigation() {
-    <ul class="space-y-2">
+    <ul class="space-y-2" x-data="{ currentPath: window.location.pathname }">
         for _, menu := range models.GetMenu() {
             <li>
                 <a 
+                    x-show="!sidebarCollapsed || isMobile"
                     hx-post={menu.Href}
                     hx-target="#content"
                     hx-swap="innerHTML"
                     hx-push-url="true"
                     hx-indicator=".htmx-loader,.loaded-content"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
-                    :class="sidebarCollapsed && !isMobile ? 'justify-center' : ''"
-                    @click="if (isMobile) sidebarOpen = false"
+                    :class={fmt.Sprintf("[sidebarCollapsed && !isMobile ? 'justify-center' : '', currentPath === '%s' ? 'bg-secondary text-secondary-foreground' : 'hover:bg-accent hover:text-accent-foreground']", menu.Href)}
+                    @click={fmt.Sprintf("currentPath = '%s'; if (isMobile) sidebarOpen = false", menu.Href)}
                 >                  
                     <div x-show="!sidebarCollapsed || isMobile" class="w-5 h-5" data-lucide={menu.Icon} />
                     <span x-show="!sidebarCollapsed || isMobile">{menu.Label}</span>
                 </a>
-                @ui.Tooltip(menu.Label, "mt-0 ml-4", templ.Attributes{}) {
+                @ui.Tooltip(menu.Label, "mt-0 ml-4", templ.Attributes{
+                    "x-show":"sidebarCollapsed && !isMobile",
+                }) {
                     <a 
                         x-show="sidebarCollapsed && !isMobile" 
                         hx-post={menu.Href}
@@ -32,8 +36,8 @@ templ Navigation() {
                         hx-push-url="true"
                         hx-indicator=".htmx-loader,.loaded-content"
                         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
-                        :class="sidebarCollapsed && !isMobile ? 'justify-center' : ''"
-                        @click="if (isMobile) sidebarOpen = false"
+                        :class={fmt.Sprintf("[sidebarCollapsed && !isMobile ? 'justify-center' : '', currentPath === '%s' ? 'bg-secondary text-secondary-foreground' : 'hover:bg-accent hover:text-accent-foreground']", menu.Href)}
+                         @click={fmt.Sprintf("currentPath = '%s'; if (isMobile) sidebarOpen = false", menu.Href)}
                     >                  
                         <div class="w-5 h-5" data-lucide={menu.Icon} />
                     </a>
