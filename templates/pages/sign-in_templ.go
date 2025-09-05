@@ -177,8 +177,6 @@ func SignIn() templ.Component {
 							return templ_7745c5c3_Err
 						}
 						templ_7745c5c3_Err = ui.FormControl("email", "email", "email", "you@example.com", "", "", templ.Attributes{
-							"id":           "email",
-							"name":         "email",
 							"autocomplete": "email",
 							"x-model":      "email",
 							"@blur":        "validateEmail",
@@ -241,8 +239,6 @@ func SignIn() templ.Component {
 							return templ_7745c5c3_Err
 						}
 						templ_7745c5c3_Err = ui.FormControl("password", "password", "password", "********", "", "", templ.Attributes{
-							"id":      "password",
-							"name":    "password",
 							"x-model": "password",
 							"@blur":   "validatePassword",
 						}).Render(ctx, templ_7745c5c3_Buffer)

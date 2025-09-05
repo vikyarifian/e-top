@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -64,7 +65,7 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "Invalid due date format!", "", nil).Render(r.Context(), w)
 		}
-		project.StartDate = &dueDate
+		project.DueDate = &dueDate
 
 		progress, err := strconv.Atoi(r.FormValue("progress"))
 		if err != nil {
@@ -87,7 +88,8 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("project-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
-		var member models.ProjectMember
+		members := []models.ProjectMember{}
+		member := models.ProjectMember{}
 		no = 0
 		db.PgSql.Table("project_members").Select("max(no)").Row().Scan(&no)
 		member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
@@ -99,7 +101,39 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 		member.UpdatedAt = &t
 		member.UpdatedBy = user.ID
 
-		db.PgSql.Create(&member)
+		members = append(members, member)
+
+		membersPayload := []models.ProjectMember{}
+		if err := json.Unmarshal([]byte(r.FormValue("members")), &membersPayload); err == nil {
+			for i, m := range membersPayload {
+				members = append(members, models.ProjectMember{
+					ID:        utils.GenerateHash(strconv.Itoa(no + 2 + i)),
+					ProjectID: project.ID,
+					Role:      m.Role,
+					UserID:    m.UserID,
+					CreatedAt: &t,
+					CreatedBy: user.ID,
+					UpdatedAt: &t,
+					UpdatedBy: user.ID,
+				})
+			}
+		}
+
+		db.PgSql.Create(&members)
+
+		tags := []models.ProjectTag{}
+		var tagsPayload []string
+		if err := json.Unmarshal([]byte(r.FormValue("tags")), &tagsPayload); err == nil {
+			for _, tag := range tagsPayload {
+				tags = append(tags, models.ProjectTag{
+					ProjectID: project.ID,
+					Tag:       tag,
+				})
+			}
+		}
+
+		db.PgSql.Create(&tags)
+
 		return ui.Toast("project-success", "success", "", "Project created successfully.", "", nil).Render(r.Context(), w)
 	case http.MethodPut:
 		var project models.Project

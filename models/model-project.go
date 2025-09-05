@@ -25,12 +25,19 @@ type Project struct {
 	UpdatedBy   string          `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
 }
 
+type ProjectStatus struct {
+	No     int    `gorm:"column:no;primaryKey" json:"-" form:"-"`
+	Status string `gorm:"column:status;not null;" json:"status" form:"status"`
+	Label  string `gorm:"column:label;not null;" json:"label" form:"label"`
+	Color  string `gorm:"column:color;not null;" json:"color" form:"color"`
+}
+
 type ProjectMember struct {
 	No        int        `gorm:"column:no;primaryKey" json:"-" form:"-"`
 	ID        string     `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
 	ProjectID string     `gorm:"column:project_id;not null;index" json:"project_id" form:"project_id"`
 	UserID    string     `gorm:"column:user_id;not null;index" json:"user_id" form:"user_id"`
-	User      User       `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
+	User      User       `gorm:"foreignKey:UserID;references:ID" json:"user"`
 	Role      string     `gorm:"column:role;default:'CONTRIBUTOR'" json:"role" form:"role"`
 	CreatedAt *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
 	CreatedBy string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
@@ -39,8 +46,8 @@ type ProjectMember struct {
 }
 
 type ProjectTag struct {
-	No        int    `gorm:"column:no;primaryKey" json:"-" form:"-"`
-	ID        string `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
+	No int `gorm:"column:no;primaryKey" json:"-" form:"-"`
+	// ID        string `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
 	ProjectID string `gorm:"column:project_id;not null;index" json:"project_id"`
 	Tag       string `gorm:"column:tag;not null" json:"tag"`
 }
@@ -62,6 +69,13 @@ type ProjectTag struct {
 //     updated_at TIMESTAMP DEFAULT NOW(),
 //     updated_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 //     CONSTRAINT fk_workspace FOREIGN KEY(workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE
+// );
+
+// -- Tabel project_tags
+// CREATE TABLE project_statuses (
+//     no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     status VARCHAR(50) NOT NULL,
+//     label VARCHAR(50) NOT NULL
 // );
 
 // -- Tabel project_members

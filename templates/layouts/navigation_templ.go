@@ -11,7 +11,7 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"fmt"
 
-	"etop/models"
+	"etop/services"
 	"etop/templates/components/ui"
 )
 
@@ -40,7 +40,7 @@ func Navigation() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, menu := range models.GetMenu() {
+		for _, menu := range services.GetMenu() {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<li><a x-show=\"!sidebarCollapsed || isMobile\" hx-post=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

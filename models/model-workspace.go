@@ -23,7 +23,7 @@ type WorkspaceMember struct {
 	ID          string     `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
 	WorkspaceID string     `gorm:"column:workspace_id;not null;index" json:"workspace_id" form:"workspace_id"`
 	UserID      string     `gorm:"column:user_id;not null;index" json:"user_id" form:"user_id"`
-	User        User       `gorm:"foreignKey:UserID;references:ID" json:"user,omitempty"`
+	User        User       `gorm:"foreignKey:UserID;references:ID" json:"user"`
 	Role        string     `gorm:"column:role;default:'MEMBER'" json:"role" form:"role"`
 	CreatedAt   *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
 	CreatedBy   string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
