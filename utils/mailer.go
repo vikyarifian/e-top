@@ -1,11 +1,12 @@
 package utils
 
 import (
-	"etop/models"
 	"fmt"
 	"log/slog"
 	"net/smtp"
 	"os"
+
+	"etop/models"
 )
 
 func SendEmail(to, subject, body string) error {

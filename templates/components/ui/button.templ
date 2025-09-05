@@ -33,10 +33,10 @@ templ Button(id string, variant, size, icon, text string, class string, attrs te
         }
         { attrs... }
     >   
+        if icon != "" {
+            <i data-lucide={icon} class="w-4 h-4 mr-1"></i>
+        }
         if text != "" {
-            if icon != "" {
-                <i data-lucide={icon} class="w-4 h-4 mr-1"></i>
-            }
             { text }
         } else {
             { children... }

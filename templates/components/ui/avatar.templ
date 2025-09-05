@@ -3,16 +3,14 @@ package ui
 import (
 	"fmt"
 	"strings"
-	
-    "etop/utils"
 )
 
 // Avatar Component
-templ Avatar(text string, size string, class string, attrs templ.Attributes) {
+templ Avatar(text string, color string, size string, class string, attrs templ.Attributes) {
 	<div class="flex items-center">
 		<div class={"rounded-full flex items-center justify-center",
 					class,
-					utils.TailwindForUsername(text),
+					color,
 					templ.KV("h-4 w-4", size == "xxs"),
 					templ.KV("h-6 w-6", size == "xs"),
 					templ.KV("h-8 w-8", size == "sm"),
@@ -20,7 +18,7 @@ templ Avatar(text string, size string, class string, attrs templ.Attributes) {
 					templ.KV("h-12 w-12", size == "lg"),
 					templ.KV("h-10 w-10", size == "")
 				}
-			:class={fmt.Sprintf("darkMode ? 'dark:bg-gray-500 dark:text-white' : '%s'",utils.TailwindForUsername(strings.Trim(text," ")))}
+			:class={fmt.Sprintf("darkMode ? 'dark:bg-gray-500 dark:text-white' : '%s'", color)}
 			{attrs...}
 		>
 			<span class="text-sm font-medium text-primary-foreground">{ strings.Trim(strings.ToUpper(text[0:1])," ") }</span>

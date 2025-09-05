@@ -35,7 +35,7 @@ func NoData(title string, description string, attrs templ.Attributes) templ.Comp
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"col-span-full text-center py-12 2xl:py-24 bg-muted/40 rounded-lg gap-2\"><svg data-lucide=\"layout-grid\" class=\"size-12 mx-auto text-muted-foreground\"></svg><h4 class=\"mt-2 text-sm\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"col-span-full text-center py-12 2xl:py-24 bg-muted/40 rounded-lg gap-2\"><svg data-lucide=\"layout-grid\" class=\"w-10 h-10 mx-auto text-muted-foreground\"></svg><h4 class=\"mt-2 text-sm\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -7,42 +7,127 @@ import (
 
     "etop/utils"
 	"etop/models"
+    "etop/services"
     "etop/templates/components"
     "etop/templates/components/ui"
 )
 
 templ Workspace(workspace models.Workspace) {
+    @CreateProject(workspace.ID, "w-[900px]", nil) 
     <div data-title="Workspace" class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
                 <div class="flex items-center justify-between space-y-0">
-                    <div class={"w-7 h-7 p-2 rounded-md text-white flex items-center justify-center text-lg font-semibold mr-2" , workspace.Color}>
-                        {strings.ToUpper(workspace.Name[0:1])}
-                    </div>
+                    // <div class={"w-7 h-7 p-2 rounded-md text-white flex items-center justify-center text-lg font-semibold mr-2" , workspace.Color}>
+                    //     {strings.ToUpper(workspace.Name[0:1])}
+                    // </div>
                     <h2 class="text-3xl font-bold tracking-tight">{workspace.Name}</h2>
                 </div>
                 <p class="text-muted-foreground">{workspace.Description}</p>
             </div>
             <div>
-                @ui.Button("create-workspace", "outline", "sm", "user-plus", "Invite", "mr-1", templ.Attributes{
+                @ui.Button("create-workspace", "outline", "sm", "", "", "mr-1", templ.Attributes{
                     "type": "button",
                     "@click":"$store.modal.open('create-workspace-modal')",
-                })
-                @ui.Button("create-workspace", "", "sm", "circle-plus", "Create Project", "", templ.Attributes{
+                }) {
+                    <i data-lucide="user-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Invite'}`"></span>
+                }
+                @ui.Button("create-workspace", "", "sm", "", "", "", templ.Attributes{
                     "type": "button",
-                    "@click":"$store.modal.open('create-workspace-modal')",
-                })
+                    "@click":"$store.modal.open('create-project-modal')",
+                }) {
+                    <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Create Project'}`"></span>
+                }
             </div>
         </div>
-        <div class="flex items-center gap-2 p-4">
-            <span class="text-sm text-muted-foreground">Members: </span>
-            <div class="flex space-x-2">
+        <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground mr-2">Members : </span>
+            <div class="flex">
                 for _,member := range workspace.Members {
                     @ui.Tooltip(member.User.FullName, "w-[120px]", nil) {
-                        @ui.Avatar(member.User.FullName, "sm", "relative h-8 w-8 rounded-full border-2 border-background overflow-hidden cursor-pointer", nil) 
+                        @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
                     }
                 }
             </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="text-xl font-semibold leading-none tracking-tight ">
+            Projects
+        </div>
+		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            if len(workspace.Projects) == 0 {
+                @components.NoData("No projects found", "Create a project to get started", nil) {
+                    @ui.Button("create-project", "outline", "xs", "circle-plus", "Create Project", "", templ.Attributes{
+                        "type": "button",
+                        "@click":"$store.modal.open('create-project-modal')",
+                    })
+                }
+            }
+            for _, project := range workspace.Projects {
+                <div 
+                    hx-post={"/projects?id="+project.ID}
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-indicator=".htmx-loader,.loaded-content"
+                        class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
+                >
+                    <div class="flex items-center justify-between space-y-0 pb-2">
+                        <div class="flex gap-2">
+                            <div>
+                                <div class="flex items-center justify-between gap-3">
+                                    <h3 class="tracking-tight font-semibold">{project.Title}</h3>
+                                    <span class="text-xs rounded-full pl-1 pr-1" 
+                                        :class={fmt.Sprintf("project_statuses.filter(c=>c.status==='%s')[0].color", project.Status)} 
+                                        x-text={fmt.Sprintf("project_statuses.filter(c=>c.status==='%s')[0].label.trim()", project.Status)}
+                                    ></span>
+                                </div>
+                                <div class="text-xs text-muted-foreground">Start at {project.StartDate.Format("Mon, 02 Jan 2006")}</div>
+                                // <div class="text-xs text-muted-foreground">Due at {project.DueDate.Format("Mon, 02 Jan 2006")}</div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row justify-between items-center">
+                            <svg data-lucide="users" class="w-4 h-4 mr-1 text-muted-foreground" /> 
+                            <span class="text-xs text-muted-foreground">{strconv.Itoa(len(project.Members))}</span>
+                        </div>
+                    </div>
+                    <div class="min-h-[50px] p-1">
+                        <p class="text-md pb-4">{project.Description}</p>
+                        <div class="space-y-4">
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs">
+                                    <div class="text-sm">
+                                        Progress
+                                    </div>
+                                    <div class="text-sm">
+                                        {project.Progress}%
+                                    </div>
+                                </div>
+                                @ui.Progress("p3", project.Progress, 100, "lg", "mb-4", templ.Attributes{"data-note":"x"})
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center text-xs gap-2 text-muted-foreground">
+                                    <span>{strconv.Itoa(len(project.Tasks))}</span>
+                                    <span>Tasks</span>
+                                </div>
+                                if project.DueDate != nil {
+                                    @ui.Tooltip("Due Date", "", nil) {
+                                        <div class="flex items-center text-xs text-muted-foreground">
+                                            <svg data-lucide="calendar-days" class="w-4 h-4 mr-1" />
+                                            <span>{project.DueDate.Format("Mon, 02 Jan 2006")}</span>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-4 pb-4">
+                        @components.DottedSeparator("", "#d4d4d8", "1px", "", "", "horizontal")
+                    </div>
+                    <div class="text-sm text-muted-foreground">view project details and tasks</div>
+                </div>
+            }
         </div>
     </div>
 }
@@ -55,17 +140,19 @@ templ Workspaces(workspaces []models.Workspace) {
                 <p class="text-muted-foreground">View all of your workspace here</p>
             </div>
             <div>
-                @ui.Button("create-workspace", "", "sm", "circle-plus", "New Workspace", "", templ.Attributes{
+                @ui.Button("create-workspace", "", "sm", "", "", "", templ.Attributes{
                     "type": "button",
                     "@click":"$store.modal.open('create-workspace-modal')",
-                })
+                }) {
+                    <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-text="`${isMobile ? 'New' : 'New Workspace'}`"></span>
+                }
             </div>
         </div>
 
         <!-- Stats Cards -->
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             if len(workspaces) == 0 {
-                @components.NoData("Workspace not found", "", nil) {
+                @components.NoData("No workspaces found", "Create a workspace to get started", nil) {
                     @ui.Button("create-workspace", "outline", "xs", "circle-plus", "Create Workspace", "", templ.Attributes{
                         "type": "button",
                         "@click":"$store.modal.open('create-workspace-modal')",
@@ -73,7 +160,14 @@ templ Workspaces(workspaces []models.Workspace) {
                 }
             }
             for _, workspace := range workspaces {
-                <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-4 transition-all hover:shadow-md hover:-translate-y-1">
+                <div
+                    hx-post={"/workspaces?id="+workspace.ID}
+                    hx-target="#content"
+                    hx-swap="innerHTML"
+                    hx-push-url="true"
+                    hx-indicator=".htmx-loader,.loaded-content" 
+                    class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
+                >
                     <div class="flex items-center justify-between space-y-0 pb-2">
                         <div class="flex gap-2">
                             <div class="p-1">
@@ -95,23 +189,15 @@ templ Workspaces(workspaces []models.Workspace) {
                     </div>
                     <div class="min-h-[50px] p-1">
                         // <div class="text-2xl font-bold">+2350</div>
-                        <p class="text-sm">{workspace.Description}</p>
+                        <p class="text-md">{workspace.Description}</p>
                     </div>
                     <div class="pt-4 pb-4">
                         @components.DottedSeparator("", "#d4d4d8", "1px", "", "", "horizontal")
                     </div>
-                    <div 
-                        class="text-sm text-muted-foreground cursor-pointer"
-                        hx-post={"/workspaces?id="+workspace.ID}
-                        hx-target="#content"
-                        hx-swap="innerHTML"
-                        hx-push-url="true"
-                        hx-indicator=".htmx-loader,.loaded-content"
-                    >view workspace details and projects</div>
+                    <div class="text-sm text-muted-foreground">view workspace details and projects</div>
                 </div>
             }
         </div>
-
     </div>
 }
 
@@ -184,6 +270,7 @@ templ CreateWorkspace(class string, attrs templ.Attributes) {
                         name: '',
                         description: '',
                         color: '',
+                        members: [],
                         nameError: '',
                         descriptionError : '',
                         colorError: '',
@@ -236,8 +323,6 @@ templ CreateWorkspace(class string, attrs templ.Attributes) {
                 @ui.FormItem("", nil) {
                     @ui.FormLabel("name", "Name", "", nil)
                     @ui.FormControl("name", "name", "text", "Workspace Name", "", "", templ.Attributes{
-                        "id": "name",
-                        "name": "name",
                         "autocomplete":"name",
                         "x-model": "name",
                         "@blur": "validateName",
@@ -250,9 +335,7 @@ templ CreateWorkspace(class string, attrs templ.Attributes) {
                 }
                 @ui.FormItem("", nil) {
                     @ui.FormLabel("description", "Description", "", nil)
-                    @ui.FormControl("description", "description", "textarea", "Workspace Description", "asd", "", templ.Attributes{
-                        "id": "description",
-                        "name": "description",
+                    @ui.FormControl("description", "description", "textarea", "Workspace Description", "", "", templ.Attributes{
                         "autocomplete":"description",
                         "x-model": "description",
                     })
@@ -291,13 +374,26 @@ templ CreateWorkspace(class string, attrs templ.Attributes) {
                             },
                         )
                     </div>
-                    <div class="pt-4 pb-4">
-                        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
-                    </div>
-                    <div class="flex justify-end items-end">
-                        @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
-                    </div>
                 }
+                @ui.FormItem("", nil) {
+                    @ui.FormLabel("members", "Members", "", nil)
+                    @components.MemberInput("members",
+                        "members",
+                        "Type a member...",
+                        []models.User{},  
+                        services.GetAllUser(),
+                        "",
+                        nil,
+                    )
+                    @ui.FormMessage("", "", templ.Attributes{},
+                    )
+                }
+                <div class="pt-4 pb-4">
+                    @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                </div>
+                <div class="flex justify-end items-end">
+                    @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+                </div>
             }
         </div>
     }

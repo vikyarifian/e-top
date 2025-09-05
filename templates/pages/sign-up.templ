@@ -155,8 +155,6 @@ templ SignUp() {
                         @ui.FormItem("", nil) {
                             @ui.FormLabel("fullname", "Full Name", "", nil)
                             @ui.FormControl("fullname", "full_name", "text", "John Doe", "", "", templ.Attributes{
-                                "id": "fullname",
-                                "name": "full_name",
                                 "autocomplete":"name",
                                 "x-model": "full_name",
                                 "@blur": "validateName",
@@ -170,8 +168,6 @@ templ SignUp() {
                         @ui.FormItem("", nil) {
                             @ui.FormLabel("email", "Email Address", "", nil)
                             @ui.FormControl("email", "email", "email", "you@example.com", "", "", templ.Attributes{
-                                "id": "email",
-                                "name": "email",
                                 "autocomplete":"email",
                                 "x-model": "email",
                                 "@blur": "validateEmail",
@@ -185,7 +181,6 @@ templ SignUp() {
                         @ui.FormItem("", nil) {
                             @ui.FormLabel("password", "Password", "", nil)
                             @ui.FormControl("password", "password", "password", "********", "", "", templ.Attributes{
-                                "id": "password",
                                 "x-model": "password",
                                 "@blur": "validatePassword",
                             })
@@ -198,7 +193,6 @@ templ SignUp() {
                         @ui.FormItem("", nil) {
                             @ui.FormLabel("password2", "Confirm Password", "", nil)
                             @ui.FormControl("password2", "password2", "password", "********", "", "", templ.Attributes{
-                                "id": "password2",
                                 "x-model": "password2",
                                 "@blur": "validatePassword2",
                             })

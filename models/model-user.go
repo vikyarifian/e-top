@@ -13,6 +13,7 @@ type User struct {
 	Password      string     `gorm:"column:password" json:"password,omitempty" form:"password"`
 	Level         string     `gorm:"column:level" json:"level,omitempty" form:"level"`
 	VerifiedEmail bool       `gorm:"column:verified_email" json:"-" form:"verified_email"`
+	Color         string     `gorm:"column:color" json:"color" form:"color"`
 	CreatedAt     *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
 	CreatedBy     string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
 	UpdatedAt     *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
@@ -38,6 +39,7 @@ type ResetPassword struct {
 //     password TEXT NOT NULL,
 //     level VARCHAR(25) NOT NULL DEFAULT 'USER',
 //     verified_email BOOLEAN NOT NULL DEFAULT false,
+//     color VARCHAR(50) NOT NULL DEFAULT 'bg-gray-500 text-white',
 //     created_at TIMESTAMP DEFAULT NOW(),
 //     created_by VARCHAR(128) DEFAULT '',
 //     updated_at TIMESTAMP DEFAULT NOW(),

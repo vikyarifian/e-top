@@ -13,6 +13,12 @@ import (
 
 type HTTPHandler func(w http.ResponseWriter, r *http.Request) error
 
+var (
+	ErrUnauthorized = errors.New("unauthorized")
+	ErrForbidden    = errors.New("forbidden")
+	ErrNotFound     = errors.New("not found")
+)
+
 func Make(h HTTPHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := h(w, r); err != nil {
@@ -43,12 +49,6 @@ func Make(h HTTPHandler) http.HandlerFunc {
 		}
 	}
 }
-
-var (
-	ErrUnauthorized = errors.New("unauthorized")
-	ErrForbidden    = errors.New("forbidden")
-	ErrNotFound     = errors.New("not found")
-)
 
 func HandleNotFound(w http.ResponseWriter, r *http.Request) error {
 	user, err := auth.GetAuth(w, r)

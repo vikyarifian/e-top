@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,16 +19,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetWorkspaces() []models.Workspace {
-	ws := []models.Workspace{}
-	ws = append(ws, models.Workspace{ID: "1", Name: "IT Dept"})
-	ws = append(ws, models.Workspace{ID: "2", Name: "Legal"})
-	ws = append(ws, models.Workspace{ID: "3", Name: "Finance"})
-
-	return ws
-}
-
-func WorkspaceSwitcher(w http.ResponseWriter, r *http.Request) error {
+func HandleWorkspaceSwitcher(w http.ResponseWriter, r *http.Request) error {
 	user, _ := auth.GetAuth(w, r)
 	var ws []models.Workspace
 	db.PgSql.Where("id in (SELECT workspace_id FROM workspace_members WHERE user_id=?)", user.ID).Order("no").Find(&ws)
@@ -53,7 +45,9 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 			if err := db.PgSql.Where("id=?", id).
 				Preload("Members", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
-				}).Preload("Projects").Order("no").First(&ws).Error; err != nil {
+				}).Preload("Projects", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Members")
+			}).Order("no").First(&ws).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
 			}
@@ -83,7 +77,9 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 			if err := db.PgSql.Where("id=?", id).
 				Preload("Members", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
-				}).Preload("Projects").Order("no").First(&ws).Error; err != nil {
+				}).Preload("Projects", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Members")
+			}).Order("no").First(&ws).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				// return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
 				return pages.NotFound().Render(r.Context(), w)
@@ -160,7 +156,8 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
-		var member models.WorkspaceMember
+		members := []models.WorkspaceMember{}
+		member := models.WorkspaceMember{}
 		no = 0
 		db.PgSql.Table("workspace_members").Select("max(no)").Row().Scan(&no)
 		member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
@@ -172,7 +169,25 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 		member.UpdatedAt = &t
 		member.UpdatedBy = user.ID
 
-		db.PgSql.Create(&member)
+		members = append(members, member)
+
+		var membersPayload []string
+		if err := json.Unmarshal([]byte(r.FormValue("members")), &membersPayload); err == nil {
+			for i, m := range membersPayload {
+				members = append(members, models.WorkspaceMember{
+					ID:          utils.GenerateHash(strconv.Itoa(no + 2 + i)),
+					WorkspaceID: workspace.ID,
+					Role:        "MEMBER",
+					UserID:      m,
+					CreatedAt:   &t,
+					CreatedBy:   user.ID,
+					UpdatedAt:   &t,
+					UpdatedBy:   user.ID,
+				})
+			}
+		}
+
+		db.PgSql.Create(&members)
 		return ui.Toast("workspace-success", "success", "", "Workspace created successfully.", "", nil).Render(r.Context(), w)
 	case http.MethodPut:
 		var workspace models.Workspace

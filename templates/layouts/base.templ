@@ -3,10 +3,11 @@ package layouts
 import (
 	"os"
 	"fmt"
+	"strings"
 
 	"etop/dto"
 	"etop/utils"
-	"etop/models"
+	"etop/services"
 	"etop/templates/features"
 	"etop/templates/components"
 )
@@ -31,8 +32,8 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		</head>
 		<body 
 			class="min-h-screen bg-background text-foreground"
-			 :class="darkMode ? 'dark' : ''"
-			x-data={fmt.Sprintf("{ sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s,}", string(utils.MustJSON(models.GetColorOptions())))}
+			:class="darkMode ? 'dark' : ''"
+			x-data={fmt.Sprintf("{ auth_id: '%s', project_statuses: %s, full_name: '%s', sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s,}", strings.Trim(user.ID," "), string(utils.MustJSON(services.GetProjectStatus())), user.FullName, string(utils.MustJSON(services.GetColorOptions())))}
 			x-init="
 				$watch('darkMode', val => {
 					localStorage.setItem('darkMode', val);
@@ -110,7 +111,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 				</div>
 
 			</div>
-			@features.CreateWorkspace("", nil) 
+			@features.CreateWorkspace("w-96", nil) 
 			@BaseScript(os.Getenv("APP_NAME"))
 			<div id="toaster"></div> 
 			<script>

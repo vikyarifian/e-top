@@ -77,8 +77,6 @@ templ ResendVerification() {
                         @ui.FormItem("", nil) {
                             @ui.FormLabel("email", "Email Address", "", nil)
                             @ui.FormControl("email", "email", "email", "you@example.com", "", "", templ.Attributes{
-                                "id": "email",
-                                "name": "email",
                                 "autocomplete":"email",
                                 "x-model": "email",
                                 "@blur": "validateEmail",

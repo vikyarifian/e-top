@@ -11,9 +11,10 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"etop/dto"
-	"etop/models"
+	"etop/services"
 	"etop/templates/components"
 	"etop/templates/features"
 	"etop/utils"
@@ -48,7 +49,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 21, Col: 16}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 22, Col: 16}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -61,7 +62,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(os.Getenv("APP_NAME"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 21, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 22, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -72,9 +73,9 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s,}", string(utils.MustJSON(models.GetColorOptions()))))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ auth_id: '%s', project_statuses: %s, full_name: '%s', sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s,}", strings.Trim(user.ID, " "), string(utils.MustJSON(services.GetProjectStatus())), user.FullName, string(utils.MustJSON(services.GetColorOptions()))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 35, Col: 248}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 36, Col: 399}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -126,7 +127,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = features.CreateWorkspace("", nil).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = features.CreateWorkspace("w-96", nil).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

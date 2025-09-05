@@ -3,13 +3,13 @@ package layouts
 import (
     "fmt"
 
-    "etop/models"
+    "etop/services"
     "etop/templates/components/ui"
 )
 
 templ Navigation() {
     <ul class="space-y-2" x-data="{ currentPath: window.location.pathname }">
-        for _, menu := range models.GetMenu() {
+        for _, menu := range services.GetMenu() {
             <li>
                 <a 
                     x-show="!sidebarCollapsed || isMobile"

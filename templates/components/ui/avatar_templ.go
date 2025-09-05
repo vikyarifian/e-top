@@ -11,12 +11,10 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"fmt"
 	"strings"
-
-	"etop/utils"
 )
 
 // Avatar Component
-func Avatar(text string, size string, class string, attrs templ.Attributes) templ.Component {
+func Avatar(text string, color string, size string, class string, attrs templ.Attributes) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -43,7 +41,7 @@ func Avatar(text string, size string, class string, attrs templ.Attributes) temp
 		}
 		var templ_7745c5c3_Var2 = []any{"rounded-full flex items-center justify-center",
 			class,
-			utils.TailwindForUsername(text),
+			color,
 			templ.KV("h-4 w-4", size == "xxs"),
 			templ.KV("h-6 w-6", size == "xs"),
 			templ.KV("h-8 w-8", size == "sm"),
@@ -72,9 +70,9 @@ func Avatar(text string, size string, class string, attrs templ.Attributes) temp
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("darkMode ? 'dark:bg-gray-500 dark:text-white' : '%s'", utils.TailwindForUsername(strings.Trim(text, " "))))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("darkMode ? 'dark:bg-gray-500 dark:text-white' : '%s'", color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 23, Col: 128}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 21, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -95,7 +93,7 @@ func Avatar(text string, size string, class string, attrs templ.Attributes) temp
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strings.Trim(strings.ToUpper(text[0:1]), " "))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 26, Col: 107}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 24, Col: 107}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -155,7 +153,7 @@ func AvatarImage(src string, alt string, class string, attrs templ.Attributes) t
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(src)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 32, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 30, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -168,7 +166,7 @@ func AvatarImage(src string, alt string, class string, attrs templ.Attributes) t
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(alt)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 32, Col: 55}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 30, Col: 55}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

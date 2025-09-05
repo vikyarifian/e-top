@@ -1,0 +1,79 @@
+package components
+
+import (
+)
+
+templ TagInput(id string, name string, placeholder string, initialTags []string, class string, attrs templ.Attributes) {
+    <div id="tag-input" class="w-full max-w-md">
+        <div class="flex flex-wrap gap-2 border rounded-md p-2" id="tag-container">
+            <!-- Tags ditambahkan lewat JS -->
+            <input 
+                id="tag-input-field"
+                placeholder={placeholder}
+                class="flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none"
+            />
+        </div>
+
+        <!-- Hidden input untuk submit ke backend -->
+        <input id={id} name={name} type="hidden" />
+    </div>
+
+    @TagScript(id, initialTags)
+}
+
+script TagScript(id string, initialTags []string) {
+    (function () {
+        let tags = []; 
+        const Id = id;
+        tags= initialTags;
+        const tagContainer = document.getElementById("tag-container");
+        const inputField = document.getElementById("tag-input-field");
+        const hiddenTags = document.getElementById(Id);
+
+        function renderTags() {
+            // hapus semua span dulu (kecuali input field)
+            tagContainer.querySelectorAll("span").forEach(span => span.remove());
+
+            tags.forEach((tag, index) => {
+                const span = document.createElement("span");
+                span.className = "flex items-center gap-1 bg-green-100 text-green-800 text-sm px-2 py-1 rounded-full";
+
+                const button = document.createElement("button");
+                button.type = "button";
+                button.innerText = "×";
+                button.className = "focus:outline-none";
+                button.onclick = () => {
+                    tags.splice(index, 1);
+                    renderTags();
+                };
+
+                const text = document.createElement("span");
+                text.innerText = tag;
+
+                span.appendChild(text);
+                span.appendChild(button);
+                tagContainer.insertBefore(span, inputField);
+            });
+
+            hiddenTags.value = JSON.stringify(tags);
+        }
+
+        inputField.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                const newTag = inputField.value.trim();
+                if (newTag !== "" && !tags.includes(newTag)) {
+                    tags.push(newTag);
+                    inputField.value = "";
+                    renderTags();
+                }
+            }
+        });
+
+        // initial render
+        if (initialTags.length > 0) {
+            renderTags();
+        }
+    })();
+}
+

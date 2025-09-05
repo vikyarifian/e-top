@@ -238,8 +238,6 @@ func SendResetPassword() templ.Component {
 						return templ_7745c5c3_Err
 					}
 					templ_7745c5c3_Err = ui.FormControl("email", "email", "email", "you@example.com", "", "", templ.Attributes{
-						"id":           "email",
-						"name":         "email",
 						"autocomplete": "email",
 						"x-model":      "email",
 						"@blur":        "validateEmail",
@@ -489,7 +487,7 @@ func ResetPassword(token string) templ.Component {
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(token)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/forgot-password.templ`, Line: 194, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/forgot-password.templ`, Line: 192, Col: 63}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -520,7 +518,6 @@ func ResetPassword(token string) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					templ_7745c5c3_Err = ui.FormControl("password", "password", "password", "********", "", "", templ.Attributes{
-						"id":      "password",
 						"x-model": "password",
 						"@blur":   "validatePassword",
 					}).Render(ctx, templ_7745c5c3_Buffer)
@@ -569,8 +566,7 @@ func ResetPassword(token string) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = ui.FormControl("password", "password2", "password", "********", "", "", templ.Attributes{
-						"id":      "password2",
+					templ_7745c5c3_Err = ui.FormControl("password2", "password2", "password", "********", "", "", templ.Attributes{
 						"x-model": "password2",
 						"@blur":   "validatePassword2",
 					}).Render(ctx, templ_7745c5c3_Buffer)

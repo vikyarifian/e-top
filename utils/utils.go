@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/a-h/templ"
 	"golang.org/x/crypto/bcrypt"
@@ -17,6 +18,13 @@ import (
 func MustJSON(v any) []byte {
 	b, _ := json.Marshal(v)
 	return b
+}
+
+func FormatDate(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("2006-01-02")
 }
 
 func Render(w http.ResponseWriter, r *http.Request, c templ.Component) error {
@@ -147,12 +155,12 @@ func GenerateBuckets() []string {
 
 // TailwindForUsername memilih warna sesuai username
 func TailwindForUsername(username string) string {
-	if username == "" {
+	if strings.Trim(username, " ") == "" {
 		return "bg-gray-400 text-black dark:bg-gray-500 dark:text-white"
 	}
 	var tailwindBuckets = GenerateBuckets()
 
-	hash := sha1.Sum([]byte(username))
+	hash := sha1.Sum([]byte(strings.Trim(username, " ")))
 	idx := int(hash[0]) % len(tailwindBuckets)
 	return tailwindBuckets[idx]
 }

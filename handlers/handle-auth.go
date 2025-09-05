@@ -148,6 +148,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 
 		user.ID = idHash
 		user.Password = string(passHash)
+		user.Color = utils.TailwindForUsername(user.Username)
 		user.VerifiedEmail = false
 		user.CreatedAt = &t
 		user.CreatedBy = user.ID

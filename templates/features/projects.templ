@@ -1,5 +1,166 @@
 package features
 
-templ ProjectList(workspaceId string) {
-    
+import (
+	"fmt"
+    "time"
+
+	"etop/utils"
+    "etop/models"
+	"etop/services"
+    "etop/templates/components"
+    "etop/templates/components/ui"
+)
+
+templ CreateProject(workspaceID string, class string, attrs templ.Attributes) {
+    @components.ResponsiveModal("create-project-modal", "Create Project", class) {
+        <div
+            x-data="{
+                        today: new Date(),
+                        workspace_id: '',
+                        title: '',
+                        description: '',
+                        status: '',
+                        titleError: '',
+                        descriptionError: '',
+                        statusError: '',
+                        validateTitle() {
+                            this.titleError = (this.title.trim() === '')
+                                ? 'Title is required'
+                                : '';
+                        },
+                        validateStatus() {
+                            this.StatusError = (this.status.trim() === '')
+                                ? 'Status is required'
+                                : '';
+                        },
+                        validateForm(e) {
+                            e.preventDefault();
+                            this.validateTitle();
+                            this.validateStatus();
+                            
+                            if (this.titleError || this.statusError) {
+                                return; 
+                            }
+                        },
+                        init() {
+                            document.body.addEventListener('htmx:afterRequest', (evt) => {
+                                if (evt.detail.successful && evt.detail.elt.id === 'create-project-form') {
+                                    $store.modal.close('create-project-modal');
+                                    this.title = '';
+                                    this.description = '';
+                                    const params = new URLSearchParams(window.location.search);
+                                    if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace_id) {
+                                        htmx.ajax('POST', '/workspaces?id='+params.get('id'), { 
+                                            target: '#content', 
+                                            swap: 'innerHTML' 
+                                        })
+                                    }
+                                }
+                            })
+                        }
+                    }"
+            x-init={fmt.Sprintf("workspace_id= '%s';", workspaceID)}
+        >
+            @ui.Form("/project", "post", "w-lg", templ.Attributes{
+                    "id":"create-project-form",
+                    "hx-target": "#toaster",
+                    "hx-swap": "innerHtml",
+                    "hx-disabled-elt":"#create-button,#title,#description",
+                    "x-ref": "form",
+                    "@submit.prevent":"validateForm($event)",
+            }) {
+                <input id="workspace_id" x-show="false" type="hidden" name="workspace_id" x-model="workspace_id" :value="workspace_id" />
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="w-full space-y-4">
+                        @ui.FormItem("mb-4", nil) {
+                            @ui.FormLabel("title", "Title", "", nil)
+                            @ui.FormControl("title", "title", "text", "Project Title", "", "", templ.Attributes{
+                                "autocomplete":"title",
+                                "x-model": "title",
+                                "@blur": "validateTitle",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "titleError != ''",
+                                    "x-text": "titleError",
+                                },
+                            )
+                        }
+                        @ui.FormItem("mb-4", nil) {
+                            @ui.FormLabel("description", "Description", "", nil)
+                            @ui.FormControl("description", "description", "textarea", "Project Description", "", "", templ.Attributes{
+                                "autocomplete":"description",
+                                "x-model": "description",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "descriptionError != ''",
+                                    "x-text": "descriptionError",
+                                },
+                            )
+                        }
+                        <div class="grid grid-cols-1 sm:grid-cols-2">
+                            <div class="w-full">
+                                @ui.FormItem("mb-4", nil) {
+                                    @ui.FormLabel("start_date", "Start Date", "", nil)
+                                    @ui.FormControl("start_date", "start_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{})
+                                    @ui.FormMessage("", "", templ.Attributes{},
+                                    )
+                                }
+                            </div>
+                            <div class="w-full">
+                                @ui.FormItem("mb-4", nil) {
+                                    @ui.FormLabel("due_date", "Due Date", "", nil)
+                                    @ui.FormControl("due_date", "due_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{})
+                                    @ui.FormMessage("", "", templ.Attributes{},
+                                    )
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-full space-y-4">
+                        @ui.FormItem("w-52 mb-4", nil) {
+                            @ui.FormLabel("status", "Status", "", nil)
+                            @ui.FormControl("status", "status", "select", "Project Status", "PLANNING", "", templ.Attributes{
+                                "x-model": "status",
+                                "@blur": "validateStatus",
+                            }) {
+                                for _, status := range services.GetProjectStatus() {
+                                    <option key={status.No} value={status.Status}>{status.Label}</option>
+                                }
+                            }
+                            @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "statusError != ''",
+                                    "x-text": "statusError",
+                                },
+                            )
+                        }
+                        @ui.FormItem("mb-4", nil) {
+                            @ui.FormLabel("members", "Members", "", nil)
+                            @components.MemberRoleInput("members",
+                                "members",
+                                "Type a member...",
+                                []models.User{},  
+                                services.GetWorkspaceMembers(workspaceID),
+                                "",
+                                nil,
+                            )
+                            @ui.FormMessage("", "", templ.Attributes{},
+                            )
+                        }
+                        @ui.FormItem("mb-4", nil) {
+                            @ui.FormLabel("tags", "Tags", "", nil)
+                            @components.TagInput("project-tag", "tags", "Add tag and enter...", []string{}, "", nil)
+                            @ui.FormMessage("", "", templ.Attributes{},
+                            )
+                        }
+                    </div>
+                </div>
+                <div class="pt-4 pb-4">
+                    @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                </div>
+                <div class="flex justify-end items-end">
+                    @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+                </div>
+            }
+        </div>
+    }
 }

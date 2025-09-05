@@ -68,8 +68,6 @@ templ SignIn() {
                         @ui.FormItem("", nil) {
                             @ui.FormLabel("email", "Email Address", "", nil)
                             @ui.FormControl("email", "email", "email", "you@example.com", "", "", templ.Attributes{
-                                "id": "email",
-                                "name": "email",
                                 "autocomplete":"email",
                                 "x-model": "email",
                                 "@blur": "validateEmail",
@@ -90,8 +88,6 @@ templ SignIn() {
                                     hx-push-url="true">@ui.FormLabel("password", "Forgot Password?", "text-blue-700 cursor-pointer", nil)</span>
                             </div>                            
                             @ui.FormControl("password", "password", "password", "********", "", "", templ.Attributes{
-                                "id": "password",
-                                "name": "password",
                                 "x-model": "password",
                                 "@blur": "validatePassword",
                             })

@@ -117,6 +117,7 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 		user.Email = userInfo.Email
 		user.FullName = userInfo.Name
 		user.Password = string(passHash)
+		user.Color = utils.TailwindForUsername(user.Username)
 		user.Level = "USER"
 		user.VerifiedEmail = true
 		user.CreatedAt = &t

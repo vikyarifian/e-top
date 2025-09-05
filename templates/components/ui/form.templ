@@ -48,9 +48,9 @@ templ FormLabel(forID, text string, class string, attrs templ.Attributes) {
     </label>
 }
 
-templ FormControl(id, name, typ, placeholder, value string, class string, attrs templ.Attributes) {
+templ FormControl(id, name, typ, placeholder, value, class string, attrs templ.Attributes) {
     if slices.Contains([]string{"text","email","password"}, typ) {
-        @Input(typ, placeholder, name, class, value, attrs)
+        @Input(id, name, typ, placeholder, class, value, attrs)
     }
     if typ == "date" {
         @DatePicker(id, name, value, placeholder, class, attrs)
@@ -65,7 +65,7 @@ templ FormControl(id, name, typ, placeholder, value string, class string, attrs 
     			type="checkbox"
     			name={name}
     			value={value}
-    			class={"h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500", class}
+    			class={"h-4 w-4 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", class}
     			{attrs...}
     		/>
     	</label>
@@ -74,14 +74,20 @@ templ FormControl(id, name, typ, placeholder, value string, class string, attrs 
 		@Radio(id, name, value, class, attrs)
 	}
 	if typ == "select" {
-		<select 
-            id={id}
-            name={name}
-            class={"flex h-11 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", class}
-            {attrs...}
-        >
-            <slot></slot>
-        </select>
+        <div class="relative min-w-64">
+            <!-- Custom Arrow -->
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <svg data-lucide="chevrons-left-right" class="w-4 h-4 rotate-90 text-muted-foreground" />
+            </div>
+            <select 
+                id={id}
+                name={name}
+                class={"flex h-11 w-full block appearance-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", class}
+                {attrs...}
+            >
+                {children...}
+            </select>
+        </div>
 	}
 	if typ == "file" {
 		@FileInput(id, name, class, attrs)
