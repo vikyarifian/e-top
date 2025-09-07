@@ -35,6 +35,10 @@ func HandleWorkspaceSwitcher(w http.ResponseWriter, r *http.Request) error {
 	return utils.Render(w, r, features.WorkspaceSwitcher(list))
 }
 
+func HandleCreateWorkspaceForm(w http.ResponseWriter, r *http.Request) error {
+	return features.CreateWorkspaceForm().Render(r.Context(), w)
+}
+
 func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 	user, _ := auth.GetAuth(w, r)
 	switch r.Method {
@@ -101,29 +105,13 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 		db.PgSql.Where("id in (SELECT workspace_id FROM workspace_members WHERE user_id=?)", user.ID).Preload("Members").Order("no").Find(&ws)
 		return features.Workspaces(ws).Render(r.Context(), w)
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }
 
 func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
-	case http.MethodGet:
-		// var workspace models.Workspace
-		// id := r.URL.Query().Get("id")
-		// user, _ := auth.GetAuth(w, r)
-
-		// if err := db.PgSql.Where("id=?", id).First(&workspace).Error; err != nil {
-		// 	w.WriteHeader(http.StatusBadRequest)
-		// 	return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
-		// }
-
-		// var member models.WorkspaceMember
-		// if err := db.PgSql.Where("id=? AND user_id=?", workspace.ID, user.ID).First(&member).Error; err != nil {
-		// 	w.WriteHeader(http.StatusBadRequest)
-		// 	return ui.Toast("workspace-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
-		// }
-
-		return nil
 	case http.MethodPost:
 		var workspace models.Workspace
 		r.ParseForm()
@@ -163,7 +151,7 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 		member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
 		member.WorkspaceID = workspace.ID
 		member.UserID = user.ID
-		member.Role = "ADMIN"
+		member.Role = "OWNER"
 		member.CreatedAt = &t
 		member.CreatedBy = user.ID
 		member.UpdatedAt = &t
@@ -236,6 +224,7 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 		}
 		return ui.Toast("workspace-success", "success", "", "Workspace updated successfully.", "", nil).Render(r.Context(), w)
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }

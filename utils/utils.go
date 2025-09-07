@@ -1,19 +1,41 @@
 package utils
 
 import (
-	"crypto/sha1"
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
+	"etop/db"
+	"etop/models"
 	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
 	"time"
 
+	"crypto/sha1"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+
 	"github.com/a-h/templ"
 	"golang.org/x/crypto/bcrypt"
 )
+
+// HoursDiff menghitung selisih jam (dibulatkan ke bawah) antara dua datetime
+// menggunakan location tertentu (misal Asia/Jakarta).
+func TimeDiff(start time.Time, to time.Time) time.Duration {
+	loc, _ := time.LoadLocation("Asia/Jakarta")
+
+	layout := "2006-01-02 15:04:05"
+
+	s, _ := time.ParseInLocation(layout, start.Format(layout), loc)
+	t, _ := time.ParseInLocation(layout, to.Format(layout), loc)
+
+	// Konversi keduanya ke lokasi yg sama
+	s2 := s.In(loc)
+	t2 := t.In(loc)
+
+	// Hitung selisih
+	diff := t2.Sub(s2)
+	return diff
+}
 
 func MustJSON(v any) []byte {
 	b, _ := json.Marshal(v)
@@ -25,6 +47,13 @@ func FormatDate(t time.Time) string {
 		return ""
 	}
 	return t.Format("2006-01-02")
+}
+
+func FormatDateTime(t time.Time) string {
+	if t.IsZero() {
+		return ""
+	}
+	return t.Format("2006-01-02 15:04:05")
 }
 
 func Render(w http.ResponseWriter, r *http.Request, c templ.Component) error {
@@ -46,6 +75,49 @@ func GenerateHash(input string) string {
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
+}
+
+func DbMutation() {
+
+	ps := []models.ProjectStatus{}
+	err := db.PgSql.Find(&ps).Error
+
+	if len(ps) == 0 || err != nil {
+		ps = append(ps, models.ProjectStatus{Status: "PLANNING", Label: "Planning", Color: "bg-blue-300 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", Form: 1, Value: 3})
+		ps = append(ps, models.ProjectStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-purple-300 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300", Form: 1, Value: 4})
+		ps = append(ps, models.ProjectStatus{Status: "ON_HOLD", Label: "On Hold", Color: "bg-yellow-300 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", Form: 0, Value: 2})
+		ps = append(ps, models.ProjectStatus{Status: "COMPLETED", Label: "Completed", Color: "bg-green-300 text-green-800 dark:bg-green-900/30 dark:text-green-300", Form: 1, Value: 5})
+		ps = append(ps, models.ProjectStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-red-300 text-red-800 dark:bg-red-900/30 dark:text-red-300", Form: 0, Value: 0})
+		if err := db.PgSql.Create(&ps).Error; err != nil {
+			println(err.Error())
+		}
+	}
+
+	ts := []models.TaskStatus{}
+	err = db.PgSql.Find(&ts).Error
+
+	if len(ts) == 0 || err != nil {
+		ts = append(ts, models.TaskStatus{Status: "TO_DO", Label: "To Do", Color: "bg-gray-500 text-gray-100 dark:bg-gray-900/30 dark:text-gray-500", Form: 1, Value: 2})
+		ts = append(ts, models.TaskStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-purple-500 text-purple-800 dark:bg-purple-900/30 dark:text-purple-500", Form: 1, Value: 3})
+		ts = append(ts, models.TaskStatus{Status: "IN_REVIEW", Label: "In Review", Color: "bg-yellow-500 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500", Form: 0, Value: 4})
+		ts = append(ts, models.TaskStatus{Status: "DONE", Label: "Done", Color: "bg-green-500 text-green-800 dark:bg-green-900/30 dark:text-green-500", Form: 1, Value: 5})
+		ts = append(ts, models.TaskStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-red-500 text-red-800 dark:bg-red-900/30 dark:text-red-500", Form: 0, Value: 0})
+		if err := db.PgSql.Create(&ts).Error; err != nil {
+			println(err.Error())
+		}
+	}
+
+	tp := []models.TaskPriority{}
+	err = db.PgSql.Find(&tp).Error
+
+	if len(tp) == 0 || err != nil {
+		tp = append(tp, models.TaskPriority{Priority: "LOW", Label: "Low", Color: "bg-green-600 text-green-800 dark:bg-green-900/30 dark:text-green-600", Value: 1})
+		tp = append(tp, models.TaskPriority{Priority: "MEDIUM", Label: "Medium", Color: "bg-yellow-600 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-600", Value: 3})
+		tp = append(tp, models.TaskPriority{Priority: "HIGH", Label: "High", Color: "bg-red-600 text-red-800 dark:bg-red-900/30 dark:text-red-600", Value: 5})
+		if err := db.PgSql.Create(&tp).Error; err != nil {
+			println(err.Error())
+		}
+	}
 }
 
 func LetterToColorHex(letter string) string {

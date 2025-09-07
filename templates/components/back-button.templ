@@ -1,0 +1,11 @@
+package components
+
+import (
+    "fmt"
+    
+    "etop/templates/components/ui"
+)
+
+templ BackButton(class string, attrs templ.Attributes) {
+    @ui.Button("back-button", "outline", "sm", "arrow-left", "Back", fmt.Sprintf("p-4 mr-4 "+class), attrs)
+}

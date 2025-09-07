@@ -84,8 +84,8 @@ func TagInput(id string, name string, placeholder string, initialTags []string, 
 
 func TagScript(id string, initialTags []string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_TagScript_343c`,
-		Function: `function __templ_TagScript_343c(id, initialTags){(function () {
+		Name: `__templ_TagScript_a969`,
+		Function: `function __templ_TagScript_a969(id, initialTags){(function () {
         let tags = []; 
         const Id = id;
         tags= initialTags;
@@ -122,14 +122,35 @@ func TagScript(id string, initialTags []string) templ.ComponentScript {
         }
 
         inputField.addEventListener("keydown", function (e) {
+            const newTag = inputField.value.trim();
             if (e.key === "Enter") {
                 e.preventDefault();
-                const newTag = inputField.value.trim();
                 if (newTag !== "" && !tags.includes(newTag)) {
                     tags.push(newTag);
                     inputField.value = "";
                     renderTags();
                 }
+            }
+            if (e.key === ',') { 
+                e.preventDefault();
+                if (newTag !== "" && !tags.includes(newTag)) {
+                    tags.push(newTag);
+                    inputField.value = "";
+                    renderTags();
+                } else {
+                    inputField.value = "";
+                }
+            }
+        });
+
+        inputField.addEventListener("blur", function() {
+            const newTag = inputField.value.trim();
+            if (newTag !== "" && !tags.includes(newTag)) {
+                tags.push(newTag);
+                inputField.value = "";
+                renderTags();
+            } else {
+                inputField.value = "";
             }
         });
 
@@ -139,8 +160,8 @@ func TagScript(id string, initialTags []string) templ.ComponentScript {
         }
     })();
 }`,
-		Call:       templ.SafeScript(`__templ_TagScript_343c`, id, initialTags),
-		CallInline: templ.SafeScriptInline(`__templ_TagScript_343c`, id, initialTags),
+		Call:       templ.SafeScript(`__templ_TagScript_a969`, id, initialTags),
+		CallInline: templ.SafeScriptInline(`__templ_TagScript_a969`, id, initialTags),
 	}
 }
 

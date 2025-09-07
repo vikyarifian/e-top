@@ -8,6 +8,10 @@ package ui
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import (
+// "fmt"
+)
+
 // Badge Component
 func Badge(variant, text string, class string, attrs templ.Attributes) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -36,14 +40,14 @@ func Badge(variant, text string, class string, attrs templ.Attributes) templ.Com
 			templ.KV("border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80", variant == "secondary"),
 			templ.KV("border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80", variant == "destructive"),
 			templ.KV("text-foreground", variant == "outline"),
-			templ.KV("border-transparent bg-red-400 text-primary hover:bg-red-400/80", variant == "todo"),
-			templ.KV("border-transparent bg-yellow-400 text-primary hover:bg-yellow-400/80", variant == "in-progress"),
-			templ.KV("border-transparent bg-blue-400 text-primary hover:bg-blue-400/80", variant == "in-review"),
-			templ.KV("border-transparent bg-emerald-400 text-primary hover:bg-emerald-400/80", variant == "done"),
-			templ.KV("border-transparent bg-neutral-200 text-primary hover:bg-neutral-400/80", variant == "close"),
-			templ.KV("border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80", variant == "high"),
-			templ.KV("border-transparent bg-primary text-primary-foreground hover:bg-primary/80", variant == "medium"),
-			templ.KV("border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80", variant == "low"),
+			// templ.KV("border-transparent bg-red-400 text-primary hover:bg-red-400/80", variant == "todo"),
+			// templ.KV("border-transparent bg-yellow-400 text-primary hover:bg-yellow-400/80", variant == "in-progress"),
+			// templ.KV("border-transparent bg-blue-400 text-primary hover:bg-blue-400/80", variant == "in-review"),
+			// templ.KV("border-transparent bg-emerald-400 text-primary hover:bg-emerald-400/80", variant == "done"),
+			// templ.KV("border-transparent bg-neutral-200 text-primary hover:bg-neutral-400/80", variant == "close"),
+			// templ.KV("border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80", variant == "high"),
+			// templ.KV("border-transparent bg-primary text-primary-foreground hover:bg-primary/80", variant == "medium"),
+			// templ.KV("border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80", variant == "low"),
 			templ.KV("border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80", variant == ""),
 		}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
@@ -78,7 +82,7 @@ func Badge(variant, text string, class string, attrs templ.Attributes) templ.Com
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/badge.templ`, Line: 23, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/badge.templ`, Line: 28, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

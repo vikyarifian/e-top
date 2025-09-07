@@ -73,9 +73,9 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ auth_id: '%s', project_statuses: %s, full_name: '%s', sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s,}", strings.Trim(user.ID, " "), string(utils.MustJSON(services.GetProjectStatus())), user.FullName, string(utils.MustJSON(services.GetColorOptions()))))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ auth_id: '%s', full_name: '%s', sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s, task_priorities: %s, }", strings.Trim(user.ID, " "), user.FullName, string(utils.MustJSON(services.GetColorOptions())), string(utils.MustJSON(services.GetTaskPriorities()))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 36, Col: 399}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/layouts/base.templ`, Line: 36, Col: 400}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -97,15 +97,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Page Content --><main class=\"flex-1 p-6 overflow-y-auto\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = components.Loader("loader").Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<div id=\"content\" class=\"w-full h-full loaded-content\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<!-- Page Content --><main class=\"flex-1 p-6 overflow-y-auto\"><div id=\"content\" class=\"w-full h-full\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -115,7 +107,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div></main></div><!-- Mobile Sidebar Overlay --><div x-show=\"sidebarOpen && isMobile\" x-transition:enter=\"transition-opacity ease-linear duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition-opacity ease-linear duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\" class=\"fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden\" @click=\"sidebarOpen = false\"></div><!-- Mobile Sidebar --><div x-show=\"sidebarOpen && isMobile\" x-transition:enter=\"transition ease-in-out duration-300 transform\" x-transition:enter-start=\"-translate-x-full\" x-transition:enter-end=\"translate-x-0\" x-transition:leave=\"transition ease-in-out duration-300 transform\" x-transition:leave-start=\"translate-x-0\" x-transition:leave-end=\"-translate-x-full\" class=\"fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border md:hidden\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></main></div><!-- Mobile Sidebar Overlay --><div x-show=\"sidebarOpen && isMobile\" x-transition:enter=\"transition-opacity ease-linear duration-300\" x-transition:enter-start=\"opacity-0\" x-transition:enter-end=\"opacity-100\" x-transition:leave=\"transition-opacity ease-linear duration-300\" x-transition:leave-start=\"opacity-100\" x-transition:leave-end=\"opacity-0\" class=\"fixed inset-0 z-40 bg-black bg-opacity-50 md:hidden\" @click=\"sidebarOpen = false\"></div><!-- Mobile Sidebar --><div x-show=\"sidebarOpen && isMobile\" x-transition:enter=\"transition ease-in-out duration-300 transform\" x-transition:enter-start=\"-translate-x-full\" x-transition:enter-end=\"translate-x-0\" x-transition:leave=\"transition ease-in-out duration-300 transform\" x-transition:leave-start=\"translate-x-0\" x-transition:leave-end=\"-translate-x-full\" class=\"fixed inset-y-0 left-0 z-50 w-64 bg-card border-r border-border md:hidden\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -123,7 +115,15 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = components.Loader("loader").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -145,8 +145,8 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 
 func BaseScript(appName string) templ.ComponentScript {
 	return templ.ComponentScript{
-		Name: `__templ_BaseScript_ae11`,
-		Function: `function __templ_BaseScript_ae11(appName){document.addEventListener("DOMContentLoaded", () => {
+		Name: `__templ_BaseScript_ea36`,
+		Function: `function __templ_BaseScript_ea36(appName){document.addEventListener("DOMContentLoaded", () => {
 		lucide.createIcons();
 	});
 
@@ -186,11 +186,28 @@ func BaseScript(appName string) templ.ComponentScript {
 			toggle(id) { this.openId = this.openId === id ? null : id },
 			close() { this.openId = null }
 		});
-		Alpine.store('modal', {
-			openId: null,
-			open(id) { this.openId = id },
-			close() { this.openId = null },
-			isOpen(id) { return this.openId === id }
+		Alpine.store("modal", {
+			active: null,
+			open(id) {
+				this.active = id
+				document.body.classList.add("overflow-hidden")
+				document.body.dispatchEvent(new CustomEvent("modal:opened", {
+					detail: { id }
+				}))
+			},
+			close(id) {
+				if (this.active === id) {
+					this.active = null
+					document.body.classList.remove("overflow-hidden")
+					// Emit event global agar listener lain bisa reset form
+					document.body.dispatchEvent(new CustomEvent("modal:closed", {
+						detail: { id }
+					}))
+				}
+			},
+			isOpen(id) {
+				return this.active === id
+			}
 		});
 		Alpine.store("workspace", {
 			current: localStorage.getItem("workspace") || "",
@@ -219,8 +236,8 @@ func BaseScript(appName string) templ.ComponentScript {
 		})
 	});
 }`,
-		Call:       templ.SafeScript(`__templ_BaseScript_ae11`, appName),
-		CallInline: templ.SafeScriptInline(`__templ_BaseScript_ae11`, appName),
+		Call:       templ.SafeScript(`__templ_BaseScript_ea36`, appName),
+		CallInline: templ.SafeScriptInline(`__templ_BaseScript_ea36`, appName),
 	}
 }
 

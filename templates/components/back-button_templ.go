@@ -8,7 +8,13 @@ package components
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Loader(id string) templ.Component {
+import (
+	"fmt"
+
+	"etop/templates/components/ui"
+)
+
+func BackButton(class string, attrs templ.Attributes) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,20 +35,7 @@ func Loader(id string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div id=\"")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		var templ_7745c5c3_Var2 string
-		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(id)
-		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/loader.templ`, Line: 5, Col: 15}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" x-transition.opacity class=\"fixed inset-0 z-50 htmx-loader htmx-indicator\"><!-- overlay --><div class=\"absolute inset-0 bg-black/80\"></div><!-- loader wrapper (buat posisi tengah) --><div class=\"absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white\"><svg data-lucide=\"loader\" class=\"w-6 h-6 animate-spin\"></svg></div></div><div id=\"loading\" class=\"loading\"></div>")
+		templ_7745c5c3_Err = ui.Button("back-button", "outline", "sm", "arrow-left", "Back", fmt.Sprintf("p-4 mr-4 "+class), attrs).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

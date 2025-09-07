@@ -7,28 +7,100 @@ import (
 	"strings"
 	"time"
 
+	"gorm.io/gorm"
+
 	"etop/auth"
 	"etop/db"
 	"etop/models"
+	"etop/services"
 	"etop/templates/components/ui"
+	"etop/templates/features"
+	"etop/templates/layouts"
+	"etop/templates/pages"
 	"etop/utils"
 )
 
-// func HandleProjects(w http.ResponseWriter, r *http.Request) error {
-// 	user, _ := auth.GetAuth(w, r)
-// 	switch r.Method {
-// 	case http.MethodGet:
+func HandleCreateProjectForm(w http.ResponseWriter, r *http.Request) error {
+	workspace_id := r.URL.Query().Get("workspace_id")
+	return features.CreateProjectForm(workspace_id).Render(r.Context(), w)
+}
 
-// 		return nil
-// 	default:
-// 		return nil
-// 	}
-// }
+func HandleProjects(w http.ResponseWriter, r *http.Request) error {
+	user, _ := auth.GetAuth(w, r)
+	switch r.Method {
+	case http.MethodGet:
+		id := r.URL.Query().Get("id")
+		if strings.Trim(id, " ") != "" {
+			var project models.Project
+			if err := db.PgSql.Where("id=?", id).
+				Preload("Members", func(db *gorm.DB) *gorm.DB {
+					return db.Preload("User")
+				}).Preload("Tasks", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Assignees", func(db *gorm.DB) *gorm.DB {
+					return db.Preload("User")
+				})
+			}).Order("no").First(&project).Error; err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
+			}
+			authorized := false
+			for _, member := range project.Members {
+				if member.UserID == user.ID {
+					authorized = true
+					break
+				}
+			}
+			if !authorized {
+				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
+			}
+			return layouts.Layout("Project", user, features.Project(project)).Render(r.Context(), w)
+		}
+
+		var projects []models.Project
+		db.PgSql.Where("id in (SELECT project_id FROM project_members WHERE user_id=?)", user.ID).
+			Preload("Members", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).Order("no").Find(&projects)
+		return layouts.Layout("Projects", user, features.Projects(projects)).Render(r.Context(), w)
+	case http.MethodPost:
+		id := r.URL.Query().Get("id")
+		if strings.Trim(id, " ") != "" {
+			var project models.Project
+			if err := db.PgSql.Where("id=?", id).
+				Preload("Members", func(db *gorm.DB) *gorm.DB {
+					return db.Preload("User")
+				}).Preload("Tasks", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Assignees", func(db *gorm.DB) *gorm.DB {
+					return db.Preload("User")
+				})
+			}).Order("no").First(&project).Error; err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				return pages.NotFound().Render(r.Context(), w)
+			}
+			authorized := false
+			for _, member := range project.Members {
+				if member.UserID == user.ID {
+					authorized = true
+					break
+				}
+			}
+			if !authorized {
+				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
+			}
+			return features.Project(project).Render(r.Context(), w)
+		}
+
+		var projects []models.Project
+		db.PgSql.Where("id in (SELECT project_id FROM project_members WHERE user_id=?)", user.ID).Preload("Members").Order("no").Find(&projects)
+		return features.Projects(projects).Render(r.Context(), w)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return nil
+	}
+}
 
 func HandleProject(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
-	case http.MethodGet:
-		return nil
 	case http.MethodPost:
 		var project models.Project
 		r.ParseForm()
@@ -53,6 +125,19 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			project.Status = "PLANNING"
 		}
 
+		projectStatuses := services.GetProjectStatuses()
+		validStatus := false
+		for _, s := range projectStatuses {
+			if s.Status == project.Status {
+				validStatus = true
+				break
+			}
+		}
+		if !validStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("project-error", "warning", "", "Invalid project status!", "", nil).Render(r.Context(), w)
+		}
+
 		startDate, err := time.Parse("2006-01-02", r.FormValue("start_date"))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -66,6 +151,11 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("project-error", "warning", "", "Invalid due date format!", "", nil).Render(r.Context(), w)
 		}
 		project.DueDate = &dueDate
+
+		if dueDate.Before(startDate) {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("project-error", "warning", "", "Due date cannot be before start date!", "", nil).Render(r.Context(), w)
+		}
 
 		progress, err := strconv.Atoi(r.FormValue("progress"))
 		if err != nil {
@@ -95,7 +185,7 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 		member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
 		member.ProjectID = project.ID
 		member.UserID = user.ID
-		member.Role = "ADMIN"
+		member.Role = "OWNER"
 		member.CreatedAt = &t
 		member.CreatedBy = user.ID
 		member.UpdatedAt = &t
@@ -170,6 +260,19 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			project.Status = r.FormValue("status")
 		}
 
+		projectStatuses := services.GetProjectStatuses()
+		validStatus := false
+		for _, s := range projectStatuses {
+			if s.Status == project.Status {
+				validStatus = true
+				break
+			}
+		}
+		if !validStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("project-error", "warning", "", "Invalid project status!", "", nil).Render(r.Context(), w)
+		}
+
 		startDate, err := time.Parse("2006-01-02", r.FormValue("start_date"))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -200,6 +303,7 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 		}
 		return ui.Toast("project-success", "success", "", "Project updated successfully.", "", nil).Render(r.Context(), w)
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }

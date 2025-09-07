@@ -16,6 +16,7 @@ func HandleDashboard(w http.ResponseWriter, r *http.Request) error {
 	case http.MethodPost:
 		return pages.Dashboard(user).Render(r.Context(), w)
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }

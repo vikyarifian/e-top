@@ -27,14 +27,14 @@ templ TableRow(class string, attrs templ.Attributes) {
     </tr>
 }
 
-templ TableHead(text string, class string, attrs templ.Attributes) {
+templ TableHead(class string, attrs templ.Attributes) {
     <th class={"h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]", class} {attrs...}>
-        {text}
+        {children...}
     </th>
 }
 
-templ TableCell(text string, class string, attrs templ.Attributes) {
-    <td class={"p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]", class} {attrs...}>
-        {text}
+templ TableCell(class string, attrs templ.Attributes) {
+    <td class={"h-10 p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]", class} {attrs...}>
+        {children...}
     </td>
 }

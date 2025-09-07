@@ -11,10 +11,10 @@ templ ResponsiveModal(id string, title string, class string) {
 		x-show={fmt.Sprintf("$store.modal.isOpen('%s')" ,id)}
 		x-cloak 
 		class="fixed inset-0 bg-black/50 z-40"
-		@click="$store.modal.close()">
+		@click={fmt.Sprintf("$store.modal.close('%s')",id)}>
 	</div>
 
-	<!-- Wrapper dengan scroll -->
+	<!-- Wrapper dengan scroll @keydown.escape={fmt.Sprintf("$store.modal.close('%s')",id)} --> 
 	<div 
 		x-show={fmt.Sprintf("$store.modal.isOpen('%s')",id)}
 		x-cloak
@@ -23,7 +23,7 @@ templ ResponsiveModal(id string, title string, class string) {
 		<!-- Modal (add class: shadow-lg "" --> 
 		<div 
 			x-show={fmt.Sprintf("$store.modal.isOpen('%s')",id)}
-			@click.away="$store.modal.close()"
+			@click.away={fmt.Sprintf("$store.modal.close('%s')",id)}
 			x-cloak 
 			class={"relative bg-background sm:rounded-lg shadow-lg my-8 data-[state=openDialog]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=openDialog]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=openDialog]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=openDialog]:slide-in-from-left-1/2 data-[state=openDialog]:slide-in-from-top-[48%] sm:rounded-lg", class}
 			>
@@ -31,7 +31,7 @@ templ ResponsiveModal(id string, title string, class string) {
 					@ui.CardHeader("", nil) {
 						@ui.DialogTitle("relative flex w-full justify-between", nil) {
 							<span>{title}</span>
-							<div @click="$store.modal.close()">
+							<div @click={fmt.Sprintf("$store.modal.close('%s')",id)}>
 								<svg data-lucide="x" class="cursor-pointer w-4 h-4" />
 							</div>
 						}

@@ -77,7 +77,7 @@ templ Notification(notif []Notif) {
 templ NotifContent(id string, from string, title string, message string) {
     @ui.DropdownItem(false, false, "hover:bg-accent", nil) {
         <div class="flex gap-2 items-start w-full">
-            @ui.Avatar(from, "", "xs", "mt-0.5", nil) 
+            @ui.Avatar(from, "bg-emerald-400", "xs", "mt-0.5", nil) 
             <div class="flex flex-col text-sm">
                 <span class="font-medium">{title}</span>
                 <span class="text-xs opacity-70">{message}</span>

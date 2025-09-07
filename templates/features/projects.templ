@@ -3,6 +3,7 @@ package features
 import (
 	"fmt"
     "time"
+	"strconv"
 
 	"etop/utils"
     "etop/models"
@@ -11,156 +12,380 @@ import (
     "etop/templates/components/ui"
 )
 
-templ CreateProject(workspaceID string, class string, attrs templ.Attributes) {
-    @components.ResponsiveModal("create-project-modal", "Create Project", class) {
-        <div
-            x-data="{
-                        today: new Date(),
-                        workspace_id: '',
-                        title: '',
-                        description: '',
-                        status: '',
-                        titleError: '',
-                        descriptionError: '',
-                        statusError: '',
-                        validateTitle() {
-                            this.titleError = (this.title.trim() === '')
-                                ? 'Title is required'
-                                : '';
-                        },
-                        validateStatus() {
-                            this.StatusError = (this.status.trim() === '')
-                                ? 'Status is required'
-                                : '';
-                        },
-                        validateForm(e) {
-                            e.preventDefault();
-                            this.validateTitle();
-                            this.validateStatus();
-                            
-                            if (this.titleError || this.statusError) {
-                                return; 
-                            }
-                        },
-                        init() {
-                            document.body.addEventListener('htmx:afterRequest', (evt) => {
-                                if (evt.detail.successful && evt.detail.elt.id === 'create-project-form') {
-                                    $store.modal.close('create-project-modal');
-                                    this.title = '';
-                                    this.description = '';
-                                    const params = new URLSearchParams(window.location.search);
-                                    if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace_id) {
-                                        htmx.ajax('POST', '/workspaces?id='+params.get('id'), { 
-                                            target: '#content', 
-                                            swap: 'innerHTML' 
-                                        })
-                                    }
-                                }
-                            })
-                        }
-                    }"
-            x-init={fmt.Sprintf("workspace_id= '%s';", workspaceID)}
-        >
-            @ui.Form("/project", "post", "w-lg", templ.Attributes{
-                    "id":"create-project-form",
-                    "hx-target": "#toaster",
-                    "hx-swap": "innerHtml",
-                    "hx-disabled-elt":"#create-button,#title,#description",
-                    "x-ref": "form",
-                    "@submit.prevent":"validateForm($event)",
-            }) {
-                <input id="workspace_id" x-show="false" type="hidden" name="workspace_id" x-model="workspace_id" :value="workspace_id" />
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div class="w-full space-y-4">
-                        @ui.FormItem("mb-4", nil) {
-                            @ui.FormLabel("title", "Title", "", nil)
-                            @ui.FormControl("title", "title", "text", "Project Title", "", "", templ.Attributes{
-                                "autocomplete":"title",
-                                "x-model": "title",
-                                "@blur": "validateTitle",
-                            })
-                            @ui.FormMessage("", "", templ.Attributes{
-                                    "x-show": "titleError != ''",
-                                    "x-text": "titleError",
-                                },
-                            )
-                        }
-                        @ui.FormItem("mb-4", nil) {
-                            @ui.FormLabel("description", "Description", "", nil)
-                            @ui.FormControl("description", "description", "textarea", "Project Description", "", "", templ.Attributes{
-                                "autocomplete":"description",
-                                "x-model": "description",
-                            })
-                            @ui.FormMessage("", "", templ.Attributes{
-                                    "x-show": "descriptionError != ''",
-                                    "x-text": "descriptionError",
-                                },
-                            )
-                        }
-                        <div class="grid grid-cols-1 sm:grid-cols-2">
-                            <div class="w-full">
-                                @ui.FormItem("mb-4", nil) {
-                                    @ui.FormLabel("start_date", "Start Date", "", nil)
-                                    @ui.FormControl("start_date", "start_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{})
-                                    @ui.FormMessage("", "", templ.Attributes{},
-                                    )
-                                }
-                            </div>
-                            <div class="w-full">
-                                @ui.FormItem("mb-4", nil) {
-                                    @ui.FormLabel("due_date", "Due Date", "", nil)
-                                    @ui.FormControl("due_date", "due_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{})
-                                    @ui.FormMessage("", "", templ.Attributes{},
-                                    )
-                                }
+templ Project(project models.Project) {
+    @CreateTask(project.ID, "PROJECT", "w-[900px]", nil)
+    <div data-title="Workspace" class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                @components.BackButton("mb-2", templ.Attributes{
+                    "type": "button",
+                    "onclick": fmt.Sprintf("htmx.ajax('POST', '/workspaces?id=%s', { target: '#content', swap: 'innerHTML' })",project.WorkspaceID),
+                })
+                <div class="flex items-center justify-between space-y-0">
+                    <h2 class="text-3xl font-bold tracking-tight">{project.Title}</h2>
+                </div>
+                <p class="text-muted-foreground">{project.Description}</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex items-center gap-2 min-w-32">
+                    <div class="space-y-1 text-muted-foreground mr-1">
+                        <div class="flex justify-between text-xs">
+                            <div class="text-xs">
+                                Progress: {project.Progress}%
                             </div>
                         </div>
+                        @ui.Progress(project.ID, project.Progress, 100, "sm", "", templ.Attributes{"data-note":"x"})
                     </div>
-                    <div class="w-full space-y-4">
-                        @ui.FormItem("w-52 mb-4", nil) {
-                            @ui.FormLabel("status", "Status", "", nil)
-                            @ui.FormControl("status", "status", "select", "Project Status", "PLANNING", "", templ.Attributes{
-                                "x-model": "status",
-                                "@blur": "validateStatus",
-                            }) {
-                                for _, status := range services.GetProjectStatus() {
-                                    <option key={status.No} value={status.Status}>{status.Label}</option>
+                    <div>
+                        @ui.Button("create-task", "", "sm", "", "", "", templ.Attributes{
+                            "type": "button",
+                            "@click":"$store.modal.open('create-task-modal')",
+                        }) {
+                            <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Add Task'}`"></span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div 
+            x-data={fmt.Sprintf("{ task_priorities: %s, task_statutes: %s, }", string(utils.MustJSON(services.GetTaskPriorities())), string(utils.MustJSON(services.GetTaskStatuses())))}
+            class="flex-1 w-full border rounded-lg border-border bg-card text-card-foreground shadow-sm p-4 transition-all duration-300 shadow-md"
+        >
+            @ui.Tabs("tabs", "table", "", nil) {
+                <div className="h-full flex flex-col overflow-auto p-4">                
+                    <div className="flex flex-col gap-y-2 lg:flex-row justify-between items-center">
+                        @ui.TabsList("w-full lg:w-auto mb-4", nil) {
+                            @ui.TabsTrigger("table", "Table", "h-8 w-full lg:w-auto", nil)  
+                            @ui.TabsTrigger("kanban", "Kanban", "h-8 w-full lg:w-auto", nil)  
+                            @ui.TabsTrigger("calendar", "Calendar", "h-8 w-full lg:w-auto", nil)  
+                        }
+                        <div class="mb-4">
+                            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                        </div>
+                        @ui.TabsContent("table", "overflow-auto mt-0", nil) {
+                            if len(project.Tasks) == 0 {
+                                @components.NoData("No tasks found", "Create your first task", nil) {
+                                    @ui.Button("create-task", "outline", "xs", "circle-plus", "Create Task", "", templ.Attributes{
+                                        "type": "button",
+                                        "@click":"$store.modal.open('create-task-modal')",
+                                    })
                                 }
+                            } else {
+                                <div class="rounded-md border">
+                                    <div class="relative w-full overflow-auto">
+                                        @ui.Table("w-full caption-bottom text-sm", nil) {
+                                            @ui.TableHeader("", nil) {
+                                                @ui.TableRow("", nil) {
+                                                    @ui.TableHead("", nil) {
+                                                        @ui.Button("title-sort", "ghost", "sm", "arrow-up-down", "Title", "", templ.Attributes{
+                                                            "type": "button",
+                                                        })
+                                                    }
+                                                    @ui.TableHead("", nil) {
+                                                        @ui.Button("priority-sort", "ghost", "sm", "arrow-up-down", "Priority", "", templ.Attributes{
+                                                            "type": "button",
+                                                        })
+                                                    }
+                                                    @ui.TableHead("", nil) {
+                                                        @ui.Button("assignee-sort", "ghost", "sm", "arrow-up-down", "Assignees", "", templ.Attributes{
+                                                            "type": "button",
+                                                        })
+                                                    }
+                                                    @ui.TableHead("", nil) {
+                                                        @ui.Button("due-sort", "ghost", "sm", "arrow-up-down", "Due Date", "", templ.Attributes{
+                                                            "type": "button",
+                                                        })
+                                                    }
+                                                    @ui.TableHead("", nil) {
+                                                        @ui.Button("status-sort", "ghost", "sm", "arrow-up-down", "Status", "", templ.Attributes{
+                                                            "type": "button",
+                                                        })
+                                                    }
+                                                    @ui.TableHead("text-right w-1", nil)
+                                                }
+                                            }
+                                            @ui.TableBody("", nil) {
+                                                for _, task := range project.Tasks {
+                                                    @ui.TableRow("", nil) {
+                                                        @ui.TableCell("", nil) {
+                                                            {task.Title}
+                                                        }
+                                                        @ui.TableCell("", nil) {
+                                                            @ui.Badge(task.Priority, "", "", templ.Attributes{
+                                                                ":class": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Priority),
+                                                                "x-text": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Priority),
+                                                            })
+                                                        }
+                                                        @ui.TableCell("", nil) {
+                                                            if len(task.Assignees) > 0 {
+                                                                <div class="flex justify-start">
+                                                                    if task.Assignees != nil {
+                                                                        @ui.Avatar(task.Assignees[0].User.Username, task.Assignees[0].User.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{})
+                                                                        {task.Assignees[0].User.FullName}
+                                                                    } else {
+                                                                        {"Unassigned"}
+                                                                    }                                                           
+                                                                    @ui.Tooltip(func() string {
+                                                                        if task.Assignees != nil {
+                                                                            assignees := ""
+                                                                            for i, assignee := range task.Assignees {
+                                                                                assignees += strconv.Itoa(i+1)+". "+assignee.User.FullName+"\n"
+                                                                            }
+                                                                            return assignees
+                                                                        }
+                                                                        return "Unassigned"
+                                                                    }(), "w-64", nil) {
+                                                                        if len(task.Assignees) > 1 {
+                                                                            <span class="text-muted-foreground cursor-pointer">&nbsp; and {len(task.Assignees)-1} more</span>
+                                                                        }
+                                                                    }
+                                                                </div>
+                                                            } 
+                                                        }
+                                                        @ui.TableCell("", templ.Attributes{
+                                                            ":class": fmt.Sprintf("%v<=3?'text-red-500':(%v<=7?'text-orange-300':(%v<=14?'text-yellow-400':''))", (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24), (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24), (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24)),
+                                                        }) {
+                                                            if task.DueDate != nil {
+                                                                // {utils.TimeDiff(time.Now(),*task.DueDate)}
+                                                                {task.DueDate.Format("Mon, 02 Jan 2006")}
+                                                            } 
+                                                        }
+                                                        @ui.TableCell("", nil) {
+                                                            <span class="text-xs rounded-md pl-1 pr-1" 
+                                                                :class={fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status)} 
+                                                                x-text={fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status)}
+                                                            ></span>
+                                                            // @ui.Badge(task.Priority, "", "", templ.Attributes{
+                                                            //     ":class": fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status),
+                                                            //     "x-text": fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),
+                                                            // })
+                                                        }
+                                                        @ui.TableCell("w-1", nil) {
+                                                            @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
+                                                                @ui.DropdownTrigger("p-1", nil) {
+                                                                    <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
+                                                                }
+                                                                @ui.DropdownContent("", nil) {
+                                                                    <div>Hide this</div>
+                                                                    <div>Nonactive all</div>
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                </div>
                             }
-                            @ui.FormMessage("", "", templ.Attributes{
-                                    "x-show": "statusError != ''",
-                                    "x-text": "statusError",
-                                },
-                            )
                         }
-                        @ui.FormItem("mb-4", nil) {
-                            @ui.FormLabel("members", "Members", "", nil)
-                            @components.MemberRoleInput("members",
-                                "members",
-                                "Type a member...",
-                                []models.User{},  
-                                services.GetWorkspaceMembers(workspaceID),
-                                "",
-                                nil,
-                            )
-                            @ui.FormMessage("", "", templ.Attributes{},
-                            )
+                        @ui.TabsContent("kanban", "overflow-auto mt-0", nil) {
+                            
                         }
-                        @ui.FormItem("mb-4", nil) {
-                            @ui.FormLabel("tags", "Tags", "", nil)
-                            @components.TagInput("project-tag", "tags", "Add tag and enter...", []string{}, "", nil)
-                            @ui.FormMessage("", "", templ.Attributes{},
-                            )
+                        @ui.TabsContent("calendar", "overflow-auto mt-0 h-full pb-4", nil) {
+                            
                         }
                     </div>
-                </div>
-                <div class="pt-4 pb-4">
-                    @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
-                </div>
-                <div class="flex justify-end items-end">
-                    @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
                 </div>
             }
         </div>
+    </div>
+}
+
+templ Projects(projects []models.Project) {
+    for _,p := range projects {
+        <span>{p.Title}</span>
     }
+}
+
+templ CreateProject(workspaceID string, class string, attrs templ.Attributes) {
+    @components.ResponsiveModal("create-project-modal", "Create Project", class) {
+        <div id="create-project-form" 
+            x-init={fmt.Sprintf("workspace_id= '%s';",workspaceID)}
+            x-data="{
+                        workspace_id: '',
+                        init() {
+                            document.body.addEventListener('modal:opened', (evt) => {
+                                if (evt.detail.id === 'create-project-modal') {
+                                    htmx.ajax('GET', '/create-project-form?workspace_id='+this.workspace_id, {target: '#create-project-form', swap: 'innerHtml'})
+                                }
+                            });
+                            document.body.addEventListener('modal:closed', (evt) => {
+                                if (evt.detail.id === 'create-project-modal') {
+                                    document.getElementById('create-project-form').innerHTML = '';
+                                }
+                            });
+                        }
+                    }"
+        >
+            
+        </div>
+    }
+}
+
+templ CreateProjectForm(workspaceID string) {
+    <div
+        x-data="{
+                    today: new Date(),
+                    project_statuses: [],
+                    workspace_id: '',
+                    title: '',
+                    description: '',
+                    status: '',
+                    titleError: '',
+                    descriptionError: '',
+                    statusError: '',
+                    validateTitle() {
+                        this.titleError = (this.title.trim() === '')
+                            ? 'Title is required'
+                            : '';
+                        this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);
+                    },
+                    validateStatus() {
+                        this.statusError = (this.status.trim() === '')
+                            ? 'Status is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateTitle();
+                        this.validateStatus();
+                        
+                        if (this.titleError || this.statusError) {
+                            return; 
+                        }
+                    },
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'create-project-form') {
+                                $store.modal.close('create-project-modal');
+                                this.title = '';
+                                this.description = '';
+                                this.status = '';
+                                this.titleError = '';
+                                this.descriptionError = '';
+                                this.statusError = '';
+                                const params = new URLSearchParams(window.location.search);
+                                if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace_id) {
+                                    htmx.ajax('POST', '/workspaces?id='+params.get('id'), { 
+                                        target: '#content', 
+                                        swap: 'innerHTML' 
+                                    })
+                                }
+                            }
+                        })
+                    }
+                }"
+        x-init={fmt.Sprintf("workspace_id= '%s'; project_statuses= %s; status= 'PLANNING';", workspaceID, string(utils.MustJSON(services.GetProjectStatuses())))}
+    >
+        @ui.Form("/project", "post", "w-lg", templ.Attributes{
+                "id":"create-project-form",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#create-button,#title,#description",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            <input id="workspace_id" x-show="false" type="hidden" name="workspace_id" x-model="workspace_id" :value="workspace_id" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="w-full space-y-4">
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("title", "Title", "", nil)
+                        @ui.FormControl("title", "title", "text", "Project Title", "", "", templ.Attributes{
+                            "autocomplete":"title",
+                            "x-model": "title",
+                            "@blur": "validateTitle",
+                        })
+                        @ui.FormMessage("", "", templ.Attributes{
+                                "x-show": "titleError != ''",
+                                "x-text": "titleError",
+                            },
+                        )
+                    }
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("description", "Description", "", nil)
+                        @ui.FormControl("description", "description", "textarea", "Project Description", "", "", templ.Attributes{
+                            "autocomplete":"description",
+                            "x-model": "description",
+                            "@blur": "description=description.charAt(0).toUpperCase() + description.slice(1)",
+                        })
+                        @ui.FormMessage("", "", templ.Attributes{
+                                "x-show": "descriptionError != ''",
+                                "x-text": "descriptionError",
+                            },
+                        )
+                    }
+                    <div class="grid grid-cols-1 sm:grid-cols-2">
+                        <div class="w-full">
+                            @ui.FormItem("mb-4", nil) {
+                                @ui.FormLabel("start_date", "Start Date", "", nil)
+                                @ui.FormControl("start_date", "start_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{})
+                                @ui.FormMessage("", "", templ.Attributes{},
+                                )
+                            }
+                        </div>
+                        <div class="w-full">
+                            @ui.FormItem("mb-4", nil) {
+                                @ui.FormLabel("due_date", "Due Date", "", nil)
+                                @ui.FormControl("due_date", "due_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{})
+                                @ui.FormMessage("", "", templ.Attributes{},
+                                )
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full space-y-4">
+                    // @ui.FormItem("w-52 mb-4", templ.Attributes{
+                    //     "x-show":"false",
+                    // }) {
+                    //     @ui.FormLabel("status", "Status", "", nil)
+                    //     @ui.FormControl("status", "status", "select", "Project Status", "PLANNING", "", templ.Attributes{
+                    //         "x-model": "status",
+                    //         "@blur": "validateStatus",
+                    //         "x-show":"false",
+                    //     }) {
+                    //         <template x-for="(status, index) in (project_statuses.filter(c=>c.form==1))" :key="index">
+                    //             <option name="status" :value="status.status" x-text="status.label"></option>
+                    //         </template>
+                    //         // for _, status := range services.GetProjectStatus() {
+                    //         //     <option key={status.No} value={status.Status}>{status.Label}</option>
+                    //         // }
+                    //     }
+                    //     @ui.FormMessage("", "", templ.Attributes{
+                    //             "x-show":"false",
+                    //             // "x-show": "statusError != ''",
+                    //             "x-text": "statusError",
+                    //         },
+                    //     )
+                    // }
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("members", "Members", "", nil)
+                        @components.MemberRoleInput("members",
+                            "members",
+                            "Type a member...",
+                            []models.User{},  
+                            services.GetWorkspaceMembers(workspaceID),
+                            "",
+                            nil,
+                        )
+                        @ui.FormMessage("", "", templ.Attributes{},
+                        )
+                    }
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("tags", "Tags", "", nil)
+                        @components.TagInput("project-tag", "tags", "Add tag...", []string{}, "", nil)
+                        @ui.FormMessage("", "", templ.Attributes{},
+                        )
+                    }
+                </div>
+            </div>
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
 }

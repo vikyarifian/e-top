@@ -58,10 +58,17 @@ func SetRoutes() {
 	mux.HandleFunc("/dashboard", auth.RequireAuth(handlers.Make(handlers.HandleDashboard)))
 
 	mux.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaceSwitcher)))
+	mux.HandleFunc("/create-workspace-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateWorkspaceForm)))
 	mux.HandleFunc("/workspace", auth.RequireAuth(handlers.Make(handlers.HandleWorkspace)))
 	mux.HandleFunc("/workspaces", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaces)))
 
 	mux.HandleFunc("/project", auth.RequireAuth(handlers.Make(handlers.HandleProject)))
+	mux.HandleFunc("/projects", auth.RequireAuth(handlers.Make(handlers.HandleProjects)))
+	mux.HandleFunc("/create-project-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateProjectForm)))
+
+	mux.HandleFunc("/task", auth.RequireAuth(handlers.Make(handlers.HandleTask)))
+	mux.HandleFunc("/tasks", auth.RequireAuth(handlers.Make(handlers.HandleTasks)))
+	mux.HandleFunc("/create-task-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateTaskFrom)))
 
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
 

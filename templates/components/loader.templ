@@ -1,12 +1,21 @@
 package components
 
+
 templ Loader(id string) {
     <div id={id}
         x-transition.opacity
-        class="relative w-full min-h-[80vh] htmx-loader htmx-indicator "
+        class="fixed inset-0 z-50 htmx-loader htmx-indicator"
     >
-        <div class="absolute inset-0 flex items-center justify-center">
-            <svg data-lucide="loader" class="w-5 h-5 animate-spin block mx-auto"></svg>
+        <!-- overlay -->
+        <div class="absolute inset-0 bg-black/80"></div>
+
+        <!-- loader wrapper (buat posisi tengah) -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white">
+            <svg data-lucide="loader"
+                 class="w-6 h-6 animate-spin">
+            </svg>
         </div>
     </div>
+
+    <div id="loading" class="loading"></div>
 }
