@@ -14,6 +14,7 @@ type Project struct {
 	Status      string          `gorm:"column:status;default:'PLANNING'" json:"status" form:"status"`
 	StartDate   *time.Time      `gorm:"column:start_date;type:DATE" json:"start_date,omitempty" form:"start_date"`
 	DueDate     *time.Time      `gorm:"column:due_date;type:DATE" json:"due_date,omitempty" form:"due_date"`
+	CompletedAt *time.Time      `gorm:"column:completed_at;type:DATE" json:"completed_at,omitempty" form:"completed_at"`
 	Progress    int             `gorm:"column:progress;default:0" json:"progress" form:"progress"`
 	Tasks       []Task          `gorm:"foreignKey:ProjectID;references:ID" json:"tasks,omitempty"`
 	Members     []ProjectMember `gorm:"foreignKey:ProjectID;references:ID" json:"members,omitempty"`
@@ -30,6 +31,8 @@ type ProjectStatus struct {
 	Status string `gorm:"column:status;not null;" json:"status" form:"status"`
 	Label  string `gorm:"column:label;not null;" json:"label" form:"label"`
 	Color  string `gorm:"column:color;not null;" json:"color" form:"color"`
+	Form   int    `gorm:"form" json:"form,omitempty" form:"form"`
+	Value  int    `gorm:"value" json:"value,omitempty" form:"value"`
 }
 
 type ProjectMember struct {
@@ -62,6 +65,7 @@ type ProjectTag struct {
 //     status VARCHAR(50) DEFAULT 'PLANNING',
 //     start_date DATE,
 //     due_date DATE,
+//     completed_at DATE,
 //     progress INT DEFAULT 0 CHECK (progress >= 0 AND progress <= 100),
 //     is_archived BOOLEAN DEFAULT FALSE,
 //     created_at TIMESTAMP DEFAULT NOW(),
@@ -71,11 +75,14 @@ type ProjectTag struct {
 //     CONSTRAINT fk_workspace FOREIGN KEY(workspace_id) REFERENCES workspaces(id) ON DELETE CASCADE
 // );
 
-// -- Tabel project_tags
+// -- Tabel project_statuses
 // CREATE TABLE project_statuses (
 //     no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-//     status VARCHAR(50) NOT NULL,
-//     label VARCHAR(50) NOT NULL
+//     status VARCHAR(100) NOT NULL,
+//     label VARCHAR(100) NOT NULL,
+//     color VARCHAR(225) NOT NULL,
+//     form INT NOT NULL DEFAULT 1,
+//     value INT NOT NULL DEFAULT 0
 // );
 
 // -- Tabel project_members

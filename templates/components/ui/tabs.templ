@@ -4,35 +4,51 @@ import (
 	"fmt"
 )
 
-// Tabs Component
-templ Tabs(defaultValue string, class string, attrs templ.Attributes) {
-	<div class={"w-full", class} data-default-value={defaultValue} {attrs...}>
-		{children...}
-	</div>
-}
-
-templ TabsList(class string, attrs templ.Attributes) {
-	<div class={"inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground ", class} {attrs...}>
-		{children...}
-	</div>
-}
-
-templ TabsTrigger(value string, class string, attrs templ.Attributes) {
-	<button
-		class={"inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm", class}
-		data-value={value}
-		onclick={templ.ComponentScript{Call:fmt.Sprintf("switchTab('%s')", value)}}
+// Root wrapper
+templ Tabs(id string, defaultTab string, class string, attrs templ.Attributes) {
+	<div
+		id={id}
+		x-data={fmt.Sprintf("{ activeTab: '%s' }", defaultTab)}
+		class={"w-full", class}
 		{attrs...}
 	>
 		{children...}
+	</div>
+}
+
+// Tabs list
+templ TabsList(class string, attrs templ.Attributes) {
+	<div
+		class={"inline-flex h-9 items-center justify-center rounded-lg bg-transparent p-1 text-muted-foreground gap-x-2", class}
+		{attrs...}
+	>
+		{children...}
+	</div>
+}
+
+// Tabs trigger
+templ TabsTrigger(tab string, label string, class string, attrs templ.Attributes) {
+	<button
+		@click={fmt.Sprintf("activeTab='%s'", tab)}
+		:class={fmt.Sprintf("activeTab === '%s' ? 'bg-neutral-200 text-black' : 'bg-neutral-100 text-muted-foreground'", tab)}
+		class={"inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-neutral-200 data-[state=active]:text-black", class}
+		{attrs...}
+	>
+		{label}
 	</button>
 }
 
-templ TabsContent(value string, class string, attrs templ.Attributes) {
+// Tabs content
+templ TabsContent(tab string, class string, attrs templ.Attributes) {
 	<div
+		x-show={fmt.Sprintf("activeTab === '%s'", tab)}
+		x-transition:enter="transition-all ease-in-out duration-0"
+		x-transition:enter-start="opacity-0 -translate-y-0 max-h-0"
+		x-transition:enter-end="opacity-100 translate-y-0 max-h-screen"
+		x-transition:leave="transition-all ease-in-out duration-0"
+		x-transition:leave-start="opacity-100 translate-y-0 max-h-screen"
+		x-transition:leave-end="opacity-0 -translate-y-0 max-h-0"
 		class={"mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2", class}
-		data-value={value}
-		id={fmt.Sprintf("tab-content-%s", value)}
 		{attrs...}
 	>
 		{children...}

@@ -55,6 +55,9 @@ templ FormControl(id, name, typ, placeholder, value, class string, attrs templ.A
     if typ == "date" {
         @DatePicker(id, name, value, placeholder, class, attrs)
     }
+    if typ == "datetime" {
+        @DateTimePicker(id, name, value, placeholder, class, attrs)
+    }
     if typ == "textarea" {
         @Textarea(id, name, placeholder, value, class, attrs)
     }
@@ -82,6 +85,7 @@ templ FormControl(id, name, typ, placeholder, value, class string, attrs templ.A
             <select 
                 id={id}
                 name={name}
+                value={value}
                 class={"flex h-11 w-full block appearance-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", class}
                 {attrs...}
             >

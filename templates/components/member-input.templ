@@ -5,13 +5,14 @@ import (
 
     "etop/utils"
 	"etop/models"
+    "etop/services"
 )
 
 templ MemberInput(id string, name string, placeholder string, initial []models.User, suggestions []models.User, class string, attrs templ.Attributes) {
     <div
         x-data="{
+                    id: '',
                     tags: [],
-                    initial: [],
                     input: '',
                     name: '',
                     suggestions: [],
@@ -71,9 +72,9 @@ templ MemberInput(id string, name string, placeholder string, initial []models.U
                     closeDropdown() {
                         this.filtered = [];
                         this.highlighted = -1;
-                    }
+                    },
                 }"
-        x-init={fmt.Sprintf("id='%s';name='%s';initial=%s;suggestions=%s;initialTag(%s);",id,name,string(utils.MustJSON(initial)),string(utils.MustJSON(suggestions)),string(utils.MustJSON(initial)))}
+        x-init={fmt.Sprintf("id='%s';name='%s';initialTag(%s);suggestions=%s;",id,name,string(utils.MustJSON(initial)),string(utils.MustJSON(suggestions)))}
         class={"w-full max-w-md relative", class}
         {attrs...}
         @keydown.escape="closeDropdown"
@@ -120,7 +121,8 @@ templ MemberInput(id string, name string, placeholder string, initial []models.U
             :class="dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'"
             class="absolute left-0 w-full bg-white border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin"
         >
-            <template x-for="(item, idx) in filtered" :key="idx">
+            <template 
+                x-for="(item, idx) in filtered" :key="idx">
                 <div x-show="auth_id !== item.id"
                     @click="addTag(item)"
                     @mouseover="highlighted = idx"
@@ -147,16 +149,14 @@ templ MemberInput(id string, name string, placeholder string, initial []models.U
         </div>
 
         <!-- hidden -->
-        <input id={id} type="hidden" :name="name" :value="JSON.stringify(tags.map(t => t.id))" />
+        <input id={id} type="hidden" :name="name" x-model={id} :value="JSON.stringify(tags.map(t => t.id))" />
     </div>
 }
-
 
 templ MemberRoleInput(id string, name string, placeholder string, initial []models.User, suggestions []models.User, class string, attrs templ.Attributes) {
 	<div
 		x-data="{
 			tags: [],
-            initial: [],
             input: '',
             name: '',
             suggestions: [],
@@ -189,7 +189,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 			toggleTag(item) {
 				let idx = this.tags.findIndex(t => t.id === item.id);
 				if (idx === -1) {
-					this.tags.push({ id: item.id, full_name: item.full_name, color: item.color, role: 'MEMBER' });
+					this.tags.push({ id: item.id, full_name: item.full_name, color: item.color, role: item.role });
 				} else {
 					this.tags.splice(idx, 1);
 				}
@@ -197,17 +197,36 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 			updateRole(id, role) {
 				let t = this.tags.find(t => t.id === id);
 				if (t) t.role = role;
+                let s = this.suggestions.find(s => s.id === id);
+                if (s) s.role = role;
 			},
 			initialTag(t) {
 				this.tags = t.map(u => ({
 					id: u.id.trim(),
 					full_name: u.full_name,
 					color: u.color,
-					role: u.role || 'MEMBER'
+					role: u.role || 'VIEWER',
 				}));
-			}
+			},
+            renderSuggestions(member, nonMembers) {
+                nonMembers.forEach(nm => {
+                    if (member.some(m => m.id === nm.id)) {
+                        this.suggestions.push({
+                            ...nm,
+                            type: 'member',
+                            role: 'MEMBER',
+                        });
+                    } else {
+                        this.suggestions.push({
+                            ...nm,
+                            type: 'non-member',
+                            role: 'VIEWER',
+                        });
+                    }
+                });
+            },
 		}"
-		x-init={fmt.Sprintf("id='%s';name='%s';initial=%s;suggestions=%s;initialTag(%s);",id,name,string(utils.MustJSON(initial)),string(utils.MustJSON(suggestions)),string(utils.MustJSON(initial)))}
+		x-init={fmt.Sprintf("id='%s';name='%s';renderSuggestions(%s,%s);initialTag(%s);",id,name,string(utils.MustJSON(suggestions)),string(utils.MustJSON(services.GetAllUser())),string(utils.MustJSON(initial)))}
 		class={"w-full max-w-md relative", class}
 		{attrs...}
         @click.away="hideDropdown"
@@ -269,9 +288,10 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
                             @change="updateRole(item.id, $event.target.value)"
                             class="ml-2 px-1 py-0.5 text-xs rounded-md border border-input bg-transparent shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            <option value="MEMBER">Member</option>
-                            <option value="VIEWER">Viewer</option>
-                            <option value="ADMIN">Admin</option>
+                            <option value="VIEWER" :selected="item.type!=='member'">Viewer</option>
+                            <option value="CONTRIBUTOR">Contributor</option>
+                            <option value="MEMBER" x-show="item.type==='member'" :selected="item.type==='member'">Member</option>
+                            <option value="ADMIN" x-show="item.type==='member'">Admin</option>
                         </select>
                     </div>
 				</div>
@@ -281,4 +301,148 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 		<!-- hidden -->
 		<input id={id} type="hidden" :name="name" :value="JSON.stringify(tags.map(t => ({user_id: t.id, role: t.role})))" />
 	</div>
+}
+
+templ AssigneeInput(id string, name string, placeholder string, initial []models.User, suggestions []models.User, class string, attrs templ.Attributes) {
+    <div
+        x-data="{
+                    id: '',
+                    tags: [],
+                    input: '',
+                    name: '',
+                    suggestions: [],
+                    filtered: [],
+                    dropdownAbove: false,
+                    highlighted: -1,
+                    filterSuggestions() {
+                        let q = this.input.toLowerCase().trim();
+                        this.filtered = q === '' ? [] : this.suggestions.filter(
+                            s => s.full_name.toLowerCase().includes(q) && !this.tags.some(t => t.id === s.id)
+                        );
+                        this.highlighted = this.filtered.length > 0 ? 0 : -1;
+                        this.$nextTick(() => this.adjustDropdown());
+                    },
+                    filterMembers() {
+                        this.filtered = this.suggestions.filter(
+                            s => !this.tags.some(t => t.id === s.id)
+                        );
+                        this.highlighted = this.filtered.length > 0 ? 0 : -1;
+                        this.$nextTick(() => this.adjustDropdown());
+                    },
+                    adjustDropdown() {
+                        let inputEl = this.$refs.input;
+                        if (!inputEl) return;
+                        let rect = inputEl.getBoundingClientRect();
+                        let spaceBelow = window.innerHeight - rect.bottom;
+                        let spaceAbove = rect.top;
+                        this.dropdownAbove = spaceBelow < 150 && spaceAbove > spaceBelow;
+                    },
+                    moveDown() {
+                        if (this.filtered.length > 0 && this.highlighted < this.filtered.length - 1) {
+                            this.highlighted++;
+                        }
+                    },
+                    moveUp() {
+                        if (this.filtered.length > 0 && this.highlighted > 0) {
+                            this.highlighted--;
+                        }
+                    },
+                    selectHighlighted() {
+                        if (this.highlighted >= 0 && this.filtered[this.highlighted]) {
+                            this.addTag(this.filtered[this.highlighted]);
+                        }
+                    },
+                    addTag(item) {
+                        if (!this.tags.some(t => t.id === item.id)) this.tags.push(item);
+                        this.input = '';
+                        this.filtered = [];
+                        this.highlighted = -1;
+                    },
+                    removeTag(i) {
+                        this.tags.splice(i, 1);
+                    },
+                    initialTag(t) {
+                        this.tags = t;
+                    },
+                    closeDropdown() {
+                        this.filtered = [];
+                        this.highlighted = -1;
+                    },
+                }"
+        x-init={fmt.Sprintf("id='%s';name='%s';initialTag(%s);suggestions=%s;",id,name,string(utils.MustJSON(initial)),string(utils.MustJSON(suggestions)))}
+        class={"w-full max-w-md relative", class}
+        {attrs...}
+        @keydown.escape="closeDropdown"
+        @click.away="closeDropdown"
+    >
+        <div class="flex flex-wrap gap-2 border rounded-md p-2 relative">
+            <!-- tags -->
+            <template x-for="(tag, index) in tags" :key="index">
+                <span class="flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">
+                    <div class="flex items-center">
+		                <div class="rounded-full flex items-center justify-center h-4 w-4" :class="`${tag.color}`">
+                            <span class="text-xs font-small text-primary-foreground" x-text="tag.full_name.slice(0,1)"></span>
+                        </div>
+                    </div>
+                    <span x-text="tag.full_name"></span>
+                    <span @click="removeTag(index)" class="cursor-pointer">×</span>
+                </span>
+            </template>
+
+            <!-- input -->
+            <input
+                x-ref="input"
+                type="text"
+                x-model="input"
+                @input="filterSuggestions"
+                @keydown.down.prevent="
+                    if (filtered.length === 0) {
+                        filterMembers()
+                    } else {
+                        moveDown()
+                    }
+                "
+                @keydown.up.prevent="moveUp"
+                @keydown.enter.prevent="selectHighlighted"
+                placeholder={placeholder}
+                class="flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none"
+            />
+        </div>
+
+        <!-- dropdown -->
+        <div
+            x-show="filtered.length > 0"
+            x-transition
+            :class="dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'"
+            class="absolute left-0 w-full bg-white border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin"
+        >
+            <template 
+                x-for="(item, idx) in filtered" :key="idx">
+                <div @click="addTag(item)"
+                    @mouseover="highlighted = idx"
+                    :class="highlighted === idx ? 'bg-blue-100 text-blue-800' : ''"
+                    class="px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm"
+                    
+                >
+                    <div class="flex items-center gap-2">
+                        <div class="flex items-center">
+                            <div class="rounded-full flex items-center justify-center h-4 w-4" :class="`${item.color}`">
+                                <span class="text-xs font-thin text-primary-foreground" x-text="item.full_name.slice(0,1)"></span>
+                            </div>
+                        </div>
+                        <span x-text="item.full_name"></span>
+                    </div>
+                    // <div class="flex items-center">
+                    //     <div class="rounded-full flex items-center justify-center h-4 w-4" :class="`${item.color}`">
+                    //         <span class="text-xs font-thin text-primary-foreground" x-text="item.full_name.slice(0,1)"></span>
+                    //     </div>
+                    // </div>
+                    // <span x-text="item.full_name"></span>
+                </div>
+            </template>
+        </div>
+
+        <!-- hidden -->
+        <input id={id} type="hidden" :name="name" x-model={name} :value="JSON.stringify(tags.map(t => t.id))" />
+    </div>
 }

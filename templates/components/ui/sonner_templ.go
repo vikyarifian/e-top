@@ -33,11 +33,10 @@ func Toast(id, typ, title, description string, class string, attrs templ.Attribu
 		var templ_7745c5c3_Var2 = []any{"fixed top-4 right-4 z-50 w-full max-w-sm rounded-lg border p-4 shadow-lg transition-all",
 			class,
 			templ.KV("bg-background text-foreground border-border", typ == "default"),
-			templ.KV("bg-background text-foreground border-border", typ == ""),
-			templ.KV("bg-gray-200 text-gray-800 border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700", typ == "error"),
-			templ.KV("bg-green-100 text-green-800 border-green-300 dark:bg-gray-400 dark:text-gray-900 dark:border-gray-600", typ == "success"),
+			templ.KV("bg-red-500 text-white-800 border-red-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700", typ == "error"),
+			templ.KV("bg-green-400 text-white-800 border-green-300 dark:bg-gray-400 dark:text-gray-900 dark:border-gray-600", typ == "success"),
 			templ.KV("bg-yellow-600 text-white border-yellow-600 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700", typ == "warning"),
-		}
+			templ.KV("bg-background text-foreground border-border", typ == "")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -33,7 +33,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		<body 
 			class="min-h-screen bg-background text-foreground"
 			:class="darkMode ? 'dark' : ''"
-			x-data={fmt.Sprintf("{ auth_id: '%s', project_statuses: %s, full_name: '%s', sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s,}", strings.Trim(user.ID," "), string(utils.MustJSON(services.GetProjectStatus())), user.FullName, string(utils.MustJSON(services.GetColorOptions())))}
+			x-data={fmt.Sprintf("{ auth_id: '%s', full_name: '%s', sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s, task_priorities: %s, }", strings.Trim(user.ID," "), user.FullName, string(utils.MustJSON(services.GetColorOptions())), string(utils.MustJSON(services.GetTaskPriorities())))}
 			x-init="
 				$watch('darkMode', val => {
 					localStorage.setItem('darkMode', val);
@@ -59,7 +59,6 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 			"
 		>
 			<div class="flex h-screen">
-				
 				<!-- Desktop Sidebar -->
 				<div 
 					class="hidden md:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out"
@@ -74,8 +73,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 
 					<!-- Page Content -->
 					<main class="flex-1 p-6 overflow-y-auto">
-						@components.Loader("loader")
-						<div id="content" class="w-full h-full loaded-content" >
+						<div id="content" class="w-full h-full" >
 							for _, c := range content {
 								@c
 							}
@@ -109,7 +107,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 				>
 					@Sidebar(true)
 				</div>
-
+				@components.Loader("loader")
 			</div>
 			@features.CreateWorkspace("w-96", nil) 
 			@BaseScript(os.Getenv("APP_NAME"))
@@ -198,11 +196,28 @@ script BaseScript(appName string) {
 			toggle(id) { this.openId = this.openId === id ? null : id },
 			close() { this.openId = null }
 		});
-		Alpine.store('modal', {
-			openId: null,
-			open(id) { this.openId = id },
-			close() { this.openId = null },
-			isOpen(id) { return this.openId === id }
+		Alpine.store("modal", {
+			active: null,
+			open(id) {
+				this.active = id
+				document.body.classList.add("overflow-hidden")
+				document.body.dispatchEvent(new CustomEvent("modal:opened", {
+					detail: { id }
+				}))
+			},
+			close(id) {
+				if (this.active === id) {
+					this.active = null
+					document.body.classList.remove("overflow-hidden")
+					// Emit event global agar listener lain bisa reset form
+					document.body.dispatchEvent(new CustomEvent("modal:closed", {
+						detail: { id }
+					}))
+				}
+			},
+			isOpen(id) {
+				return this.active === id
+			}
 		});
 		Alpine.store("workspace", {
 			current: localStorage.getItem("workspace") || "",

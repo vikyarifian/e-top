@@ -88,6 +88,7 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signin-error", "warning", "", "Invalid password!", "", nil).Render(r.Context(), w)
 		}
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 
@@ -169,6 +170,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 
 		return ui.Toast("login-success", "success", "", "Register success! Please check your email for verification.", "", nil).Render(r.Context(), w)
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 
@@ -217,6 +219,7 @@ func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 
 		return ui.Toast("resend-success", "success", "", "If your email is registered, you will receive a verification link.", "", nil).Render(r.Context(), w)
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }
@@ -371,6 +374,7 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 		return ui.Toast("forgot-success", "success", "", "Reset password success! You can sign in to continue.", "", nil).Render(r.Context(), w)
 
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }
@@ -422,6 +426,7 @@ func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }

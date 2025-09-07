@@ -72,6 +72,7 @@ func DottedSeparator(class string, color string, height string, dotSize string, 
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 = []any{"",
+			class,
 			templ.KV("flex-grow", direction == "horizontal"),
 			templ.KV("flex-grow-0", direction == "vertical"),
 		}
@@ -108,7 +109,7 @@ func DottedSeparator(class string, color string, height string, dotSize string, 
 			templ.KV("background-repeat:repeat-y;", direction == "vertical"),
 		)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/dotted-separator.templ`, Line: 38, Col: 12}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/dotted-separator.templ`, Line: 39, Col: 12}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {

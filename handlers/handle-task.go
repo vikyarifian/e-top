@@ -1,0 +1,202 @@
+package handlers
+
+import (
+	"encoding/json"
+	"etop/auth"
+	"etop/db"
+	"etop/models"
+	"etop/services"
+	"etop/templates/components/ui"
+	"etop/templates/features"
+	"etop/templates/layouts"
+	"etop/templates/pages"
+	"etop/utils"
+	"net/http"
+	"strconv"
+	"strings"
+	"time"
+
+	"gorm.io/gorm"
+)
+
+func HandleCreateTaskFrom(w http.ResponseWriter, r *http.Request) error {
+	project_id := r.URL.Query().Get("project_id")
+	typ := r.URL.Query().Get("type")
+	return features.CreateTaskForm(project_id, typ).Render(r.Context(), w)
+}
+
+func HandleTasks(w http.ResponseWriter, r *http.Request) error {
+	user, _ := auth.GetAuth(w, r)
+	switch r.Method {
+	case http.MethodGet:
+		id := r.URL.Query().Get("id")
+		if strings.Trim(id, " ") != "" {
+			var task models.Task
+			if err := db.PgSql.Where("id=?", id).Preload("Assignees", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).First(&task).Error; err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
+			}
+
+			return layouts.Layout("Task", user, features.Task(task)).Render(r.Context(), w)
+		}
+		var tasks []models.Task
+		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).
+			Preload("Assignees", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("User")
+		}).Find(&tasks)
+		return layouts.Layout("Tasks", user, features.Tasks(tasks)).Render(r.Context(), w)
+	case http.MethodPost:
+		id := r.URL.Query().Get("id")
+		if strings.Trim(id, " ") != "" {
+			var task models.Task
+			if err := db.PgSql.Where("id=?",
+				id).Preload("Assignees", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).First(&task).Error; err != nil {
+				w.WriteHeader(http.StatusNotFound)
+				return pages.NotFound().Render(r.Context(), w)
+			}
+
+			return features.Task(task).Render(r.Context(), w)
+		}
+
+		var tasks []models.Task
+		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).Preload("Assignees").Preload("Watchers").Order("no").Find(&tasks)
+		return features.Tasks(tasks).Render(r.Context(), w)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return nil
+	}
+}
+
+func HandleTask(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case http.MethodPost:
+		var task models.Task
+		r.ParseForm()
+		t := time.Now().Local()
+		user, _ := auth.GetAuth(w, r)
+
+		task.Title = r.FormValue("title")
+		if len(strings.Trim(task.Title, " ")) < 1 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Title is required!", "", nil).Render(r.Context(), w)
+		}
+
+		task.Description = r.FormValue("description")
+		task.ProjectID = r.FormValue("project_id")
+		if len(strings.Trim(task.ProjectID, " ")) < 1 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Task is required!", "", nil).Render(r.Context(), w)
+		}
+
+		task.Status = r.FormValue("status")
+		if len(strings.Trim(task.Status, " ")) < 1 {
+			task.Status = "TO_DO"
+		}
+
+		task.StartDate = &t
+
+		taskStatus := services.GetTaskStatuses()
+		validStatus := false
+		status := false
+		for _, s := range taskStatus {
+			if strings.EqualFold(strings.Trim(s.Status, " "), strings.Trim(task.Status, " ")) {
+				validStatus = true
+				if s.Value == 5 {
+					status = true
+					tc := time.Now().Add(1 * time.Minute)
+					task.CompletedAt = &tc
+					task.ActualHours = float32(utils.TimeDiff(*task.StartDate, tc).Hours())
+				}
+				break
+			}
+		}
+		if !validStatus {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Invalid status!", "", nil).Render(r.Context(), w)
+		}
+
+		dueDate, err := time.Parse("2006-01-02", r.FormValue("due_date"))
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Invalid due date format!", "", nil).Render(r.Context(), w)
+		}
+		task.DueDate = &dueDate
+
+		task.EstimatedHours = float32(utils.TimeDiff(*task.StartDate, *task.DueDate).Hours())
+
+		task.Priority = r.FormValue("priority")
+		if len(strings.Trim(task.Priority, " ")) < 1 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Priority is required!", "", nil).Render(r.Context(), w)
+		}
+
+		taskPriorities := services.GetTaskPriorities()
+		validPriority := false
+		for _, p := range taskPriorities {
+			if p.Priority == task.Priority {
+				validPriority = true
+				break
+			}
+		}
+		if !validPriority {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Invalid priority!", "", nil).Render(r.Context(), w)
+		}
+
+		if dueDate.Before(*task.StartDate) {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Due date cannot be before today!", "", nil).Render(r.Context(), w)
+		}
+
+		no := 0
+		db.PgSql.Table("tasks").Select("max(no)").Row().Scan(&no)
+		task.ID = utils.GenerateHash(strconv.Itoa(no + 1))
+		task.CreatedAt = &t
+		task.CreatedBy = user.ID
+		task.UpdatedAt = &t
+		task.UpdatedBy = user.ID
+
+		if err := db.PgSql.Create(&task).Error; err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return ui.Toast("task-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+		}
+
+		assignees := []models.TaskAssignee{}
+		assigneesPayload := []string{}
+		if err := json.Unmarshal([]byte(r.FormValue("assignees")), &assigneesPayload); err == nil {
+			for _, m := range assigneesPayload {
+				assignee := models.TaskAssignee{
+					TaskID:    task.ID,
+					UserID:    m,
+					CreatedAt: &t,
+					CreatedBy: user.ID,
+					UpdatedAt: &t,
+					UpdatedBy: user.ID,
+				}
+				if status {
+					assignee.ActualHours = task.ActualHours
+					assignee.CompletedAt = task.CompletedAt
+				}
+				assignees = append(assignees, assignee)
+			}
+		}
+
+		db.PgSql.Create(&assignees)
+
+		return ui.Toast("task-success", "success", "", "Task created successfully.", "", nil).Render(r.Context(), w)
+
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return nil
+	}
+}

@@ -14,3 +14,17 @@ templ DatePicker(id string, name string, value, placeholder string, class string
         />
     </div>
 }
+
+templ DateTimePicker(id string, name string, value, placeholder string, class string, attrs templ.Attributes) {
+    <div class="relative">
+        <input 
+            id={id}
+            type="datetime-local"
+            name={name}
+            value={value}
+            placeholder={placeholder}
+            class={"flex h-11 min-w-74 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50", class}
+            {attrs...}
+        />
+    </div>
+}

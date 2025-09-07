@@ -39,7 +39,6 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 				"focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none "+
 				"disabled:bg-muted disabled:text-muted-foreground border border-border shadow-sm [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 %s",
 			class),
-			// Variants
 			templ.KV("bg-primary text-primary-foreground hover:bg-primary/90", variant == "primary"),
 			templ.KV("bg-destructive text-destructive-foreground hover:bg-destructive/90", variant == "destructive"),
 			templ.KV("bg-secondary text-secondary-foreground hover:bg-secondary/80", variant == "secondary"),
@@ -48,9 +47,7 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 			templ.KV("text-primary underline-offset-4 hover:underline", variant == "link"),
 			templ.KV("bg-muted text-muted-foreground hover:bg-muted/80", variant == "muted"),
 			templ.KV("bg-blue-100 text-blue-600 border-transparent hover:bg-blue-200 shadow-none", variant == "teritary"),
-			// Default
 			templ.KV("bg-primary text-primary-foreground hover:bg-primary/90", variant == ""),
-			// Sizes
 			templ.KV("h-10 px-4 py-2", size == ""),
 			templ.KV("h-8 rounded-md px-3", size == "sm"),
 			templ.KV("h-7 rounded-md px-2 text-xs", size == "xs"),
@@ -107,7 +104,7 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(icon)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 37, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 34, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -122,7 +119,7 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 40, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 37, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {

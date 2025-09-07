@@ -23,6 +23,7 @@ templ DottedSeparator(class string, color string, height string, dotSize string,
     >
         <div class={
                 "",
+                class,
                 templ.KV("flex-grow", direction == "horizontal"),
                 templ.KV("flex-grow-0", direction == "vertical"),
             }

@@ -66,6 +66,7 @@ func HandleNotFound(w http.ResponseWriter, r *http.Request) error {
 	case http.MethodPost:
 		return pages.NotFound().Render(r.Context(), w)
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }
@@ -86,6 +87,7 @@ func HandleForbidden(w http.ResponseWriter, r *http.Request) error {
 	case http.MethodPost:
 		return pages.Forbidden().Render(r.Context(), w)
 	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
 }

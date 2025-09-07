@@ -59,14 +59,35 @@ script TagScript(id string, initialTags []string) {
         }
 
         inputField.addEventListener("keydown", function (e) {
+            const newTag = inputField.value.trim();
             if (e.key === "Enter") {
                 e.preventDefault();
-                const newTag = inputField.value.trim();
                 if (newTag !== "" && !tags.includes(newTag)) {
                     tags.push(newTag);
                     inputField.value = "";
                     renderTags();
                 }
+            }
+            if (e.key === ',') { 
+                e.preventDefault();
+                if (newTag !== "" && !tags.includes(newTag)) {
+                    tags.push(newTag);
+                    inputField.value = "";
+                    renderTags();
+                } else {
+                    inputField.value = "";
+                }
+            }
+        });
+
+        inputField.addEventListener("blur", function() {
+            const newTag = inputField.value.trim();
+            if (newTag !== "" && !tags.includes(newTag)) {
+                tags.push(newTag);
+                inputField.value = "";
+                renderTags();
+            } else {
+                inputField.value = "";
             }
         });
 

@@ -16,15 +16,15 @@ type Task struct {
 	Priority string `gorm:"column:priority;default:'MEDIUM'" json:"priority"`
 
 	// Many-to-many: assignees
-	Assignees []User `gorm:"many2many:task_assignees;" json:"assignees,omitempty"`
+	Assignees []TaskAssignee `gorm:"foreignKey:TaskID;references:ID" json:"assignees,omitempty"`
 	// Many-to-many: watchers
 	Watchers []User `gorm:"many2many:task_watchers;" json:"watchers,omitempty"`
 
 	StartDate      *time.Time `gorm:"column:start_date;type:DATE" json:"start_date,omitempty" form:"start_date"`
 	DueDate        *time.Time `gorm:"column:due_date;type:TIMESTAMP" json:"due_date,omitempty"`
 	CompletedAt    *time.Time `gorm:"column:completed_at;type:TIMESTAMP" json:"completed_at,omitempty"`
-	EstimatedHours int        `gorm:"column:estimated_hours;default:0" json:"estimated_hours"`
-	ActualHours    int        `gorm:"column:actual_hours;default:0" json:"actual_hours"`
+	EstimatedHours float32    `gorm:"column:estimated_hours;default:0" json:"estimated_hours"`
+	ActualHours    float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
 
 	// Array of tags → simpan sebagai TEXT[] di Postgres
 	Tags []string `gorm:"type:text[]" json:"tags"`
@@ -44,6 +44,47 @@ type Task struct {
 	CreatedBy string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
 	UpdatedBy string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
+}
+
+type TaskAssignee struct {
+	TaskID      string     `gorm:"column:task_id;not null;index" json:"task_id"`
+	Task        Task       `gorm:"foreignKey:TaskID;references:ID"`
+	UserID      string     `gorm:"column:user_id;not null;index" json:"user_id"`
+	User        User       `gorm:"foreignKey:UserID;references:ID"`
+	CompletedAt *time.Time `gorm:"column:completed_at;type:TIMESTAMP" json:"completed_at,omitempty"`
+	ActualHours float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
+	CreatedAt   *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
+	CreatedBy   string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
+	UpdatedAt   *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
+	UpdatedBy   string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
+}
+
+type TaskWatchers struct {
+	TaskID    string     `gorm:"column:task_id;not null;index" json:"task_id"`
+	Task      Task       `gorm:"foreignKey:TaskID;references:ID"`
+	UserID    string     `gorm:"column:user_id;not null;index" json:"user_id"`
+	User      User       `gorm:"foreignKey:UserID;references:ID"`
+	CreatedAt *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
+	CreatedBy string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
+	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
+	UpdatedBy string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
+}
+
+type TaskStatus struct {
+	No     int    `gorm:"column:no;primaryKey" json:"-" form:"-"`
+	Status string `gorm:"column:status;not null;" json:"status" form:"status"`
+	Label  string `gorm:"column:label;not null;" json:"label" form:"label"`
+	Color  string `gorm:"column:color;not null;" json:"color" form:"color"`
+	Form   int    `gorm:"form" json:"form,omitempty" form:"form"`
+	Value  int    `gorm:"value" json:"value,omitempty" form:"value"`
+}
+
+type TaskPriority struct {
+	No       int    `gorm:"column:no;primaryKey" json:"-" form:"-"`
+	Priority string `gorm:"column:priority;not null;" json:"priority" form:"priority"`
+	Label    string `gorm:"column:label;not null;" json:"label" form:"label"`
+	Color    string `gorm:"column:color;not null;" json:"color" form:"color"`
+	Value    int    `gorm:"value" json:"value,omitempty" form:"value"`
 }
 
 // Subtask model
@@ -67,9 +108,9 @@ type Subtask struct {
 //     title TEXT NOT NULL,
 //     description TEXT,
 //     project_id VARCHAR(255) NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-//     status VARCHAR(50) DEFAULT 'TO_DO' CHECK (status IN ('TO_DO','IN_PROGRESS','IN_REVIEW','DONE')),
+//     status VARCHAR(50) DEFAULT 'TO_DO' CHECK (status IN ('TO_DO','IN_PROGRESS','IN_REVIEW','DONE','CANCELLED')),
 //     priority VARCHAR(50) DEFAULT 'MEDIUM' CHECK (priority IN ('LOW','MEDIUM','HIGH')),
-// 	   start_date DATE,
+// 	   start_date TIMESTAMP,
 //     due_date TIMESTAMP,
 //     completed_at TIMESTAMP,
 //     estimated_hours INT DEFAULT 0 CHECK (estimated_hours >= 0),
@@ -80,6 +121,49 @@ type Subtask struct {
 //     created_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 //     updated_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT
+// );
+
+// -- Tabel task_statuses
+// CREATE TABLE task_statuses (
+//     no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     status VARCHAR(100) NOT NULL,
+//     label VARCHAR(100) NOT NULL,
+//     color VARCHAR(225) NOT NULL,
+//     form INT NOT NULL DEFAULT 1,
+//     value INT NOT NULL DEFAULT 0
+// );
+
+// -- Tabel task_priorities
+// CREATE TABLE task_priorities (
+//     no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     priority VARCHAR(100) NOT NULL,
+//     label VARCHAR(100) NOT NULL,
+//     color VARCHAR(225) NOT NULL,
+//     value INT NOT NULL DEFAULT 0
+// );
+
+// -- Join table: task_assignees (many-to-many)
+// CREATE TABLE task_assignees (
+//     task_id VARCHAR(255) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+//     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     completed_at TIMESTAMP,
+//     actual_hours INT DEFAULT 0 CHECK (actual_hours >= 0),
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     created_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     updated_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+//     PRIMARY KEY (task_id, user_id)
+// );
+
+// -- Join table: task_watchers (many-to-many)
+// CREATE TABLE task_watchers (
+//     task_id VARCHAR(255) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+//     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     created_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     updated_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+//     PRIMARY KEY (task_id, user_id)
 // );
 
 // -- TABLE: subtasks

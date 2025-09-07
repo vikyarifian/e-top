@@ -66,7 +66,7 @@
 }
 
 .locked-text {
-    background: url('/public/img/lock.jpg'); /* ganti dengan path gambar gembok */
+    background: url('/public/img/lock.jpg'); 
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-size: cover;
@@ -85,12 +85,12 @@
   display: block;
 }
 
-/* Hide previously loaded content during HTMX request */
-.htmx-request .loaded-content {
+/* Hide previously loading during HTMX request */
+.htmx-request .loading {
   display: none;
 }
 
-.htmx-request.loaded-content {
+.htmx-request.loading {
   display: none;
 }
 
