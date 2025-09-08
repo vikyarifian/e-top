@@ -120,6 +120,18 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("project-error", "warning", "", "Workspace is required!", "", nil).Render(r.Context(), w)
 		}
 
+		workspace := models.Workspace{}
+		if err := db.PgSql.Where("id=?", project.WorkspaceID).First(&workspace).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("project-error", "warning", "", "Workspace is not found!", "", nil).Render(r.Context(), w)
+		}
+
+		var wsMember models.WorkspaceMember
+		if err := db.PgSql.Where("workspace_id=? AND user_id=?", project.WorkspaceID, user.ID).First(&wsMember).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("project-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
+		}
+
 		project.Status = r.FormValue("status")
 		if len(strings.Trim(project.Status, " ")) < 1 {
 			project.Status = "PLANNING"
@@ -178,8 +190,9 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("project-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
-		members := []models.ProjectMember{}
 		member := models.ProjectMember{}
+		members := []models.ProjectMember{}
+
 		no = 0
 		db.PgSql.Table("project_members").Select("max(no)").Row().Scan(&no)
 		member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
@@ -225,6 +238,7 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 		db.PgSql.Create(&tags)
 
 		return ui.Toast("project-success", "success", "", "Project created successfully.", "", nil).Render(r.Context(), w)
+
 	case http.MethodPut:
 		var project models.Project
 		r.ParseForm()
@@ -232,13 +246,18 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 		user, _ := auth.GetAuth(w, r)
 
 		project.ID = r.FormValue("id")
-		if err := db.PgSql.Where("id=?", project.ID).First(&project).Error; err != nil {
+		if err := db.PgSql.Where("id=? AND workspace_id=?", project.ID, r.FormValue("workspace_id")).First(&project).Error; err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "Project is not found!", "", nil).Render(r.Context(), w)
 		}
 
-		var member models.WorkspaceMember
-		if err := db.PgSql.Where("id=? AND user_id=?", project.ID, user.ID).First(&member).Error; err != nil {
+		var member models.ProjectMember
+		if err := db.PgSql.Where("project_id=? AND user_id=?", project.WorkspaceID, user.ID).First(&member).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("project-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
+		}
+
+		if member.Role != "OWNER" && member.Role != "ADMIN" {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
 		}
@@ -254,6 +273,12 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 		if len(strings.Trim(project.WorkspaceID, " ")) < 1 {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "Workspace is required!", "", nil).Render(r.Context(), w)
+		}
+
+		workspace := models.Workspace{}
+		if err := db.PgSql.Where("id=?", project.WorkspaceID).First(&workspace).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("project-error", "warning", "", "Workspace is not found!", "", nil).Render(r.Context(), w)
 		}
 
 		if strings.Trim(project.Status, " ") != "" {
@@ -301,7 +326,9 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			w.WriteHeader(http.StatusInternalServerError)
 			return ui.Toast("project-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
+
 		return ui.Toast("project-success", "success", "", "Project updated successfully.", "", nil).Render(r.Context(), w)
+
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil

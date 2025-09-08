@@ -112,7 +112,7 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 		r.ParseForm()
 		user.Username = strings.ToLower(r.FormValue("email"))
 		user.Password = r.FormValue("password")
-		pass2 := r.FormValue("password2")
+		password2 := r.FormValue("password2")
 		user.Email = strings.ToLower(r.FormValue("email"))
 		user.FullName = r.FormValue("full_name")
 		user.Level = "USER"
@@ -138,17 +138,17 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signup-error", "warning", "", "Password must be at least 6 characters!", "", nil).Render(r.Context(), w)
 		}
 
-		if strings.Trim(user.Password, " ") != strings.Trim(pass2, " ") {
+		if strings.Trim(user.Password, " ") != strings.Trim(password2, " ") {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("signup-error", "warning", "", "Password not match!", "", nil).Render(r.Context(), w)
 		}
 
 		t := time.Now()
 		idHash := utils.GenerateHash(user.Email)
-		passHash, _ := utils.HashPassword(user.Password)
+		passwordHash, _ := utils.HashPassword(user.Password)
 
 		user.ID = idHash
-		user.Password = string(passHash)
+		user.Password = string(passwordHash)
 		user.Color = utils.TailwindForUsername(user.Username)
 		user.VerifiedEmail = false
 		user.CreatedAt = &t
@@ -162,11 +162,11 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signup-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
-		url := os.Getenv("APP_URL")
+		appUrl := os.Getenv("APP_URL")
 		if os.Getenv("APP_ENV") == "dev" {
-			url += os.Getenv("APP_PORT")
+			appUrl += os.Getenv("APP_PORT")
 		}
-		utils.SendVerificationEmail(user, url+"/verify-email?id="+user.ID)
+		utils.SendVerificationEmail(user, appUrl+"/verify-email?id="+user.ID)
 
 		return ui.Toast("login-success", "success", "", "Register success! Please check your email for verification.", "", nil).Render(r.Context(), w)
 	default:
@@ -237,14 +237,14 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case http.MethodGet:
 
-		var resetPass models.ResetPassword
+		var resetPassword models.ResetPassword
 		param := "Reset"
 		token := r.URL.Query().Get("token")
 		if token == "" {
 			param = "Forgot"
 		} else {
 			var count int64
-			if db.PgSql.Where("token_hash=? AND used=0 AND expires_at > ? ", token, time.Now()).First(&resetPass).Count(&count); count == 0 {
+			if db.PgSql.Where("token_hash=? AND used=0 AND expires_at > ? ", token, time.Now()).First(&resetPassword).Count(&count); count == 0 {
 				param = "Error"
 			}
 		}
@@ -297,11 +297,11 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 					ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})).Render(r.Context(), w)
 			}
 
-			url := os.Getenv("APP_URL")
+			appUrl := os.Getenv("APP_URL")
 			if os.Getenv("APP_ENV") == "dev" {
-				url += os.Getenv("APP_PORT")
+				appUrl += os.Getenv("APP_PORT")
 			}
-			utils.ResetPasswordEmail(user, url+"/forgot-password?token="+newResetPass.TokenHash)
+			utils.ResetPasswordEmail(user, appUrl+"/forgot-password?token="+newResetPass.TokenHash)
 
 			return components.CardStatus(200, "Reset Password Sent", "If your email is registered, you will receive a reset link.", "circle-check-big",
 				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})).Render(r.Context(), w)
@@ -309,44 +309,44 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 
 	case http.MethodPut:
 		var user models.User
-		var resetPass models.ResetPassword
+		var resetPassword models.ResetPassword
 
 		r.ParseForm()
 		token := r.FormValue("token")
 		user.Password = r.FormValue("password")
-		pass2 := r.FormValue("password2")
+		password2 := r.FormValue("password2")
 
 		if len(strings.Trim(user.Password, " ")) < 6 {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("forgot-error", "warning", "", "Password must be at least 6 characters!", "", nil).Render(r.Context(), w)
 		}
 
-		if strings.Trim(user.Password, " ") != strings.Trim(pass2, " ") {
+		if strings.Trim(user.Password, " ") != strings.Trim(password2, " ") {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("forgot-error", "warning", "", "Password not match!", "", nil).Render(r.Context(), w)
 		}
 
-		err := db.PgSql.Where("token_hash=? AND used = 0 AND expires_at > ?", token, time.Now()).First(&resetPass).Error
+		err := db.PgSql.Where("token_hash=? AND used = 0 AND expires_at > ?", token, time.Now()).First(&resetPassword).Error
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return ui.Toast("resend-error", "warning", "", "Invaid or expired request!", "", nil).Render(r.Context(), w)
 		}
 
 		var count int64
-		if db.PgSql.Where("email=? or username=?", resetPass.Email, resetPass.Email).First(&user).Count(&count); count == 0 {
+		if db.PgSql.Where("email=? or username=?", resetPassword.Email, resetPassword.Email).First(&user).Count(&count); count == 0 {
 			w.WriteHeader(http.StatusInternalServerError)
 			return ui.Toast("forgot-error", "warning", "", "Can't find account!", "", nil).Render(r.Context(), w)
 		}
 
-		if bcrypt.CompareHashAndPassword([]byte(strings.Trim(user.Password, " ")), []byte(pass2)) == nil {
+		if bcrypt.CompareHashAndPassword([]byte(strings.Trim(user.Password, " ")), []byte(password2)) == nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("forgot-error", "warning", "", "New password must be different from the last one!", "", nil).Render(r.Context(), w)
 		}
 
 		t := time.Now()
-		passHash, _ := utils.HashPassword(pass2)
+		passwordHash, _ := utils.HashPassword(password2)
 
-		user.Password = string(passHash)
+		user.Password = string(passwordHash)
 		user.UpdatedAt = &t
 
 		err = db.PgSql.Save(&user).Error
@@ -355,18 +355,18 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("forgot-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
-		resetPass.Used = 1
-		if err = db.PgSql.Save(&resetPass).Error; err != nil {
+		resetPassword.Used = 1
+		if err = db.PgSql.Save(&resetPassword).Error; err != nil {
 			println(err.Error())
 		}
 
 		if !user.VerifiedEmail {
 
-			url := os.Getenv("APP_URL")
+			appUrl := os.Getenv("APP_URL")
 			if os.Getenv("APP_ENV") == "dev" {
-				url += os.Getenv("APP_PORT")
+				appUrl += os.Getenv("APP_PORT")
 			}
-			utils.SendVerificationEmail(user, url+"/verify-email?id="+user.ID)
+			utils.SendVerificationEmail(user, appUrl+"/verify-email?id="+user.ID)
 
 			return ui.Toast("forgot-success", "success", "", "Reset password success! Please check your email for verification.", "", nil).Render(r.Context(), w)
 		}

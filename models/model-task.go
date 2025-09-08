@@ -7,6 +7,7 @@ import (
 type Task struct {
 	No          int     `gorm:"column:no;primaryKey" json:"-" form:"-"`
 	ID          string  `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
+	Type        string  `gorm:"column:type;default:'DAILY';check:type IN ('PROJECT','DAILY','TICKET')" json:"type,omitempty" form:"type"`
 	Title       string  `gorm:"column:title;not null" json:"title" form:"title"`
 	Description string  `gorm:"column:description" json:"description,omitempty" form:"description"`
 	ProjectID   string  `gorm:"column:project_id;not null;index" json:"project_id" form:"project_id"`
@@ -51,6 +52,7 @@ type TaskAssignee struct {
 	Task        Task       `gorm:"foreignKey:TaskID;references:ID"`
 	UserID      string     `gorm:"column:user_id;not null;index" json:"user_id"`
 	User        User       `gorm:"foreignKey:UserID;references:ID"`
+	Status      string     `gorm:"column:status;default:'TO_DO'" json:"status"`
 	CompletedAt *time.Time `gorm:"column:completed_at;type:TIMESTAMP" json:"completed_at,omitempty"`
 	ActualHours float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
 	CreatedAt   *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
@@ -105,9 +107,10 @@ type Subtask struct {
 // CREATE TABLE tasks (
 // 	   no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 //     id VARCHAR(255) UNIQUE NOT NULL DEFAULT '00000000000000',
+//     type VARCHAR(50) UNIQUE NOT NULL DEFAULT 'DAILY' CHECK (type IN ('PROJECT','DAILY','TICKET')),
 //     title TEXT NOT NULL,
 //     description TEXT,
-//     project_id VARCHAR(255) NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+//     project_id VARCHAR(255),
 //     status VARCHAR(50) DEFAULT 'TO_DO' CHECK (status IN ('TO_DO','IN_PROGRESS','IN_REVIEW','DONE','CANCELLED')),
 //     priority VARCHAR(50) DEFAULT 'MEDIUM' CHECK (priority IN ('LOW','MEDIUM','HIGH')),
 // 	   start_date TIMESTAMP,
@@ -146,6 +149,7 @@ type Subtask struct {
 // CREATE TABLE task_assignees (
 //     task_id VARCHAR(255) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
 //     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     status VARCHAR(50) DEFAULT 'TO_DO' CHECK (status IN ('TO_DO','IN_PROGRESS','IN_REVIEW','DONE','CANCELLED')),
 //     completed_at TIMESTAMP,
 //     actual_hours INT DEFAULT 0 CHECK (actual_hours >= 0),
 //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -44,7 +44,7 @@ func TagInput(id string, name string, placeholder string, initialTags []string, 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none\"></div><!-- Hidden input untuk submit ke backend --><input id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\" class=\"flex-1 px-2 py-1 text-sm border-none bg-transparent placeholder:text-muted-foreground outline-none \"></div><!-- Hidden input untuk submit ke backend --><input id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

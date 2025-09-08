@@ -70,9 +70,9 @@ func Avatar(text string, color string, size string, class string, attrs templ.At
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("darkMode ? 'dark:bg-gray-500 dark:text-white' : '%s'", color))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("'%s'", color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 21, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/avatar.templ`, Line: 21, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {

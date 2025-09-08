@@ -94,7 +94,6 @@ templ MemberInput(id string, name string, placeholder string, initial []models.U
                 </span>
             </template>
 
-            <!-- input -->
             <input
                 x-ref="input"
                 type="text"
@@ -110,7 +109,7 @@ templ MemberInput(id string, name string, placeholder string, initial []models.U
                 @keydown.up.prevent="moveUp"
                 @keydown.enter.prevent="selectHighlighted"
                 placeholder={placeholder}
-                class="flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none"
+                class="flex-1 px-2 py-1 text-sm border-none flex h-11 w-full rounded-md bg-transparent px-3 py-1 text-sm file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground outline-none disabled:cursor-not-allowed disabled:opacity-50"
             />
         </div>
 
@@ -119,7 +118,9 @@ templ MemberInput(id string, name string, placeholder string, initial []models.U
             x-show="filtered.length > 0"
             x-transition
             :class="dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'"
-            class="absolute left-0 w-full bg-white border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin"
+            class="absolute left-0 w-full bg-background text-foreground border-border 
+				   hover:text-accent-foreground
+				   focus:outline-none transition-colors border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin"
         >
             <template 
                 x-for="(item, idx) in filtered" :key="idx">
@@ -127,7 +128,7 @@ templ MemberInput(id string, name string, placeholder string, initial []models.U
                     @click="addTag(item)"
                     @mouseover="highlighted = idx"
                     :class="highlighted === idx ? 'bg-blue-100 text-blue-800' : ''"
-                    class="px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm"
+                    class="px-3 py-2 hover:bg-blue-100 dark:hover:bg-accent cursor-pointer text-sm"
                     
                 >
                     <div class="flex items-center gap-2">
@@ -163,17 +164,20 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
             filtered: [],
             dropdownAbove: false,
             dropdownOpen: false,
+            highlighted: -1,
 
             filterSuggestions() {
                 let q = this.input.toLowerCase().trim();
                 this.filtered = q === '' ? [] : this.suggestions.filter(
                 s => s.full_name.toLowerCase().includes(q)
                 );
+                this.highlighted = this.filtered.length > 0 ? 0 : -1;
                 this.dropdownOpen = this.filtered.length > 0;
                 this.$nextTick(() => this.adjustDropdown());
             },
             showAll() {
                 this.filtered = this.suggestions;
+                this.highlighted = this.filtered.length > 0 ? 0 : -1;
                 this.dropdownOpen = this.filtered.length > 0;
                 this.$nextTick(() => this.adjustDropdown());
             },
@@ -193,6 +197,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 				} else {
 					this.tags.splice(idx, 1);
 				}
+                this.highlighted = idx;
 			},
 			updateRole(id, role) {
 				let t = this.tags.find(t => t.id === id);
@@ -208,6 +213,25 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 					role: u.role || 'VIEWER',
 				}));
 			},
+            moveDown() {
+                if (this.filtered.length > 0 && this.highlighted < this.filtered.length - 1) {
+                    this.highlighted++;
+                }
+            },
+            moveUp() {
+                if (this.filtered.length > 0 && this.highlighted > 0) {
+                    this.highlighted--;
+                }
+            },
+            selectHighlighted() {
+                if (this.highlighted >= 0 && this.filtered[this.highlighted]) {
+                    this.addTag(this.filtered[this.highlighted]);
+                }
+            },
+            closeDropdown() {
+                this.filtered = [];
+                this.highlighted = -1;
+            },
             renderSuggestions(member, nonMembers) {
                 nonMembers.forEach(nm => {
                     if (member.some(m => m.id === nm.id)) {
@@ -256,7 +280,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
                 @focus="showAll"
                 @keydown.escape="hideDropdown"
                 placeholder={placeholder}
-                class="flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none"
+                class="flex-1 px-2 py-1 text-sm border-none flex h-11 w-full rounded-md bg-transparent px-3 py-1 text-sm file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground outline-none disabled:cursor-not-allowed disabled:opacity-50"
 			/>
 		</div>
 
@@ -265,15 +289,20 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 			x-show="dropdownOpen && filtered.length > 0"
 			x-transition
 			:class="dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'"
-			class="absolute left-0 w-full bg-white border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin"
+			class="absolute left-0 w-full bg-background text-foreground border-border 
+				   hover:text-accent-foreground
+				   focus:outline-none transition-colors border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin"
 		>
 			<template x-for="(item, idx) in filtered" :key="idx">
-				<div x-show="auth_id !== item.id" class="flex items-center justify-between px-3 py-2 text-sm hover:bg-blue-100">
-					<div class="flex items-center gap-2">
+				<div x-show="auth_id !== item.id" class="flex items-center justify-between px-3 py-2 text-sm hover:bg-blue-100 dark:hover:bg-accent"
+                    @mouseover="highlighted = idx"
+                    :class="highlighted === idx ? 'bg-blue-100 text-blue-800 dark:bg-accent dark:text-white' : ''"
+                >
+					<div class="flex items-center gap-2 cursor-pointer" @click="toggleTag(item)">
+                        // @change="toggleTag(item)"
 						<input type="checkbox"
 							:checked="tags.some(t => t.id === item.id)"
-							@change="toggleTag(item)"
-							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+							class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
 						>
                         <div class="flex items-center">
                             <div class="rounded-full flex items-center justify-center h-4 w-4" :class="`${item.color}`">
@@ -286,7 +315,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
                         <select 
                             :disabled="!tags.some(t => t.id === item.id)"
                             @change="updateRole(item.id, $event.target.value)"
-                            class="ml-2 px-1 py-0.5 text-xs rounded-md border border-input bg-transparent shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                            class="ml-2 px-1 py-0.5 text-xs rounded-md border border-input bg-background dark:bg-accent shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             <option value="VIEWER" :selected="item.type!=='member'">Viewer</option>
                             <option value="CONTRIBUTOR">Contributor</option>
@@ -405,7 +434,7 @@ templ AssigneeInput(id string, name string, placeholder string, initial []models
                 @keydown.up.prevent="moveUp"
                 @keydown.enter.prevent="selectHighlighted"
                 placeholder={placeholder}
-                class="flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none"
+                class="flex-1 px-2 py-1 text-sm focus:ring-0 focus:outline-none border-none flex h-11 w-full rounded-md bg-transparent px-3 py-1 text-sm file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground outline-none disabled:cursor-not-allowed disabled:opacity-50"
             />
         </div>
 
@@ -414,14 +443,16 @@ templ AssigneeInput(id string, name string, placeholder string, initial []models
             x-show="filtered.length > 0"
             x-transition
             :class="dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'"
-            class="absolute left-0 w-full bg-white border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin"
+            class="absolute left-0 w-full bg-background text-foreground border-border 
+				   hover:text-accent-foreground
+				   focus:outline-none transition-colors border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin"
         >
             <template 
                 x-for="(item, idx) in filtered" :key="idx">
                 <div @click="addTag(item)"
                     @mouseover="highlighted = idx"
-                    :class="highlighted === idx ? 'bg-blue-100 text-blue-800' : ''"
-                    class="px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm"
+                    :class="highlighted === idx ? 'bg-blue-100 text-blue-800 dark:bg-accent dark:text-white' : ''"
+                    class="px-3 py-2 hover:bg-blue-100 dark:hover:bg-accent cursor-pointer text-sm"
                     
                 >
                     <div class="flex items-center gap-2">

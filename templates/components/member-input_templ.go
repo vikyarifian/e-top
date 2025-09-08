@@ -76,27 +76,27 @@ func MemberInput(id string, name string, placeholder string, initial []models.Us
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " @keydown.escape=\"closeDropdown\" @click.away=\"closeDropdown\"><div class=\"flex flex-wrap gap-2 border rounded-md p-2 relative\"><!-- tags --><template x-for=\"(tag, index) in tags\" :key=\"index\"><span class=\"flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full\"><div class=\"flex items-center\"><div class=\"rounded-full flex items-center justify-center h-4 w-4\" :class=\"`${tag.color}`\"><span class=\"text-xs font-small text-primary-foreground\" x-text=\"tag.full_name.slice(0,1)\"></span></div></div><span x-text=\"tag.full_name\"></span> <span @click=\"removeTag(index)\" class=\"cursor-pointer\">×</span></span></template><!-- input --><input x-ref=\"input\" type=\"text\" x-model=\"input\" @input=\"filterSuggestions\" @keydown.down.prevent=\"\r\n                    if (filtered.length === 0) {\r\n                        filterMembers()\r\n                    } else {\r\n                        moveDown()\r\n                    }\r\n                \" @keydown.up.prevent=\"moveUp\" @keydown.enter.prevent=\"selectHighlighted\" placeholder=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, " @keydown.escape=\"closeDropdown\" @click.away=\"closeDropdown\"><div class=\"flex flex-wrap gap-2 border rounded-md p-2 relative\"><!-- tags --><template x-for=\"(tag, index) in tags\" :key=\"index\"><span class=\"flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full\"><div class=\"flex items-center\"><div class=\"rounded-full flex items-center justify-center h-4 w-4\" :class=\"`${tag.color}`\"><span class=\"text-xs font-small text-primary-foreground\" x-text=\"tag.full_name.slice(0,1)\"></span></div></div><span x-text=\"tag.full_name\"></span> <span @click=\"removeTag(index)\" class=\"cursor-pointer\">×</span></span></template><input x-ref=\"input\" type=\"text\" x-model=\"input\" @input=\"filterSuggestions\" @keydown.down.prevent=\"\r\n                    if (filtered.length === 0) {\r\n                        filterMembers()\r\n                    } else {\r\n                        moveDown()\r\n                    }\r\n                \" @keydown.up.prevent=\"moveUp\" @keydown.enter.prevent=\"selectHighlighted\" placeholder=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(placeholder)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 112, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 111, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none\"></div><!-- dropdown --><div x-show=\"filtered.length > 0\" x-transition :class=\"dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'\" class=\"absolute left-0 w-full bg-white border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin\"><template x-for=\"(item, idx) in filtered\" :key=\"idx\"><div x-show=\"auth_id !== item.id\" @click=\"addTag(item)\" @mouseover=\"highlighted = idx\" :class=\"highlighted === idx ? 'bg-blue-100 text-blue-800' : ''\" class=\"px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm\"><div class=\"flex items-center gap-2\"><div class=\"flex items-center\"><div class=\"rounded-full flex items-center justify-center h-4 w-4\" :class=\"`${item.color}`\"><span class=\"text-xs font-thin text-primary-foreground\" x-text=\"item.full_name.slice(0,1)\"></span></div></div><span x-text=\"item.full_name\"></span></div></div></template></div><!-- hidden --><input id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"flex-1 px-2 py-1 text-sm border-none flex h-11 w-full rounded-md bg-transparent px-3 py-1 text-sm file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground outline-none disabled:cursor-not-allowed disabled:opacity-50\"></div><!-- dropdown --><div x-show=\"filtered.length > 0\" x-transition :class=\"dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'\" class=\"absolute left-0 w-full bg-background text-foreground border-border \r\n\t\t\t\t   hover:text-accent-foreground\r\n\t\t\t\t   focus:outline-none transition-colors border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin\"><template x-for=\"(item, idx) in filtered\" :key=\"idx\"><div x-show=\"auth_id !== item.id\" @click=\"addTag(item)\" @mouseover=\"highlighted = idx\" :class=\"highlighted === idx ? 'bg-blue-100 text-blue-800' : ''\" class=\"px-3 py-2 hover:bg-blue-100 dark:hover:bg-accent cursor-pointer text-sm\"><div class=\"flex items-center gap-2\"><div class=\"flex items-center\"><div class=\"rounded-full flex items-center justify-center h-4 w-4\" :class=\"`${item.color}`\"><span class=\"text-xs font-thin text-primary-foreground\" x-text=\"item.full_name.slice(0,1)\"></span></div></div><span x-text=\"item.full_name\"></span></div></div></template></div><!-- hidden --><input id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 152, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 153, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -109,7 +109,7 @@ func MemberInput(id string, name string, placeholder string, initial []models.Us
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 152, Col: 61}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 153, Col: 61}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -149,14 +149,14 @@ func MemberRoleInput(id string, name string, placeholder string, initial []model
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div x-data=\"{\r\n\t\t\ttags: [],\r\n            input: '',\r\n            name: '',\r\n            suggestions: [],\r\n            filtered: [],\r\n            dropdownAbove: false,\r\n            dropdownOpen: false,\r\n\r\n            filterSuggestions() {\r\n                let q = this.input.toLowerCase().trim();\r\n                this.filtered = q === '' ? [] : this.suggestions.filter(\r\n                s => s.full_name.toLowerCase().includes(q)\r\n                );\r\n                this.dropdownOpen = this.filtered.length > 0;\r\n                this.$nextTick(() => this.adjustDropdown());\r\n            },\r\n            showAll() {\r\n                this.filtered = this.suggestions;\r\n                this.dropdownOpen = this.filtered.length > 0;\r\n                this.$nextTick(() => this.adjustDropdown());\r\n            },\r\n            hideDropdown() {\r\n                this.dropdownOpen = false;\r\n            },\r\n            adjustDropdown() {\r\n                let rect = this.$refs.input.getBoundingClientRect();\r\n                let spaceBelow = window.innerHeight - rect.bottom;\r\n                let spaceAbove = rect.top;\r\n                this.dropdownAbove = spaceBelow < 150 && spaceAbove > spaceBelow;\r\n            },\r\n\t\t\ttoggleTag(item) {\r\n\t\t\t\tlet idx = this.tags.findIndex(t => t.id === item.id);\r\n\t\t\t\tif (idx === -1) {\r\n\t\t\t\t\tthis.tags.push({ id: item.id, full_name: item.full_name, color: item.color, role: item.role });\r\n\t\t\t\t} else {\r\n\t\t\t\t\tthis.tags.splice(idx, 1);\r\n\t\t\t\t}\r\n\t\t\t},\r\n\t\t\tupdateRole(id, role) {\r\n\t\t\t\tlet t = this.tags.find(t => t.id === id);\r\n\t\t\t\tif (t) t.role = role;\r\n                let s = this.suggestions.find(s => s.id === id);\r\n                if (s) s.role = role;\r\n\t\t\t},\r\n\t\t\tinitialTag(t) {\r\n\t\t\t\tthis.tags = t.map(u => ({\r\n\t\t\t\t\tid: u.id.trim(),\r\n\t\t\t\t\tfull_name: u.full_name,\r\n\t\t\t\t\tcolor: u.color,\r\n\t\t\t\t\trole: u.role || 'VIEWER',\r\n\t\t\t\t}));\r\n\t\t\t},\r\n            renderSuggestions(member, nonMembers) {\r\n                nonMembers.forEach(nm => {\r\n                    if (member.some(m => m.id === nm.id)) {\r\n                        this.suggestions.push({\r\n                            ...nm,\r\n                            type: 'member',\r\n                            role: 'MEMBER',\r\n                        });\r\n                    } else {\r\n                        this.suggestions.push({\r\n                            ...nm,\r\n                            type: 'non-member',\r\n                            role: 'VIEWER',\r\n                        });\r\n                    }\r\n                });\r\n            },\r\n\t\t}\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<div x-data=\"{\r\n\t\t\ttags: [],\r\n            input: '',\r\n            name: '',\r\n            suggestions: [],\r\n            filtered: [],\r\n            dropdownAbove: false,\r\n            dropdownOpen: false,\r\n            highlighted: -1,\r\n\r\n            filterSuggestions() {\r\n                let q = this.input.toLowerCase().trim();\r\n                this.filtered = q === '' ? [] : this.suggestions.filter(\r\n                s => s.full_name.toLowerCase().includes(q)\r\n                );\r\n                this.highlighted = this.filtered.length > 0 ? 0 : -1;\r\n                this.dropdownOpen = this.filtered.length > 0;\r\n                this.$nextTick(() => this.adjustDropdown());\r\n            },\r\n            showAll() {\r\n                this.filtered = this.suggestions;\r\n                this.highlighted = this.filtered.length > 0 ? 0 : -1;\r\n                this.dropdownOpen = this.filtered.length > 0;\r\n                this.$nextTick(() => this.adjustDropdown());\r\n            },\r\n            hideDropdown() {\r\n                this.dropdownOpen = false;\r\n            },\r\n            adjustDropdown() {\r\n                let rect = this.$refs.input.getBoundingClientRect();\r\n                let spaceBelow = window.innerHeight - rect.bottom;\r\n                let spaceAbove = rect.top;\r\n                this.dropdownAbove = spaceBelow < 150 && spaceAbove > spaceBelow;\r\n            },\r\n\t\t\ttoggleTag(item) {\r\n\t\t\t\tlet idx = this.tags.findIndex(t => t.id === item.id);\r\n\t\t\t\tif (idx === -1) {\r\n\t\t\t\t\tthis.tags.push({ id: item.id, full_name: item.full_name, color: item.color, role: item.role });\r\n\t\t\t\t} else {\r\n\t\t\t\t\tthis.tags.splice(idx, 1);\r\n\t\t\t\t}\r\n                this.highlighted = idx;\r\n\t\t\t},\r\n\t\t\tupdateRole(id, role) {\r\n\t\t\t\tlet t = this.tags.find(t => t.id === id);\r\n\t\t\t\tif (t) t.role = role;\r\n                let s = this.suggestions.find(s => s.id === id);\r\n                if (s) s.role = role;\r\n\t\t\t},\r\n\t\t\tinitialTag(t) {\r\n\t\t\t\tthis.tags = t.map(u => ({\r\n\t\t\t\t\tid: u.id.trim(),\r\n\t\t\t\t\tfull_name: u.full_name,\r\n\t\t\t\t\tcolor: u.color,\r\n\t\t\t\t\trole: u.role || 'VIEWER',\r\n\t\t\t\t}));\r\n\t\t\t},\r\n            moveDown() {\r\n                if (this.filtered.length > 0 && this.highlighted < this.filtered.length - 1) {\r\n                    this.highlighted++;\r\n                }\r\n            },\r\n            moveUp() {\r\n                if (this.filtered.length > 0 && this.highlighted > 0) {\r\n                    this.highlighted--;\r\n                }\r\n            },\r\n            selectHighlighted() {\r\n                if (this.highlighted >= 0 && this.filtered[this.highlighted]) {\r\n                    this.addTag(this.filtered[this.highlighted]);\r\n                }\r\n            },\r\n            closeDropdown() {\r\n                this.filtered = [];\r\n                this.highlighted = -1;\r\n            },\r\n            renderSuggestions(member, nonMembers) {\r\n                nonMembers.forEach(nm => {\r\n                    if (member.some(m => m.id === nm.id)) {\r\n                        this.suggestions.push({\r\n                            ...nm,\r\n                            type: 'member',\r\n                            role: 'MEMBER',\r\n                        });\r\n                    } else {\r\n                        this.suggestions.push({\r\n                            ...nm,\r\n                            type: 'non-member',\r\n                            role: 'VIEWER',\r\n                        });\r\n                    }\r\n                });\r\n            },\r\n\t\t}\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("id='%s';name='%s';renderSuggestions(%s,%s);initialTag(%s);", id, name, string(utils.MustJSON(suggestions)), string(utils.MustJSON(services.GetAllUser())), string(utils.MustJSON(initial))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 229, Col: 205}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 253, Col: 205}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
@@ -190,7 +190,7 @@ func MemberRoleInput(id string, name string, placeholder string, initial []model
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 250, Col: 22}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 274, Col: 22}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -203,20 +203,20 @@ func MemberRoleInput(id string, name string, placeholder string, initial []model
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(placeholder)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 258, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 282, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none\"></div><!-- dropdown --><div x-show=\"dropdownOpen && filtered.length > 0\" x-transition :class=\"dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'\" class=\"absolute left-0 w-full bg-white border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin\"><template x-for=\"(item, idx) in filtered\" :key=\"idx\"><div x-show=\"auth_id !== item.id\" class=\"flex items-center justify-between px-3 py-2 text-sm hover:bg-blue-100\"><div class=\"flex items-center gap-2\"><input type=\"checkbox\" :checked=\"tags.some(t => t.id === item.id)\" @change=\"toggleTag(item)\" class=\"rounded border-gray-300 text-blue-600 focus:ring-blue-500\"><div class=\"flex items-center\"><div class=\"rounded-full flex items-center justify-center h-4 w-4\" :class=\"`${item.color}`\"><span class=\"text-xs font-thin text-primary-foreground\" x-text=\"item.full_name.slice(0,1)\"></span></div></div><span x-text=\"item.full_name\"></span></div><div class=\"relative min-w-52\"><select :disabled=\"!tags.some(t => t.id === item.id)\" @change=\"updateRole(item.id, $event.target.value)\" class=\"ml-2 px-1 py-0.5 text-xs rounded-md border border-input bg-transparent shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50\"><option value=\"VIEWER\" :selected=\"item.type!=='member'\">Viewer</option> <option value=\"CONTRIBUTOR\">Contributor</option> <option value=\"MEMBER\" x-show=\"item.type==='member'\" :selected=\"item.type==='member'\">Member</option> <option value=\"ADMIN\" x-show=\"item.type==='member'\">Admin</option></select></div></div></template></div><!-- hidden --><input id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "\" class=\"flex-1 px-2 py-1 text-sm border-none flex h-11 w-full rounded-md bg-transparent px-3 py-1 text-sm file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground outline-none disabled:cursor-not-allowed disabled:opacity-50\"></div><!-- dropdown --><div x-show=\"dropdownOpen && filtered.length > 0\" x-transition :class=\"dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'\" class=\"absolute left-0 w-full bg-background text-foreground border-border \r\n\t\t\t\t   hover:text-accent-foreground\r\n\t\t\t\t   focus:outline-none transition-colors border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin\"><template x-for=\"(item, idx) in filtered\" :key=\"idx\"><div x-show=\"auth_id !== item.id\" class=\"flex items-center justify-between px-3 py-2 text-sm hover:bg-blue-100 dark:hover:bg-accent\" @mouseover=\"highlighted = idx\" :class=\"highlighted === idx ? 'bg-blue-100 text-blue-800 dark:bg-accent dark:text-white' : ''\"><div class=\"flex items-center gap-2 cursor-pointer\" @click=\"toggleTag(item)\"><input type=\"checkbox\" :checked=\"tags.some(t => t.id === item.id)\" class=\"rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer\"><div class=\"flex items-center\"><div class=\"rounded-full flex items-center justify-center h-4 w-4\" :class=\"`${item.color}`\"><span class=\"text-xs font-thin text-primary-foreground\" x-text=\"item.full_name.slice(0,1)\"></span></div></div><span x-text=\"item.full_name\"></span></div><div class=\"relative min-w-52\"><select :disabled=\"!tags.some(t => t.id === item.id)\" @change=\"updateRole(item.id, $event.target.value)\" class=\"ml-2 px-1 py-0.5 text-xs rounded-md border border-input bg-background dark:bg-accent shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50\"><option value=\"VIEWER\" :selected=\"item.type!=='member'\">Viewer</option> <option value=\"CONTRIBUTOR\">Contributor</option> <option value=\"MEMBER\" x-show=\"item.type==='member'\" :selected=\"item.type==='member'\">Member</option> <option value=\"ADMIN\" x-show=\"item.type==='member'\">Admin</option></select></div></div></template></div><!-- hidden --><input id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 302, Col: 15}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 331, Col: 15}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -263,7 +263,7 @@ func AssigneeInput(id string, name string, placeholder string, initial []models.
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("id='%s';name='%s';initialTag(%s);suggestions=%s;", id, name, string(utils.MustJSON(initial)), string(utils.MustJSON(suggestions))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 372, Col: 155}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 401, Col: 155}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
@@ -297,20 +297,20 @@ func AssigneeInput(id string, name string, placeholder string, initial []models.
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(placeholder)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 407, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 436, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"flex-1 px-2 py-1 text-sm border-none focus:ring-0 focus:outline-none\"></div><!-- dropdown --><div x-show=\"filtered.length > 0\" x-transition :class=\"dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'\" class=\"absolute left-0 w-full bg-white border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin\"><template x-for=\"(item, idx) in filtered\" :key=\"idx\"><div @click=\"addTag(item)\" @mouseover=\"highlighted = idx\" :class=\"highlighted === idx ? 'bg-blue-100 text-blue-800' : ''\" class=\"px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm\"><div class=\"flex items-center gap-2\"><div class=\"flex items-center\"><div class=\"rounded-full flex items-center justify-center h-4 w-4\" :class=\"`${item.color}`\"><span class=\"text-xs font-thin text-primary-foreground\" x-text=\"item.full_name.slice(0,1)\"></span></div></div><span x-text=\"item.full_name\"></span></div></div></template></div><!-- hidden --><input id=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "\" class=\"flex-1 px-2 py-1 text-sm focus:ring-0 focus:outline-none border-none flex h-11 w-full rounded-md bg-transparent px-3 py-1 text-sm file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground outline-none disabled:cursor-not-allowed disabled:opacity-50\"></div><!-- dropdown --><div x-show=\"filtered.length > 0\" x-transition :class=\"dropdownAbove ? 'bottom-full mb-1' : 'top-full mt-1'\" class=\"absolute left-0 w-full bg-background text-foreground border-border \r\n\t\t\t\t   hover:text-accent-foreground\r\n\t\t\t\t   focus:outline-none transition-colors border rounded-md shadow z-10 max-h-60 overflow-y-auto scrollbar-thin\"><template x-for=\"(item, idx) in filtered\" :key=\"idx\"><div @click=\"addTag(item)\" @mouseover=\"highlighted = idx\" :class=\"highlighted === idx ? 'bg-blue-100 text-blue-800 dark:bg-accent dark:text-white' : ''\" class=\"px-3 py-2 hover:bg-blue-100 dark:hover:bg-accent cursor-pointer text-sm\"><div class=\"flex items-center gap-2\"><div class=\"flex items-center\"><div class=\"rounded-full flex items-center justify-center h-4 w-4\" :class=\"`${item.color}`\"><span class=\"text-xs font-thin text-primary-foreground\" x-text=\"item.full_name.slice(0,1)\"></span></div></div><span x-text=\"item.full_name\"></span></div></div></template></div><!-- hidden --><input id=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(id)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 446, Col: 21}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 477, Col: 21}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -323,7 +323,7 @@ func AssigneeInput(id string, name string, placeholder string, initial []models.
 		var templ_7745c5c3_Var21 string
 		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 446, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/member-input.templ`, Line: 477, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
