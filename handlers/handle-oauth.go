@@ -26,13 +26,13 @@ import (
 var OAuthConf *oauth2.Config
 
 func OAthConfig() {
-	port := strings.Trim(os.Getenv("APP_PORT"), " ")
+	appPort := strings.Trim(os.Getenv("APP_PORT"), " ")
 	if strings.Trim(os.Getenv("APP_ENV"), " ") != "dev" {
-		port = ""
+		appPort = ""
 	}
 
 	OAuthConf = &oauth2.Config{
-		RedirectURL:  strings.Trim(os.Getenv("APP_URL"), " ") + port + strings.Trim(os.Getenv("GOOGLE_REDIRECT_URI"), " "),
+		RedirectURL:  strings.Trim(os.Getenv("APP_URL"), " ") + appPort + strings.Trim(os.Getenv("GOOGLE_REDIRECT_URI"), " "),
 		ClientID:     strings.Trim(os.Getenv("GOOGLE_CLIENT_ID"), " "),
 		ClientSecret: strings.Trim(os.Getenv("GOOGLE_CLIENT_SECRET"), " "),
 		Scopes: []string{
@@ -51,8 +51,8 @@ func HandleLoginGoogle(w http.ResponseWriter, r *http.Request) error {
 			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 		}
 	}
-	url := OAuthConf.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+	authUrl := OAuthConf.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	http.Redirect(w, r, authUrl, http.StatusTemporaryRedirect)
 	return nil
 }
 
@@ -83,40 +83,39 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	client := OAuthConf.Client(context.Background(), tokenGoogle)
-	resp, err := client.Get("https://openidconnect.googleapis.com/v1/userinfo")
+	response, err := client.Get("https://openidconnect.googleapis.com/v1/userinfo")
 	if err != nil {
 		http.Error(w, "Failed to fetch user info", http.StatusUnauthorized)
 		return layouts.AuthLayout("Verify Email", pages.VerifyEmail(
 			components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
 				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 	}
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, _ := io.ReadAll(response.Body)
 
 	var user models.User
-	var userInfo struct {
+	var userGoogle struct {
 		Name    string `json:"name"`
 		Email   string `json:"email"`
 		Picture string `json:"picture"`
 		Locale  string `json:"locale"`
 	}
 
-	_ = json.Unmarshal(body, &userInfo)
+	_ = json.Unmarshal(body, &userGoogle)
 
 	var count int64
 	t := time.Now()
-	if db.PgSql.Where("email=? or username=?", userInfo.Email, userInfo.Email).First(&user).Count(&count); count == 0 {
-		idHash := utils.GenerateHash(userInfo.Email)
-		println(idHash)
-		parts := strings.Split(userInfo.Email, "@")
-		passHash, _ := utils.HashPassword(parts[0])
+	if db.PgSql.Where("email=? or username=?", userGoogle.Email, userGoogle.Email).First(&user).Count(&count); count == 0 {
+		idHash := utils.GenerateHash(userGoogle.Email)
+		splitEmail := strings.Split(userGoogle.Email, "@")
+		passwordHash, _ := utils.HashPassword(splitEmail[0])
 
 		user.ID = idHash
-		user.Username = userInfo.Email
-		user.Email = userInfo.Email
-		user.FullName = userInfo.Name
-		user.Password = string(passHash)
+		user.Username = userGoogle.Email
+		user.Email = userGoogle.Email
+		user.FullName = userGoogle.Name
+		user.Password = string(passwordHash)
 		user.Color = utils.TailwindForUsername(user.Username)
 		user.Level = "USER"
 		user.VerifiedEmail = true
@@ -157,22 +156,14 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 			Value:    tokenString,
 			Path:     "/",
 			HttpOnly: true,
-			Secure:   false, // set true kalau pakai https
+			Secure:   false, // set true if use https
 			Expires:  time.Now().Add(24 * time.Hour),
 		})
 
 		http.Redirect(w, r, "/", http.StatusFound)
 
-		// userAuth := dto.UserAuth{
-		// 	Username: user.Username,
-		// 	Email:    user.Email,
-		// 	FullName: user.FullName,
-		// 	Level:    user.Level,
-		// 	IsAuth:   true,
-		// }
-
 		return nil
-		// layouts.Layout("Dashboard", userAuth, pages.Dashboard(userAuth)).Render(r.Context(), w)
+
 	}
 
 }

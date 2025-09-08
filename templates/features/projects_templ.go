@@ -50,9 +50,12 @@ func Project(project models.Project) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = components.BackButton("mb-2", templ.Attributes{
-			"type":    "button",
-			"onclick": fmt.Sprintf("htmx.ajax('POST', '/workspaces?id=%s', { target: '#content', swap: 'innerHTML' })", project.WorkspaceID),
-		}).Render(ctx, templ_7745c5c3_Buffer)
+			"type":         "button",
+			"hx-post":      fmt.Sprintf("/workspaces?id=%s", project.WorkspaceID),
+			"hx-target":    "#content",
+			"hx-swap":      "innerHTML",
+			"hx-push-url":  "true",
+			"hx-indicator": ".htmx-loader,.loaded-content"}).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -63,7 +66,7 @@ func Project(project models.Project) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(project.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 25, Col: 80}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 28, Col: 80}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -76,7 +79,7 @@ func Project(project models.Project) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(project.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 27, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 30, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -89,7 +92,7 @@ func Project(project models.Project) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(project.Progress)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 35, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 38, Col: 59}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -139,7 +142,7 @@ func Project(project models.Project) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("{ task_priorities: %s, task_statutes: %s, }", string(utils.MustJSON(services.GetTaskPriorities())), string(utils.MustJSON(services.GetTaskStatuses()))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 54, Col: 184}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 57, Col: 184}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
@@ -254,7 +257,7 @@ func Project(project models.Project) templ.Component {
 						return templ_7745c5c3_Err
 					}
 				} else {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"rounded-md border\"><div class=\"relative w-full overflow-auto\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<div class=\"rounded-md border\"><div class=\"relative w-full overflow-auto scrollbar-thin\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -334,7 +337,7 @@ func Project(project models.Project) templ.Component {
 										}()
 									}
 									ctx = templ.InitializeContext(ctx)
-									templ_7745c5c3_Err = ui.Button("priority-sort", "ghost", "sm", "arrow-up-down", "Priority", "", templ.Attributes{
+									templ_7745c5c3_Err = ui.Button("assignee-sort", "ghost", "sm", "arrow-up-down", "Assignees", "", templ.Attributes{
 										"type": "button",
 									}).Render(ctx, templ_7745c5c3_Buffer)
 									if templ_7745c5c3_Err != nil {
@@ -362,7 +365,7 @@ func Project(project models.Project) templ.Component {
 										}()
 									}
 									ctx = templ.InitializeContext(ctx)
-									templ_7745c5c3_Err = ui.Button("assignee-sort", "ghost", "sm", "arrow-up-down", "Assignees", "", templ.Attributes{
+									templ_7745c5c3_Err = ui.Button("due-sort", "ghost", "sm", "arrow-up-down", "Due Date", "", templ.Attributes{
 										"type": "button",
 									}).Render(ctx, templ_7745c5c3_Buffer)
 									if templ_7745c5c3_Err != nil {
@@ -390,7 +393,7 @@ func Project(project models.Project) templ.Component {
 										}()
 									}
 									ctx = templ.InitializeContext(ctx)
-									templ_7745c5c3_Err = ui.Button("due-sort", "ghost", "sm", "arrow-up-down", "Due Date", "", templ.Attributes{
+									templ_7745c5c3_Err = ui.Button("priority-sort", "ghost", "sm", "arrow-up-down", "Priority", "", templ.Attributes{
 										"type": "button",
 									}).Render(ctx, templ_7745c5c3_Buffer)
 									if templ_7745c5c3_Err != nil {
@@ -494,7 +497,7 @@ func Project(project models.Project) templ.Component {
 										var templ_7745c5c3_Var22 string
 										templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 										if templ_7745c5c3_Err != nil {
-											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 114, Col: 71}
+											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 117, Col: 71}
 										}
 										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 										if templ_7745c5c3_Err != nil {
@@ -502,7 +505,7 @@ func Project(project models.Project) templ.Component {
 										}
 										return nil
 									})
-									templ_7745c5c3_Err = ui.TableCell("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var21), templ_7745c5c3_Buffer)
+									templ_7745c5c3_Err = ui.TableCell("py-1.5 px-2", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var21), templ_7745c5c3_Buffer)
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
@@ -511,6 +514,148 @@ func Project(project models.Project) templ.Component {
 										return templ_7745c5c3_Err
 									}
 									templ_7745c5c3_Var23 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+										templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+										templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+										if !templ_7745c5c3_IsBuffer {
+											defer func() {
+												templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+												if templ_7745c5c3_Err == nil {
+													templ_7745c5c3_Err = templ_7745c5c3_BufErr
+												}
+											}()
+										}
+										ctx = templ.InitializeContext(ctx)
+										if len(task.Assignees) > 0 {
+											templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "<div class=\"flex justify-start\">")
+											if templ_7745c5c3_Err != nil {
+												return templ_7745c5c3_Err
+											}
+											if task.Assignees != nil {
+												templ_7745c5c3_Err = ui.Avatar(task.Assignees[0].User.Username, task.Assignees[0].User.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
+												if templ_7745c5c3_Err != nil {
+													return templ_7745c5c3_Err
+												}
+												templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, " ")
+												if templ_7745c5c3_Err != nil {
+													return templ_7745c5c3_Err
+												}
+												var templ_7745c5c3_Var24 string
+												templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(task.Assignees[0].User.FullName)
+												if templ_7745c5c3_Err != nil {
+													return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 124, Col: 104}
+												}
+												_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
+												if templ_7745c5c3_Err != nil {
+													return templ_7745c5c3_Err
+												}
+											} else {
+												var templ_7745c5c3_Var25 string
+												templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs("Unassigned")
+												if templ_7745c5c3_Err != nil {
+													return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 126, Col: 85}
+												}
+												_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
+												if templ_7745c5c3_Err != nil {
+													return templ_7745c5c3_Err
+												}
+											}
+											templ_7745c5c3_Var26 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+												templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+												templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+												if !templ_7745c5c3_IsBuffer {
+													defer func() {
+														templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+														if templ_7745c5c3_Err == nil {
+															templ_7745c5c3_Err = templ_7745c5c3_BufErr
+														}
+													}()
+												}
+												ctx = templ.InitializeContext(ctx)
+												if len(task.Assignees) > 1 {
+													templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"text-muted-foreground cursor-pointer\">&nbsp; and ")
+													if templ_7745c5c3_Err != nil {
+														return templ_7745c5c3_Err
+													}
+													var templ_7745c5c3_Var27 string
+													templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(len(task.Assignees) - 1)
+													if templ_7745c5c3_Err != nil {
+														return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 139, Col: 160}
+													}
+													_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
+													if templ_7745c5c3_Err != nil {
+														return templ_7745c5c3_Err
+													}
+													templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, " more</span>")
+													if templ_7745c5c3_Err != nil {
+														return templ_7745c5c3_Err
+													}
+												}
+												return nil
+											})
+											templ_7745c5c3_Err = ui.Tooltip(func() string {
+												if task.Assignees != nil {
+													assignees := ""
+													for i, assignee := range task.Assignees {
+														assignees += strconv.Itoa(i+1) + ". " + assignee.User.FullName + "\n"
+													}
+													return assignees
+												}
+												return "Unassigned"
+											}(), "w-64 z-39", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var26), templ_7745c5c3_Buffer)
+											if templ_7745c5c3_Err != nil {
+												return templ_7745c5c3_Err
+											}
+											templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</div>")
+											if templ_7745c5c3_Err != nil {
+												return templ_7745c5c3_Err
+											}
+										}
+										return nil
+									})
+									templ_7745c5c3_Err = ui.TableCell("py-1.5 px-2", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var23), templ_7745c5c3_Buffer)
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, " ")
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									templ_7745c5c3_Var28 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+										templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+										templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+										if !templ_7745c5c3_IsBuffer {
+											defer func() {
+												templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+												if templ_7745c5c3_Err == nil {
+													templ_7745c5c3_Err = templ_7745c5c3_BufErr
+												}
+											}()
+										}
+										ctx = templ.InitializeContext(ctx)
+										if task.DueDate != nil {
+											var templ_7745c5c3_Var29 string
+											templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(task.DueDate.Format("Mon, 02 Jan 2006"))
+											if templ_7745c5c3_Err != nil {
+												return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 149, Col: 104}
+											}
+											_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
+											if templ_7745c5c3_Err != nil {
+												return templ_7745c5c3_Err
+											}
+										}
+										return nil
+									})
+									templ_7745c5c3_Err = ui.TableCell("py-1.5 px-2", templ.Attributes{
+										":class": fmt.Sprintf("%v<=3?'text-red-500':(%v<=7?'text-orange-500':(%v<=14?'text-yellow-600':'text-muted-foreground'))", (utils.TimeDiff(time.Now(), *task.DueDate).Hours() / 24), (utils.TimeDiff(time.Now(), *task.DueDate).Hours() / 24), (utils.TimeDiff(time.Now(), *task.DueDate).Hours() / 24)),
+									}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var28), templ_7745c5c3_Buffer)
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, " ")
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									templ_7745c5c3_Var30 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 										templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 										templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 										if !templ_7745c5c3_IsBuffer {
@@ -531,157 +676,11 @@ func Project(project models.Project) templ.Component {
 										}
 										return nil
 									})
-									templ_7745c5c3_Err = ui.TableCell("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var23), templ_7745c5c3_Buffer)
+									templ_7745c5c3_Err = ui.TableCell("py-1.5 px-2", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var30), templ_7745c5c3_Buffer)
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
-									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, " ")
-									if templ_7745c5c3_Err != nil {
-										return templ_7745c5c3_Err
-									}
-									templ_7745c5c3_Var24 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-										templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-										templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-										if !templ_7745c5c3_IsBuffer {
-											defer func() {
-												templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-												if templ_7745c5c3_Err == nil {
-													templ_7745c5c3_Err = templ_7745c5c3_BufErr
-												}
-											}()
-										}
-										ctx = templ.InitializeContext(ctx)
-										if len(task.Assignees) > 0 {
-											templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<div class=\"flex justify-start\">")
-											if templ_7745c5c3_Err != nil {
-												return templ_7745c5c3_Err
-											}
-											if task.Assignees != nil {
-												templ_7745c5c3_Err = ui.Avatar(task.Assignees[0].User.Username, task.Assignees[0].User.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
-												if templ_7745c5c3_Err != nil {
-													return templ_7745c5c3_Err
-												}
-												templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, " ")
-												if templ_7745c5c3_Err != nil {
-													return templ_7745c5c3_Err
-												}
-												var templ_7745c5c3_Var25 string
-												templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(task.Assignees[0].User.FullName)
-												if templ_7745c5c3_Err != nil {
-													return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 127, Col: 104}
-												}
-												_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
-												if templ_7745c5c3_Err != nil {
-													return templ_7745c5c3_Err
-												}
-											} else {
-												var templ_7745c5c3_Var26 string
-												templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs("Unassigned")
-												if templ_7745c5c3_Err != nil {
-													return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 129, Col: 85}
-												}
-												_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
-												if templ_7745c5c3_Err != nil {
-													return templ_7745c5c3_Err
-												}
-											}
-											templ_7745c5c3_Var27 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-												templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-												templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-												if !templ_7745c5c3_IsBuffer {
-													defer func() {
-														templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-														if templ_7745c5c3_Err == nil {
-															templ_7745c5c3_Err = templ_7745c5c3_BufErr
-														}
-													}()
-												}
-												ctx = templ.InitializeContext(ctx)
-												if len(task.Assignees) > 1 {
-													templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "<span class=\"text-muted-foreground cursor-pointer\">&nbsp; and ")
-													if templ_7745c5c3_Err != nil {
-														return templ_7745c5c3_Err
-													}
-													var templ_7745c5c3_Var28 string
-													templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(len(task.Assignees) - 1)
-													if templ_7745c5c3_Err != nil {
-														return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 142, Col: 160}
-													}
-													_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
-													if templ_7745c5c3_Err != nil {
-														return templ_7745c5c3_Err
-													}
-													templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, " more</span>")
-													if templ_7745c5c3_Err != nil {
-														return templ_7745c5c3_Err
-													}
-												}
-												return nil
-											})
-											templ_7745c5c3_Err = ui.Tooltip(func() string {
-												if task.Assignees != nil {
-													assignees := ""
-													for i, assignee := range task.Assignees {
-														assignees += strconv.Itoa(i+1) + ". " + assignee.User.FullName + "\n"
-													}
-													return assignees
-												}
-												return "Unassigned"
-											}(), "w-64", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var27), templ_7745c5c3_Buffer)
-											if templ_7745c5c3_Err != nil {
-												return templ_7745c5c3_Err
-											}
-											templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div>")
-											if templ_7745c5c3_Err != nil {
-												return templ_7745c5c3_Err
-											}
-										}
-										return nil
-									})
-									templ_7745c5c3_Err = ui.TableCell("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var24), templ_7745c5c3_Buffer)
-									if templ_7745c5c3_Err != nil {
-										return templ_7745c5c3_Err
-									}
-									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, " ")
-									if templ_7745c5c3_Err != nil {
-										return templ_7745c5c3_Err
-									}
-									templ_7745c5c3_Var29 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-										templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-										templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-										if !templ_7745c5c3_IsBuffer {
-											defer func() {
-												templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-												if templ_7745c5c3_Err == nil {
-													templ_7745c5c3_Err = templ_7745c5c3_BufErr
-												}
-											}()
-										}
-										ctx = templ.InitializeContext(ctx)
-										if task.DueDate != nil {
-											templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, " ")
-											if templ_7745c5c3_Err != nil {
-												return templ_7745c5c3_Err
-											}
-											var templ_7745c5c3_Var30 string
-											templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(task.DueDate.Format("Mon, 02 Jan 2006"))
-											if templ_7745c5c3_Err != nil {
-												return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 153, Col: 104}
-											}
-											_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
-											if templ_7745c5c3_Err != nil {
-												return templ_7745c5c3_Err
-											}
-										}
-										return nil
-									})
-									templ_7745c5c3_Err = ui.TableCell("", templ.Attributes{
-										":class": fmt.Sprintf("%v<=3?'text-red-500':(%v<=7?'text-orange-300':(%v<=14?'text-yellow-400':''))", (utils.TimeDiff(time.Now(), *task.DueDate).Hours() / 24), (utils.TimeDiff(time.Now(), *task.DueDate).Hours() / 24), (utils.TimeDiff(time.Now(), *task.DueDate).Hours() / 24)),
-									}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var29), templ_7745c5c3_Buffer)
-									if templ_7745c5c3_Err != nil {
-										return templ_7745c5c3_Err
-									}
-									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, " ")
+									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, " ")
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
@@ -697,43 +696,43 @@ func Project(project models.Project) templ.Component {
 											}()
 										}
 										ctx = templ.InitializeContext(ctx)
-										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<span class=\"text-xs rounded-md pl-1 pr-1\" :class=\"")
+										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span class=\"text-xs rounded-md pl-1 pr-1\" :class=\"")
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}
 										var templ_7745c5c3_Var32 string
 										templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status))
 										if templ_7745c5c3_Err != nil {
-											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 158, Col: 191}
+											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 160, Col: 191}
 										}
 										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}
-										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\" x-text=\"")
+										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "\" x-text=\"")
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}
 										var templ_7745c5c3_Var33 string
 										templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status))
 										if templ_7745c5c3_Err != nil {
-											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 159, Col: 191}
+											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 161, Col: 191}
 										}
 										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}
-										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\"></span>   ")
+										templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "\"></span>   ")
 										if templ_7745c5c3_Err != nil {
 											return templ_7745c5c3_Err
 										}
 										return nil
 									})
-									templ_7745c5c3_Err = ui.TableCell("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var31), templ_7745c5c3_Buffer)
+									templ_7745c5c3_Err = ui.TableCell("py-1.5 px-2", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var31), templ_7745c5c3_Buffer)
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
-									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, " ")
+									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, " ")
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
@@ -773,7 +772,7 @@ func Project(project models.Project) templ.Component {
 													}()
 												}
 												ctx = templ.InitializeContext(ctx)
-												templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "<div data-lucide=\"ellipsis-vertical\" class=\"w-4 h-4\"></div>")
+												templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<div data-lucide=\"ellipsis-vertical\" class=\"w-4 h-4\"></div>")
 												if templ_7745c5c3_Err != nil {
 													return templ_7745c5c3_Err
 												}
@@ -783,7 +782,7 @@ func Project(project models.Project) templ.Component {
 											if templ_7745c5c3_Err != nil {
 												return templ_7745c5c3_Err
 											}
-											templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, " ")
+											templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, " ")
 											if templ_7745c5c3_Err != nil {
 												return templ_7745c5c3_Err
 											}
@@ -799,7 +798,7 @@ func Project(project models.Project) templ.Component {
 													}()
 												}
 												ctx = templ.InitializeContext(ctx)
-												templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "<div>Hide this</div><div>Nonactive all</div>")
+												templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div>Hide this</div><div>Nonactive all</div>")
 												if templ_7745c5c3_Err != nil {
 													return templ_7745c5c3_Err
 												}
@@ -817,7 +816,7 @@ func Project(project models.Project) templ.Component {
 										}
 										return nil
 									})
-									templ_7745c5c3_Err = ui.TableCell("w-1", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var34), templ_7745c5c3_Buffer)
+									templ_7745c5c3_Err = ui.TableCell("py-1.5 px-2 w-1", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var34), templ_7745c5c3_Buffer)
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
@@ -840,14 +839,14 @@ func Project(project models.Project) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</div></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</div></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.TabsContent("table", "overflow-auto mt-0", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.TabsContent("table", "overflow-auto mt-0 scrollbar-thin", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var9), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -865,7 +864,7 @@ func Project(project models.Project) templ.Component {
 				ctx = templ.InitializeContext(ctx)
 				return nil
 			})
-			templ_7745c5c3_Err = ui.TabsContent("kanban", "overflow-auto mt-0", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var38), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.TabsContent("kanban", "overflow-auto scrollbar-thin mt-0", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var38), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -883,11 +882,11 @@ func Project(project models.Project) templ.Component {
 				ctx = templ.InitializeContext(ctx)
 				return nil
 			})
-			templ_7745c5c3_Err = ui.TabsContent("calendar", "overflow-auto mt-0 h-full pb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var39), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.TabsContent("calendar", "overflow-auto scrollbar-thin mt-0 h-full pb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var39), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -897,7 +896,7 @@ func Project(project models.Project) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -927,20 +926,20 @@ func Projects(projects []models.Project) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		for _, p := range projects {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "<span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var41 string
 			templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(p.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 200, Col: 22}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 202, Col: 22}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "</span>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, "</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -982,20 +981,20 @@ func CreateProject(workspaceID string, class string, attrs templ.Attributes) tem
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<div id=\"create-project-form\" x-init=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "<div id=\"create-project-form\" x-init=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var44 string
 			templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("workspace_id= '%s';", workspaceID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 207, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 209, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "\" x-data=\"{\r\n                        workspace_id: '',\r\n                        init() {\r\n                            document.body.addEventListener('modal:opened', (evt) => {\r\n                                if (evt.detail.id === 'create-project-modal') {\r\n                                    htmx.ajax('GET', '/create-project-form?workspace_id='+this.workspace_id, {target: '#create-project-form', swap: 'innerHtml'})\r\n                                }\r\n                            });\r\n                            document.body.addEventListener('modal:closed', (evt) => {\r\n                                if (evt.detail.id === 'create-project-modal') {\r\n                                    document.getElementById('create-project-form').innerHTML = '';\r\n                                }\r\n                            });\r\n                        }\r\n                    }\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "\" x-data=\"{\r\n                        workspace_id: '',\r\n                        init() {\r\n                            document.body.addEventListener('modal:opened', (evt) => {\r\n                                if (evt.detail.id === 'create-project-modal') {\r\n                                    htmx.ajax('GET', '/create-project-form?workspace_id='+this.workspace_id, {target: '#create-project-form', swap: 'innerHtml'})\r\n                                }\r\n                            });\r\n                            document.body.addEventListener('modal:closed', (evt) => {\r\n                                if (evt.detail.id === 'create-project-modal') {\r\n                                    document.getElementById('create-project-form').innerHTML = '';\r\n                                }\r\n                            });\r\n                        }\r\n                    }\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1030,20 +1029,20 @@ func CreateProjectForm(workspaceID string) templ.Component {
 			templ_7745c5c3_Var45 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<div x-data=\"{\r\n                    today: new Date(),\r\n                    project_statuses: [],\r\n                    workspace_id: '',\r\n                    title: '',\r\n                    description: '',\r\n                    status: '',\r\n                    titleError: '',\r\n                    descriptionError: '',\r\n                    statusError: '',\r\n                    validateTitle() {\r\n                        this.titleError = (this.title.trim() === '')\r\n                            ? 'Title is required'\r\n                            : '';\r\n                        this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);\r\n                    },\r\n                    validateStatus() {\r\n                        this.statusError = (this.status.trim() === '')\r\n                            ? 'Status is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateTitle();\r\n                        this.validateStatus();\r\n                        \r\n                        if (this.titleError || this.statusError) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'create-project-form') {\r\n                                $store.modal.close('create-project-modal');\r\n                                this.title = '';\r\n                                this.description = '';\r\n                                this.status = '';\r\n                                this.titleError = '';\r\n                                this.descriptionError = '';\r\n                                this.statusError = '';\r\n                                const params = new URLSearchParams(window.location.search);\r\n                                if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace_id) {\r\n                                    htmx.ajax('POST', '/workspaces?id='+params.get('id'), { \r\n                                        target: '#content', \r\n                                        swap: 'innerHTML' \r\n                                    })\r\n                                }\r\n                            }\r\n                        })\r\n                    }\r\n                }\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "<div x-data=\"{\r\n                    today: new Date(),\r\n                    project_statuses: [],\r\n                    workspace_id: '',\r\n                    title: '',\r\n                    description: '',\r\n                    status: '',\r\n                    titleError: '',\r\n                    descriptionError: '',\r\n                    statusError: '',\r\n                    validateTitle() {\r\n                        this.titleError = (this.title.trim() === '')\r\n                            ? 'Title is required'\r\n                            : '';\r\n                        this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);\r\n                    },\r\n                    validateStatus() {\r\n                        this.statusError = (this.status.trim() === '')\r\n                            ? 'Status is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateTitle();\r\n                        this.validateStatus();\r\n                        \r\n                        if (this.titleError || this.statusError) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'create-project-form') {\r\n                                $store.modal.close('create-project-modal');\r\n                                this.title = '';\r\n                                this.description = '';\r\n                                this.status = '';\r\n                                this.titleError = '';\r\n                                this.descriptionError = '';\r\n                                this.statusError = '';\r\n                                const params = new URLSearchParams(window.location.search);\r\n                                if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace_id) {\r\n                                    htmx.ajax('POST', '/workspaces?id='+params.get('id'), { \r\n                                        target: '#content', \r\n                                        swap: 'innerHTML' \r\n                                    })\r\n                                }\r\n                            }\r\n                        })\r\n                    }\r\n                }\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var46 string
 		templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("workspace_id= '%s'; project_statuses= %s; status= 'PLANNING';", workspaceID, string(utils.MustJSON(services.GetProjectStatuses()))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 282, Col: 160}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/projects.templ`, Line: 284, Col: 160}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1059,7 +1058,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "<input id=\"workspace_id\" x-show=\"false\" type=\"hidden\" name=\"workspace_id\" x-model=\"workspace_id\" :value=\"workspace_id\"><div class=\"grid grid-cols-1 sm:grid-cols-2 gap-6\"><div class=\"w-full space-y-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, "<input id=\"workspace_id\" x-show=\"false\" type=\"hidden\" name=\"workspace_id\" x-model=\"workspace_id\" :value=\"workspace_id\"><div class=\"grid grid-cols-1 sm:grid-cols-2 gap-6\"><div class=\"w-full space-y-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1079,7 +1078,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1091,7 +1090,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1125,7 +1124,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1137,7 +1136,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1155,7 +1154,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<div class=\"grid grid-cols-1 sm:grid-cols-2\"><div class=\"w-full\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<div class=\"grid grid-cols-1 sm:grid-cols-2\"><div class=\"w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1175,7 +1174,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1183,7 +1182,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1197,7 +1196,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</div><div class=\"w-full\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</div><div class=\"w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1217,7 +1216,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1225,7 +1224,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1239,7 +1238,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</div></div></div><div class=\"w-full space-y-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "</div></div></div><div class=\"w-full space-y-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1259,7 +1258,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1274,7 +1273,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1304,7 +1303,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1312,7 +1311,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1326,7 +1325,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, "</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 63, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1334,7 +1333,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, " <div class=\"flex justify-end items-end\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 64, " <div class=\"flex justify-end items-end\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1342,7 +1341,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 65, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1359,7 +1358,7 @@ func CreateProjectForm(workspaceID string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 67, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 66, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

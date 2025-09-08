@@ -22,7 +22,7 @@ import (
 func HandleCreateTaskFrom(w http.ResponseWriter, r *http.Request) error {
 	project_id := r.URL.Query().Get("project_id")
 	typ := r.URL.Query().Get("type")
-	return features.CreateTaskForm(project_id, typ).Render(r.Context(), w)
+	return features.CreateTaskForm(project_id, string(typ)).Render(r.Context(), w)
 }
 
 func HandleTasks(w http.ResponseWriter, r *http.Request) error {
@@ -93,9 +93,45 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 
 		task.Description = r.FormValue("description")
 		task.ProjectID = r.FormValue("project_id")
-		if len(strings.Trim(task.ProjectID, " ")) < 1 {
-			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("task-error", "warning", "", "Task is required!", "", nil).Render(r.Context(), w)
+		task.Type = r.FormValue("type")
+
+		if strings.Trim(task.Type, " ") == "PROJECT" {
+			if len(strings.Trim(task.ProjectID, " ")) < 1 {
+				w.WriteHeader(http.StatusBadRequest)
+				return ui.Toast("task-error", "warning", "", "Project is required!", "", nil).Render(r.Context(), w)
+			}
+
+			project := models.Project{}
+			if err := db.PgSql.Where("id=?", task.ProjectID).First(&project).Error; err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return ui.Toast("task-error", "warning", "", "Project is not found!", "", nil).Render(r.Context(), w)
+			}
+
+			projectStatuses := services.GetProjectStatuses()
+			for _, projectStatus := range projectStatuses {
+				if strings.EqualFold(strings.Trim(projectStatus.Status, " "), strings.Trim(project.Status, " ")) {
+					if projectStatus.Value >= 4 || projectStatus.Value == 0 {
+						w.WriteHeader(http.StatusBadRequest)
+						return ui.Toast("task-error", "warning", "", "Cannot add task to a completed or cancelled project!", "", nil).Render(r.Context(), w)
+					}
+					break
+				}
+			}
+
+			var member models.ProjectMember
+			if err := db.PgSql.Where("project_id=? AND user_id=?", task.ProjectID, user.ID).First(&member).Error; err != nil {
+				w.WriteHeader(http.StatusForbidden)
+				return ui.Toast("task-error", "warning", "", "You are not a member of this project!", "", nil).Render(r.Context(), w)
+			}
+			if strings.ToUpper(strings.Trim(member.Role, " ")) == "VIEWER" || strings.ToUpper(strings.Trim(member.Role, " ")) == "CONTRIBUTOR" {
+				w.WriteHeader(http.StatusForbidden)
+				return ui.Toast("task-error", "warning", "", "You don't have permission to add task to this project!", "", nil).Render(r.Context(), w)
+			}
+		} else {
+			if strings.Trim(task.Type, " ") == "" {
+				w.WriteHeader(http.StatusBadRequest)
+				return ui.Toast("task-error", "warning", "", "Invalid task type!", "", nil).Render(r.Context(), w)
+			}
 		}
 
 		task.Status = r.FormValue("status")
@@ -107,12 +143,12 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 
 		taskStatus := services.GetTaskStatuses()
 		validStatus := false
-		status := false
+		statusDone := false
 		for _, s := range taskStatus {
 			if strings.EqualFold(strings.Trim(s.Status, " "), strings.Trim(task.Status, " ")) {
 				validStatus = true
 				if s.Value == 5 {
-					status = true
+					statusDone = true
 					tc := time.Now().Add(1 * time.Minute)
 					task.CompletedAt = &tc
 					task.ActualHours = float32(utils.TimeDiff(*task.StartDate, tc).Hours())
@@ -178,12 +214,13 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 				assignee := models.TaskAssignee{
 					TaskID:    task.ID,
 					UserID:    m,
+					Status:    task.Status,
 					CreatedAt: &t,
 					CreatedBy: user.ID,
 					UpdatedAt: &t,
 					UpdatedBy: user.ID,
 				}
-				if status {
+				if statusDone {
 					assignee.ActualHours = task.ActualHours
 					assignee.CompletedAt = task.CompletedAt
 				}

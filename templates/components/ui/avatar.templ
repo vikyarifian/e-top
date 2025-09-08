@@ -18,7 +18,7 @@ templ Avatar(text string, color string, size string, class string, attrs templ.A
 					templ.KV("h-12 w-12", size == "lg"),
 					templ.KV("h-10 w-10", size == "")
 				}
-			:class={fmt.Sprintf("darkMode ? 'dark:bg-gray-500 dark:text-white' : '%s'", color)}
+			:class={fmt.Sprintf("'%s'", color)}
 			{attrs...}
 		>
 			<span class="text-sm font-medium text-primary-foreground">{ strings.Trim(strings.ToUpper(text[0:1])," ") }</span>

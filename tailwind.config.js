@@ -3,7 +3,7 @@ module.exports = {
   content: [
     "./templates/**/*.{go,html,templ}",
     "./public/js/**/*.js",
-    "./utils/**/*.txt",
+    "./utils/**/*.{txt,go}",
   ],
   theme: {
     container: {

@@ -79,42 +79,42 @@ func HashPassword(password string) (string, error) {
 
 func DbMutation() {
 
-	ps := []models.ProjectStatus{}
-	err := db.PgSql.Find(&ps).Error
+	projectStatuses := []models.ProjectStatus{}
+	err := db.PgSql.Find(&projectStatuses).Error
 
-	if len(ps) == 0 || err != nil {
-		ps = append(ps, models.ProjectStatus{Status: "PLANNING", Label: "Planning", Color: "bg-blue-300 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", Form: 1, Value: 3})
-		ps = append(ps, models.ProjectStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-purple-300 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300", Form: 1, Value: 4})
-		ps = append(ps, models.ProjectStatus{Status: "ON_HOLD", Label: "On Hold", Color: "bg-yellow-300 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", Form: 0, Value: 2})
-		ps = append(ps, models.ProjectStatus{Status: "COMPLETED", Label: "Completed", Color: "bg-green-300 text-green-800 dark:bg-green-900/30 dark:text-green-300", Form: 1, Value: 5})
-		ps = append(ps, models.ProjectStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-red-300 text-red-800 dark:bg-red-900/30 dark:text-red-300", Form: 0, Value: 0})
-		if err := db.PgSql.Create(&ps).Error; err != nil {
+	if len(projectStatuses) == 0 || err != nil {
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "PLANNING", Label: "Planning", Color: "bg-blue-300 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", Form: 1, Value: 3})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-purple-300 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300", Form: 1, Value: 4})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "ON_HOLD", Label: "On Hold", Color: "bg-yellow-300 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", Form: 0, Value: 2})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "COMPLETED", Label: "Completed", Color: "bg-green-300 text-green-800 dark:bg-green-900/30 dark:text-green-300", Form: 1, Value: 5})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-red-300 text-red-800 dark:bg-red-900/30 dark:text-red-300", Form: 0, Value: 0})
+		if err := db.PgSql.Create(&projectStatuses).Error; err != nil {
 			println(err.Error())
 		}
 	}
 
-	ts := []models.TaskStatus{}
-	err = db.PgSql.Find(&ts).Error
+	taskStatuses := []models.TaskStatus{}
+	err = db.PgSql.Find(&taskStatuses).Error
 
-	if len(ts) == 0 || err != nil {
-		ts = append(ts, models.TaskStatus{Status: "TO_DO", Label: "To Do", Color: "bg-gray-500 text-gray-100 dark:bg-gray-900/30 dark:text-gray-500", Form: 1, Value: 2})
-		ts = append(ts, models.TaskStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-purple-500 text-purple-800 dark:bg-purple-900/30 dark:text-purple-500", Form: 1, Value: 3})
-		ts = append(ts, models.TaskStatus{Status: "IN_REVIEW", Label: "In Review", Color: "bg-yellow-500 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-500", Form: 0, Value: 4})
-		ts = append(ts, models.TaskStatus{Status: "DONE", Label: "Done", Color: "bg-green-500 text-green-800 dark:bg-green-900/30 dark:text-green-500", Form: 1, Value: 5})
-		ts = append(ts, models.TaskStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-red-500 text-red-800 dark:bg-red-900/30 dark:text-red-500", Form: 0, Value: 0})
-		if err := db.PgSql.Create(&ts).Error; err != nil {
+	if len(taskStatuses) == 0 || err != nil {
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "TO_DO", Label: "To Do", Color: "bg-red-400 text-primary dark:bg-red-500", Form: 1, Value: 2})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-yellow-400 text-primary dark:bg-yellow-500", Form: 1, Value: 3})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "IN_REVIEW", Label: "In Review", Color: "bg-blue-400 text-primary dark:bg-blue-500", Form: 0, Value: 4})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "DONE", Label: "Done", Color: "bg-emerald-400 text-primary dark:bg-emerald-500", Form: 1, Value: 5})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-pink-400 text-primary dark:bg-pink-500", Form: 0, Value: 0})
+		if err := db.PgSql.Create(&taskStatuses).Error; err != nil {
 			println(err.Error())
 		}
 	}
 
-	tp := []models.TaskPriority{}
-	err = db.PgSql.Find(&tp).Error
+	taskPriorities := []models.TaskPriority{}
+	err = db.PgSql.Find(&taskPriorities).Error
 
-	if len(tp) == 0 || err != nil {
-		tp = append(tp, models.TaskPriority{Priority: "LOW", Label: "Low", Color: "bg-green-600 text-green-800 dark:bg-green-900/30 dark:text-green-600", Value: 1})
-		tp = append(tp, models.TaskPriority{Priority: "MEDIUM", Label: "Medium", Color: "bg-yellow-600 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-600", Value: 3})
-		tp = append(tp, models.TaskPriority{Priority: "HIGH", Label: "High", Color: "bg-red-600 text-red-800 dark:bg-red-900/30 dark:text-red-600", Value: 5})
-		if err := db.PgSql.Create(&tp).Error; err != nil {
+	if len(taskPriorities) == 0 || err != nil {
+		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "LOW", Label: "Low", Color: "bg-green-400 dark:bg-green-600/30", Value: 1})
+		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "MEDIUM", Label: "Medium", Color: "bg-yellow-400 dark:bg-yellow-600/30 ", Value: 3})
+		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "HIGH", Label: "High", Color: "bg-red-400 dark:bg-red-600/30", Value: 5})
+		if err := db.PgSql.Create(&taskPriorities).Error; err != nil {
 			println(err.Error())
 		}
 	}
@@ -163,32 +163,32 @@ func LetterToColorHex(letter string) string {
 func LetterToColor(letter string) string {
 	// Peta huruf ke Tailwind class (dengan dark mode)
 	colorMap := map[string]string{
-		"A": "bg-red-500 dark:bg-gray-500 text-white",
-		"B": "bg-blue-500 dark:bg-gray-500 text-white",
-		"C": "bg-green-500 dark:bg-gray-500 text-white",
-		"D": "bg-yellow-500 dark:bg-gray-500 text-black",
-		"E": "bg-purple-500 dark:bg-gray-500 text-white",
-		"F": "bg-pink-500 dark:bg-gray-500 text-white",
-		"G": "bg-indigo-500 dark:bg-gray-500 text-white",
-		"H": "bg-teal-500 dark:bg-gray-500 text-white",
-		"I": "bg-cyan-500 dark:bg-gray-500 text-white",
-		"J": "bg-lime-500 dark:bg-gray-500 text-black",
-		"K": "bg-amber-500 dark:bg-gray-500 text-black",
-		"L": "bg-orange-500 dark:bg-gray-500 text-white",
-		"M": "bg-emerald-500 dark:bg-gray-500 text-white",
-		"N": "bg-fuchsia-500 dark:bg-gray-500 text-white",
-		"O": "bg-rose-500 dark:bg-gray-500 text-white",
-		"P": "bg-sky-500 dark:bg-gray-500 text-white",
-		"Q": "bg-violet-500 dark:bg-gray-500 text-white",
-		"R": "bg-stone-500 dark:bg-gray-500 text-white",
-		"S": "bg-zinc-500 dark:bg-gray-500 text-white",
-		"T": "bg-neutral-500 dark:bg-gray-500 text-white",
-		"U": "bg-slate-500 dark:bg-gray-500 text-white",
-		"V": "bg-gray-500 dark:bg-gray-500 text-white",
-		"W": "bg-blue-400 dark:bg-gray-500 text-white",
-		"X": "bg-red-400 dark:bg-gray-500 text-white",
-		"Y": "bg-green-400 dark:bg-gray-500 text-white",
-		"Z": "bg-yellow-400 dark:bg-gray-500 text-black",
+		"A": "bg-red-500 text-white",
+		"B": "bg-blue-500 text-white",
+		"C": "bg-green-500 text-white",
+		"D": "bg-yellow-500 text-black",
+		"E": "bg-purple-500 text-white",
+		"F": "bg-pink-500 text-white",
+		"G": "bg-indigo-500 text-white",
+		"H": "bg-teal-500 text-white",
+		"I": "bg-cyan-500 text-white",
+		"J": "bg-lime-500 text-black",
+		"K": "bg-amber-500 text-black",
+		"L": "bg-orange-500 text-white",
+		"M": "bg-emerald-500 text-white",
+		"N": "bg-fuchsia-500 text-white",
+		"O": "bg-rose-500 text-white",
+		"P": "bg-sky-500 text-white",
+		"Q": "bg-violet-500 text-white",
+		"R": "bg-stone-500 text-white",
+		"S": "bg-zinc-500 text-white",
+		"T": "bg-neutral-500 text-white",
+		"U": "bg-slate-500 text-white",
+		"V": "bg-gray-500 text-white",
+		"W": "bg-blue-400 text-white",
+		"X": "bg-red-400 text-white",
+		"Y": "bg-green-400 text-white",
+		"Z": "bg-yellow-400 text-black",
 	}
 
 	// Normalisasi ke uppercase dan ambil huruf pertama
@@ -217,8 +217,7 @@ func GenerateBuckets() []string {
 			if s >= 500 {
 				text = "text-white"
 			}
-			class := "bg-" + c + "-" + fmt.Sprint(s) + " " + text +
-				" dark:bg-gray-500 dark:text-white"
+			class := "bg-" + c + "-" + fmt.Sprint(s) + " " + text
 			buckets = append(buckets, class)
 		}
 	}

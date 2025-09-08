@@ -52,6 +52,7 @@ templ CreateTaskForm(projectID string, typ string) {
                     task_statuses: [],
                     task_priorities: [],
                     project_id: '',
+                    typ: '',
                     title: '',
                     description: '',
                     status: 'TO_DO',
@@ -110,7 +111,7 @@ templ CreateTaskForm(projectID string, typ string) {
                         })
                     }
                 }"
-        x-init={fmt.Sprintf("project_id= '%s'; task_statuses= %s; status= task_statuses[0].status; task_priorities= %s; priority= task_priorities.filter(c=>c.priority.toUpperCase()==='MEDIUM')[0].priority;", projectID, string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())))}
+        x-init={fmt.Sprintf("project_id= '%s'; typ= '%s'; task_statuses= %s; status= task_statuses[0].status; task_priorities= %s; priority= task_priorities.filter(c=>c.priority.toUpperCase()==='MEDIUM')[0].priority;", projectID, typ, string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())))}
     >
         @ui.Form("/task", "post", "w-lg", templ.Attributes{
                 "id":"create-task-form",
@@ -121,6 +122,7 @@ templ CreateTaskForm(projectID string, typ string) {
                 "@submit.prevent":"validateForm($event)",
         }) {
             <input id="project_id" x-show="false" type="hidden" name="project_id" x-model="project_id" :value="project_id" />
+            <input id="type" x-show="false" type="hidden" name="type" x-model="typ" :value="typ" />
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div class="w-full space-y-4">
                     @ui.FormItem("mb-4", nil) {
