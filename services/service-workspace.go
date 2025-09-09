@@ -5,15 +5,6 @@ import (
 	"etop/models"
 )
 
-func GetWorkspaces() []models.Workspace {
-	ws := []models.Workspace{}
-	ws = append(ws, models.Workspace{ID: "1", Name: "IT Dept"})
-	ws = append(ws, models.Workspace{ID: "2", Name: "Legal"})
-	ws = append(ws, models.Workspace{ID: "3", Name: "Finance"})
-
-	return ws
-}
-
 func GetWorkspaceMembers(workspceID string) []models.User {
 	members := []models.WorkspaceMember{}
 	users := []models.User{}

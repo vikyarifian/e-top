@@ -41,7 +41,7 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
 			}
 
-			return layouts.Layout("Task", user, features.Task(task)).Render(r.Context(), w)
+			return layouts.Layout("Task", user, features.Task(task, user)).Render(r.Context(), w)
 		}
 		var tasks []models.Task
 		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).
@@ -65,7 +65,7 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 				return pages.NotFound().Render(r.Context(), w)
 			}
 
-			return features.Task(task).Render(r.Context(), w)
+			return features.Task(task, user).Render(r.Context(), w)
 		}
 
 		var tasks []models.Task
@@ -231,6 +231,66 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 		db.PgSql.Create(&assignees)
 
 		return ui.Toast("task-success", "success", "", "Task created successfully.", "", nil).Render(r.Context(), w)
+
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return nil
+	}
+}
+
+func HandleTaskWatcher(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case http.MethodPost:
+		taskID := r.URL.Query().Get("task_id")
+		userID := r.URL.Query().Get("user_id")
+		status := r.URL.Query().Get("status")
+		if strings.Trim(taskID, " ") == "" || strings.Trim(userID, " ") == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-watcher-error", "warning", "", "Task and User are required!", "", nil).Render(r.Context(), w)
+		}
+		var task models.Task
+		if err := db.PgSql.Where("id=?", taskID).Preload("Watchers").First(&task).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return ui.Toast("task-watcher-error", "warning", "", "Task not found!", "", nil).Render(r.Context(), w)
+		}
+		var user models.User
+		if err := db.PgSql.Where("id=?", userID).First(&user).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return ui.Toast("task-watcher-error", "warning", "", "User not found!", "", nil).Render(r.Context(), w)
+		}
+		t := time.Now().Local()
+		if strings.Trim(status, " ") == "true" {
+			if services.IsUserWatchingTask(task, userID) {
+				w.WriteHeader(http.StatusBadRequest)
+				return ui.Toast("task-watcher-warning", "warning", "", "You're already watching this task!", "", nil).Render(r.Context(), w)
+			}
+			watcher := models.TaskWatchers{
+				TaskID:    task.ID,
+				UserID:    user.ID,
+				CreatedAt: &t,
+				CreatedBy: user.ID,
+				UpdatedAt: &t,
+				UpdatedBy: user.ID,
+			}
+			if err := db.PgSql.Create(&watcher).Error; err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return ui.Toast("task-watcher-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+			}
+			return ui.Toast("task-watcher-success", "success", "", "Watchers added successfully.", "", nil).Render(r.Context(), w)
+		}
+		if strings.Trim(status, " ") == "false" {
+			if !services.IsUserWatchingTask(task, userID) {
+				w.WriteHeader(http.StatusBadRequest)
+				return ui.Toast("task-watcher-warning", "warning", "", "You're' not watching this task!", "", nil).Render(r.Context(), w)
+			}
+			if err := db.PgSql.Where("task_id=? AND user_id=?", task.ID, user.ID).Delete(&models.TaskWatchers{}).Error; err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return ui.Toast("task-watcher-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+			}
+			return ui.Toast("task-watcher-success", "success", "", "Watchers removed successfully.", "", nil).Render(r.Context(), w)
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return ui.Toast("task-watcher-error", "warning", "", "Invalid status value!", "", nil).Render(r.Context(), w)
 
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)

@@ -19,7 +19,7 @@ type Task struct {
 	// Many-to-many: assignees
 	Assignees []TaskAssignee `gorm:"foreignKey:TaskID;references:ID" json:"assignees,omitempty"`
 	// Many-to-many: watchers
-	Watchers []User `gorm:"many2many:task_watchers;" json:"watchers,omitempty"`
+	Watchers []TaskWatchers `gorm:"foreignKey:TaskID;references:ID;" json:"watchers,omitempty"`
 
 	StartDate      *time.Time `gorm:"column:start_date;type:DATE" json:"start_date,omitempty" form:"start_date"`
 	DueDate        *time.Time `gorm:"column:due_date;type:TIMESTAMP" json:"due_date,omitempty"`

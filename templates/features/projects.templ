@@ -14,7 +14,7 @@ import (
 
 templ Project(project models.Project) {
     @CreateTask(project.ID, "PROJECT", "w-[900px]", nil)
-    <div data-title="Workspace" class="space-y-6">
+    <div data-title="Project" class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
                 @components.BackButton("mb-2", templ.Attributes{
@@ -112,7 +112,13 @@ templ Project(project models.Project) {
                                             }
                                             @ui.TableBody("", nil) {
                                                 for _, task := range project.Tasks {
-                                                    @ui.TableRow("", nil) {
+                                                    @ui.TableRow("cursor-pointer", templ.Attributes{
+                                                        "hx-post": "/tasks?id="+task.ID,
+                                                        "hx-target": "#content",
+                                                        "hx-swap": "innerHtml",
+                                                        "hx-push-url": "true",
+                                                        "hx-indicator": ".htmx-loader,.loaded-content",
+                                                    }) {
                                                         @ui.TableCell("py-1.5 px-2", nil) {
                                                             {task.Title}
                                                         }
@@ -171,8 +177,34 @@ templ Project(project models.Project) {
                                                                     <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
                                                                 }
                                                                 @ui.DropdownContent("", nil) {
-                                                                    <div>Hide this</div>
-                                                                    <div>Nonactive all</div>
+                                                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+                                                                        "hx-post": "/tasks?id="+task.ID,
+                                                                        "hx-target": "#content",
+                                                                        "hx-swap": "innerHtml",
+                                                                        "hx-push-url": "true",
+                                                                        "hx-indicator": ".htmx-loader,.loaded-content",
+                                                                    }) {
+                                                                        <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                                                                        Task Details
+                                                                    }
+                                                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+                                                                        "hx-post": "/tasks?id="+task.ID+"#edit-task-form",
+                                                                        "hx-target": "#content",
+                                                                        "hx-swap": "innerHtml",
+                                                                        "hx-push-url": "true",
+                                                                        "hx-indicator": ".htmx-loader,.loaded-content",
+                                                                    }) {
+                                                                        <i data-lucide="edit" class="w-4 h-4"></i>
+                                                                        Edit Task
+                                                                    }
+                                                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100" , templ.Attributes{
+                                                                        "hx-post": "/delete-task?id="+task.ID+"#edit-task-form",
+                                                                        "hx-target": "#toaster",
+                                                                        "hx-swap": "innerHtml",
+                                                                    }) {
+                                                                        <i data-lucide="edit" class="w-4 h-4"></i>
+                                                                        Delete Task
+                                                                    }
                                                                 }
                                                             }
                                                         }

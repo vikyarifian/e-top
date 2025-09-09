@@ -34,6 +34,30 @@ func GenerateToken(user models.User) (string, error) {
 
 // Get User Auth from Token
 func GetAuth(w http.ResponseWriter, r *http.Request) (dto.UserAuth, error) {
+	authUser := dto.UserAuth{
+		ID:       r.Header.Get("X-User-ID"),
+		Username: r.Header.Get("X-Username"),
+		FullName: r.Header.Get("X-Full-Name"),
+		Email:    r.Header.Get("X-Email"),
+		Level:    r.Header.Get("X-Level"),
+		IsAuth:   true,
+		Token:    r.Header.Get("session_token"),
+	}
+	_, err := r.Cookie("session_token")
+	if err != nil {
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/sign-in")
+		} else {
+			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+		}
+		return authUser, err
+	}
+
+	return authUser, nil
+}
+
+func GetJwtClaims(w http.ResponseWriter, r *http.Request) (dto.UserAuth, error) {
+
 	var user dto.UserAuth
 
 	cookie, err := r.Cookie("session_token")
@@ -98,9 +122,20 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		// save email user to context
-		username, _ := claims["username"].(string)
-		r.Header.Set("X-Username", username)
+		// save userAuth to request header
+		user := dto.UserAuth{
+			ID:       fmt.Sprintf("%s", claims["id"]),
+			Username: fmt.Sprintf("%s", claims["username"]),
+			Email:    fmt.Sprintf("%s", claims["email"]),
+			FullName: cases.Title(language.English, cases.Compact).String(fmt.Sprintf("%s", claims["full_name"])),
+			Level:    fmt.Sprintf("%s", claims["level"]),
+		}
+
+		r.Header.Set("X-User-ID", user.ID)
+		r.Header.Set("X-Username", user.Username)
+		r.Header.Set("X-Full-Name", user.FullName)
+		r.Header.Set("X-Email", user.Email)
+		r.Header.Set("X-Level", user.Level)
 
 		next.ServeHTTP(w, r)
 	}
