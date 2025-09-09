@@ -6,13 +6,26 @@ import (
 )
 
 func GetTaskStatuses() []models.TaskStatus {
-	ts := []models.TaskStatus{}
-	db.PgSql.Find(&ts)
-	return ts
+	taskStatuses := []models.TaskStatus{}
+	if err := db.PgSql.Find(&taskStatuses).Error; err != nil {
+		return []models.TaskStatus{}
+	}
+	return taskStatuses
 }
 
 func GetTaskPriorities() []models.TaskPriority {
-	prts := []models.TaskPriority{}
-	db.PgSql.Find(&prts)
-	return prts
+	taskPriorities := []models.TaskPriority{}
+	if err := db.PgSql.Find(&taskPriorities).Error; err != nil {
+		return []models.TaskPriority{}
+	}
+	return taskPriorities
+}
+
+func IsUserWatchingTask(task models.Task, userID string) bool {
+	for _, watcher := range task.Watchers {
+		if watcher.UserID == userID {
+			return true
+		}
+	}
+	return false
 }

@@ -26,7 +26,8 @@ func HandleCreateProjectForm(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HandleProjects(w http.ResponseWriter, r *http.Request) error {
-	user, _ := auth.GetAuth(w, r)
+	// user, _ := auth.GetAuth(w, r)
+	user, _ := auth.GetJwtClaims(w, r)
 	switch r.Method {
 	case http.MethodGet:
 		id := r.URL.Query().Get("id")

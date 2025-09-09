@@ -69,6 +69,7 @@ func SetRoutes() {
 	mux.HandleFunc("/task", auth.RequireAuth(handlers.Make(handlers.HandleTask)))
 	mux.HandleFunc("/tasks", auth.RequireAuth(handlers.Make(handlers.HandleTasks)))
 	mux.HandleFunc("/create-task-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateTaskFrom)))
+	mux.HandleFunc("/task-watch", auth.RequireAuth(handlers.Make(handlers.HandleTaskWatcher)))
 
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
 

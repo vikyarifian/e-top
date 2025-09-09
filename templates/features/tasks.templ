@@ -4,6 +4,7 @@ import (
     "fmt"
     "time"
 
+	"etop/dto"
 	"etop/utils"
     "etop/models"
 	"etop/services"
@@ -11,12 +12,75 @@ import (
     "etop/templates/components/ui"
 )
 
-templ Task(task models.Task) {
+templ Task(task models.Task, user dto.UserAuth) {
+    <div data-title="Task" class="space-y-6" 
+        x-data="{
+                task_id: '',
+                user_id: '',
+                isWatching: false,
+                taskWatch() {
+                    htmx.ajax('POST', '/task-watch?task_id='+this.task_id+'&user_id='+this.user_id+'&status='+!this.isWatching, {source: document.getElementById('task-watch'), target: '#toaster', swap: 'innerHtml'})
+                },
+                init() {
+                    document.body.addEventListener('htmx:afterRequest', (evt) => {
+                        if (evt.detail.successful && evt.detail.elt.id === 'task-watch') {
+                            this.isWatching = !this.isWatching;
+                        }
+                    })
+                }
+            }" 
+        x-init={fmt.Sprintf("task_id = '%s'; user_id = '%s'; isWatching = %t;", task.ID, user.ID, services.IsUserWatchingTask(task, user.ID))}
+    >
+        <div class="flex items-center justify-between">
+            <div>
+                @components.BackButton("mb-2", templ.Attributes{
+                    "type": "button",
+                    "hx-post": fmt.Sprintf("/projects?id=%s",task.ProjectID),
+                    "hx-target": "#content",
+                    "hx-swap": "innerHTML",
+                    "hx-push-url": "true",
+                    "hx-indicator": ".htmx-loader,.loaded-content",})
+                <div class="flex items-center justify-between space-y-0">
+                    <h2 class="text-3xl font-bold tracking-tight">{task.Title}</h2>
+                </div>
+            </div>
 
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="flex items-center gap-2 min-w-32">
+                    <div>
+                        @ui.Button("task-watch", "ghost", "sm", "", "", "", templ.Attributes{
+                            "@click":"taskWatch",
+                            "type": "button",
+                            ":class": "isWatching ? 'text-red-500 dark:hover:bg-gray-400 hover:bg-red-100' : '' ",
+                        }) {
+                            <i x-show="isWatching" data-lucide="eye-off" class="w-4 h-4 "></i>
+                            <i x-show="!isWatching"  data-lucide="eye" class="w-4 h-4 "></i>
+                            <span x-show="!isMobile" x-text="`${isMobile ? '' : (isWatching ? 'Unwatch':'Watch') }`"></span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-6">
+            <div className="lg:col-span-2">
+                <div className="bg-card rounded-lg p-6 shadow-sm mb-6">
+                    <div className="flex flex-col md:flex-row justify-between items-start mb-4">
+                        <div>
+                            @ui.Badge(task.Priority, "", "", templ.Attributes{
+                                ":class": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Priority),
+                                "x-text": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label.trim()+' Priority'", task.Priority),
+                            })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 templ Tasks(tasks []models.Task) {
-    
+    <div>{len(tasks)}</div>
 }
 
 templ CreateTask(projectID string, typ string, class string, attrs templ.Attributes) {
