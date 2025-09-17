@@ -40,7 +40,7 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 				return db.Preload("Assignees", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
 				})
-			}).Order("no").First(&project).Error; err != nil {
+			}).Preload("Workspace").Order("no").First(&project).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
 			}
@@ -74,7 +74,7 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 				return db.Preload("Assignees", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
 				})
-			}).Order("no").First(&project).Error; err != nil {
+			}).Preload("Workspace").Order("no").First(&project).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return pages.NotFound().Render(r.Context(), w)
 			}

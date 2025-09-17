@@ -33,7 +33,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 		<body 
 			class="min-h-screen bg-background text-foreground"
 			:class="darkMode ? 'dark' : ''"
-			x-data={fmt.Sprintf("{ auth_id: '%s', full_name: '%s', sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s, task_priorities: %s, }", strings.Trim(user.ID," "), user.FullName, string(utils.MustJSON(services.GetColorOptions())), string(utils.MustJSON(services.GetTaskPriorities())))}
+			x-data={fmt.Sprintf("{ auth_id: '%s', full_name: '%s', sidebarOpen: false, sidebarCollapsed: false, darkMode: (localStorage.getItem('darkMode') === 'true' ? true : false), isMobile: window.innerWidth < 768, colorOptions: %s, task_priorities: %s, project_statuses: %s, task_statutes: %s, }", strings.Trim(user.ID," "), user.FullName, string(utils.MustJSON(services.GetColorOptions())), string(utils.MustJSON(services.GetTaskPriorities())), string(utils.MustJSON(services.GetProjectStatuses())), string(utils.MustJSON(services.GetTaskStatuses())))}
 			x-init="
 				$watch('darkMode', val => {
 					localStorage.setItem('darkMode', val);
@@ -52,7 +52,7 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 					if (!isMobile) sidebarOpen = false;
 					
 					if (currentSize != isMobile) {
-						htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml', indicator: 'false'})
+						htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHTML', indicators: []})
 					}
 					
 				});

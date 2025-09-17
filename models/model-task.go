@@ -52,6 +52,7 @@ type TaskAssignee struct {
 	Task        Task       `gorm:"foreignKey:TaskID;references:ID"`
 	UserID      string     `gorm:"column:user_id;not null;index" json:"user_id"`
 	User        User       `gorm:"foreignKey:UserID;references:ID"`
+	Conclusion  string     `gorm:"column:conclusion" json:"conclusion,omitempty" form:"conclusion"`
 	Status      string     `gorm:"column:status;default:'TO_DO'" json:"status"`
 	CompletedAt *time.Time `gorm:"column:completed_at;type:TIMESTAMP" json:"completed_at,omitempty"`
 	ActualHours float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
@@ -149,6 +150,7 @@ type Subtask struct {
 // CREATE TABLE task_assignees (
 //     task_id VARCHAR(255) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
 //     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     conclusion TEXT,
 //     status VARCHAR(50) DEFAULT 'TO_DO' CHECK (status IN ('TO_DO','IN_PROGRESS','IN_REVIEW','DONE','CANCELLED')),
 //     completed_at TIMESTAMP,
 //     actual_hours INT DEFAULT 0 CHECK (actual_hours >= 0),

@@ -34,6 +34,15 @@ func GenerateToken(user models.User) (string, error) {
 
 // Get User Auth from Token
 func GetAuth(w http.ResponseWriter, r *http.Request) (dto.UserAuth, error) {
+	_, err := r.Cookie("session_token")
+	if err != nil {
+		if r.Header.Get("HX-Request") == "true" {
+			w.Header().Set("HX-Redirect", "/sign-in")
+		} else {
+			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+		}
+		return dto.UserAuth{}, err
+	}
 	authUser := dto.UserAuth{
 		ID:       r.Header.Get("X-User-ID"),
 		Username: r.Header.Get("X-Username"),
@@ -42,15 +51,6 @@ func GetAuth(w http.ResponseWriter, r *http.Request) (dto.UserAuth, error) {
 		Level:    r.Header.Get("X-Level"),
 		IsAuth:   true,
 		Token:    r.Header.Get("session_token"),
-	}
-	_, err := r.Cookie("session_token")
-	if err != nil {
-		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/sign-in")
-		} else {
-			http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
-		}
-		return authUser, err
 	}
 
 	return authUser, nil

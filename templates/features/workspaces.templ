@@ -2,8 +2,8 @@ package features
 
 import (
     "fmt"
-	"strconv"
     "strings"
+	"strconv"
 
     "etop/utils"
 	"etop/models"
@@ -18,9 +18,11 @@ templ Workspace(workspace models.Workspace) {
         <div class="flex items-center justify-between">
             <div>
                 <div class="flex items-center justify-between space-y-0">
-                    // <div class={"w-7 h-7 p-2 rounded-md text-white flex items-center justify-center text-lg font-semibold mr-2" , workspace.Color}>
-                    //     {strings.ToUpper(workspace.Name[0:1])}
-                    // </div>
+                    <div class="p-1 mr-2">
+                        <div class={"w-7 h-7 p-2 rounded-md text-white flex items-center justify-center text-sm font-semibold " , workspace.Color}>
+                            {strings.ToUpper(workspace.Name[0:1])}
+                        </div>
+                    </div>
                     <h2 class="text-3xl font-bold tracking-tight">{workspace.Name}</h2>
                 </div>
                 <p class="text-muted-foreground">{workspace.Description}</p>
@@ -55,7 +57,7 @@ templ Workspace(workspace models.Workspace) {
         <div class="text-xl font-semibold leading-none tracking-tight ">
             Projects
         </div>
-		<div x-init={fmt.Sprintf("project_statuses= %s; ", string(utils.MustJSON(services.GetProjectStatuses())))} class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             if len(workspace.Projects) == 0 {
                 @components.NoData("No projects found", "Create a project to get started", nil) {
                     @ui.Button("create-project", "outline", "xs", "circle-plus", "Create Project", "", templ.Attributes{

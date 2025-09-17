@@ -3,6 +3,7 @@ package features
 import (
 	"fmt"
     "time"
+    "strings"
 	"strconv"
 
 	"etop/utils"
@@ -17,14 +18,29 @@ templ Project(project models.Project) {
     <div data-title="Project" class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
-                @components.BackButton("mb-2", templ.Attributes{
-                    "type": "button",
-                    "hx-post": fmt.Sprintf("/workspaces?id=%s",project.WorkspaceID),
-                    "hx-target": "#content",
-                    "hx-swap": "innerHTML",
-                    "hx-push-url": "true",
-                    "hx-indicator": ".htmx-loader,.loaded-content",})
+                // @components.BackButton("mb-2", templ.Attributes{
+                //     "type": "button",
+                //     "hx-post": fmt.Sprintf("/workspaces?id=%s",project.WorkspaceID),
+                //     "hx-target": "#content",
+                //     "hx-swap": "innerHTML",
+                //     "hx-push-url": "true",
+                //     "hx-indicator": ".htmx-loader,.loaded-content",})
                 <div class="flex items-center justify-between space-y-0">
+                    <div class="p-1 mr-2">
+                        <div class={"w-7 h-7 p-2 rounded-md text-white flex items-center justify-center text-sm font-semibold " , project.Workspace.Color}>
+                            {strings.ToUpper(project.Workspace.Name[0:1])}
+                        </div>
+                    </div>
+                    <h2 x-show="!isMobile" class="text-3xl font-semibold text-muted-foreground hover:opacity-75 transition cursor-pointer"
+                        hx-post={fmt.Sprintf("/workspaces?id=%s",project.WorkspaceID)}
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-indicator=".htmx-loader,.loaded-content"
+                    >
+                        {project.Workspace.Name}
+                    </h2>
+                    <svg x-show="!isMobile" class="size-4 mr-2 ml-2 pt-1 text-muted-foreground" data-lucide="chevron-right" />
                     <h2 class="text-3xl font-bold tracking-tight">{project.Title}</h2>
                 </div>
                 <p class="text-muted-foreground">{project.Description}</p>
@@ -54,7 +70,6 @@ templ Project(project models.Project) {
 
         <!-- Stats Cards -->
         <div 
-            x-data={fmt.Sprintf("{ task_priorities: %s, task_statutes: %s, }", string(utils.MustJSON(services.GetTaskPriorities())), string(utils.MustJSON(services.GetTaskStatuses())))}
             class="flex-1 w-full border rounded-lg border-border bg-card text-card-foreground shadow-sm p-4 transition-all duration-300 shadow-md"
         >
             @ui.Tabs("tabs", "table", "", nil) {
@@ -264,7 +279,6 @@ templ CreateProjectForm(workspaceID string) {
     <div
         x-data="{
                     today: new Date(),
-                    project_statuses: [],
                     workspace_id: '',
                     title: '',
                     description: '',
@@ -313,7 +327,7 @@ templ CreateProjectForm(workspaceID string) {
                         })
                     }
                 }"
-        x-init={fmt.Sprintf("workspace_id= '%s'; project_statuses= %s; status= 'PLANNING';", workspaceID, string(utils.MustJSON(services.GetProjectStatuses())))}
+        x-init={fmt.Sprintf("workspace_id= '%s'; status= 'PLANNING';", workspaceID)}
     >
         @ui.Form("/project", "post", "w-lg", templ.Attributes{
                 "id":"create-project-form",
