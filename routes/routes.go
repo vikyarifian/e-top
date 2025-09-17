@@ -76,7 +76,12 @@ func SetRoutes() {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" || r.URL.Path == "" {
 			if _, err := auth.GetAuth(w, r); err != nil {
-				http.Redirect(w, r, "/sign-in", http.StatusFound)
+				if r.Header.Get("HX-Request") == "true" {
+					w.Header().Set("HX-Redirect", "/sign-in")
+				} else {
+					http.Redirect(w, r, "/sign-in", http.StatusSeeOther)
+				}
+				return
 			}
 			auth.RequireAuth(handlers.Make(handlers.HandleDashboard))(w, r)
 			return

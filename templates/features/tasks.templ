@@ -3,6 +3,8 @@ package features
 import (
     "fmt"
     "time"
+    "strconv"
+    "strings"
 
 	"etop/dto"
 	"etop/utils"
@@ -15,11 +17,11 @@ import (
 templ Task(task models.Task, user dto.UserAuth) {
     <div data-title="Task" class="space-y-6" 
         x-data="{
-                task_id: '',
+                task_id: '', 
                 user_id: '',
                 isWatching: false,
                 taskWatch() {
-                    htmx.ajax('POST', '/task-watch?task_id='+this.task_id+'&user_id='+this.user_id+'&status='+!this.isWatching, {source: document.getElementById('task-watch'), target: '#toaster', swap: 'innerHtml'})
+                    htmx.ajax('POST', '/task-watch?task_id='+this.task_id+'&user_id='+this.user_id+'&status='+!this.isWatching, {source: document.getElementById('task-watch'), target: '#toaster', swap: 'innerHtml'});
                 },
                 init() {
                     document.body.addEventListener('htmx:afterRequest', (evt) => {
@@ -29,19 +31,37 @@ templ Task(task models.Task, user dto.UserAuth) {
                     })
                 }
             }" 
-        x-init={fmt.Sprintf("task_id = '%s'; user_id = '%s'; isWatching = %t;", task.ID, user.ID, services.IsUserWatchingTask(task, user.ID))}
+        x-init={fmt.Sprintf("task_id = '%s'; user_id = '%s'; isWatching = %t; ", task.ID, user.ID, services.IsUserWatchingTask(task, user.ID))}
     >
         <div class="flex items-center justify-between">
             <div>
-                @components.BackButton("mb-2", templ.Attributes{
-                    "type": "button",
-                    "hx-post": fmt.Sprintf("/projects?id=%s",task.ProjectID),
-                    "hx-target": "#content",
-                    "hx-swap": "innerHTML",
-                    "hx-push-url": "true",
-                    "hx-indicator": ".htmx-loader,.loaded-content",})
+                // @components.BackButton("mb-2", templ.Attributes{
+                //     "type": "button",
+                //     "hx-post": fmt.Sprintf("/projects?id=%s",task.ProjectID), 
+                //     "hx-target": "#content",
+                //     "hx-swap": "innerHTML",
+                //     "hx-push-url": "true",
+                //     "hx-indicator": ".htmx-loader,.loaded-content",})
                 <div class="flex items-center justify-between space-y-0">
-                    <h2 class="text-3xl font-bold tracking-tight">{task.Title}</h2>
+                    if strings.Trim(task.Type," ") == "PROJECT" {
+                        <div class="">
+                            @ui.Avatar(task.Project.Title, "", "sm", "mr-2", templ.Attributes{
+                                ":class":fmt.Sprintf("project_statuses.filter(c=>c.status==='%s')[0].color", task.Project.Status),
+                                "x-show":"!isMobile",
+                            })
+                        </div>
+                        <h2 x-show="!isMobile" class="text-3xl font-semibold text-muted-foreground hover:opacity-75 transition cursor-pointer"
+                            hx-post={fmt.Sprintf("/projects?id=%s",task.ProjectID)}
+                            hx-target="#content"
+                            hx-swap="innerHTML"
+                            hx-push-url="true"
+                            hx-indicator=".htmx-loader,.loaded-content"
+                        >
+                            {task.Project.Title}
+                        </h2>
+                        <svg x-show="!isMobile" class="size-4 mr-2 ml-2 pt-1 text-muted-foreground" data-lucide="chevron-right" />
+                    }
+                    <h2 class="text-3xl font-semibold">{task.Title}</h2>
                 </div>
             </div>
 
@@ -52,6 +72,7 @@ templ Task(task models.Task, user dto.UserAuth) {
                             "@click":"taskWatch",
                             "type": "button",
                             ":class": "isWatching ? 'text-red-500 dark:hover:bg-gray-400 hover:bg-red-100' : '' ",
+                            "hx-indicator": ".htmx-loader,.loaded-content",
                         }) {
                             <i x-show="isWatching" data-lucide="eye-off" class="w-4 h-4 "></i>
                             <i x-show="!isWatching"  data-lucide="eye" class="w-4 h-4 "></i>
@@ -62,16 +83,79 @@ templ Task(task models.Task, user dto.UserAuth) {
             </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-            <div className="lg:col-span-2">
-                <div className="bg-card rounded-lg p-6 shadow-sm mb-6">
-                    <div className="flex flex-col md:flex-row justify-between items-start mb-4">
+        <div class="flex flex-col gap-4">
+            <div class="">
+            // lg:col-span-2
+                <div class="bg-card rounded-lg p-4 shadow-sm mb-4">
+                    <div class="flex justify-between items-start mb-2">
                         <div>
-                            @ui.Badge(task.Priority, "", "", templ.Attributes{
-                                ":class": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Priority),
-                                "x-text": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label.trim()+' Priority'", task.Priority),
-                            })
+                            <div class="flex items-center gap-2"><div class="text-xl flex-1 font-semibold">{task.Title}</div></div>
+
+                            <div class="text-xs md:text-base text-muted-foreground mb-4">
+                                Created at {task.CreatedAt.Format("Mon, 02 Jan 2006")}
+                            </div>
                         </div>
+                        <div class="flex items-start gap-2">
+                            <div class=" p-1">
+                                @ui.Badge(task.Priority, "", "mt-1.5 mr-2", templ.Attributes{
+                                    ":class": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Priority),
+                                    "x-text": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label.trim()+' Priority'", task.Priority),
+                                })
+                                @ui.Badge(task.Priority, "", "mt-1.5 mr-2", templ.Attributes{
+                                    ":class":fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status),
+                                    "x-text":fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),
+                                })
+                            </div>
+                            @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
+                                @ui.DropdownTrigger("p-1", nil) {
+                                    <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
+                                }
+                                @ui.DropdownContent("", nil) {
+                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+                                        "hx-post": "/tasks?id="+task.ID+"#edit-task-form",
+                                        "hx-target": "#content",
+                                        "hx-swap": "innerHtml",
+                                        "hx-push-url": "true",
+                                        "hx-indicator": ".htmx-loader,.loaded-content",
+                                    }) {
+                                        <i data-lucide="edit" class="w-4 h-4"></i>
+                                        Edit Task
+                                    }
+                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100" , templ.Attributes{
+                                        "hx-post": "/delete-task?id="+task.ID+"#edit-task-form",
+                                        "hx-target": "#toaster",
+                                        "hx-swap": "innerHtml",
+                                    }) {
+                                        <i data-lucide="edit" class="w-4 h-4"></i>
+                                        Delete Task
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-muted-foreground mb-0">
+                            Description
+                        </div>
+
+                        <div class="flex items-center gap-2 p-2"><div class="text-sm md:text-base text-pretty flex-1 text-muted-foreground">{task.Description}</div></div> 
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="text-sm font-medium text-muted-foreground mb-0">
+                            Assignees
+                        </div>
+
+                        <div class="flex items-center gap-2 p-2">
+                            <div class="flex">
+                                for _, assignee := range task.Assignees {
+                                    @ui.Tooltip(assignee.User.FullName, "flex w-[120px]", nil) {
+                                        @ui.Avatar(assignee.User.FullName, assignee.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                                    }
+                                }
+                            </div>
+                        </div> 
                     </div>
                 </div>
             </div>
@@ -80,7 +164,7 @@ templ Task(task models.Task, user dto.UserAuth) {
 }
 
 templ Tasks(tasks []models.Task) {
-    <div>{len(tasks)}</div>
+    <div>My tasks: {len(tasks)}</div>
 }
 
 templ CreateTask(projectID string, typ string, class string, attrs templ.Attributes) {

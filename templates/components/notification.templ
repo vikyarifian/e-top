@@ -17,7 +17,9 @@ templ Notification(notif []Notif) {
 		}
 
 		/* Panel dropdown */
-		@ui.DropdownContent("w-96", nil) {
+		@ui.DropdownContent("", templ.Attributes{
+            ":class":"isMobile ? 'w-72' : 'w-96'",
+        }) {
 			@ui.DropdownLabel(false, "flex items-center justify-center font-sm", nil) {
                 Notifications
             }

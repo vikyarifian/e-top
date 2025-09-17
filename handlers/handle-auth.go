@@ -22,11 +22,11 @@ import (
 
 func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 
-	if _, err := auth.GetAuth(w, r); err == nil {
+	if _, err := auth.GetJwtClaims(w, r); err == nil {
 		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/dashboard")
+			w.Header().Set("HX-Redirect", "/")
 		} else {
-			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	}
 
@@ -95,11 +95,12 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
-	if _, err := auth.GetAuth(w, r); err == nil {
+
+	if _, err := auth.GetJwtClaims(w, r); err == nil {
 		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/dashboard")
+			w.Header().Set("HX-Redirect", "/")
 		} else {
-			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	}
 
@@ -178,11 +179,11 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 
 func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 
-	if _, err := auth.GetAuth(w, r); err == nil {
+	if _, err := auth.GetJwtClaims(w, r); err == nil {
 		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/dashboard")
+			w.Header().Set("HX-Redirect", "/")
 		} else {
-			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	}
 
@@ -226,11 +227,11 @@ func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 
 func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 
-	if _, err := auth.GetAuth(w, r); err == nil {
+	if _, err := auth.GetJwtClaims(w, r); err == nil {
 		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/dashboard")
+			w.Header().Set("HX-Redirect", "/")
 		} else {
-			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	}
 
@@ -380,11 +381,12 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
-	if _, err := auth.GetAuth(w, r); err == nil {
+
+	if _, err := auth.GetJwtClaims(w, r); err == nil {
 		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/dashboard")
+			w.Header().Set("HX-Redirect", "/")
 		} else {
-			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	}
 
