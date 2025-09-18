@@ -15,7 +15,7 @@ import (
 )
 
 templ Task(task models.Task, user dto.UserAuth) {
-    <div data-title="Task" class="space-y-6" 
+    <div data-title="Task" class="mx-auto space-y-6" 
         x-data="{
                 task_id: '', 
                 user_id: '',
@@ -27,6 +27,7 @@ templ Task(task models.Task, user dto.UserAuth) {
                     document.body.addEventListener('htmx:afterRequest', (evt) => {
                         if (evt.detail.successful && evt.detail.elt.id === 'task-watch') {
                             this.isWatching = !this.isWatching;
+                            htmx.ajax('GET', '/task-watch?task_id='+this.task_id, {target: '#task-watchers', swap: 'innerHtml'});
                         }
                     })
                 }
@@ -83,15 +84,14 @@ templ Task(task models.Task, user dto.UserAuth) {
             </div>
         </div>
 
-        <div class="flex flex-col gap-4">
-            <div class="">
-            // lg:col-span-2
+        <div class="flex flex-col lg:flex-row gap-4">
+            <div class="lg:col-span-2 lg:w-8/12">
                 <div class="bg-card rounded-lg p-4 shadow-sm mb-4">
-                    <div class="flex justify-between items-start mb-2">
+                    <div class="flex flex-col md:flex-row justify-between items-start">
                         <div>
                             <div class="flex items-center gap-2"><div class="text-xl flex-1 font-semibold">{task.Title}</div></div>
 
-                            <div class="text-xs md:text-base text-muted-foreground mb-4">
+                            <div class="text-xs text-muted-foreground mb-4">
                                 Created at {task.CreatedAt.Format("Mon, 02 Jan 2006")}
                             </div>
                         </div>
@@ -133,13 +133,15 @@ templ Task(task models.Task, user dto.UserAuth) {
                             }
                         </div>
                     </div>
-                    
+                    <div class="mb-4">
+                        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                    </div>
                     <div class="mb-4">
                         <div class="text-sm font-medium text-muted-foreground mb-0">
                             Description
                         </div>
 
-                        <div class="flex items-center gap-2 p-2"><div class="text-sm md:text-base text-pretty flex-1 text-muted-foreground">{task.Description}</div></div> 
+                        <div class="flex items-center gap-2 p-2"><div class="text-sm text-pretty flex-1 text-muted-foreground">{task.Description}</div></div> 
                     </div>
 
                     <div class="mb-4">
@@ -159,6 +161,46 @@ templ Task(task models.Task, user dto.UserAuth) {
                     </div>
                 </div>
             </div>
+            <div class="lg:w-4/12">
+                <div id="task-watchers">@TaskWatchers(task.Watchers)</div>
+                <div class="bg-card rounded-lg p-4 shadow-sm mb-4">
+                    <h3 class="text-lg font-medium mb-4">Activity</h3>
+                    <div class=" mt-2 mb-4">
+                        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                    </div>
+                    <div class="space-y-2 justify-between">
+                        if len(task.Watchers) > 0 {
+                            for _,watcher := range task.Watchers {
+                                @ui.Avatar(watcher.User.FullName, watcher.User.Color, "xs", "h-6 w-6 border-2 border-background overflow-hidden", nil) {
+                                    <span class="flex text-xs text-muted-foreground ml-2">{watcher.User.FullName}</span>
+                                }
+                            }
+                        } else {
+                            <p class="text-xs text-muted-foreground">No watchers</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+templ TaskWatchers(watchers []models.TaskWatchers) {
+    <div class="bg-card rounded-lg p-4 shadow-sm mb-4">
+        <h3 class="text-lg font-medium mb-4">Watchers</h3>
+        <div class=" mt-2 mb-4">
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+        </div>
+        <div class="space-y-2 justify-between">
+            if len(watchers) > 0 {
+                for _,watcher := range watchers {
+                    @ui.Avatar(watcher.User.FullName, watcher.User.Color, "xs", "h-6 w-6 border-2 border-background overflow-hidden", nil) {
+                        <span class="flex text-xs text-muted-foreground ml-2">{watcher.User.FullName}</span>
+                    }
+                }
+            } else {
+                <p class="text-sm text-muted-foreground">No watchers</p>
+            }
         </div>
     </div>
 }
