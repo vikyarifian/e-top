@@ -110,7 +110,7 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 			projectStatuses := services.GetProjectStatuses()
 			for _, projectStatus := range projectStatuses {
 				if strings.EqualFold(strings.Trim(projectStatus.Status, " "), strings.Trim(project.Status, " ")) {
-					if projectStatus.Value >= 4 || projectStatus.Value == 0 {
+					if projectStatus.Value > 4 || projectStatus.Value == 0 {
 						w.WriteHeader(http.StatusBadRequest)
 						return ui.Toast("task-error", "warning", "", "Cannot add task to a completed or cancelled project!", "", nil).Render(r.Context(), w)
 					}
@@ -240,6 +240,16 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 
 func HandleTaskWatcher(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
+	case http.MethodGet:
+		taskID := r.URL.Query().Get("task_id")
+		var watchers []models.TaskWatchers
+		if err := db.PgSql.Where("task_id=?", taskID).Preload("User").Find(&watchers).Error; err != nil {
+			w.WriteHeader(http.StatusOK)
+			return features.TaskWatchers([]models.TaskWatchers{}).Render(r.Context(), w)
+		}
+		println(len(watchers))
+		w.WriteHeader(http.StatusOK)
+		return features.TaskWatchers(watchers).Render(r.Context(), w)
 	case http.MethodPost:
 		taskID := r.URL.Query().Get("task_id")
 		userID := r.URL.Query().Get("user_id")

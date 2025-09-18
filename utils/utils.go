@@ -83,11 +83,11 @@ func DbMutation() {
 	err := db.PgSql.Find(&projectStatuses).Error
 
 	if len(projectStatuses) == 0 || err != nil {
-		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "PLANNING", Label: "Planning", Color: "bg-blue-300 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300", Form: 1, Value: 3})
-		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-purple-300 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300", Form: 1, Value: 4})
-		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "ON_HOLD", Label: "On Hold", Color: "bg-yellow-300 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300", Form: 0, Value: 2})
-		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "COMPLETED", Label: "Completed", Color: "bg-green-300 text-green-800 dark:bg-green-900/30 dark:text-green-300", Form: 1, Value: 5})
-		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-red-300 text-red-800 dark:bg-red-900/30 dark:text-red-300", Form: 0, Value: 0})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "PLANNING", Label: "Planning", Color: "bg-blue-300 text-blue-800 dark:bg-blue-400/30 dark:text-blue-100", Form: 1, Value: 3})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-purple-300 text-purple-800 dark:bg-purple-400/30 dark:text-purple-100", Form: 1, Value: 4})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "ON_HOLD", Label: "On Hold", Color: "bg-yellow-300 text-yellow-800 dark:bg-yellow-400/30 dark:text-yellow-100", Form: 0, Value: 2})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "COMPLETED", Label: "Completed", Color: "bg-green-300 text-green-800 dark:bg-green-400/30 dark:text-green-100", Form: 1, Value: 5})
+		projectStatuses = append(projectStatuses, models.ProjectStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-red-300 text-red-800 dark:bg-red-400/30 dark:text-red-100", Form: 0, Value: 0})
 		if err := db.PgSql.Create(&projectStatuses).Error; err != nil {
 			println(err.Error())
 		}
