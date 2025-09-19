@@ -16,6 +16,7 @@ import (
 	"etop/auth"
 	"etop/db"
 	"etop/models"
+	"etop/services"
 	"etop/templates/components"
 	"etop/templates/components/ui"
 	"etop/templates/layouts"
@@ -133,6 +134,9 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 				components.CardStatus(500, "Something went wrong", "Sorry, we're cannot verify your email at this time, try again later.", "circle-x",
 					ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 		}
+		services.AddLog(user.ID, "registered_user", "User", user.ID, map[string]any{
+			"description": strings.Trim(user.FullName, " ") + " registered at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+		})
 	} else {
 		t := time.Now()
 		user.VerifiedEmail = true
@@ -140,6 +144,9 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 		user.UpdatedBy = user.ID
 
 		db.PgSql.Save(&user)
+		services.AddLog(user.ID, "verified_user", "User", user.ID, map[string]any{
+			"description": strings.Trim(user.FullName, " ") + " verified their email at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+		})
 	}
 
 	time.Sleep(1 * time.Second)
@@ -160,6 +167,10 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 			HttpOnly: true,
 			Secure:   false, // set true if use https
 			Expires:  time.Now().Add(24 * time.Hour),
+		})
+
+		services.AddLog(user.ID, "login_user", "User", user.ID, map[string]any{
+			"description": strings.Trim(user.FullName, " ") + " login at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
 		})
 
 		http.Redirect(w, r, "/", http.StatusFound)

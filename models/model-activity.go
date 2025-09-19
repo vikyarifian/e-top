@@ -5,7 +5,7 @@ import (
 )
 
 type Log struct {
-	ID     string `gorm:"column:id;primaryKey;type:uuid;default:gen_random_uuid()" json:"id"`
+	ID     int    `gorm:"column:id;primaryKey;type:int;" json:"id"`
 	UserID string `gorm:"column:user_id;not null;type:uuid" json:"user_id"`
 	User   *User  `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user,omitempty"`
 
@@ -65,3 +65,52 @@ type Reaction struct {
 	Emoji  string `json:"emoji"`
 	UserID string `json:"user_id"`
 }
+
+// -- TABLE: logs
+// CREATE TABLE logs (
+//     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+//     action VARCHAR(128) NOT NULL CHECK (action IN (
+//         'created_task',
+//         'updated_task',
+//         'created_subtask',
+//         'updated_subtask',
+//         'completed_task',
+//         'created_project',
+//         'updated_project',
+//         'completed_project',
+//         'created_workspace',
+//         'updated_workspace',
+//         'added_comment',
+//         'added_member',
+//         'removed_member',
+//         'joined_workspace',
+//         'transferred_workspace_ownership',
+//         'added_attachment',
+//		   'registered_user',
+//			'login_user',
+//			'forgot_password_user',
+//			'resend_email_user',
+//			'verified_user'
+//     )),
+
+//     resource_type VARCHAR(128) NOT NULL CHECK (resource_type IN ('Task','Project','Workspace','Comment','User')),
+//     resource_id VARCHAR(255) NOT NULL,
+
+//     details JSONB, -- simpan info tambahan fleksibel
+
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     created_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
+//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     updated_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT
+// );
+
+// -- index untuk pencarian cepat by resource
+// CREATE INDEX idx_logs_resource ON logs(resource_type, resource_id);
+
+// -- index untuk pencarian by user
+// CREATE INDEX idx_logs_user ON logs(user_id);
+
+// -- index GIN untuk details JSONB biar bisa query dalam JSON
+// CREATE INDEX idx_logs_details_gin ON logs USING GIN (details);
