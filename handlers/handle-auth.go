@@ -13,6 +13,7 @@ import (
 	"etop/auth"
 	"etop/db"
 	"etop/models"
+	"etop/services"
 	"etop/templates/components"
 	"etop/templates/components/ui"
 	"etop/templates/layouts"
@@ -75,6 +76,10 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) error {
 					HttpOnly: true,
 					Secure:   false, // set true kalau pakai https
 					Expires:  time.Now().Add(24 * time.Hour),
+				})
+
+				services.AddLog(user.ID, "login_user", "User", user.ID, map[string]any{
+					"description": strings.Trim(user.FullName, " ") + " login at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
 				})
 
 				time.Sleep(1 * time.Second)
@@ -163,6 +168,10 @@ func HandleSignUp(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("signup-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
+		services.AddLog(user.ID, "registered_user", "User", user.ID, map[string]any{
+			"description": strings.Trim(user.FullName, " ") + " registered at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+		})
+
 		appUrl := os.Getenv("APP_URL")
 		if os.Getenv("APP_ENV") == "dev" {
 			appUrl += os.Getenv("APP_PORT")
@@ -217,6 +226,10 @@ func HandleResendVerification(w http.ResponseWriter, r *http.Request) error {
 			url += os.Getenv("APP_PORT")
 		}
 		utils.SendVerificationEmail(user, url+"/verify-email?id="+user.ID)
+
+		services.AddLog(user.ID, "resend_email_user", "User", user.ID, map[string]any{
+			"description": strings.Trim(user.FullName, " ") + " resend email verification at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+		})
 
 		return ui.Toast("resend-success", "success", "", "If your email is registered, you will receive a verification link.", "", nil).Render(r.Context(), w)
 	default:
@@ -304,6 +317,9 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 			}
 			utils.ResetPasswordEmail(user, appUrl+"/forgot-password?token="+newResetPass.TokenHash)
 
+			services.AddLog(user.ID, "forgot_password_user", "User", user.ID, map[string]any{
+				"description": strings.Trim(user.FullName, " ") + " resend reset password at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+			})
 			return components.CardStatus(200, "Reset Password Sent", "If your email is registered, you will receive a reset link.", "circle-check-big",
 				ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})).Render(r.Context(), w)
 		}
@@ -361,6 +377,10 @@ func HandleForgotPassword(w http.ResponseWriter, r *http.Request) error {
 			println(err.Error())
 		}
 
+		services.AddLog(user.ID, "forgot_password_user", "User", user.ID, map[string]any{
+			"description": strings.Trim(user.FullName, " ") + " reset password at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+		})
+
 		if !user.VerifiedEmail {
 
 			appUrl := os.Getenv("APP_URL")
@@ -417,6 +437,10 @@ func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 						ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 			}
 
+			services.AddLog(user.ID, "verified_user", "User", user.ID, map[string]any{
+				"description": strings.Trim(user.FullName, " ") + " verified their email at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+			})
+
 			return layouts.AuthLayout("Verify Email", pages.VerifyEmail(
 				components.CardStatus(200, "Email Verified Successfully", "Your account has been successfully verified. You can now sign in to continue.", "circle-check-big",
 					ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
@@ -434,6 +458,15 @@ func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HandleLogout(w http.ResponseWriter, r *http.Request) error {
+	user, err := auth.GetAuth(w, r)
+	if err != nil {
+		w.Header().Set("HX-Redirect", "/")
+		w.WriteHeader(http.StatusSeeOther)
+		return nil
+	}
+	services.AddLog(user.ID, "login_user", "User", user.ID, map[string]any{
+		"description": strings.Trim(user.FullName, " ") + " logout at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+	})
 	http.SetCookie(w, &http.Cookie{
 		Name:   "session_token",
 		Value:  "",
