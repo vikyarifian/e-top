@@ -14,6 +14,8 @@ import (
 
 templ Workspace(workspace models.Workspace) {
     @CreateProject(workspace.ID, "w-[900px]", nil) 
+    @EditWorkspace(workspace.ID, "w-96", nil) 
+    @InviteWorkspace(workspace.ID, "w-96", nil) 
     <div data-title="Workspace" class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
@@ -28,17 +30,23 @@ templ Workspace(workspace models.Workspace) {
                 <p class="text-muted-foreground p-1">{workspace.Description}</p>
             </div>
             <div>
-                @ui.Button("create-workspace", "outline", "sm", "", "", "mr-1", templ.Attributes{
+                @ui.Button("invite-workspace", "outline", "sm", "", "", "mr-1", templ.Attributes{
                     "type": "button",
-                    "@click":"$store.modal.open('create-workspace-modal')",
+                    "@click":"$store.modal.open('invite-workspace-modal')",
                 }) {
                     <i data-lucide="user-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Invite'}`"></span>
                 }
-                @ui.Button("create-workspace", "", "sm", "", "", "", templ.Attributes{
+                @ui.Button("create-project", "", "sm", "", "", "mr-1", templ.Attributes{
                     "type": "button",
                     "@click":"$store.modal.open('create-project-modal')",
                 }) {
-                    <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Create Project'}`"></span>
+                    <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'New Project'}`"></span>
+                }
+                @ui.Button("workspace-settings", "outline", "sm", "", "", "", templ.Attributes{
+                    "type": "button",
+                    "@click":"$store.modal.open('edit-workspace-modal')",
+                }) {
+                    <i data-lucide="settings" class="w-4 h-4 "></i>
                 }
             </div>
         </div>
@@ -46,7 +54,7 @@ templ Workspace(workspace models.Workspace) {
             <span class="text-sm text-muted-foreground mr-2">Members : </span>
             <div class="flex">
                 for _,member := range workspace.Members {
-                    @ui.Tooltip(member.User.FullName, "w-[120px]", nil) {
+                    @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "w-[180px]", nil) {
                         @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
                     }
                 }
@@ -430,6 +438,261 @@ templ CreateWorkspaceForm() {
             @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             <div class="flex justify-end items-end">
                 @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
+}
+
+templ EditWorkspace(workspaceID string, class string, attrs templ.Attributes) {
+    @components.ResponsiveModal("edit-workspace-modal", "Edit Workspace", class) {
+        <div id="edit-workspace-form" 
+            x-init={fmt.Sprintf("workspace_id='%s'", workspaceID)}
+            x-data="{
+                        workspace_id:'',
+                        init() {
+                            document.body.addEventListener('modal:opened', (evt) => {
+                                if (evt.detail.id === 'edit-workspace-modal') {
+                                    htmx.ajax('GET', '/edit-workspace-form?workspace_id='+this.workspace_id, {target: '#edit-workspace-form', swap: 'innerHtml'})
+                                }
+                            });
+                            document.body.addEventListener('modal:closed', (evt) => {
+                                if (evt.detail.id === 'edit-workspace-modal') {
+                                    document.getElementById('edit-workspace-form').innerHTML = '';
+                                }
+                            });
+                        }
+                    }"
+        >
+            
+        </div>
+    }
+}
+
+templ EditWorkspaceForm(workspace models.Workspace) {
+    <div
+        x-data="{
+                    workspace: {},
+                    tags: [],
+                    selectedColor: '',
+                    nameError: '',
+                    descriptionError : '',
+                    colorError: '',
+                    validateName() {
+                        this.nameError = (this.workspace.name.trim() === '')
+                            ? 'Name is required'
+                            : '';
+                        this.workspace.name = this.workspace.name.charAt(0).toUpperCase() + this.workspace.name.slice(1);
+                    },
+                    validateColor() {
+                        this.colorError = (this.workspace.color.trim() === '')
+                            ? 'Color is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateName();
+                        //this.validateColor();
+                        
+                        if (this.nameError || this.validateColor()) {
+                            return; 
+                        }
+                    },
+                    resetForm() {
+                        this.workspace = {};
+                        this.nameError = '';
+                        this.descriptionError = '';
+                        this.colorError = '';
+                    },
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'edit-workspace-form') {
+                                $store.modal.close('edit-workspace-modal');
+                                htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})
+                                const params = new URLSearchParams(window.location.search);
+                                if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace.id.trim()) {
+                                    htmx.ajax('POST', '/workspaces?id='+this.workspace.id, { 
+                                        target: '#content', 
+                                        swap: 'innerHTML' 
+                                    })
+                                }
+                            }
+                        });
+                    }
+                }"
+        x-init={fmt.Sprintf("workspace=%s;selectedColor='%s'", string(utils.MustJSON(workspace)), workspace.Color)}
+    >
+        @ui.Form("/workspace", "put", "", templ.Attributes{
+                "id":"edit-workspace-form",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#edit-button,#name,#description,#colorOption",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            <input id="workspace_id" type="hidden" name="workspace_id" x-model="workspace.id" />
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("name", "Name", "", nil)
+                @ui.FormControl("name", "name", "text", "Workspace Name", workspace.Name, "", templ.Attributes{
+                    "autocomplete":"name",
+                    "x-model": "workspace.name",
+                    "@blur": "validateName",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "nameError != ''",
+                        "x-text": "nameError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("description", "Description", "", nil)
+                @ui.FormControl("description", "description", "textarea", "Workspace Description", workspace.Description, "", templ.Attributes{
+                    "autocomplete":"description",
+                    "x-model": "workspace.description",
+                    "@blur": "workspace.description=workspace.description.charAt(0).toUpperCase() + workspace.description.slice(1)",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "descriptionError != ''",
+                        "x-text": "descriptionError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("", "Color", "", nil)
+                <div id="colorOption"
+                    class="flex items-center space-x-3 mt-2"
+                >
+                    <template x-for="color in colorOptions" :key="color.name">
+                        <button 
+                            type="button"
+                            class="h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
+                            :class="[
+                                color.class, 
+                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'
+                            ]"
+                            @click="selectedColor = color.class;"
+                            :title="color.class"
+                        ></button>
+                    </template>
+
+                    <!-- Hidden input buat form -->
+                    <input type="hidden" id="color" name="color" x-model="workspace.color" :value="selectedColor">
+                    @ui.FormMessage("", "", templ.Attributes{
+                            "x-show": "selectedColor === ''",
+                            "x-text": "colorError",
+                        },
+                    )
+                </div>
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("members", "Members", "", nil)
+                <div class="flex px-2">
+                    for _,member := range workspace.Members {
+                        @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "min-w-[120px] w-[180px]", nil) {
+                            @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-6 w-6 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                        }
+                    }
+                </div>
+            }
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("edit-button", "", "", "", "Save", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
+}
+
+templ InviteWorkspace(workspaceID string, class string, attrs templ.Attributes) {
+    @components.ResponsiveModal("invite-workspace-modal", "Invite Workspace", class) {
+        <div id="invite-workspace-form" 
+            x-init={fmt.Sprintf("workspace_id='%s'", workspaceID)}
+            x-data="{
+                        workspace_id:'',
+                        init() {
+                            document.body.addEventListener('modal:opened', (evt) => {
+                                if (evt.detail.id === 'invite-workspace-modal') {
+                                    htmx.ajax('GET', '/invite-workspace-form?workspace_id='+this.workspace_id, {target: '#invite-workspace-form', swap: 'innerHtml'})
+                                }
+                            });
+                            document.body.addEventListener('modal:closed', (evt) => {
+                                if (evt.detail.id === 'invite-workspace-modal') {
+                                    document.getElementById('invite-workspace-form').innerHTML = '';
+                                }
+                            });
+                        }
+                    }"
+        >
+            
+        </div>
+    }
+}
+
+templ InviteWorkspaceForm(workspace models.Workspace, users []models.User, invitedUsers []models.InviteWorkspaceMember) {
+    <div
+        x-data="{
+                    workspace: {},
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'invite-workspace-form') {
+                                $store.modal.close('invite-workspace-modal');
+                            }
+                        });
+                    }
+                }"
+        x-init={fmt.Sprintf("workspace=%s;", string(utils.MustJSON(workspace)))}
+    >
+        <div class="flex items-center justify-start space-y-0">
+            <div class="p-1 mr-2">
+                <div class={"w-6 h-6 p-2 rounded-md text-white flex items-center justify-center text-sm font-semibold " , workspace.Color}>
+                    {strings.ToUpper(workspace.Name[0:1])}
+                </div>
+            </div>
+            <h2 class="text-lg font-semibold tracking-tight">{workspace.Name}</h2>
+        </div>
+        @ui.Form("/invite-workspace", "post", "", templ.Attributes{
+                "id":"invite-workspace-form",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#invite-button,#name,#description,#colorOption",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            <input id="workspace_id" type="hidden" name="workspace_id" x-model="workspace.id" />            
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("members", "Members", "", nil)
+                <div class="flex px-2">
+                    for _,member := range workspace.Members {
+                        @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "min-w-[120px] w-[180px]", nil) {
+                            @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-6 w-6 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                        }
+                    }
+                </div>
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("invited_members", "Invited Members (not join yet)", "", nil)
+                <div class="flex px-2">
+                    for _,member := range invitedUsers {
+                        @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Status, " ")+")", "min-w-[120px] w-[180px]", nil) {
+                            @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-6 w-6 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                        }
+                    }
+                </div>
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("invite_members", "Invite", "", nil)
+                @components.MemberInput("invite_members",
+                    "invite_members",
+                    "Type a name...",
+                    []models.User{},  
+                    users,
+                    "",
+                    nil,
+                )
+                @ui.FormMessage("", "", templ.Attributes{},
+                )
+            }
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("invite-button", "", "", "", "Invite", "", templ.Attributes{"type": "submit"}) 
             </div>
         }
     </div>

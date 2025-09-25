@@ -59,7 +59,10 @@ func SetRoutes() {
 
 	mux.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaceSwitcher)))
 	mux.HandleFunc("/create-workspace-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateWorkspaceForm)))
+	mux.HandleFunc("/edit-workspace-form", auth.RequireAuth(handlers.Make(handlers.HandleEditWorkspaceForm)))
+	mux.HandleFunc("/invite-workspace-form", auth.RequireAuth(handlers.Make(handlers.HandleInviteWorkspaceForm)))
 	mux.HandleFunc("/workspace", auth.RequireAuth(handlers.Make(handlers.HandleWorkspace)))
+	mux.HandleFunc("/invite-workspace", auth.RequireAuth(handlers.Make(handlers.HandleInviteWorkspace)))
 	mux.HandleFunc("/workspaces", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaces)))
 
 	mux.HandleFunc("/project", auth.RequireAuth(handlers.Make(handlers.HandleProject)))
@@ -70,6 +73,8 @@ func SetRoutes() {
 	mux.HandleFunc("/tasks", auth.RequireAuth(handlers.Make(handlers.HandleTasks)))
 	mux.HandleFunc("/create-task-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateTaskFrom)))
 	mux.HandleFunc("/task-watch", auth.RequireAuth(handlers.Make(handlers.HandleTaskWatcher)))
+
+	mux.HandleFunc("/task-activities", auth.RequireAuth(handlers.Make(handlers.HandleTaskActivities)))
 
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
 

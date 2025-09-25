@@ -64,6 +64,14 @@ templ Project(project models.Project) {
                             <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Add Task'}`"></span>
                         }
                     </div>
+                    <div>
+                        @ui.Button("project-settings", "outline", "sm", "", "", "", templ.Attributes{
+                            "type": "button",
+                            "@click":"$store.modal.open('create-task-modal')",
+                        }) {
+                            <i data-lucide="settings" class="w-4 h-4 "></i>
+                        }
+                    </div>
                 </div>
             </div>
         </div>

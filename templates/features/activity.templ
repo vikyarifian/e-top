@@ -1,0 +1,35 @@
+package features
+
+import (
+    "fmt"
+    "strings"
+
+    "etop/utils"
+    "etop/models"
+	"etop/templates/components"
+)
+
+templ TaskActivities(activities []models.Log) {
+    <div class="bg-card rounded-lg p-4 shadow-sm mb-4">
+        <h3 class="text-lg font-medium mb-4">Activity</h3>
+        <div class=" mt-2 mb-4">
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+        </div>
+        <div class="space-y-3 text-sm">
+            if len(activities) > 0 {
+                for _,activity := range activities {
+                    <div class="flex items-start gap-2">
+                        @components.ActivityIcon(activity.Action, "", nil)
+                        <div x-data={fmt.Sprintf("{details:%s}",string(utils.MustJSON(activity.Details)))} class="mt-0">
+                            <p>
+                                <span class="font-medium">{strings.Split(activity.User.FullName," ")[0]}</span> 
+                                <span x-text="details.description" />
+                            </p>
+                            <span class="text-xs text-gray-500">{utils.TimeAgo(*activity.CreatedAt)}</span>
+                        </div>
+                    </div>            
+                }
+            }
+        </div>
+    </div>    
+}

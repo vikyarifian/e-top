@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -191,12 +192,16 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("project-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
+		services.AddLog(user.ID, "created_project", "Project", project.ID, map[string]any{
+			"description": "created project " + project.Title,
+		})
+
 		member := models.ProjectMember{}
 		members := []models.ProjectMember{}
 
 		no = 0
 		db.PgSql.Table("project_members").Select("max(no)").Row().Scan(&no)
-		member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
+		// member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
 		member.ProjectID = project.ID
 		member.UserID = user.ID
 		member.Role = "OWNER"
@@ -209,9 +214,9 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 
 		membersPayload := []models.ProjectMember{}
 		if err := json.Unmarshal([]byte(r.FormValue("members")), &membersPayload); err == nil {
-			for i, m := range membersPayload {
+			for _, m := range membersPayload {
 				members = append(members, models.ProjectMember{
-					ID:        utils.GenerateHash(strconv.Itoa(no + 2 + i)),
+					// ID:        utils.GenerateHash(strconv.Itoa(no + 2 + i)),
 					ProjectID: project.ID,
 					Role:      m.Role,
 					UserID:    m.UserID,
@@ -246,6 +251,10 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 		t := time.Now()
 		user, _ := auth.GetAuth(w, r)
 
+		logDetails := map[string]any{
+			"description": "updated project",
+		}
+
 		project.ID = r.FormValue("id")
 		if err := db.PgSql.Where("id=? AND workspace_id=?", project.ID, r.FormValue("workspace_id")).First(&project).Error; err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -263,13 +272,25 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("project-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
 		}
 
+		if strings.Trim(project.Title, " ") != strings.Trim(r.FormValue("title"), " ") {
+			logDetails["old_title"] = project.Title
+			logDetails["new_title"] = r.FormValue("title")
+		}
 		project.Title = r.FormValue("title")
 		if len(strings.Trim(project.Title, " ")) < 1 {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "Title is required!", "", nil).Render(r.Context(), w)
 		}
 
+		if strings.Trim(project.Description, " ") != strings.Trim(r.FormValue("description"), " ") {
+			logDetails["old_description"] = project.Description
+			logDetails["new_description"] = r.FormValue("description")
+		}
 		project.Description = r.FormValue("description")
+		if strings.Trim(project.WorkspaceID, " ") != strings.Trim(r.FormValue("workspace_id"), " ") {
+			logDetails["old_workspace_id"] = project.WorkspaceID
+			logDetails["new_workspace_id"] = r.FormValue("workspace_id")
+		}
 		project.WorkspaceID = r.FormValue("workspace_id")
 		if len(strings.Trim(project.WorkspaceID, " ")) < 1 {
 			w.WriteHeader(http.StatusBadRequest)
@@ -282,6 +303,10 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("project-error", "warning", "", "Workspace is not found!", "", nil).Render(r.Context(), w)
 		}
 
+		if strings.Trim(project.Status, " ") != strings.Trim(r.FormValue("status"), " ") {
+			logDetails["old_status"] = project.Status
+			logDetails["new_status"] = r.FormValue("status")
+		}
 		if strings.Trim(project.Status, " ") != "" {
 			project.Status = r.FormValue("status")
 		}
@@ -304,6 +329,10 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "Invalid start date format!", "", nil).Render(r.Context(), w)
 		}
+		if project.StartDate != &startDate {
+			logDetails["old_start_date"] = project.StartDate
+			logDetails["new_start_date"] = &startDate
+		}
 		project.StartDate = &startDate
 
 		dueDate, err := time.Parse("2006-01-02", r.FormValue("due_date"))
@@ -311,21 +340,53 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "Invalid due date format!", "", nil).Render(r.Context(), w)
 		}
+		if project.DueDate != &dueDate {
+			logDetails["old_due_date"] = project.DueDate
+			logDetails["new_due_date"] = &dueDate
+		}
 		project.StartDate = &dueDate
 
 		progress, err := strconv.Atoi(r.FormValue("progress"))
 		if err == nil {
+			if project.Progress != progress {
+				logDetails["old_progress"] = project.Progress
+				logDetails["new_progress"] = progress
+			}
 			project.Progress = progress
 		}
 
 		isArchivedStr := r.FormValue("is_archived")
+		if (!project.IsArchived && isArchivedStr == "true") || (project.IsArchived && isArchivedStr != "true") {
+			logDetails["old_is_archived"] = project.Progress
+			logDetails["new_is_archived"] = isArchivedStr == "true" || false
+		}
 		project.IsArchived = isArchivedStr == "true" || false
+
 		project.UpdatedAt = &t
 		project.UpdatedBy = user.ID
 
 		if err := db.PgSql.Save(&project).Error; err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return ui.Toast("project-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+		}
+
+		services.AddLog(user.ID, "updated_project", "Project", project.ID, logDetails)
+
+		membersPayload := []models.ProjectMember{}
+		if err := json.Unmarshal([]byte(r.FormValue("members")), &membersPayload); err == nil {
+			members := ""
+			for i, m := range membersPayload {
+				if i != 0 {
+					members += ","
+				}
+				members += "'" + strings.Trim(m.UserID, " ") + "'"
+				membersPayload[i].ProjectID = project.ID
+				membersPayload[i].UpdatedAt = &t
+				membersPayload[i].UpdatedBy = user.ID
+			}
+			rawSql := fmt.Sprintf("DELETE FROM project_members WHERE project_id='%s' AND user_id NOT IN (%s) ", project.ID, members)
+			db.PgSql.Raw(rawSql)
+			db.PgSql.Save(&membersPayload)
 		}
 
 		return ui.Toast("project-success", "success", "", "Project updated successfully.", "", nil).Render(r.Context(), w)

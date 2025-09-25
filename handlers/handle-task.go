@@ -36,11 +36,28 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 				return db.Preload("User")
 			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("User")
-			}).Preload("Project").First(&task).Error; err != nil {
+			}).Preload("Project", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Members")
+			}).First(&task).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
 			}
-
+			authorized := false
+			for _, member := range task.Project.Members {
+				if member.UserID == user.ID {
+					authorized = true
+					break
+				}
+			}
+			for _, assignee := range task.Assignees {
+				if assignee.UserID == user.ID {
+					authorized = true
+					break
+				}
+			}
+			if !authorized {
+				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
+			}
 			return layouts.Layout("Task", user, features.Task(task, user)).Render(r.Context(), w)
 		}
 		var tasks []models.Task
@@ -60,11 +77,28 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 				return db.Preload("User")
 			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("User")
-			}).Preload("Project").First(&task).Error; err != nil {
+			}).Preload("Project", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("Members")
+			}).First(&task).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return pages.NotFound().Render(r.Context(), w)
 			}
-
+			authorized := false
+			for _, member := range task.Project.Members {
+				if member.UserID == user.ID {
+					authorized = true
+					break
+				}
+			}
+			for _, assignee := range task.Assignees {
+				if assignee.UserID == user.ID {
+					authorized = true
+					break
+				}
+			}
+			if !authorized {
+				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
+			}
 			return features.Task(task, user).Render(r.Context(), w)
 		}
 
@@ -207,6 +241,10 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("task-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
+		services.AddLog(user.ID, "created_task", "Task", task.ID, map[string]any{
+			"description": "created task " + task.Title,
+		})
+
 		assignees := []models.TaskAssignee{}
 		assigneesPayload := []string{}
 		if err := json.Unmarshal([]byte(r.FormValue("assignees")), &assigneesPayload); err == nil {
@@ -247,7 +285,7 @@ func HandleTaskWatcher(w http.ResponseWriter, r *http.Request) error {
 			w.WriteHeader(http.StatusOK)
 			return features.TaskWatchers([]models.TaskWatchers{}).Render(r.Context(), w)
 		}
-		println(len(watchers))
+
 		w.WriteHeader(http.StatusOK)
 		return features.TaskWatchers(watchers).Render(r.Context(), w)
 	case http.MethodPost:
@@ -286,6 +324,11 @@ func HandleTaskWatcher(w http.ResponseWriter, r *http.Request) error {
 				w.WriteHeader(http.StatusInternalServerError)
 				return ui.Toast("task-watcher-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 			}
+
+			services.AddLog(user.ID, "watched_task", "Task", task.ID, map[string]any{
+				"description": "started watching task",
+			})
+
 			return ui.Toast("task-watcher-success", "success", "", "Watchers added successfully.", "", nil).Render(r.Context(), w)
 		}
 		if strings.Trim(status, " ") == "false" {
@@ -297,11 +340,18 @@ func HandleTaskWatcher(w http.ResponseWriter, r *http.Request) error {
 				w.WriteHeader(http.StatusInternalServerError)
 				return ui.Toast("task-watcher-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 			}
+
+			services.AddLog(user.ID, "unwatched_task", "Task", task.ID, map[string]any{
+				"description": "stopped watching task",
+			})
+
 			return ui.Toast("task-watcher-success", "success", "", "Watchers removed successfully.", "", nil).Render(r.Context(), w)
 		}
 		w.WriteHeader(http.StatusBadRequest)
 		return ui.Toast("task-watcher-error", "warning", "", "Invalid status value!", "", nil).Render(r.Context(), w)
 
+	case http.MethodPut:
+		return nil
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
