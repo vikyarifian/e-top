@@ -135,7 +135,7 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 					ui.Button("back", "outline", "", "", "Back to Sign In", "", templ.Attributes{"onclick": "window.location.href='/sign-in'"})))).Render(r.Context(), w)
 		}
 		services.AddLog(user.ID, "registered_user", "User", user.ID, map[string]any{
-			"description": strings.Trim(user.FullName, " ") + " registered at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+			"description": strings.Trim(user.FullName, " ") + " registered",
 		})
 	} else {
 		t := time.Now()
@@ -145,7 +145,7 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 
 		db.PgSql.Save(&user)
 		services.AddLog(user.ID, "verified_user", "User", user.ID, map[string]any{
-			"description": strings.Trim(user.FullName, " ") + " verified their email at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+			"description": strings.Trim(user.FullName, " ") + " verified their email",
 		})
 	}
 
@@ -170,7 +170,7 @@ func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 		})
 
 		services.AddLog(user.ID, "login_user", "User", user.ID, map[string]any{
-			"description": strings.Trim(user.FullName, " ") + " login at " + time.Now().Format("Mon, 02 Jan 2006 15:04:05"),
+			"description": strings.Trim(user.FullName, " ") + " login",
 		})
 
 		http.Redirect(w, r, "/", http.StatusFound)

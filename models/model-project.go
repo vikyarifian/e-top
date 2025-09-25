@@ -36,8 +36,8 @@ type ProjectStatus struct {
 }
 
 type ProjectMember struct {
-	No        int        `gorm:"column:no;primaryKey" json:"-" form:"-"`
-	ID        string     `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
+	No int `gorm:"column:no;primaryKey" json:"-" form:"-"`
+	// ID        string     `gorm:"column:id;unique" json:"id,omitempty" form:"id"`
 	ProjectID string     `gorm:"column:project_id;not null;index" json:"project_id" form:"project_id"`
 	UserID    string     `gorm:"column:user_id;not null;index" json:"user_id" form:"user_id"`
 	User      User       `gorm:"foreignKey:UserID;references:ID" json:"user"`

@@ -10,6 +10,7 @@ import (
 	"etop/auth"
 	"etop/db"
 	"etop/models"
+	"etop/services"
 	"etop/templates/components/ui"
 	"etop/templates/features"
 	"etop/templates/layouts"
@@ -39,6 +40,35 @@ func HandleCreateWorkspaceForm(w http.ResponseWriter, r *http.Request) error {
 	return features.CreateWorkspaceForm().Render(r.Context(), w)
 }
 
+func HandleEditWorkspaceForm(w http.ResponseWriter, r *http.Request) error {
+	workspaceID := r.URL.Query().Get("workspace_id")
+	workspace := models.Workspace{}
+	if err := db.PgSql.Where("id=?", workspaceID).Preload("Members", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("User")
+	}).First(&workspace).Error; err != nil {
+		return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
+	}
+	return features.EditWorkspaceForm(workspace).Render(r.Context(), w)
+}
+
+func HandleInviteWorkspaceForm(w http.ResponseWriter, r *http.Request) error {
+	workspaceID := r.URL.Query().Get("workspace_id")
+	workspace := models.Workspace{}
+	users := []models.User{}
+	invitedUsers := []models.InviteWorkspaceMember{}
+	if err := db.PgSql.Where("id=?", workspaceID).Preload("Members", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("User")
+	}).First(&workspace).Error; err != nil {
+		return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
+	}
+	db.PgSql.Where("id NOT IN (SELECT user_id FROM workspace_members WHERE workspace_id=?) AND id NOT IN (SELECT user_id FROM invite_workspace_members WHERE workspace_id=?)", workspaceID, workspaceID).
+		Find(&users)
+	db.PgSql.Where("user_id NOT IN (SELECT user_id FROM workspace_members WHERE workspace_id=?) AND status='INVITED' AND workspace_id=?", workspaceID, workspaceID).
+		Preload("User").Find(&invitedUsers)
+
+	return features.InviteWorkspaceForm(workspace, users, invitedUsers).Render(r.Context(), w)
+}
+
 func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 	user, _ := auth.GetAuth(w, r)
 	switch r.Method {
@@ -50,7 +80,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 				Preload("Members", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
 				}).Preload("Projects", func(db *gorm.DB) *gorm.DB {
-				return db.Preload("Members")
+				return db.Preload("Members").Preload("Tasks")
 			}).Order("no").First(&ws).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
@@ -60,6 +90,14 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 				if member.UserID == user.ID {
 					authorized = true
 					break
+				}
+			}
+			for _, project := range ws.Projects {
+				for _, member := range project.Members {
+					if member.UserID == user.ID {
+						authorized = true
+						break
+					}
 				}
 			}
 			if !authorized {
@@ -82,7 +120,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 				Preload("Members", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
 				}).Preload("Projects", func(db *gorm.DB) *gorm.DB {
-				return db.Preload("Members")
+				return db.Preload("Members").Preload("Tasks")
 			}).Order("no").First(&ws).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				// return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
@@ -93,6 +131,14 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 				if member.UserID == user.ID {
 					authorized = true
 					break
+				}
+			}
+			for _, project := range ws.Projects {
+				for _, member := range project.Members {
+					if member.UserID == user.ID {
+						authorized = true
+						break
+					}
 				}
 			}
 			if !authorized {
@@ -144,11 +190,15 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 
+		services.AddLog(user.ID, "created_workspace", "Workspace", workspace.ID, map[string]any{
+			"description": "created workspace " + workspace.Name,
+		})
+
 		members := []models.WorkspaceMember{}
 		member := models.WorkspaceMember{}
 		no = 0
 		db.PgSql.Table("workspace_members").Select("max(no)").Row().Scan(&no)
-		member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
+		// member.ID = utils.GenerateHash(strconv.Itoa(no + 1))
 		member.WorkspaceID = workspace.ID
 		member.UserID = user.ID
 		member.Role = "OWNER"
@@ -161,9 +211,9 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 
 		var membersPayload []string
 		if err := json.Unmarshal([]byte(r.FormValue("members")), &membersPayload); err == nil {
-			for i, m := range membersPayload {
+			for _, m := range membersPayload {
 				members = append(members, models.WorkspaceMember{
-					ID:          utils.GenerateHash(strconv.Itoa(no + 2 + i)),
+					// ID:          utils.GenerateHash(strconv.Itoa(no + 2 + i)),
 					WorkspaceID: workspace.ID,
 					Role:        "MEMBER",
 					UserID:      m,
@@ -181,7 +231,7 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 		var workspace models.Workspace
 		r.ParseForm()
 
-		workspace.ID = r.FormValue("id")
+		workspace.ID = r.FormValue("workspace_id")
 
 		user, _ := auth.GetAuth(w, r)
 		t := time.Now()
@@ -191,13 +241,36 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 		}
 
 		var member models.WorkspaceMember
-		if err := db.PgSql.Where("id=? AND user_id=?", workspace.ID, user.ID).First(&member).Error; err != nil {
+		if err := db.PgSql.Where("workspace_id=? AND user_id=?", workspace.ID, user.ID).First(&member).Error; err != nil {
+			println(err.Error())
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("workspace-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
 		}
 
+		updated := false
+		logDetails := map[string]any{
+			"description": "updated workspace",
+		}
+
+		if strings.Trim(workspace.Name, " ") != strings.Trim(r.FormValue("name"), " ") {
+			logDetails["old_name"] = workspace.Name
+			logDetails["new_name"] = r.FormValue("name")
+			updated = true
+		}
 		workspace.Name = r.FormValue("name")
+
+		if strings.Trim(workspace.Description, " ") != strings.Trim(r.FormValue("description"), " ") {
+			logDetails["old_description"] = workspace.Description
+			logDetails["new_description"] = r.FormValue("description")
+			updated = true
+		}
 		workspace.Description = r.FormValue("description")
+
+		if strings.Trim(workspace.Color, " ") != strings.Trim(r.FormValue("color"), " ") {
+			logDetails["old_color"] = workspace.Color
+			logDetails["new_color"] = r.FormValue("color")
+			updated = true
+		}
 		workspace.Color = r.FormValue("color")
 
 		if len(strings.Trim(workspace.Name, " ")) < 1 {
@@ -210,7 +283,7 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("workspace-error", "warning", "", "Color is required!", "", nil).Render(r.Context(), w)
 		}
 
-		if strings.ToUpper(strings.Trim(member.Role, " ")) != "ADMIN" {
+		if strings.ToUpper(strings.Trim(member.Role, " ")) != "ADMIN" && strings.ToUpper(strings.Trim(member.Role, " ")) != "OWNER" {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("workspace-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
 		}
@@ -222,7 +295,91 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 			w.WriteHeader(http.StatusInternalServerError)
 			return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
+
+		if updated {
+			services.AddLog(user.ID, "updated_workspace", "Workspace", workspace.ID, logDetails)
+		}
+
+		// membersPayload := []models.WorkspaceMember{}
+		// if err := json.Unmarshal([]byte(r.FormValue("members")), &membersPayload); err == nil {
+		// 	members := ""
+		// 	for i, m := range membersPayload {
+		// 		if i != 0 {
+		// 			members += ","
+		// 		}
+		// 		members += "'" + strings.Trim(m.UserID, " ") + "'"
+		// 		membersPayload[i].WorkspaceID = workspace.ID
+		// 		membersPayload[i].UpdatedAt = &t
+		// 		membersPayload[i].UpdatedBy = user.ID
+		// 	}
+		// 	rawSql := fmt.Sprintf("DELETE FROM workspace_members WHERE workspace_id='%s' AND user_id NOT IN (%s) ", workspace.ID, members)
+		// 	db.PgSql.Raw(rawSql)
+		// 	db.PgSql.Save(&membersPayload)
+		// }
+
 		return ui.Toast("workspace-success", "success", "", "Workspace updated successfully.", "", nil).Render(r.Context(), w)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return nil
+	}
+}
+
+func HandleInviteWorkspace(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case http.MethodPost:
+		var workspace models.Workspace
+		r.ParseForm()
+
+		workspace.ID = r.FormValue("workspace_id")
+
+		user, _ := auth.GetAuth(w, r)
+		t := time.Now()
+		if err := db.PgSql.Where("id=?", workspace.ID).First(&workspace).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("workspace-error", "warning", "", "Workspace is not found!", "", nil).Render(r.Context(), w)
+		}
+
+		var member models.WorkspaceMember
+		if err := db.PgSql.Where("workspace_id=? AND user_id=?", workspace.ID, user.ID).First(&member).Error; err != nil {
+			println(err.Error())
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("workspace-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
+		}
+
+		updated := false
+		logDetails := map[string]any{
+			"description": "invited workspace",
+		}
+
+		newInviteMembers := []models.InviteWorkspaceMember{}
+		var inviteMembersPayload []string
+		newMembers := []string{}
+		if err := json.Unmarshal([]byte(r.FormValue("invite_members")), &inviteMembersPayload); err == nil {
+			for _, m := range inviteMembersPayload {
+				newInviteMembers = append(newInviteMembers, models.InviteWorkspaceMember{
+					WorkspaceID: workspace.ID,
+					Role:        "MEMBER",
+					UserID:      m,
+					Status:      "INVITED",
+					CreatedAt:   &t,
+					CreatedBy:   user.ID,
+					UpdatedAt:   &t,
+					UpdatedBy:   user.ID,
+				})
+				newMembers = append(newMembers, m)
+				updated = true
+			}
+			logDetails["new_members"] = newMembers
+		}
+
+		db.PgSql.Create(&newInviteMembers)
+
+		if updated && len(newMembers) > 0 {
+			services.AddLog(user.ID, "invited_workspace", "Workspace", workspace.ID, logDetails)
+		}
+
+		return ui.Toast("workspace-success", "success", "", "Invite Workspace's members successfully.", "", nil).Render(r.Context(), w)
+
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil

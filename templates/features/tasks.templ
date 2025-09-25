@@ -163,23 +163,12 @@ templ Task(task models.Task, user dto.UserAuth) {
             </div>
             <div class="lg:w-4/12">
                 <div id="task-watchers">@TaskWatchers(task.Watchers)</div>
-                <div class="bg-card rounded-lg p-4 shadow-sm mb-4">
-                    <h3 class="text-lg font-medium mb-4">Activity</h3>
-                    <div class=" mt-2 mb-4">
-                        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
-                    </div>
-                    <div class="space-y-2 justify-between">
-                        if len(task.Watchers) > 0 {
-                            for _,watcher := range task.Watchers {
-                                @ui.Avatar(watcher.User.FullName, watcher.User.Color, "xs", "h-6 w-6 border-2 border-background overflow-hidden", nil) {
-                                    <span class="flex text-xs text-muted-foreground ml-2">{watcher.User.FullName}</span>
-                                }
-                            }
-                        } else {
-                            <p class="text-xs text-muted-foreground">No watchers</p>
-                        }
-                    </div>
-                </div>
+                <div id="task-activities"
+                    hx-get={"/task-activities?task_id="+task.ID}
+                    hx-swap="true"
+                    hx-trigger="load"
+                    hx-target="#task-activities" 
+                />
             </div>
         </div>
     </div>

@@ -372,63 +372,20 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><div class=\"bg-card rounded-lg p-4 shadow-sm mb-4\"><h3 class=\"text-lg font-medium mb-4\">Activity</h3><div class=\" mt-2 mb-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><div id=\"task-activities\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal").Render(ctx, templ_7745c5c3_Buffer)
+		var templ_7745c5c3_Var16 string
+		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("/task-activities?task_id=" + task.ID)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 167, Col: 63}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</div><div class=\"space-y-2 justify-between\">")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if len(task.Watchers) > 0 {
-			for _, watcher := range task.Watchers {
-				templ_7745c5c3_Var16 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-					templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-					templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-					if !templ_7745c5c3_IsBuffer {
-						defer func() {
-							templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-							if templ_7745c5c3_Err == nil {
-								templ_7745c5c3_Err = templ_7745c5c3_BufErr
-							}
-						}()
-					}
-					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<span class=\"flex text-xs text-muted-foreground ml-2\">")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					var templ_7745c5c3_Var17 string
-					templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(watcher.User.FullName)
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 175, Col: 112}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</span>")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					return nil
-				})
-				templ_7745c5c3_Err = ui.Avatar(watcher.User.FullName, watcher.User.Color, "xs", "h-6 w-6 border-2 border-background overflow-hidden", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var16), templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<p class=\"text-xs text-muted-foreground\">No watchers</p>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</div></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "\" hx-swap=\"true\" hx-trigger=\"load\" hx-target=\"#task-activities\"></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -452,12 +409,12 @@ func TaskWatchers(watchers []models.TaskWatchers) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var18 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var18 == nil {
-			templ_7745c5c3_Var18 = templ.NopComponent
+		templ_7745c5c3_Var17 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var17 == nil {
+			templ_7745c5c3_Var17 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<div class=\"bg-card rounded-lg p-4 shadow-sm mb-4\"><h3 class=\"text-lg font-medium mb-4\">Watchers</h3><div class=\" mt-2 mb-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "<div class=\"bg-card rounded-lg p-4 shadow-sm mb-4\"><h3 class=\"text-lg font-medium mb-4\">Watchers</h3><div class=\" mt-2 mb-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -465,13 +422,13 @@ func TaskWatchers(watchers []models.TaskWatchers) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div><div class=\"space-y-2 justify-between\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "</div><div class=\"space-y-2 justify-between\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if len(watchers) > 0 {
 			for _, watcher := range watchers {
-				templ_7745c5c3_Var19 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_Var18 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 					templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 					templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 					if !templ_7745c5c3_IsBuffer {
@@ -483,37 +440,37 @@ func TaskWatchers(watchers []models.TaskWatchers) templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<span class=\"flex text-xs text-muted-foreground ml-2\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "<span class=\"flex text-xs text-muted-foreground ml-2\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var20 string
-					templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(watcher.User.FullName)
+					var templ_7745c5c3_Var19 string
+					templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(watcher.User.FullName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 198, Col: 100}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 187, Col: 100}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</span>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</span>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					return nil
 				})
-				templ_7745c5c3_Err = ui.Avatar(watcher.User.FullName, watcher.User.Color, "xs", "h-6 w-6 border-2 border-background overflow-hidden", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var19), templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.Avatar(watcher.User.FullName, watcher.User.Color, "xs", "h-6 w-6 border-2 border-background overflow-hidden", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var18), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<p class=\"text-sm text-muted-foreground\">No watchers</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "<p class=\"text-sm text-muted-foreground\">No watchers</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -537,25 +494,25 @@ func Tasks(tasks []models.Task) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var21 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var21 == nil {
-			templ_7745c5c3_Var21 = templ.NopComponent
+		templ_7745c5c3_Var20 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var20 == nil {
+			templ_7745c5c3_Var20 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<div>My tasks: ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "<div>My tasks: ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var22 string
-		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(len(tasks))
+		var templ_7745c5c3_Var21 string
+		templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(len(tasks))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 209, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 198, Col: 30}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -579,12 +536,12 @@ func CreateTask(projectID string, typ string, class string, attrs templ.Attribut
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var23 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var23 == nil {
-			templ_7745c5c3_Var23 = templ.NopComponent
+		templ_7745c5c3_Var22 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var22 == nil {
+			templ_7745c5c3_Var22 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var24 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var23 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -596,26 +553,26 @@ func CreateTask(projectID string, typ string, class string, attrs templ.Attribut
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<div id=\"create-task-form\" x-init=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "<div id=\"create-task-form\" x-init=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var25 string
-			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("project_id = '%s'; typ = '%s';", projectID, typ))
+			var templ_7745c5c3_Var24 string
+			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("project_id = '%s'; typ = '%s';", projectID, typ))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 215, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 204, Col: 80}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "\" x-data=\"{\r\n                        project_id: &#39;&#39;,\r\n                        typ: &#39;&#39;,\r\n                        init() {\r\n                            document.body.addEventListener(&#39;modal:opened&#39;, (evt) =&gt; {\r\n                                if (evt.detail.id === &#39;create-task-modal&#39;) {\r\n                                    htmx.ajax(&#39;GET&#39;, &#39;/create-task-form?project_id=&#39;+this.project_id+&#39;&amp;type=&#39;+this.typ, {target: &#39;#create-task-form&#39;, swap: &#39;innerHtml&#39;})\r\n                                }\r\n                            });\r\n                            document.body.addEventListener(&#39;modal:closed&#39;, (evt) =&gt; {\r\n                                if (evt.detail.id === &#39;create-task-modal&#39;) {\r\n                                    document.getElementById(&#39;create-task-form&#39;).innerHTML = &#39;&#39;;\r\n                                }\r\n                            });\r\n                        }\r\n                    }\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 34, "\" x-data=\"{\r\n                        project_id: &#39;&#39;,\r\n                        typ: &#39;&#39;,\r\n                        init() {\r\n                            document.body.addEventListener(&#39;modal:opened&#39;, (evt) =&gt; {\r\n                                if (evt.detail.id === &#39;create-task-modal&#39;) {\r\n                                    htmx.ajax(&#39;GET&#39;, &#39;/create-task-form?project_id=&#39;+this.project_id+&#39;&amp;type=&#39;+this.typ, {target: &#39;#create-task-form&#39;, swap: &#39;innerHtml&#39;})\r\n                                }\r\n                            });\r\n                            document.body.addEventListener(&#39;modal:closed&#39;, (evt) =&gt; {\r\n                                if (evt.detail.id === &#39;create-task-modal&#39;) {\r\n                                    document.getElementById(&#39;create-task-form&#39;).innerHTML = &#39;&#39;;\r\n                                }\r\n                            });\r\n                        }\r\n                    }\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = components.ResponsiveModal("create-task-modal", "Create Task", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var24), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.ResponsiveModal("create-task-modal", "Create Task", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var23), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -639,29 +596,29 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var26 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var26 == nil {
-			templ_7745c5c3_Var26 = templ.NopComponent
+		templ_7745c5c3_Var25 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var25 == nil {
+			templ_7745c5c3_Var25 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, "<div x-data=\"{\r\n                    today: new Date(),\r\n                    task_statuses: [],\r\n                    task_priorities: [],\r\n                    project_id: &#39;&#39;,\r\n                    typ: &#39;&#39;,\r\n                    title: &#39;&#39;,\r\n                    description: &#39;&#39;,\r\n                    status: &#39;TO_DO&#39;,\r\n                    priority: &#39;&#39;,\r\n                    assignees: [],\r\n                    titleError: &#39;&#39;,\r\n                    descriptionError: &#39;&#39;,\r\n                    statusError: &#39;&#39;,\r\n                    priorityError: &#39;&#39;,\r\n                    validateTitle() {\r\n                        this.titleError = (this.title.trim() === &#39;&#39;)\r\n                            ? &#39;Title is required&#39;\r\n                            : &#39;&#39;;\r\n                        this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);\r\n                    },\r\n                    validateStatus() {\r\n                        this.statusError = (this.status.trim() === &#39;&#39;)\r\n                            ? &#39;Status is required&#39;\r\n                            : &#39;&#39;;\r\n                    },\r\n                    validatePriority() {\r\n                        this.priorityError = (this.priority.trim() === &#39;&#39;)\r\n                            ? &#39;Priority is required&#39;\r\n                            : &#39;&#39;;\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateTitle();\r\n                        this.validateStatus();\r\n                        \r\n                        if (this.titleError || this.statusError) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener(&#39;htmx:afterRequest&#39;, (evt) =&gt; {\r\n                            if (evt.detail.successful &amp;&amp; evt.detail.elt.id === &#39;create-task-form&#39;) {\r\n                                $store.modal.close(&#39;create-task-modal&#39;);\r\n                                this.title = &#39;&#39;;\r\n                                this.description = &#39;&#39;;\r\n                                this.status = &#39;&#39;;\r\n                                this.priority = &#39;&#39;;\r\n                                this.assignees = [];\r\n                                this.titleError = &#39;&#39;;\r\n                                this.descriptionError = &#39;&#39;;\r\n                                this.statusError = &#39;&#39;;\r\n                                this.priorityError = &#39;&#39;;\r\n                                const params = new URLSearchParams(window.location.search);\r\n                                if (&#39;/projects?id=&#39;+params.get(&#39;id&#39;) === &#39;/projects?id=&#39;+this.project_id) {\r\n                                    htmx.ajax(&#39;POST&#39;, &#39;/projects?id=&#39;+params.get(&#39;id&#39;), { \r\n                                        target: &#39;#content&#39;, \r\n                                        swap: &#39;innerHTML&#39; \r\n                                    })\r\n                                }\r\n                            }\r\n                        })\r\n                    }\r\n                }\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "<div x-data=\"{\r\n                    today: new Date(),\r\n                    task_statuses: [],\r\n                    task_priorities: [],\r\n                    project_id: &#39;&#39;,\r\n                    typ: &#39;&#39;,\r\n                    title: &#39;&#39;,\r\n                    description: &#39;&#39;,\r\n                    status: &#39;TO_DO&#39;,\r\n                    priority: &#39;&#39;,\r\n                    assignees: [],\r\n                    titleError: &#39;&#39;,\r\n                    descriptionError: &#39;&#39;,\r\n                    statusError: &#39;&#39;,\r\n                    priorityError: &#39;&#39;,\r\n                    validateTitle() {\r\n                        this.titleError = (this.title.trim() === &#39;&#39;)\r\n                            ? &#39;Title is required&#39;\r\n                            : &#39;&#39;;\r\n                        this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);\r\n                    },\r\n                    validateStatus() {\r\n                        this.statusError = (this.status.trim() === &#39;&#39;)\r\n                            ? &#39;Status is required&#39;\r\n                            : &#39;&#39;;\r\n                    },\r\n                    validatePriority() {\r\n                        this.priorityError = (this.priority.trim() === &#39;&#39;)\r\n                            ? &#39;Priority is required&#39;\r\n                            : &#39;&#39;;\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateTitle();\r\n                        this.validateStatus();\r\n                        \r\n                        if (this.titleError || this.statusError) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener(&#39;htmx:afterRequest&#39;, (evt) =&gt; {\r\n                            if (evt.detail.successful &amp;&amp; evt.detail.elt.id === &#39;create-task-form&#39;) {\r\n                                $store.modal.close(&#39;create-task-modal&#39;);\r\n                                this.title = &#39;&#39;;\r\n                                this.description = &#39;&#39;;\r\n                                this.status = &#39;&#39;;\r\n                                this.priority = &#39;&#39;;\r\n                                this.assignees = [];\r\n                                this.titleError = &#39;&#39;;\r\n                                this.descriptionError = &#39;&#39;;\r\n                                this.statusError = &#39;&#39;;\r\n                                this.priorityError = &#39;&#39;;\r\n                                const params = new URLSearchParams(window.location.search);\r\n                                if (&#39;/projects?id=&#39;+params.get(&#39;id&#39;) === &#39;/projects?id=&#39;+this.project_id) {\r\n                                    htmx.ajax(&#39;POST&#39;, &#39;/projects?id=&#39;+params.get(&#39;id&#39;), { \r\n                                        target: &#39;#content&#39;, \r\n                                        swap: &#39;innerHTML&#39; \r\n                                    })\r\n                                }\r\n                            }\r\n                        })\r\n                    }\r\n                }\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var27 string
-		templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("project_id= '%s'; typ= '%s'; task_statuses= %s; status= task_statuses[0].status; task_priorities= %s; priority= task_priorities.filter(c=>c.priority.toUpperCase()==='MEDIUM')[0].priority;", projectID, typ, string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities()))))
+		var templ_7745c5c3_Var26 string
+		templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("project_id= '%s'; typ= '%s'; task_statuses= %s; status= task_statuses[0].status; task_priorities= %s; priority= task_priorities.filter(c=>c.priority.toUpperCase()==='MEDIUM')[0].priority;", projectID, typ, string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities()))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 304, Col: 340}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 293, Col: 340}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var28 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var27 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -673,11 +630,11 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, "<input id=\"project_id\" x-show=\"false\" type=\"hidden\" name=\"project_id\" x-model=\"project_id\" :value=\"project_id\"> <input id=\"type\" x-show=\"false\" type=\"hidden\" name=\"type\" x-model=\"typ\" :value=\"typ\"><div class=\"grid grid-cols-1 sm:grid-cols-2 gap-6\"><div class=\"w-full space-y-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "<input id=\"project_id\" x-show=\"false\" type=\"hidden\" name=\"project_id\" x-model=\"project_id\" :value=\"project_id\"> <input id=\"type\" x-show=\"false\" type=\"hidden\" name=\"type\" x-model=\"typ\" :value=\"typ\"><div class=\"grid grid-cols-1 sm:grid-cols-2 gap-6\"><div class=\"w-full space-y-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var29 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var28 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -693,7 +650,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -705,13 +662,59 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 39, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
 					"x-show": "titleError != ''",
 					"x-text": "titleError",
+				},
+				).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var28), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var29 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = ui.FormLabel("description", "Description", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormControl("description", "description", "textarea", "Task Description", "", "", templ.Attributes{
+					"autocomplete": "description",
+					"x-model":      "description",
+					"@blur":        "description=description.charAt(0).toUpperCase() + description.slice(1)",
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 41, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
+					"x-show": "descriptionError != ''",
+					"x-text": "descriptionError",
 				},
 				).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
@@ -735,37 +738,33 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("description", "Description", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("due_date", "Due Date", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 42, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = ui.FormControl("description", "description", "textarea", "Task Description", "", "", templ.Attributes{
-					"autocomplete": "description",
-					"x-model":      "description",
-					"@blur":        "description=description.charAt(0).toUpperCase() + description.slice(1)",
-				}).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormControl("due_date", "due_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "descriptionError != ''",
-					"x-text": "descriptionError",
-				},
-				).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return nil
 			})
 			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var30), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "</div><div class=\"w-full space-y-4\"><div class=\"grid grid-cols-1 sm:grid-cols-2 pr-4\"><div class=\"w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -781,57 +780,15 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("due_date", "Due Date", "", nil).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormControl("due_date", "due_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				return nil
-			})
-			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var31), templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</div><div class=\"w-full space-y-4\"><div class=\"grid grid-cols-1 sm:grid-cols-2 pr-4\"><div class=\"w-full\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Var32 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-				if !templ_7745c5c3_IsBuffer {
-					defer func() {
-						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err == nil {
-							templ_7745c5c3_Err = templ_7745c5c3_BufErr
-						}
-					}()
-				}
-				ctx = templ.InitializeContext(ctx)
 				templ_7745c5c3_Err = ui.FormLabel("status", "Status", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Var33 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_Var32 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 					templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 					templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 					if !templ_7745c5c3_IsBuffer {
@@ -843,7 +800,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<template x-for=\"(status, index) in (task_statuses.filter(c=&gt;c.form==1))\" :key=\"index\"><option name=\"status\" x-text=\"status.label\" :value=\"status.status\" :selected=\"status.status===&#39;TO_DO&#39;\"></option></template>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 46, "<template x-for=\"(status, index) in (task_statuses.filter(c=&gt;c.form==1))\" :key=\"index\"><option name=\"status\" x-text=\"status.label\" :value=\"status.status\" :selected=\"status.status===&#39;TO_DO&#39;\"></option></template>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -852,11 +809,11 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				templ_7745c5c3_Err = ui.FormControl("status", "status", "select", "Task Status", "TO_DO", "", templ.Attributes{
 					"x-model": "status",
 					"@blur":   "validateStatus",
-				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var33), templ_7745c5c3_Buffer)
+				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var32), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 47, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -870,15 +827,15 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("w-44 mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var32), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("w-44 mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var31), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div><div class=\"w-full\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "</div><div class=\"w-full\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var34 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var33 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -894,11 +851,11 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Var35 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_Var34 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 					templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 					templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 					if !templ_7745c5c3_IsBuffer {
@@ -910,7 +867,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 						}()
 					}
 					ctx = templ.InitializeContext(ctx)
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, "<template x-for=\"(priority, index) in task_priorities\" :key=\"index\"><option name=\"priority\" x-text=\"priority.label\" :value=\"priority.priority\" :selected=\"priority.priority===&#39;MEDIUM&#39;\"></option></template>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<template x-for=\"(priority, index) in task_priorities\" :key=\"index\"><option name=\"priority\" x-text=\"priority.label\" :value=\"priority.priority\" :selected=\"priority.priority===&#39;MEDIUM&#39;\"></option></template>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -919,11 +876,11 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				templ_7745c5c3_Err = ui.FormControl("priority", "priority", "select", "Task Priority", "MEDIUM", "", templ.Attributes{
 					"x-model": "priority",
 					"@blur":   "validatePriority",
-				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var35), templ_7745c5c3_Buffer)
+				}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var34), templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -938,15 +895,15 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("w-44 mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var34), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("w-44 mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var33), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, "</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var36 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var35 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -962,7 +919,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -977,7 +934,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 54, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -987,11 +944,11 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var36), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var35), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 59, "</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -999,7 +956,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 60, " <div class=\"flex justify-end items-end\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 56, " <div class=\"flex justify-end items-end\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1007,7 +964,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 61, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 57, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1020,11 +977,11 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 			"hx-disabled-elt": "#create-button,#title,#description",
 			"x-ref":           "form",
 			"@submit.prevent": "validateForm($event)",
-		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var28), templ_7745c5c3_Buffer)
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var27), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 62, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

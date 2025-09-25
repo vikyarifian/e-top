@@ -37,6 +37,69 @@ func TimeDiff(start time.Time, to time.Time) time.Duration {
 	return diff
 }
 
+// TimeAgo menerima t (waktu log) dan mengembalikan string relatif dibanding sekarang
+func TimeAgo(tLog time.Time) string {
+	loc, _ := time.LoadLocation("Asia/Jakarta")
+
+	layout := "2006-01-02 15:04:05"
+	now := time.Now().Local()
+	s, _ := time.ParseInLocation(layout, tLog.Format(layout), loc)
+	t, _ := time.ParseInLocation(layout, now.Format(layout), loc)
+
+	// Konversi keduanya ke lokasi yg sama
+	s2 := s.In(loc)
+	t2 := t.In(loc)
+
+	// Hitung selisih
+	diff := t2.Sub(s2)
+
+	// now := time.Now().Local()
+	// diff := now.Sub(t.Local())
+
+	seconds := int(diff.Seconds())
+	minutes := int(diff.Minutes())
+	hours := int(diff.Hours())
+	days := int(diff.Hours() / 24)
+	weeks := int(diff.Hours() / (24 * 7))
+	months := int(diff.Hours() / (24 * 30))
+	years := int(diff.Hours() / (24 * 365))
+
+	switch {
+	case seconds < 60:
+		return "less than a minute ago"
+	case minutes < 60:
+		if minutes == 1 {
+			return "1 minute ago"
+		}
+		return fmt.Sprintf("%d minutes ago", minutes)
+	case hours < 24:
+		if hours == 1 {
+			return "1 hour ago"
+		}
+		return fmt.Sprintf("%d hours ago", hours)
+	case days < 7:
+		if days == 1 {
+			return "yesterday"
+		}
+		return fmt.Sprintf("%d days ago", days)
+	case weeks < 5:
+		if weeks == 1 {
+			return "1 week ago"
+		}
+		return fmt.Sprintf("%d weeks ago", weeks)
+	case months < 12:
+		if months == 1 {
+			return "1 month ago"
+		}
+		return fmt.Sprintf("%d months ago", months)
+	default:
+		if years == 1 {
+			return "1 year ago"
+		}
+		return fmt.Sprintf("%d years ago", years)
+	}
+}
+
 func MustJSON(v any) []byte {
 	b, _ := json.Marshal(v)
 	return b

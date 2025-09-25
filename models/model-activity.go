@@ -1,20 +1,41 @@
 package models
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
 	"time"
 )
+
+type JSONB map[string]interface{}
+
+func (j *JSONB) Scan(value interface{}) error {
+	if value == nil {
+		*j = make(map[string]interface{})
+		return nil
+	}
+	b, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("type assertion to []byte failed")
+	}
+	return json.Unmarshal(b, &j)
+}
+
+func (j JSONB) Value() (driver.Value, error) {
+	return json.Marshal(j)
+}
 
 type Log struct {
 	ID     int    `gorm:"column:id;primaryKey;type:int;" json:"id"`
 	UserID string `gorm:"column:user_id;not null;type:uuid" json:"user_id"`
-	User   *User  `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE" json:"user,omitempty"`
+	User   User   `gorm:"foreignKey:UserID;references:ID"`
 
 	Action string `gorm:"column:action;type:varchar(50);not null;check:action IN ('created_task','updated_task','created_subtask','updated_subtask','completed_task','created_project','updated_project','completed_project','created_workspace','updated_workspace','added_comment','added_member','removed_member','joined_workspace','transferred_workspace_ownership','added_attachment')" json:"action"`
 
 	ResourceType string `gorm:"column:resource_type;type:varchar(50);not null;check:resource_type IN ('Task','Project','Workspace','Comment','User')" json:"resource_type"`
 	ResourceID   string `gorm:"column:resource_id;type:uuid;not null" json:"resource_id"`
 
-	Details map[string]any `gorm:"column:details;type:jsonb" json:"details,omitempty"`
+	Details JSONB `gorm:"column:details;type:jsonb" json:"details,omitempty"`
 
 	CreatedAt *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
 	CreatedBy string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
@@ -72,6 +93,8 @@ type Reaction struct {
 //     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
 //     action VARCHAR(128) NOT NULL CHECK (action IN (
+//         'created_dept',
+//         'updated_dept',
 //         'created_task',
 //         'updated_task',
 //         'created_subtask',
@@ -82,9 +105,12 @@ type Reaction struct {
 //         'completed_project',
 //         'created_workspace',
 //         'updated_workspace',
+//			'watched_task',
+//			'unwatched_task',
 //         'added_comment',
 //         'added_member',
 //         'removed_member',
+//		   'invited_workspace',
 //         'joined_workspace',
 //         'transferred_workspace_ownership',
 //         'added_attachment',
@@ -95,7 +121,7 @@ type Reaction struct {
 //			'verified_user'
 //     )),
 
-//     resource_type VARCHAR(128) NOT NULL CHECK (resource_type IN ('Task','Project','Workspace','Comment','User')),
+//     resource_type VARCHAR(128) NOT NULL CHECK (resource_type IN ('User','Dept','Workspace','Project','Task','Comment')),
 //     resource_id VARCHAR(255) NOT NULL,
 
 //     details JSONB, -- simpan info tambahan fleksibel
