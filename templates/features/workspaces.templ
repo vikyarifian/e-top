@@ -697,3 +697,58 @@ templ InviteWorkspaceForm(workspace models.Workspace, users []models.User, invit
         }
     </div>
 }
+
+templ JoinWorkspace(workspace models.Workspace) {
+    <div data-title="Workspace" class="space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="flex items-center justify-between space-y-0">
+                    <div class="p-1 mr-2">
+                        <div class={"w-7 h-7 p-2 rounded-md text-white flex items-center justify-center text-sm font-semibold " , workspace.Color}>
+                            {strings.ToUpper(workspace.Name[0:1])}
+                        </div>
+                    </div>
+                    <h2 class="text-3xl font-bold tracking-tight">{workspace.Name}</h2>
+                </div>
+                <p class="text-muted-foreground p-1">{workspace.Description}</p>
+            </div>
+            <div>
+                
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground mr-2">Members : </span>
+            <div class="flex">
+                for _,member := range workspace.Members {
+                    @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "w-[180px]", nil) {
+                        @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div class="col-span-full text-center py-12 2xl:py-24 bg-muted/40 rounded-lg gap-2">
+                <svg data-lucide="layout-grid" class="w-10 h-10 mx-auto text-muted-foreground" />
+                <h4 class="mt-2 text-sm">You've been invited to join the "{workspace.Name}" workspace.</h4>
+                <p class="mt-1 text-muted-foreground max-w-sm mx-auto text-xs">
+                    {workspace.Description}
+                </p>
+                <div class="mt-2 flex justify-center items-center gap-2">
+                    @ui.Button("join-workspace", "", "sm", "log-in", "Accept", "", templ.Attributes{
+                        "type": "button",
+                        "hx-post": fmt.Sprintf(`/join-workspace?workspace_id=%s&action=join`, workspace.ID),
+                        "hx-target": "#toaster",
+                        "hx-swap": "innerHTML",
+                    })
+                    @ui.Button("join-workpsace", "outline", "sm", "x-circle", "Decline", "", templ.Attributes{
+                        "type": "button",
+                        "hx-post": fmt.Sprintf(`/join-workspace?workspace_id=%s&action=decline`, workspace.ID),
+                        "hx-target": "#toaster",
+                        "hx-swap": "innerHTML",
+                    })
+                </div>
+            </div>
+        </div>
+    </div>
+}

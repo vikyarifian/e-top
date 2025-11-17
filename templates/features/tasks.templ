@@ -181,15 +181,24 @@ templ TaskWatchers(watchers []models.TaskWatchers) {
             @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
         </div>
         <div class="space-y-2 justify-between">
-            if len(watchers) > 0 {
-                for _,watcher := range watchers {
-                    @ui.Avatar(watcher.User.FullName, watcher.User.Color, "xs", "h-6 w-6 border-2 border-background overflow-hidden", nil) {
-                        <span class="flex text-xs text-muted-foreground ml-2">{watcher.User.FullName}</span>
+            <div class="flex items-center gap-2 p-2">
+                <div class="flex">
+                    for _, watcher := range watchers {
+                        @ui.Tooltip(watcher.User.FullName, "flex w-[120px]", nil) {
+                            @ui.Avatar(watcher.User.FullName, watcher.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                        }
                     }
-                }
-            } else {
-                <p class="text-sm text-muted-foreground">No watchers</p>
-            }
+                </div>
+            </div> 
+            // if len(watchers) > 0 {
+            //     for _,watcher := range watchers {
+            //         @ui.Avatar(watcher.User.FullName, watcher.User.Color, "xs", "h-6 w-6 border-2 border-background overflow-hidden", nil) {
+            //             <span class="flex text-xs text-muted-foreground ml-2">{watcher.User.FullName}</span>
+            //         }
+            //     }
+            // } else {
+            //     <p class="text-sm text-muted-foreground">No watchers</p>
+            // }
         </div>
     </div>
 }

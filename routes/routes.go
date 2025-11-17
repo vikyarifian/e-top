@@ -63,6 +63,7 @@ func SetRoutes() {
 	mux.HandleFunc("/invite-workspace-form", auth.RequireAuth(handlers.Make(handlers.HandleInviteWorkspaceForm)))
 	mux.HandleFunc("/workspace", auth.RequireAuth(handlers.Make(handlers.HandleWorkspace)))
 	mux.HandleFunc("/invite-workspace", auth.RequireAuth(handlers.Make(handlers.HandleInviteWorkspace)))
+	mux.HandleFunc("/join-workspace", auth.RequireAuth(handlers.Make(handlers.HandleJoinWorkspace)))
 	mux.HandleFunc("/workspaces", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaces)))
 
 	mux.HandleFunc("/project", auth.RequireAuth(handlers.Make(handlers.HandleProject)))

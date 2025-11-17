@@ -81,13 +81,13 @@ func SendVerificationEmail(user models.User, verifyURL string) error {
 		<p>If the button doesn’t work, copy and paste this link into your browser:</p>
 		<p><a href="%s">%s</a></p>
 		<div class="footer">
-		  <p>© 2025 EBER IT Department. All rights reserved.</p>
+		  <p>© 2025 %s. All rights reserved.</p>
 		  <p>If you didn’t sign up, please ignore this email.</p>
 		</div>
 	  </div>
 	</body>
 	</html>
-	`, os.Getenv("APP_NAME"), user.FullName, verifyURL, verifyURL, verifyURL)
+	`, os.Getenv("APP_NAME"), user.FullName, verifyURL, verifyURL, verifyURL, os.Getenv("APP_NAME"))
 
 	return SendEmail(user.Email, subject, body)
 }
@@ -127,12 +127,55 @@ func ResetPasswordEmail(user models.User, resetURL string) error {
 			<p>If the button doesn’t work, copy and paste this link into your browser:</p>
 			<p><a href="%s">%s</a></p>
 			<div class="footer">
-			<p>© 2025 %s IT Department. All rights reserved.</p>
+			<p>© 2025 %s. All rights reserved.</p>
 			<p>If you didn’t request a password reset, you can safely ignore this email.</p>
 			</div>
 		</div>
 		</body>
 		</html>`, user.FullName, os.Getenv("APP_NAME"), resetURL, resetURL, resetURL, os.Getenv("APP_NAME"))
+
+	return SendEmail(user.Email, subject, body)
+}
+
+// Email invite workspace
+func SendInviteWorkspaceEmail(user models.User, workspace models.Workspace, verifyURL string) error {
+	subject := fmt.Sprintf(`[%s] You have been invite to join a workspace`, os.Getenv("APP_NAME"))
+
+	body := fmt.Sprintf(`
+	<!DOCTYPE html>
+	<html>
+	<head>
+	  <meta charset="UTF-8">
+	  <style>
+		body { font-family: Arial, sans-serif; background:#f9fafb; color:#111; }
+		.container { max-width:600px; margin:auto; background:white; padding:20px; border-radius:8px; }
+		.btn {
+		  display:inline-block; 
+		  padding:10px 20px; 
+		  background:#2563eb; 
+		  color:white; 
+		  text-decoration:none; 
+		  border-radius:6px;
+		}
+		.footer { font-size:12px; color:#555; margin-top:20px; }
+	  </style>
+	</head>
+	<body>
+	  <div class="container">
+		<p>Hi %s,</p>
+		<p>You have been invite to join a %s workspace</p>
+		<p style="text-align:center;">
+		  <a href="%s" class="btn" style="color: white; text-decoration:none;">Join Workspace</a>
+		</p>
+		<p>If the button doesn’t work, copy and paste this link into your browser:</p>
+		<p><a href="%s">%s</a></p>
+		<div class="footer">
+		  <p>© 2025 %s. All rights reserved.</p>
+		</div>
+	  </div>
+	</body>
+	</html>
+	`, user.FullName, workspace.Name, verifyURL, verifyURL, verifyURL, os.Getenv("APP_NAME"))
 
 	return SendEmail(user.Email, subject, body)
 }
