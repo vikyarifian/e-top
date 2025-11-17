@@ -87,7 +87,7 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 				}
 			}
 			if !authorized {
-				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
+				return pages.Forbidden().Render(r.Context(), w)
 			}
 			return features.Project(project).Render(r.Context(), w)
 		}

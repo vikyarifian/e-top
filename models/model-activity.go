@@ -140,3 +140,37 @@ type Reaction struct {
 
 // -- index GIN untuk details JSONB biar bisa query dalam JSON
 // CREATE INDEX idx_logs_details_gin ON logs USING GIN (details);
+
+// ALTER CHECK
+// ALTER TABLE logs
+// DROP CONSTRAINT logs_action_check;
+// ALTER TABLE logs
+// ADD CONSTRAINT action CHECK (action IN (
+//         'created_dept',
+//         'updated_dept',
+//         'created_task',
+//         'updated_task',
+//         'created_subtask',
+//         'updated_subtask',
+//         'completed_task',
+//         'created_project',
+//         'updated_project',
+//         'completed_project',
+//         'created_workspace',
+//         'updated_workspace',
+// 			'watched_task',
+// 			'unwatched_task',
+//         'added_comment',
+//         'added_member',
+//         'removed_member',
+// 		   'invited_workspace',
+//         'joined_workspace',
+// 		'declined_workspace',
+//         'transferred_workspace_ownership',
+//         'added_attachment',
+// 		   'registered_user',
+// 			'login_user',
+// 			'forgot_password_user',
+// 			'resend_email_user',
+// 			'verified_user'
+//     ));

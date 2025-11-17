@@ -12,10 +12,7 @@ import (
     "etop/templates/components/ui"
 )
 
-templ Workspace(workspace models.Workspace) {
-    @CreateProject(workspace.ID, "w-[900px]", nil) 
-    @EditWorkspace(workspace.ID, "w-96", nil) 
-    @InviteWorkspace(workspace.ID, "w-96", nil) 
+templ Workspace(role string, workspace models.Workspace, contributors []models.User) {
     <div data-title="Workspace" class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
@@ -30,23 +27,28 @@ templ Workspace(workspace models.Workspace) {
                 <p class="text-muted-foreground p-1">{workspace.Description}</p>
             </div>
             <div>
-                @ui.Button("invite-workspace", "outline", "sm", "", "", "mr-1", templ.Attributes{
-                    "type": "button",
-                    "@click":"$store.modal.open('invite-workspace-modal')",
-                }) {
-                    <i data-lucide="user-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Invite'}`"></span>
-                }
-                @ui.Button("create-project", "", "sm", "", "", "mr-1", templ.Attributes{
-                    "type": "button",
-                    "@click":"$store.modal.open('create-project-modal')",
-                }) {
-                    <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'New Project'}`"></span>
-                }
-                @ui.Button("workspace-settings", "outline", "sm", "", "", "", templ.Attributes{
-                    "type": "button",
-                    "@click":"$store.modal.open('edit-workspace-modal')",
-                }) {
-                    <i data-lucide="settings" class="w-4 h-4 "></i>
+                if role == "OWNER" || role == "ADMIN"  || role == "MEMBER" {
+                    @CreateProject(workspace.ID, "w-[900px]", nil) 
+                    @EditWorkspace(workspace.ID, "w-96", nil) 
+                    @InviteWorkspace(workspace.ID, "w-96", nil) 
+                    @ui.Button("invite-workspace", "outline", "sm", "", "", "mr-1", templ.Attributes{
+                        "type": "button",
+                        "@click":"$store.modal.open('invite-workspace-modal')",
+                    }) {
+                        <i data-lucide="user-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Invite'}`"></span>
+                    }
+                    @ui.Button("create-project", "", "sm", "", "", "mr-1", templ.Attributes{
+                        "type": "button",
+                        "@click":"$store.modal.open('create-project-modal')",
+                    }) {
+                        <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'New Project'}`"></span>
+                    }
+                    @ui.Button("workspace-settings", "outline", "sm", "", "", "", templ.Attributes{
+                        "type": "button",
+                        "@click":"$store.modal.open('edit-workspace-modal')",
+                    }) {
+                        <i data-lucide="settings" class="w-4 h-4 "></i>
+                    }
                 }
             </div>
         </div>
@@ -56,6 +58,16 @@ templ Workspace(workspace models.Workspace) {
                 for _,member := range workspace.Members {
                     @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "w-[180px]", nil) {
                         @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                    }
+                }
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground mr-2">Contributors : </span>
+            <div class="flex">
+                for _,contributor := range contributors {
+                    @ui.Tooltip(strings.Split(contributor.FullName," ")[0]+" (CONTRIBUTOR)", "w-[180px]", nil) {
+                        @ui.Avatar(contributor.FullName, contributor.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
                     }
                 }
             </div>
@@ -729,19 +741,44 @@ templ JoinWorkspace(workspace models.Workspace) {
 
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div class="col-span-full text-center py-12 2xl:py-24 bg-muted/40 rounded-lg gap-2">
-                <svg data-lucide="layout-grid" class="w-10 h-10 mx-auto text-muted-foreground" />
+                <svg data-lucide="briefcase-business" class="w-16 h-16 mx-auto text-muted-foreground mb-2" />
                 <h4 class="mt-2 text-sm">You've been invited to join the "{workspace.Name}" workspace.</h4>
                 <p class="mt-1 text-muted-foreground max-w-sm mx-auto text-xs">
                     {workspace.Description}
                 </p>
-                <div class="mt-2 flex justify-center items-center gap-2">
+                <div class="mt-2 flex justify-center items-center gap-2"
+                    x-init={fmt.Sprintf("workspace_id = '%s';", workspace.ID)}
+                    x-data="{
+                                workspace_id:'',
+                                init() {
+                                    document.body.addEventListener('htmx:afterRequest', (evt) => {
+                                        if (evt.detail.successful && evt.detail.elt.id === 'join-workspace') {
+                                            htmx.ajax('POST', '/workspaces?id='+this.workspace_id, {
+                                                target: '#content',
+                                                swap: 'innerHTML'
+                                            }).then(() => {
+                                                window.history.pushState({}, '', '/workspaces?id=' + this.workspace_id);
+                                            });
+                                        }
+                                        if (evt.detail.elt.id === 'decline-workpsace') {
+                                            htmx.ajax('POST', '/workspaces?id='+this.workspace_id, {
+                                                target: '#content',
+                                                swap: 'innerHTML'
+                                            }).then(() => {
+                                                window.history.pushState({}, '', '/workspaces?id=' + this.workspace_id);
+                                            });
+                                        }
+                                    })
+                                }
+                            }" 
+                >
                     @ui.Button("join-workspace", "", "sm", "log-in", "Accept", "", templ.Attributes{
                         "type": "button",
                         "hx-post": fmt.Sprintf(`/join-workspace?workspace_id=%s&action=join`, workspace.ID),
                         "hx-target": "#toaster",
                         "hx-swap": "innerHTML",
                     })
-                    @ui.Button("join-workpsace", "outline", "sm", "x-circle", "Decline", "", templ.Attributes{
+                    @ui.Button("decline-workpsace", "outline", "sm", "x-circle", "Decline", "", templ.Attributes{
                         "type": "button",
                         "hx-post": fmt.Sprintf(`/join-workspace?workspace_id=%s&action=decline`, workspace.ID),
                         "hx-target": "#toaster",

@@ -210,7 +210,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 					id: u.id.trim(),
 					full_name: u.full_name,
 					color: u.color,
-					role: u.role || 'VIEWER',
+					role: u.role || 'CONTRIBUTOR',
 				}));
 			},
             moveDown() {
@@ -244,7 +244,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
                         this.suggestions.push({
                             ...nm,
                             type: 'non-member',
-                            role: 'VIEWER',
+                            role: 'CONTRIBUTOR',
                         });
                     }
                 });
@@ -317,8 +317,8 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
                             @change="updateRole(item.id, $event.target.value)"
                             class="ml-2 px-1 py-0.5 text-xs rounded-md border border-input bg-background dark:bg-accent shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            <option value="VIEWER" :selected="item.type!=='member'">Viewer</option>
-                            <option value="CONTRIBUTOR">Contributor</option>
+                            // <option value="VIEWER" :selected="item.type!=='member'" x-show="item.type!=='member'">Viewer</option>
+                            <option value="CONTRIBUTOR" x-show="item.type!=='member'" :selected="item.type!=='member'">Contributor</option>
                             <option value="MEMBER" x-show="item.type==='member'" :selected="item.type==='member'">Member</option>
                             <option value="ADMIN" x-show="item.type==='member'">Admin</option>
                         </select>
