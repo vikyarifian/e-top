@@ -100,7 +100,9 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 				for _, member := range project.Members {
 					if member.UserID == user.ID {
 						authorized = true
-						userRole = member.Role
+						if userRole == "" {
+							userRole = member.Role
+						}
 						break
 					}
 				}
@@ -147,7 +149,9 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 				for _, member := range project.Members {
 					if member.UserID == user.ID {
 						authorized = true
-						userRole = member.Role
+						if userRole == "" {
+							userRole = member.Role
+						}
 						break
 					}
 				}
@@ -447,7 +451,9 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 					for _, project := range ws.Projects {
 						for _, member := range project.Members {
 							if member.UserID == user.ID {
-								userRole = member.Role
+								if userRole == "" {
+									userRole = member.Role
+								}
 								break
 							}
 						}
@@ -502,7 +508,9 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 					for _, project := range ws.Projects {
 						for _, member := range project.Members {
 							if member.UserID == user.ID {
-								userRole = member.Role
+								if userRole == "" {
+									userRole = member.Role
+								}
 								break
 							}
 						}
@@ -525,7 +533,7 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 		}
 
 		r.ParseForm()
-		// t := time.Now().Local()
+		t := time.Now().Local()
 		var inviteMember models.InviteWorkspaceMember
 		if err := db.PgSql.Where("workspace_id=? AND user_id=? AND status='INVITED'", r.FormValue("workspace_id"), user.ID).
 			First(&inviteMember).Error; err != nil {
@@ -533,41 +541,41 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("workspace-error", "warning", "", "You're not authorized to join this workspace!", "", nil).Render(r.Context(), w)
 		}
 		if r.FormValue("action") == "join" {
-			// inviteMember.Status = "JOINED"
-			// inviteMember.UpdatedAt = &t
-			// inviteMember.UpdatedBy = user.ID
-			// if err := db.PgSql.Save(&inviteMember).Error; err != nil {
-			// 	w.WriteHeader(http.StatusInternalServerError)
-			// 	return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
-			// }
-			// workspaceMember := models.WorkspaceMember{
-			// 	WorkspaceID: inviteMember.WorkspaceID,
-			// 	UserID:      inviteMember.UserID,
-			// 	Role:        "MEMBER",
-			// 	CreatedAt:   &t,
-			// 	CreatedBy:   user.ID,
-			// 	UpdatedAt:   &t,
-			// 	UpdatedBy:   user.ID,
-			// }
-			// if err := db.PgSql.Create(&workspaceMember).Error; err != nil {
-			// 	w.WriteHeader(http.StatusInternalServerError)
-			// 	return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
-			// }
-			// services.AddLog(user.ID, "joined_workspace", "Workspace", inviteMember.WorkspaceID, map[string]any{
-			// 	"description": "joined workspace",
-			// })
+			inviteMember.Status = "JOINED"
+			inviteMember.UpdatedAt = &t
+			inviteMember.UpdatedBy = user.ID
+			if err := db.PgSql.Save(&inviteMember).Error; err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+			}
+			workspaceMember := models.WorkspaceMember{
+				WorkspaceID: inviteMember.WorkspaceID,
+				UserID:      inviteMember.UserID,
+				Role:        "MEMBER",
+				CreatedAt:   &t,
+				CreatedBy:   user.ID,
+				UpdatedAt:   &t,
+				UpdatedBy:   user.ID,
+			}
+			if err := db.PgSql.Create(&workspaceMember).Error; err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+			}
+			services.AddLog(user.ID, "joined_workspace", "Workspace", inviteMember.WorkspaceID, map[string]any{
+				"description": "joined workspace",
+			})
 			return ui.Toast("workspace-success", "success", "", "You have successfully joined the workspace.", "", nil).Render(r.Context(), w)
 		} else if r.FormValue("action") == "decline" {
-			// inviteMember.Status = "DECLINED"
-			// inviteMember.UpdatedAt = &t
-			// inviteMember.UpdatedBy = user.ID
-			// if err := db.PgSql.Save(&inviteMember).Error; err != nil {
-			// 	w.WriteHeader(http.StatusInternalServerError)
-			// 	return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
-			// }
-			// services.AddLog(user.ID, "declined_workspace", "Workspace", inviteMember.WorkspaceID, map[string]any{
-			// 	"description": "declined workspace",
-			// })
+			inviteMember.Status = "DECLINED"
+			inviteMember.UpdatedAt = &t
+			inviteMember.UpdatedBy = user.ID
+			if err := db.PgSql.Save(&inviteMember).Error; err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return ui.Toast("workspace-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+			}
+			services.AddLog(user.ID, "declined_workspace", "Workspace", inviteMember.WorkspaceID, map[string]any{
+				"description": "declined workspace",
+			})
 			return ui.Toast("workspace-error", "error", "", "You have declined to join the workspace.", "", nil).Render(r.Context(), w)
 		}
 
