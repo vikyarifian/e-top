@@ -28,7 +28,7 @@ templ Workspace(role string, workspace models.Workspace, contributors []models.U
             </div>
             <div>
                 if role == "OWNER" || role == "ADMIN" {
-                    @EditWorkspace(workspace.ID, "w-96", nil) 
+                    @EditWorkspace(workspace.ID, "w-[250px]", nil) 
                     @InviteWorkspace(workspace.ID, "w-96", nil) 
                     @ui.Button("invite-workspace", "outline", "sm", "", "", "mr-1", templ.Attributes{
                         "type": "button",
@@ -66,16 +66,16 @@ templ Workspace(role string, workspace models.Workspace, contributors []models.U
                 }
             </div>
         </div>
-        <div class="flex items-center gap-2">
-            <span class="text-sm text-muted-foreground mr-2">Contributors : </span>
-            <div class="flex">
-                for _,contributor := range contributors {
-                    @ui.Tooltip(strings.Split(contributor.FullName," ")[0]+" (CONTRIBUTOR)", "w-[180px]", nil) {
-                        @ui.Avatar(contributor.FullName, contributor.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
-                    }
-                }
-            </div>
-        </div>
+        // <div class="flex items-center gap-2">
+        //     <span class="text-sm text-muted-foreground mr-2">Contributors : </span>
+        //     <div class="flex">
+        //         for _,contributor := range contributors {
+        //             @ui.Tooltip(strings.Split(contributor.FullName," ")[0]+" (CONTRIBUTOR)", "w-[180px]", nil) {
+        //                 @ui.Avatar(contributor.FullName, contributor.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+        //             }
+        //         }
+        //     </div>
+        // </div>
 
         <!-- Stats Cards -->
         <div class="text-xl font-semibold leading-none tracking-tight ">
@@ -601,13 +601,70 @@ templ EditWorkspaceForm(workspace models.Workspace) {
             }
             @ui.FormItem("", nil) {
                 @ui.FormLabel("members", "Members", "", nil)
-                <div class="flex px-2">
-                    for _,member := range workspace.Members {
-                        @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "min-w-[120px] w-[180px]", nil) {
-                            @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-6 w-6 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                
+                <div
+                    x-data="{
+                        members: [],
+                        mems: [],
+                        init() {
+                            this.mems.forEach(m => {
+                                this.members.push({
+                                    user_id: m.user_id,
+                                    role: m.role,
+                                });
+                            });
+                        },
+                        updateRole(userId, role) {
+                            console.log([...this.members]);
+                            let m = [...this.members].find(x => x.user_id === userId);
+                            if (m) m.role = role;
+                            console.log(m.user_id);
                         }
+                    }"
+                    class="pl-2 space-y-2"
+                    x-init={fmt.Sprintf("mems=%s;init();", string(utils.MustJSON(workspace.Members)))}
+                >
+                    for i, member := range workspace.Members {
+
+                        <div class="inline-flex items-center gap-2">
+                            <span class="w-full flex items-center gap-2">
+                                @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                                {member.User.FullName}
+                            </span>
+
+                            <select id={fmt.Sprintf("role-%v", i)} 
+                                @change={fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID)}
+                                class="px-1 py-0.5 text-xs rounded-md border"
+                                if strings.Trim(member.Role, " ") == "OWNER" {
+                                    disabled
+                                }
+                            >
+                                <option value="OWNER" 
+                                    if strings.Trim(member.Role, " ") == "OWNER" {
+                                         selected
+                                     }
+                                >Owner</option>
+                                <option value="ADMIN" 
+                                    if strings.Trim(member.Role, " ") == "ADMIN" {
+                                         selected
+                                     }
+                                >Admin</option>
+                                <option value="MEMBER" 
+                                if strings.Trim(member.Role, " ") == "MEMBER" {
+                                         selected
+                                     }
+                                >Member</option>
+                            </select>
+                        </div>
                     }
+
+                    <input
+                        type="hidden"
+                        name="members" 
+                        :value="JSON.stringify(members)"
+                    />
                 </div>
+
             }
             @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             <div class="flex justify-end items-end">
