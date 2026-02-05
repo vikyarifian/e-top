@@ -46,13 +46,13 @@ func OAthConfig() {
 
 func HandleLoginGoogle(w http.ResponseWriter, r *http.Request) error {
 
-	if _, err := auth.GetJwtClaims(w, r); err == nil {
-		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/")
-		} else {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-		}
-	}
+	// if _, err := auth.GetJwtClaims(w, r); err == nil {
+	// 	if r.Header.Get("HX-Request") == "true" {
+	// 		w.Header().Set("HX-Redirect", "/")
+	// 	} else {
+	// 		http.Redirect(w, r, "/", http.StatusSeeOther)
+	// 	}
+	// }
 
 	authUrl := OAuthConf.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
 	http.Redirect(w, r, authUrl, http.StatusTemporaryRedirect)
@@ -61,13 +61,13 @@ func HandleLoginGoogle(w http.ResponseWriter, r *http.Request) error {
 
 func HandleCallbackGoogle(w http.ResponseWriter, r *http.Request) error {
 
-	if _, err := auth.GetJwtClaims(w, r); err == nil {
-		if r.Header.Get("HX-Request") == "true" {
-			w.Header().Set("HX-Redirect", "/")
-		} else {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-		}
-	}
+	// if _, err := auth.GetJwtClaims(w, r); err == nil {
+	// 	if r.Header.Get("HX-Request") == "true" {
+	// 		w.Header().Set("HX-Redirect", "/")
+	// 	} else {
+	// 		http.Redirect(w, r, "/", http.StatusSeeOther)
+	// 	}
+	// }
 
 	code := r.URL.Query().Get("code")
 	if code == "" {

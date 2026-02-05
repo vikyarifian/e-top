@@ -464,9 +464,9 @@ func HandleVerifyEmail(w http.ResponseWriter, r *http.Request) error {
 func HandleLogout(w http.ResponseWriter, r *http.Request) error {
 	user, err := auth.GetAuth(w, r)
 	if err != nil {
-		w.Header().Set("HX-Redirect", "/")
-		w.WriteHeader(http.StatusSeeOther)
-		return nil
+		// w.Header().Set("HX-Redirect", "/")
+		// w.WriteHeader(http.StatusSeeOther)
+		// return nil
 	}
 	services.AddLog(user.ID, "login_user", "User", user.ID, map[string]any{
 		"description": strings.Trim(user.FullName, " ") + " logout",

@@ -75,10 +75,21 @@ templ Project(project models.Project) {
                 </div>
             </div>
         </div>
+        
+        <div class="flex items-center gap-2">
+            <span class="text-sm text-muted-foreground mr-2">Contributors : </span>
+            <div class="flex">
+                for _,contributor := range project.Members {
+                    @ui.Tooltip(strings.Split(contributor.User.FullName," ")[0]+" ("+contributor.Role+")", "w-[180px]", nil) {
+                        @ui.Avatar(contributor.User.FullName, contributor.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                    }
+                }
+            </div>
+        </div>
 
         <!-- Stats Cards -->
         <div 
-            class="flex-1 w-full border rounded-lg border-border bg-card text-card-foreground shadow-sm p-4 transition-all duration-300 shadow-md"
+            class="flex-1 w-full h-full border rounded-lg border-border bg-card text-card-foreground shadow-sm p-4 transition-all duration-300 shadow-md"
         >
             @ui.Tabs("tabs", "table", "", nil) {
                 <div className="h-full flex flex-col overflow-auto p-4">                
@@ -194,7 +205,7 @@ templ Project(project models.Project) {
                                                             //     "x-text": fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),
                                                             // })
                                                         }
-                                                        @ui.TableCell("py-1.5 px-2 w-1", nil) {
+                                                        @ui.TableCell("py-1.5 px-2 w-1 z-80", nil) {
                                                             @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
                                                                 @ui.DropdownTrigger("p-1", nil) {
                                                                     <div data-lucide="ellipsis-vertical" class="w-4 h-4" />

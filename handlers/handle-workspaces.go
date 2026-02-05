@@ -252,6 +252,19 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 
 		workspace.ID = r.FormValue("workspace_id")
 
+		membersPayload := []models.WorkspaceMember{}
+		if err := json.Unmarshal([]byte(r.FormValue("members")), &membersPayload); err == nil {
+			for _, m := range membersPayload {
+				var member = models.WorkspaceMember{}
+				db.PgSql.Where("user_id=? and workspace_id=?", m.UserID, workspace.ID).First(&member)
+				member.Role = m.Role
+				print(m.User.FullName)
+				print(m.Role)
+				db.PgSql.Save(&member)
+			}
+
+		}
+
 		user, _ := auth.GetAuth(w, r)
 		t := time.Now()
 		if err := db.PgSql.Where("id=?", workspace.ID).First(&workspace).Error; err != nil {
