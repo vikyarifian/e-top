@@ -43,14 +43,14 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-title=\"Task\" class=\"mx-auto space-y-6\" x-data=\"{\r\n                task_id: '', \r\n                user_id: '',\r\n                isWatching: false,\r\n                taskWatch() {\r\n                    htmx.ajax('POST', '/task-watch?task_id='+this.task_id+'&user_id='+this.user_id+'&status='+!this.isWatching, {source: document.getElementById('task-watch'), target: '#toaster', swap: 'innerHtml'});\r\n                },\r\n                init() {\r\n                    document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                        if (evt.detail.successful && evt.detail.elt.id === 'task-watch') {\r\n                            this.isWatching = !this.isWatching;\r\n                            htmx.ajax('GET', '/task-watch?task_id='+this.task_id, {target: '#task-watchers', swap: 'innerHtml'});\r\n                        }\r\n                    })\r\n                }\r\n            }\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div data-title=\"Task\" class=\"mx-auto space-y-6\" x-data=\"{\r\n                task_id: '', \r\n                user_id: '',\r\n                isWatching: false,\r\n                taskWatch() {\r\n                    htmx.ajax('POST', '/task-watch?task_id='+this.task_id+'&user_id='+this.user_id+'&status='+!this.isWatching, {source: document.getElementById('task-watch'), target: '#toaster', swap: 'innerHtml'});\r\n                },\r\n                init() {\r\n                    document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                        if (evt.detail.successful && evt.detail.elt.id === 'task-watch') {\r\n                            this.isWatching = !this.isWatching;\r\n                            htmx.ajax('GET', '/task-watch?task_id='+this.task_id, {target: '#task-watchers', swap: 'innerHtml'});\r\n                            htmx.ajax('GET', '/task-activities?task_id='+this.task_id, {target: '#task-activities', swap: 'innerHtml'});\r\n                        }\r\n                    })\r\n                }\r\n            }\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("task_id = '%s'; user_id = '%s'; isWatching = %t; ", task.ID, user.ID, services.IsUserWatchingTask(task, user.ID)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 35, Col: 142}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 36, Col: 142}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
@@ -79,7 +79,7 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/projects?id=%s", task.ProjectID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 55, Col: 82}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 56, Col: 82}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -92,7 +92,7 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(task.Project.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 61, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 62, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -110,7 +110,7 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 65, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 66, Col: 66}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -154,7 +154,7 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 92, Col: 118}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 93, Col: 118}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -167,7 +167,7 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(task.CreatedAt.Format("Mon, 02 Jan 2006"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 95, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 96, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -330,7 +330,7 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(task.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 144, Col: 144}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 145, Col: 144}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -379,7 +379,7 @@ func Task(task models.Task, user dto.UserAuth) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs("/task-activities?task_id=" + task.ID)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 167, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 168, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -486,7 +486,7 @@ func Tasks(tasks []models.Task) templ.Component {
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(len(tasks))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 207, Col: 30}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 208, Col: 30}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
@@ -540,7 +540,7 @@ func CreateTask(projectID string, typ string, class string, attrs templ.Attribut
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("project_id = '%s'; typ = '%s';", projectID, typ))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 213, Col: 80}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 214, Col: 80}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -588,7 +588,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("project_id= '%s'; typ= '%s'; task_statuses= %s; status= task_statuses[0].status; task_priorities= %s; priority= task_priorities.filter(c=>c.priority.toUpperCase()==='MEDIUM')[0].priority;", projectID, typ, string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities()))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 302, Col: 340}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/tasks.templ`, Line: 303, Col: 340}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -906,7 +906,7 @@ func CreateTaskForm(projectID string, typ string) templ.Component {
 				templ_7745c5c3_Err = components.AssigneeInput("assignees",
 					"assignees",
 					"Type a assignee...",
-					[]models.User{},
+					[]models.UserRole{},
 					services.GetProjectMembers(projectID),
 					"",
 					nil,

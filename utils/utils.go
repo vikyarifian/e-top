@@ -18,6 +18,40 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func ExtractUserMemberOfWorkspace(workspace models.Workspace) []models.UserRole {
+	var members []models.UserRole
+	for _, member := range workspace.Members {
+		var m models.UserRole
+		m.ID = member.User.ID
+		m.FullName = member.User.FullName
+		m.Role = member.Role
+		m.Color = member.User.Color
+		members = append(members, m)
+	}
+	return members
+}
+
+func ExtractUserMemberOfProject(project models.Project) []models.UserRole {
+	var members []models.UserRole
+	for _, member := range project.Members {
+		var m models.UserRole
+		m.ID = member.User.ID
+		m.FullName = member.User.FullName
+		m.Role = member.Role
+		m.Color = member.User.Color
+		members = append(members, m)
+	}
+	return members
+}
+
+func ExtractTagsFromProject(project models.Project) []string {
+	var tags []string
+	for _, projectTags := range project.Tags {
+		tags = append(tags, projectTags.Tag)
+	}
+	return tags
+}
+
 // HoursDiff menghitung selisih jam (dibulatkan ke bawah) antara dua datetime
 // menggunakan location tertentu (misal Asia/Jakarta).
 func TimeDiff(start time.Time, to time.Time) time.Duration {
