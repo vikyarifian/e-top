@@ -28,6 +28,7 @@ templ Task(task models.Task, user dto.UserAuth) {
                         if (evt.detail.successful && evt.detail.elt.id === 'task-watch') {
                             this.isWatching = !this.isWatching;
                             htmx.ajax('GET', '/task-watch?task_id='+this.task_id, {target: '#task-watchers', swap: 'innerHtml'});
+                            htmx.ajax('GET', '/task-activities?task_id='+this.task_id, {target: '#task-activities', swap: 'innerHtml'});
                         }
                     })
                 }
@@ -391,7 +392,7 @@ templ CreateTaskForm(projectID string, typ string) {
                         @components.AssigneeInput("assignees",
                             "assignees",
                             "Type a assignee...",
-                            []models.User{},  
+                            []models.UserRole{},  
                             services.GetProjectMembers(projectID),
                             "",
                             nil,

@@ -13,8 +13,13 @@ import (
     "etop/templates/components/ui"
 )
 
-templ Project(project models.Project) {
-    @CreateTask(project.ID, "PROJECT", "w-[900px]", nil)
+templ Project(role string, project models.Project) {
+    if role == "OWNER" || role == "ADMIN"  || role == "MEMBER" {
+        @CreateTask(project.ID, "PROJECT", "w-[900px]", nil)
+    }
+    if role == "OWNER" || role == "ADMIN" {
+        @EditProject(project.ID, "w-[900px]", nil) 
+    }
     <div data-title="Project" class="space-y-6">
         <div class="flex items-center justify-between">
             <div>
@@ -56,22 +61,26 @@ templ Project(project models.Project) {
                         </div>
                         @ui.Progress(project.ID, project.Progress, 100, "sm", "", templ.Attributes{"data-note":"x"})
                     </div>
-                    <div>
-                        @ui.Button("create-task", "", "sm", "", "", "", templ.Attributes{
-                            "type": "button",
-                            "@click":"$store.modal.open('create-task-modal')",
-                        }) {
-                            <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Add Task'}`"></span>
-                        }
-                    </div>
-                    <div>
-                        @ui.Button("project-settings", "outline", "sm", "", "", "", templ.Attributes{
-                            "type": "button",
-                            "@click":"$store.modal.open('create-task-modal')",
-                        }) {
-                            <i data-lucide="settings" class="w-4 h-4 "></i>
-                        }
-                    </div>
+                    if role == "OWNER" || role == "ADMIN"  || role == "MEMBER" {
+                        <div>
+                            @ui.Button("create-task", "", "sm", "", "", "", templ.Attributes{
+                                "type": "button",
+                                "@click":"$store.modal.open('create-task-modal')",
+                            }) {
+                                <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-show="!isMobile" x-text="`${isMobile ? '' : 'Add Task'}`"></span>
+                            }
+                        </div>
+                    }
+                    if role == "OWNER" || role == "ADMIN" {
+                        <div>
+                            @ui.Button("project-settings", "outline", "sm", "", "", "", templ.Attributes{
+                                "type": "button",
+                                "@click":"$store.modal.open('edit-project-modal')",
+                            }) {
+                                <i data-lucide="settings" class="w-4 h-4 "></i>
+                            }
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -117,29 +126,39 @@ templ Project(project models.Project) {
                                             @ui.TableHeader("", nil) {
                                                 @ui.TableRow("", nil) {
                                                     @ui.TableHead("", nil) {
-                                                        @ui.Button("title-sort", "ghost", "sm", "arrow-up-down", "Title", "", templ.Attributes{
+                                                        @ui.Button("title-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
-                                                        })
+                                                        }) {
+                                                            Title <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                                        }
                                                     }
                                                     @ui.TableHead("", nil) {
-                                                        @ui.Button("assignee-sort", "ghost", "sm", "arrow-up-down", "Assignees", "", templ.Attributes{
+                                                        @ui.Button("assignee-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
-                                                        })
+                                                        }) {
+                                                            Assignees <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                                        }
                                                     }
                                                     @ui.TableHead("", nil) {
-                                                        @ui.Button("due-sort", "ghost", "sm", "arrow-up-down", "Due Date", "", templ.Attributes{
+                                                        @ui.Button("due-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
-                                                        })
+                                                        }) {
+                                                            Due Date <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                                        }
                                                     }
                                                     @ui.TableHead("", nil) {
-                                                        @ui.Button("priority-sort", "ghost", "sm", "arrow-up-down", "Priority", "", templ.Attributes{
+                                                        @ui.Button("priority-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
-                                                        })
+                                                        }) {
+                                                            Priority <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                                        }
                                                     }
                                                     @ui.TableHead("", nil) {
-                                                        @ui.Button("status-sort", "ghost", "sm", "arrow-up-down", "Status", "", templ.Attributes{
+                                                        @ui.Button("status-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
-                                                        })
+                                                        }) {
+                                                            Status <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                                        }
                                                     }
                                                     @ui.TableHead("text-right w-1", nil)
                                                 }
@@ -205,43 +224,43 @@ templ Project(project models.Project) {
                                                             //     "x-text": fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),
                                                             // })
                                                         }
-                                                        @ui.TableCell("py-1.5 px-2 w-1 z-80", nil) {
-                                                            @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
-                                                                @ui.DropdownTrigger("p-1", nil) {
-                                                                    <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
-                                                                }
-                                                                @ui.DropdownContent("", nil) {
-                                                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
-                                                                        "hx-post": "/tasks?id="+task.ID,
-                                                                        "hx-target": "#content",
-                                                                        "hx-swap": "innerHtml",
-                                                                        "hx-push-url": "true",
-                                                                        "hx-indicator": ".htmx-loader,.loaded-content",
-                                                                    }) {
-                                                                        <i data-lucide="clipboard-check" class="w-4 h-4"></i>
-                                                                        Task Details
-                                                                    }
-                                                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
-                                                                        "hx-post": "/tasks?id="+task.ID+"#edit-task-form",
-                                                                        "hx-target": "#content",
-                                                                        "hx-swap": "innerHtml",
-                                                                        "hx-push-url": "true",
-                                                                        "hx-indicator": ".htmx-loader,.loaded-content",
-                                                                    }) {
-                                                                        <i data-lucide="edit" class="w-4 h-4"></i>
-                                                                        Edit Task
-                                                                    }
-                                                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100" , templ.Attributes{
-                                                                        "hx-post": "/delete-task?id="+task.ID+"#edit-task-form",
-                                                                        "hx-target": "#toaster",
-                                                                        "hx-swap": "innerHtml",
-                                                                    }) {
-                                                                        <i data-lucide="edit" class="w-4 h-4"></i>
-                                                                        Delete Task
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
+                                                        // @ui.TableCell("py-1.5 px-2 w-1 z-80", nil) {
+                                                        //     @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
+                                                        //         @ui.DropdownTrigger("p-1", nil) {
+                                                        //             <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
+                                                        //         }
+                                                        //         @ui.DropdownContent("", nil) {
+                                                        //             @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+                                                        //                 "hx-post": "/tasks?id="+task.ID,
+                                                        //                 "hx-target": "#content",
+                                                        //                 "hx-swap": "innerHtml",
+                                                        //                 "hx-push-url": "true",
+                                                        //                 "hx-indicator": ".htmx-loader,.loaded-content",
+                                                        //             }) {
+                                                        //                 <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                                                        //                 Task Details
+                                                        //             }
+                                                        //             @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+                                                        //                 "hx-post": "/tasks?id="+task.ID+"#edit-task-form",
+                                                        //                 "hx-target": "#content",
+                                                        //                 "hx-swap": "innerHtml",
+                                                        //                 "hx-push-url": "true",
+                                                        //                 "hx-indicator": ".htmx-loader,.loaded-content",
+                                                        //             }) {
+                                                        //                 <i data-lucide="edit" class="w-4 h-4"></i>
+                                                        //                 Edit Task
+                                                        //             }
+                                                        //             @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100" , templ.Attributes{
+                                                        //                 "hx-post": "/delete-task?id="+task.ID+"#edit-task-form",
+                                                        //                 "hx-target": "#toaster",
+                                                        //                 "hx-swap": "innerHtml",
+                                                        //             }) {
+                                                        //                 <i data-lucide="edit" class="w-4 h-4"></i>
+                                                        //                 Delete Task
+                                                        //             }
+                                                        //         }
+                                                        //     }
+                                                        // }
                                                     }
                                                 }
                                             }
@@ -405,35 +424,12 @@ templ CreateProjectForm(workspaceID string) {
                     </div>
                 </div>
                 <div class="w-full space-y-4">
-                    // @ui.FormItem("w-52 mb-4", templ.Attributes{
-                    //     "x-show":"false",
-                    // }) {
-                    //     @ui.FormLabel("status", "Status", "", nil)
-                    //     @ui.FormControl("status", "status", "select", "Project Status", "PLANNING", "", templ.Attributes{
-                    //         "x-model": "status",
-                    //         "@blur": "validateStatus",
-                    //         "x-show":"false",
-                    //     }) {
-                    //         <template x-for="(status, index) in (project_statuses.filter(c=>c.form==1))" :key="index">
-                    //             <option name="status" :value="status.status" x-text="status.label"></option>
-                    //         </template>
-                    //         // for _, status := range services.GetProjectStatus() {
-                    //         //     <option key={status.No} value={status.Status}>{status.Label}</option>
-                    //         // }
-                    //     }
-                    //     @ui.FormMessage("", "", templ.Attributes{
-                    //             "x-show":"false",
-                    //             // "x-show": "statusError != ''",
-                    //             "x-text": "statusError",
-                    //         },
-                    //     )
-                    // }
                     @ui.FormItem("mb-4", nil) {
                         @ui.FormLabel("members", "Members", "", nil)
                         @components.MemberRoleInput("members",
                             "members",
                             "Type a member...",
-                            []models.User{},  
+                            []models.UserRole{},  
                             services.GetWorkspaceMembers(workspaceID),
                             "",
                             nil,
@@ -452,6 +448,171 @@ templ CreateProjectForm(workspaceID string) {
             @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             <div class="flex justify-end items-end">
                 @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
+}
+
+templ EditProject(projectID string, class string, attrs templ.Attributes) {
+    @components.ResponsiveModal("edit-project-modal", "Edit Project", class) {
+        <div id="edit-project-form" 
+            x-init={fmt.Sprintf("project_id= '%s';",projectID)}
+            x-data="{
+                        project_id: '',
+                        init() {
+                            document.body.addEventListener('modal:opened', (evt) => {
+                                if (evt.detail.id === 'edit-project-modal') {
+                                    htmx.ajax('GET', '/edit-project-form?project_id='+this.project_id, {target: '#edit-project-form', swap: 'innerHtml'})
+                                }
+                            });
+                            document.body.addEventListener('modal:closed', (evt) => {
+                                if (evt.detail.id === 'edit-project-modal') {
+                                    document.getElementById('edit-project-form').innerHTML = '';
+                                }
+                            });
+                        }
+                    }"
+        >
+            
+        </div>
+    }
+}
+
+templ EditProjectForm(project models.Project) {
+    <div
+        x-data="{
+                    project: {},
+                    today: new Date(),
+                    titleError: '',
+                    descriptionError: '',
+                    statusError: '',
+                    validateTitle() {
+                        this.titleError = (this.project.title.trim() === '')
+                            ? 'Title is required'
+                            : '';
+                        this.project.title = this.project.title.charAt(0).toUpperCase() + this.project.title.slice(1);
+                    },
+                    validateStatus() {
+                        this.statusError = (this.project.status.trim() === '')
+                            ? 'Status is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateTitle();
+                        this.validateStatus();
+                        
+                        if (this.titleError || this.statusError) {
+                            return; 
+                        }
+                    },
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'edit-project-form') {
+                                $store.modal.close('edit-project-modal');
+                                this.title = '';
+                                this.description = '';
+                                this.status = '';
+                                this.titleError = '';
+                                this.descriptionError = '';
+                                this.statusError = '';
+                                const params = new URLSearchParams(window.location.search);
+                                if ('/projects?id='+params.get('id') === '/projects?id='+this.project.id.trim()) {
+                                    htmx.ajax('POST', '/projects?id='+this.project.id, { 
+                                        target: '#content', 
+                                        swap: 'innerHTML' 
+                                    })
+                                }
+                            }
+                        })
+                    }
+                }"
+        x-init={fmt.Sprintf("project= %s", string(utils.MustJSON(project)))}
+    >
+        @ui.Form("/project", "put", "w-lg", templ.Attributes{
+                "id":"edit-project-form",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#save-button,#title,#description",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            <input id="workspace_id" x-show="false" type="hidden" name="workspace_id" x-model="project.workspace_id" />
+            <input id="project_id" x-show="false" type="hidden" name="project_id" x-model="project.id" :value="project.id" />
+            <input id="status" x-show="false" type="hidden" name="status" x-model="project.status" :value="project.status" />
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="w-full space-y-4">
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("title", "Title", "", nil)
+                        @ui.FormControl("title", "title", "text", "Project Title", "", "", templ.Attributes{
+                            "autocomplete":"title",
+                            "x-model": "project.title",
+                            "@blur": "validateTitle",
+                        })
+                        @ui.FormMessage("", "", templ.Attributes{
+                                "x-show": "titleError != ''",
+                                "x-text": "titleError",
+                            },
+                        )
+                    }
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("description", "Description", "", nil)
+                        @ui.FormControl("description", "description", "textarea", "Project Description", "", "", templ.Attributes{
+                            "autocomplete":"description",
+                            "x-model": "project.description",
+                            "@blur": "project.description=project.description.charAt(0).toUpperCase() + project.description.slice(1)",
+                        })
+                        @ui.FormMessage("", "", templ.Attributes{
+                                "x-show": "descriptionError != ''",
+                                "x-text": "descriptionError",
+                            },
+                        )
+                    }
+                    <div class="grid grid-cols-1 sm:grid-cols-2">
+                        <div class="w-full">
+                            @ui.FormItem("mb-4", nil) {
+                                @ui.FormLabel("start_date", "Start Date", "", nil)
+                                @ui.FormControl("start_date", "start_date", "date", "", utils.FormatDate(*project.StartDate), "w-46", templ.Attributes{})
+                                @ui.FormMessage("", "", templ.Attributes{},
+                                )
+                            }
+                        </div>
+                        <div class="w-full">
+                            @ui.FormItem("mb-4", nil) {
+                                @ui.FormLabel("due_date", "Due Date", "", nil)
+                                @ui.FormControl("due_date", "due_date", "date", "", utils.FormatDate(*project.DueDate), "w-46", templ.Attributes{})
+                                @ui.FormMessage("", "", templ.Attributes{},
+                                )
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full space-y-4">
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("members", "Members", "", nil)
+                        
+                        @components.MemberRoleInput("members",
+                            "members",
+                            "Add a member...",
+                            utils.ExtractUserMemberOfProject(project),
+                            services.GetWorkspaceMembers(project.WorkspaceID),
+                            "",
+                            nil,
+                        )
+                        @ui.FormMessage("", "", templ.Attributes{},
+                        )
+                    }
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("tags", "Tags", "", nil)
+                        @components.TagInput("project-tag", "tags", "Add tag...", utils.ExtractTagsFromProject(project), "", nil)
+                        @ui.FormMessage("", "", templ.Attributes{},
+                        )
+                    }
+                </div>
+            </div>
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("save-button", "", "", "", "Update Project", "", templ.Attributes{"type": "submit"}) 
             </div>
         }
     </div>

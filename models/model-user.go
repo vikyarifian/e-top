@@ -30,6 +30,13 @@ type ResetPassword struct {
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
 }
 
+type UserRole struct {
+	ID       string `json:"id"`
+	FullName string `json:"full_name"`
+	Color    string `json:"color"`
+	Role     string `json:"role"`
+}
+
 // CREATE TABLE users (
 //     no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 //     id VARCHAR(255) UNIQUE NOT NULL DEFAULT '00000000000000',

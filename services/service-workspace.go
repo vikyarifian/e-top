@@ -5,12 +5,17 @@ import (
 	"etop/models"
 )
 
-func GetWorkspaceMembers(workspceID string) []models.User {
+func GetWorkspaceMembers(workspceID string) []models.UserRole {
 	members := []models.WorkspaceMember{}
-	users := []models.User{}
+	users := []models.UserRole{}
 	db.PgSql.Where("workspace_id=?", workspceID).Preload("User").Find(&members)
 	for _, member := range members {
-		users = append(users, member.User)
+		var m models.UserRole
+		m.ID = member.User.ID
+		m.FullName = member.User.FullName
+		m.Role = member.Role
+		m.Color = member.User.Color
+		users = append(users, m)
 	}
 
 	return users

@@ -67,7 +67,15 @@ func HandleInviteWorkspaceForm(w http.ResponseWriter, r *http.Request) error {
 	db.PgSql.Where("user_id NOT IN (SELECT user_id FROM workspace_members WHERE workspace_id=?) AND status='INVITED' AND workspace_id=?", workspaceID, workspaceID).
 		Preload("User").Find(&invitedUsers)
 
-	return features.InviteWorkspaceForm(workspace, users, invitedUsers).Render(r.Context(), w)
+	userRole := []models.UserRole{}
+	for _, user := range users {
+		var m models.UserRole
+		m.ID = user.ID
+		m.FullName = user.FullName
+		m.Color = user.Color
+		userRole = append(userRole, m)
+	}
+	return features.InviteWorkspaceForm(workspace, userRole, invitedUsers).Render(r.Context(), w)
 }
 
 func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {

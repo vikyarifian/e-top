@@ -443,8 +443,8 @@ templ CreateWorkspaceForm() {
                 @components.MemberInput("members",
                     "members",
                     "Type a member...",
-                    []models.User{},  
-                    services.GetAllUser(),
+                    []models.UserRole{},  
+                    services.GetAllUserRole(),
                     "",
                     nil,
                 )
@@ -639,11 +639,13 @@ templ EditWorkspaceForm(workspace models.Workspace) {
                                     disabled
                                 }
                             >
-                                <option value="OWNER" 
-                                    if strings.Trim(member.Role, " ") == "OWNER" {
-                                         selected
-                                     }
-                                >Owner</option>
+                                if strings.Trim(member.Role, " ") == "OWNER" {
+                                    <option value="OWNER" 
+                                        if strings.Trim(member.Role, " ") == "OWNER" {
+                                            selected
+                                        }
+                                    >Owner</option>
+                                }
                                 <option value="ADMIN" 
                                     if strings.Trim(member.Role, " ") == "ADMIN" {
                                          selected
@@ -699,7 +701,7 @@ templ InviteWorkspace(workspaceID string, class string, attrs templ.Attributes) 
     }
 }
 
-templ InviteWorkspaceForm(workspace models.Workspace, users []models.User, invitedUsers []models.InviteWorkspaceMember) {
+templ InviteWorkspaceForm(workspace models.Workspace, users []models.UserRole, invitedUsers []models.InviteWorkspaceMember) {
     <div
         x-data="{
                     workspace: {},
@@ -755,7 +757,7 @@ templ InviteWorkspaceForm(workspace models.Workspace, users []models.User, invit
                 @components.MemberInput("invite_members",
                     "invite_members",
                     "Type a name...",
-                    []models.User{},  
+                    []models.UserRole{},  
                     users,
                     "",
                     nil,

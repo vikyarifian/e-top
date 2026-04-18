@@ -69,6 +69,7 @@ func SetRoutes() {
 	mux.HandleFunc("/project", auth.RequireAuth(handlers.Make(handlers.HandleProject)))
 	mux.HandleFunc("/projects", auth.RequireAuth(handlers.Make(handlers.HandleProjects)))
 	mux.HandleFunc("/create-project-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateProjectForm)))
+	mux.HandleFunc("/edit-project-form", auth.RequireAuth(handlers.Make(handlers.HandleEditProjectForm)))
 
 	mux.HandleFunc("/task", auth.RequireAuth(handlers.Make(handlers.HandleTask)))
 	mux.HandleFunc("/tasks", auth.RequireAuth(handlers.Make(handlers.HandleTasks)))

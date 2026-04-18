@@ -8,7 +8,7 @@ import (
     "etop/services"
 )
 
-templ MemberInput(id string, name string, placeholder string, initial []models.User, suggestions []models.User, class string, attrs templ.Attributes) {
+templ MemberInput(id string, name string, placeholder string, initial []models.UserRole, suggestions []models.UserRole, class string, attrs templ.Attributes) {
     <div
         x-data="{
                     id: '',
@@ -154,7 +154,7 @@ templ MemberInput(id string, name string, placeholder string, initial []models.U
     </div>
 }
 
-templ MemberRoleInput(id string, name string, placeholder string, initial []models.User, suggestions []models.User, class string, attrs templ.Attributes) {
+templ MemberRoleInput(id string, name string, placeholder string, initial []models.UserRole, suggestions []models.UserRole, class string, attrs templ.Attributes) {
 	<div
 		x-data="{
 			tags: [],
@@ -211,6 +211,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 					full_name: u.full_name,
 					color: u.color,
 					role: u.role || 'CONTRIBUTOR',
+                    type: (u.role !== 'CONTRIBUTOR' ? 'member' : 'non-member'),
 				}));
 			},
             moveDown() {
@@ -234,7 +235,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
             },
             renderSuggestions(member, nonMembers) {
                 nonMembers.forEach(nm => {
-                    if (member.some(m => m.id === nm.id)) {
+                    if (member.some(m => m.id === nm.id && m.role !== 'CONTRIBUTOR')) {
                         this.suggestions.push({
                             ...nm,
                             type: 'member',
@@ -258,7 +259,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 		<!-- input -->
 		<div class="flex flex-wrap gap-2 border rounded-md p-2 relative">
 			<template x-for="(tag, index) in tags" :key="index">
-				<span class="flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full">
+				<span class="flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded-full" x-show="tag.role !== 'OWNER'">
 					<div class="flex items-center">
 						<div class="rounded-full flex items-center justify-center h-4 w-4" :class="`${tag.color}`">
 							<span class="text-xs font-thin text-primary-foreground" x-text="tag.full_name.slice(0,1)"></span>
@@ -332,7 +333,7 @@ templ MemberRoleInput(id string, name string, placeholder string, initial []mode
 	</div>
 }
 
-templ AssigneeInput(id string, name string, placeholder string, initial []models.User, suggestions []models.User, class string, attrs templ.Attributes) {
+templ AssigneeInput(id string, name string, placeholder string, initial []models.UserRole, suggestions []models.UserRole, class string, attrs templ.Attributes) {
     <div
         x-data="{
                     id: '',

@@ -26,6 +26,18 @@ func HandleCreateProjectForm(w http.ResponseWriter, r *http.Request) error {
 	return features.CreateProjectForm(workspace_id).Render(r.Context(), w)
 }
 
+func HandleEditProjectForm(w http.ResponseWriter, r *http.Request) error {
+	project_id := r.URL.Query().Get("project_id")
+	project := models.Project{}
+	if err := db.PgSql.Where("id=?", project_id).Preload("Members", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("User")
+	}).Preload("Tags").First(&project).Error; err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return pages.NotFound().Render(r.Context(), w)
+	}
+	return features.EditProjectForm(project).Render(r.Context(), w)
+}
+
 func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 	// user, _ := auth.GetAuth(w, r)
 	user, _ := auth.GetJwtClaims(w, r)
@@ -46,16 +58,18 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
 			}
 			authorized := false
+			userRole := ""
 			for _, member := range project.Members {
 				if member.UserID == user.ID {
 					authorized = true
+					userRole = member.Role
 					break
 				}
 			}
 			if !authorized {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
-			return layouts.Layout("Project", user, features.Project(project)).Render(r.Context(), w)
+			return layouts.Layout("Project", user, features.Project(userRole, project)).Render(r.Context(), w)
 		}
 
 		var projects []models.Project
@@ -80,16 +94,18 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 				return pages.NotFound().Render(r.Context(), w)
 			}
 			authorized := false
+			userRole := ""
 			for _, member := range project.Members {
 				if member.UserID == user.ID {
 					authorized = true
+					userRole = member.Role
 					break
 				}
 			}
 			if !authorized {
 				return pages.Forbidden().Render(r.Context(), w)
 			}
-			return features.Project(project).Render(r.Context(), w)
+			return features.Project(userRole, project).Render(r.Context(), w)
 		}
 
 		var projects []models.Project
@@ -255,7 +271,7 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			"description": "updated project",
 		}
 
-		project.ID = r.FormValue("id")
+		project.ID = r.FormValue("project_id")
 		if err := db.PgSql.Where("id=? AND workspace_id=?", project.ID, r.FormValue("workspace_id")).First(&project).Error; err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "Project is not found!", "", nil).Render(r.Context(), w)
@@ -344,7 +360,7 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			logDetails["old_due_date"] = project.DueDate
 			logDetails["new_due_date"] = &dueDate
 		}
-		project.StartDate = &dueDate
+		project.DueDate = &dueDate
 
 		progress, err := strconv.Atoi(r.FormValue("progress"))
 		if err == nil {
@@ -380,13 +396,53 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 					members += ","
 				}
 				members += "'" + strings.Trim(m.UserID, " ") + "'"
-				membersPayload[i].ProjectID = project.ID
-				membersPayload[i].UpdatedAt = &t
-				membersPayload[i].UpdatedBy = user.ID
+				mp := models.ProjectMember{}
+				if err := db.PgSql.Where("project_id=? AND user_id=?", project.ID, m.UserID).First(&mp).Error; err == nil {
+					mp.Role = m.Role
+					mp.UpdatedAt = &t
+					mp.UpdatedBy = user.ID
+					db.PgSql.Save(&mp)
+				} else {
+					mp.ProjectID = project.ID
+					mp.UserID = m.UserID
+					mp.Role = m.Role
+					mp.CreatedAt = &t
+					mp.CreatedBy = user.ID
+					mp.UpdatedAt = &t
+					mp.UpdatedBy = user.ID
+					db.PgSql.Create(&mp)
+				}
 			}
-			rawSql := fmt.Sprintf("DELETE FROM project_members WHERE project_id='%s' AND user_id NOT IN (%s) ", project.ID, members)
-			db.PgSql.Raw(rawSql)
-			db.PgSql.Save(&membersPayload)
+
+			rawSql := fmt.Sprintf("DELETE FROM project_members WHERE project_id='%s' AND user_id NOT IN (%s) AND role != 'OWNER'", project.ID, members)
+			if err := db.PgSql.Exec(rawSql).Error; err != nil {
+				fmt.Printf("Error executing delete project_members: %v\n", err)
+				if err != nil {
+					// Proper error logging
+					fmt.Printf("Error deleting project members: %v\n", err)
+				}
+			}
+		}
+
+		tags := ""
+		var tagsPayload []string
+		if err := json.Unmarshal([]byte(r.FormValue("tags")), &tagsPayload); err == nil {
+			for _, tag := range tagsPayload {
+				pt := models.ProjectTag{}
+				if err := db.PgSql.Where("project_id=? AND tag=?", project.ID, tag).First(&pt).Error; err != nil {
+					pt.ProjectID = project.ID
+					pt.Tag = tag
+					db.PgSql.Create(&pt)
+				}
+				tags += "'" + strings.Trim(tag, " ") + "',"
+			}
+			rawSql := fmt.Sprintf("DELETE FROM project_tags WHERE project_id='%s' AND tag NOT IN (%s)", project.ID, strings.TrimRight(tags, ","))
+			if err := db.PgSql.Exec(rawSql).Error; err != nil {
+				fmt.Printf("Error executing delete project_tags: %v\n", err)
+				if err != nil {
+					fmt.Printf("Error deleting project tags: %v\n", err)
+				}
+			}
 		}
 
 		return ui.Toast("project-success", "success", "", "Project updated successfully.", "", nil).Render(r.Context(), w)
