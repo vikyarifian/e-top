@@ -98,14 +98,19 @@ templ Task(task models.Task, user dto.UserAuth) {
                         </div>
                         <div class="flex items-start gap-2">
                             <div class=" p-1">
-                                @ui.Badge(task.Priority, "", "mt-1.5 mr-2", templ.Attributes{
-                                    ":class": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Priority),
-                                    "x-text": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label.trim()+' Priority'", task.Priority),
-                                })
-                                @ui.Badge(task.Priority, "", "mt-1.5 mr-2", templ.Attributes{
-                                    ":class":fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status),
-                                    "x-text":fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),
-                                })
+                                // @ui.Badge(task.Priority, "", "mt-1.5 mr-2", templ.Attributes{
+                                //     ":class": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Priority),
+                                //     "x-text": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label.trim()+' Priority'", task.Priority),
+                                // })
+                                // @ui.Badge(task.Priority, "", "mt-1.5 mr-2", templ.Attributes{
+                                //     ":class":fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status),
+                                //     "x-text":fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),
+                                // })
+                                @ui.Statusbar([]ui.StatusStep{
+                                    {Label: "New", Sub: "", Active: true},
+                                    {Label: "Progress", Sub: "1h", Active: false},
+                                    {Label: "Solved", Sub: "9d", Active: false},
+                                }, "")
                             </div>
                             @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
                                 @ui.DropdownTrigger("p-1", nil) {
@@ -348,25 +353,25 @@ templ CreateTaskForm(projectID string, typ string) {
                     }
                 </div>
                 <div class="w-full space-y-4">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 pr-4">
-                        <div class="w-full">
-                            @ui.FormItem("w-44 mb-4", nil) {
-                                @ui.FormLabel("status", "Status", "", nil)                              
-                                @ui.FormControl("status", "status", "select", "Task Status", "TO_DO", "", templ.Attributes{
-                                    "x-model": "status",
-                                    "@blur": "validateStatus",
-                                }) {
-                                    <template x-for="(status, index) in (task_statuses.filter(c=>c.form==1))" :key="index">
-                                        <option name="status" x-text="status.label" :value="status.status" :selected="status.status==='TO_DO'"></option>
-                                    </template>
-                                }
-                                @ui.FormMessage("", "", templ.Attributes{
-                                        "x-show": "statusError != ''",
-                                        "x-text": "statusError",
-                                    },
-                                )
-                            }
-                        </div>
+                    // <div class="grid grid-cols-1 sm:grid-cols-2 pr-4">
+                        // <div class="w-full">
+                        //     @ui.FormItem("w-44 mb-4", nil) {
+                        //         @ui.FormLabel("status", "Status", "", nil)                              
+                        //         @ui.FormControl("status", "status", "select", "Task Status", "TO_DO", "", templ.Attributes{
+                        //             "x-model": "status",
+                        //             "@blur": "validateStatus",
+                        //         }) {
+                        //             <template x-for="(status, index) in (task_statuses.filter(c=>c.form==1))" :key="index">
+                        //                 <option name="status" x-text="status.label" :value="status.status" :selected="status.status==='TO_DO'"></option>
+                        //             </template>
+                        //         }
+                        //         @ui.FormMessage("", "", templ.Attributes{
+                        //                 "x-show": "statusError != ''",
+                        //                 "x-text": "statusError",
+                        //             },
+                        //         )
+                        //     }
+                        // </div>
                         <div class="w-full">
                             @ui.FormItem("w-44 mb-4", nil) {
                                 @ui.FormLabel("priority", "Priority", "", nil)
@@ -385,7 +390,7 @@ templ CreateTaskForm(projectID string, typ string) {
                                     },
                                 )
                             }
-                        </div>
+                        // </div>
                     </div>
                     @ui.FormItem("mb-4", nil) {
                         @ui.FormLabel("assignees", "Assignees", "", nil)
@@ -397,6 +402,12 @@ templ CreateTaskForm(projectID string, typ string) {
                             "",
                             nil,
                         )
+                        @ui.FormMessage("", "", templ.Attributes{},
+                        )
+                    }
+                    @ui.FormItem("mb-4", nil) {
+                        @ui.FormLabel("tags", "Tags", "", nil)
+                        @components.TagInput("task-tag", "tags", "Add tag...", []string{}, "", nil)
                         @ui.FormMessage("", "", templ.Attributes{},
                         )
                     }

@@ -268,6 +268,19 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 
 		db.PgSql.Create(&assignees)
 
+		tags := []models.TaskTag{}
+		var tagsPayload []string
+		if err := json.Unmarshal([]byte(r.FormValue("tags")), &tagsPayload); err == nil {
+			for _, tag := range tagsPayload {
+				tags = append(tags, models.TaskTag{
+					TaskID: task.ID,
+					Tag:    tag,
+				})
+			}
+		}
+
+		db.PgSql.Create(&tags)
+
 		return ui.Toast("task-success", "success", "", "Task created successfully.", "", nil).Render(r.Context(), w)
 
 	default:
