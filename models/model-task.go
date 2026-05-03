@@ -28,8 +28,8 @@ type Task struct {
 	ActualHours    float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
 
 	// Array of tags → simpan sebagai TEXT[] di Postgres
-	Tags []string `gorm:"type:text[]" json:"tags"`
-
+	// Tags []string `gorm:"type:text[]" json:"tags"`
+	Tags []TaskTag `gorm:"foreignKey:TaskID;references:ID" json:"tags,omitempty"`
 	// One-to-many subtasks
 	Subtasks []Subtask `gorm:"foreignKey:TaskID;references:ID" json:"subtasks"`
 
@@ -102,6 +102,12 @@ type Subtask struct {
 	CreatedBy string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
 	UpdatedBy string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
+}
+
+type TaskTag struct {
+	No     int    `gorm:"column:no;primaryKey" json:"-" form:"-"`
+	TaskID string `gorm:"column:task_id;not null;index" json:"task_id"`
+	Tag    string `gorm:"column:tag;not null" json:"tag"`
 }
 
 // -- TABLE: tasks
@@ -198,4 +204,11 @@ type Subtask struct {
 //     uploaded_by VARCHAR(100) REFERENCES users(id) ON DELETE SET NULL,
 //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 //     updated_by VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT
+// );
+// -- Tabel task_tags
+// CREATE TABLE task_tags (
+//     no INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     task_id VARCHAR(255) NOT NULL,
+//     tag VARCHAR(100) NOT NULL,
+//     CONSTRAINT fk_task_tag FOREIGN KEY(task_id) REFERENCES tasks(id) ON DELETE CASCADE
 // );

@@ -2,6 +2,7 @@ package ui
 
 import (
     "fmt"
+    "etop/utils"
 )
 
 // Button Component
@@ -40,4 +41,41 @@ templ Button(id string, variant, size, icon, text string, class string, attrs te
         }
     </button>
     <script>lucide.createIcons();</script>
+}
+
+type StatusStep struct {
+	ID     string
+	Label  string
+	Sub    string
+	Active bool
+}
+
+templ Statusbar(steps []StatusStep, class string) {
+	<div class={fmt.Sprintf("o_statusbar %s", class)} role="radiogroup"
+        x-data="{ steps: [] }"
+        x-init={fmt.Sprintf("steps = %s", string(utils.MustJSON(steps))) }
+		
+    >
+		
+		// for _, step := range steps {
+        <template x-for="(step, idx) in steps" :key="idx">
+			<button
+				type="button"
+                :class="step.Active ? 'o_arrow_button o_arrow_button_current text-green-600 font-bold' : 'o_arrow_button '"
+                role="radio"
+                :aria-checked="step.Active ? 'true' : 'false'"
+                :data-value="step.ID"
+                :z-index="(-1 * (10+idx))"
+			>
+				<span class="pl-6 " x-text="step.Label"></span>
+
+				// if step.Sub != "" {
+					<span class="o_step_sub" x-text="step.Sub" x-show="step.Sub"></span>
+				// }
+			</button>
+        </template>
+		// }
+
+		<div class="ml-2 text-gray-500">...</div>
+	</div>
 }

@@ -2387,8 +2387,16 @@ video {
   padding-left: 0.5rem;
 }
 
+.pl-4 {
+  padding-left: 1rem;
+}
+
 .pl-5 {
   padding-left: 1.25rem;
+}
+
+.pl-6 {
+  padding-left: 1.5rem;
 }
 
 .pl-8 {
@@ -2887,6 +2895,96 @@ video {
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: hsl(var(--muted-foreground));
+}
+
+.o_statusbar {
+  display: flex;
+  align-items: center;
+}
+
+/* STEP BASE */
+
+.o_arrow_button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 28px 6px 18px;
+  font-size: 14px;
+  background: #e9ecef;
+  color: #374151;
+  border: 0.2px solid #d1d5db;
+  margin-right: -18px;
+}
+
+/* layering biar tidak ketiban */
+
+.o_arrow_button:nth-child(1) {
+  z-index: 3;
+}
+
+.o_arrow_button:nth-child(2) {
+  z-index: 2;
+}
+
+.o_arrow_button:nth-child(3) {
+  z-index: 1;
+}
+
+/* ARROW FILL */
+
+.o_arrow_button:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -18px;
+  border-top: 17px solid transparent;
+  border-bottom: 17px solid transparent;
+  border-left: 18px solid #e9ecef;
+  /* default fill */
+}
+
+/* ARROW BORDER */
+
+.o_arrow_button:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -19px;
+  border-top: 18px solid transparent;
+  border-bottom: 18px solid transparent;
+  border-left: 19px solid #d1d5db;
+  /* default border */
+}
+
+/* ACTIVE */
+
+.o_arrow_button_current {
+  background: #e6f4f1;
+  /* ✅ warna hijau aktif */
+  border-top-color: 0.2px solid #0f766e;
+  border-bottom-color: 0.2px solid #0f766e;
+}
+
+/* ✅ Panah kanan ikut warna hijau aktif */
+
+.o_arrow_button_current:not(:last-child)::after {
+  border-left-color: #e6f4f1;
+  /* sama dengan background aktif */
+}
+
+/* ✅ Border panah kanan ikut border aktif */
+
+.o_arrow_button_current:not(:last-child)::before {
+  border-left-color: 0.2px solid #2d7a6b;
+  /* sama dengan border aktif */
+}
+
+/* TEXT */
+
+.o_step_sub {
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .file\:border-0::file-selector-button {
