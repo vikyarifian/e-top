@@ -17,7 +17,11 @@ type Task struct {
 	Priority string `gorm:"column:priority;default:'MEDIUM'" json:"priority"`
 
 	// Many-to-many: assignees
-	Assignees []TaskAssignee `gorm:"foreignKey:TaskID;references:ID" json:"assignees,omitempty"`
+	// Assignees []TaskAssignee `gorm:"foreignKey:TaskID;references:ID" json:"assignees,omitempty"`
+
+	// Assignee User `gorm:"foreignKey:TaskID;references:ID" json:"assignees,omitempty"`
+	UserID   string `gorm:"column:user_id;not null;type:uuid" json:"user_id"`
+	Assignee *User  `gorm:"foreignKey:UserID;references:ID" json:"assignee,omitempty"`
 	// Many-to-many: watchers
 	Watchers []TaskWatchers `gorm:"foreignKey:TaskID;references:ID;" json:"watchers,omitempty"`
 
@@ -47,20 +51,20 @@ type Task struct {
 	UpdatedBy string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
 }
 
-type TaskAssignee struct {
-	TaskID      string     `gorm:"column:task_id;not null;index" json:"task_id"`
-	Task        Task       `gorm:"foreignKey:TaskID;references:ID"`
-	UserID      string     `gorm:"column:user_id;not null;index" json:"user_id"`
-	User        User       `gorm:"foreignKey:UserID;references:ID"`
-	Conclusion  string     `gorm:"column:conclusion" json:"conclusion,omitempty" form:"conclusion"`
-	Status      string     `gorm:"column:status;default:'TO_DO'" json:"status"`
-	CompletedAt *time.Time `gorm:"column:completed_at;type:TIMESTAMP" json:"completed_at,omitempty"`
-	ActualHours float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
-	CreatedAt   *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
-	CreatedBy   string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
-	UpdatedAt   *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
-	UpdatedBy   string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
-}
+// type TaskAssignee struct {
+// 	TaskID      string     `gorm:"column:task_id;not null;index" json:"task_id"`
+// 	Task        Task       `gorm:"foreignKey:TaskID;references:ID"`
+// 	UserID      string     `gorm:"column:user_id;not null;index" json:"user_id"`
+// 	User        User       `gorm:"foreignKey:UserID;references:ID"`
+// 	Conclusion  string     `gorm:"column:conclusion" json:"conclusion,omitempty" form:"conclusion"`
+// 	Status      string     `gorm:"column:status;default:'TO_DO'" json:"status"`
+// 	CompletedAt *time.Time `gorm:"column:completed_at;type:TIMESTAMP" json:"completed_at,omitempty"`
+// 	ActualHours float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
+// 	CreatedAt   *time.Time `gorm:"column:created_at;type:TIMESTAMP" json:"created_at,omitempty" form:"created_at"`
+// 	CreatedBy   string     `gorm:"column:created_by" json:"created_by,omitempty" form:"created_by"`
+// 	UpdatedAt   *time.Time `gorm:"column:updated_at;type:TIMESTAMP" json:"updated_at,omitempty" form:"updated_at"`
+// 	UpdatedBy   string     `gorm:"column:updated_by" json:"updated_by,omitempty" form:"updated_by"`
+// }
 
 type TaskWatchers struct {
 	TaskID    string     `gorm:"column:task_id;not null;index" json:"task_id"`
@@ -120,6 +124,7 @@ type TaskTag struct {
 //     project_id VARCHAR(255),
 //     status VARCHAR(50) DEFAULT 'TO_DO' CHECK (status IN ('TO_DO','IN_PROGRESS','IN_REVIEW','DONE','CANCELLED')),
 //     priority VARCHAR(50) DEFAULT 'MEDIUM' CHECK (priority IN ('LOW','MEDIUM','HIGH')),
+//     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 // 	   start_date TIMESTAMP,
 //     due_date TIMESTAMP,
 //     completed_at TIMESTAMP,

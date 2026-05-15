@@ -50,8 +50,8 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 				Preload("Members", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
 				}).Preload("Tasks", func(db *gorm.DB) *gorm.DB {
-				return db.Order("created_at").Preload("Assignees", func(db *gorm.DB) *gorm.DB {
-					return db.Preload("User")
+				return db.Order("created_at").Preload("Assignee", func(db *gorm.DB) *gorm.DB {
+					return db //.Preload("User")
 				})
 			}).Preload("Workspace").Order("no").First(&project).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
@@ -86,8 +86,8 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 				Preload("Members", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
 				}).Preload("Tasks", func(db *gorm.DB) *gorm.DB {
-				return db.Order("created_at").Preload("Assignees", func(db *gorm.DB) *gorm.DB {
-					return db.Preload("User")
+				return db.Order("created_at").Preload("Assignee", func(db *gorm.DB) *gorm.DB {
+					return db //.Preload("User")
 				})
 			}).Preload("Workspace").Order("no").First(&project).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
