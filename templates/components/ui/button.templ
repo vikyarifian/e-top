@@ -65,7 +65,7 @@ templ Statusbar(steps []StatusStep, class string) {
                 role="radio"
                 :aria-checked="step.Active ? 'true' : 'false'"
                 :data-value="step.ID"
-                :z-index="(-1 * (10+idx))"
+                :style="`z-index: ${steps.length - idx}`"
 			>
 				<span class="pl-6 " x-text="step.Label"></span>
 
@@ -75,7 +75,15 @@ templ Statusbar(steps []StatusStep, class string) {
 			</button>
         </template>
 		// }
-
-		<div class="ml-2 text-gray-500">...</div>
+        <!-- Tombol titik tiga -->
+		<button
+			type="button"
+			class="o_arrow_button cursor-not-allowed"
+			aria-label="More steps"
+            :style="`z-index: ${steps.length - steps.length}`"
+		>
+			<span class="tracking-widest pl-6">···</span>
+		</button>
+		// <div class="ml-2 text-gray-500">...</div>
 	</div>
 }

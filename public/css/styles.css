@@ -1292,6 +1292,10 @@ video {
   cursor: default;
 }
 
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
@@ -2387,10 +2391,6 @@ video {
   padding-left: 0.5rem;
 }
 
-.pl-4 {
-  padding-left: 1rem;
-}
-
 .pl-5 {
   padding-left: 1.25rem;
 }
@@ -2976,7 +2976,7 @@ video {
 /* ✅ Border panah kanan ikut border aktif */
 
 .o_arrow_button_current:not(:last-child)::before {
-  border-left-color: 0.2px solid #2d7a6b;
+  border-left-color: #9bcfc7;
   /* sama dengan border aktif */
 }
 
@@ -3662,3 +3662,4 @@ video {
 .\[\&_tr\]\:border-b tr {
   border-bottom-width: 1px;
 }
+

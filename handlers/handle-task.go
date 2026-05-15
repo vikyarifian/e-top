@@ -32,8 +32,8 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 		id := r.URL.Query().Get("id")
 		if strings.Trim(id, " ") != "" {
 			var task models.Task
-			if err := db.PgSql.Where("id=?", id).Preload("Assignees", func(db *gorm.DB) *gorm.DB {
-				return db.Preload("User")
+			if err := db.PgSql.Where("id=?", id).Preload("Assignee", func(db *gorm.DB) *gorm.DB {
+				return db //.Preload("User")
 			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("User")
 			}).Preload("Project", func(db *gorm.DB) *gorm.DB {
@@ -49,12 +49,12 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 					break
 				}
 			}
-			for _, assignee := range task.Assignees {
-				if assignee.UserID == user.ID {
-					authorized = true
-					break
-				}
+			// for _, assignee := range task.Assignees {
+			if task.Assignee.ID == user.ID {
+				authorized = true
+				// break
 			}
+			// }
 			if !authorized {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
@@ -62,8 +62,8 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 		}
 		var tasks []models.Task
 		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).
-			Preload("Assignees", func(db *gorm.DB) *gorm.DB {
-				return db.Preload("User")
+			Preload("Assignee", func(db *gorm.DB) *gorm.DB {
+				return db //.Preload("User")
 			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("User")
 		}).Find(&tasks)
@@ -73,8 +73,8 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 		if strings.Trim(id, " ") != "" {
 			var task models.Task
 			if err := db.PgSql.Where("id=?",
-				id).Preload("Assignees", func(db *gorm.DB) *gorm.DB {
-				return db.Preload("User")
+				id).Preload("Assignee", func(db *gorm.DB) *gorm.DB {
+				return db //.Preload("User")
 			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("User")
 			}).Preload("Project", func(db *gorm.DB) *gorm.DB {
@@ -90,12 +90,12 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 					break
 				}
 			}
-			for _, assignee := range task.Assignees {
-				if assignee.UserID == user.ID {
-					authorized = true
-					break
-				}
+			// for _, assignee := range task.Assignees {
+			if task.Assignee.ID == user.ID {
+				authorized = true
+				// break
 			}
+			// }
 			if !authorized {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
@@ -103,7 +103,9 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 		}
 
 		var tasks []models.Task
-		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).Preload("Assignees").Preload("Watchers").Order("no").Find(&tasks)
+		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).Preload("Assignee", func(db *gorm.DB) *gorm.DB {
+			return db //.Preload("User")
+		}).Preload("Watchers").Order("no").Find(&tasks)
 		return features.Tasks(tasks).Render(r.Context(), w)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -228,6 +230,12 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("task-error", "warning", "", "Due date cannot be before today!", "", nil).Render(r.Context(), w)
 		}
 
+		task.UserID = r.FormValue("assignee")
+		if len(strings.Trim(task.UserID, " ")) < 1 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Assignee is required!", "", nil).Render(r.Context(), w)
+		}
+
 		no := 0
 		db.PgSql.Table("tasks").Select("max(no)").Row().Scan(&no)
 		task.ID = utils.GenerateHash(strconv.Itoa(no + 1))
@@ -235,6 +243,10 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 		task.CreatedBy = user.ID
 		task.UpdatedAt = &t
 		task.UpdatedBy = user.ID
+		if statusDone {
+			task.ActualHours = task.ActualHours
+			task.CompletedAt = task.CompletedAt
+		}
 
 		if err := db.PgSql.Create(&task).Error; err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -245,28 +257,28 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 			"description": "created task " + task.Title,
 		})
 
-		assignees := []models.TaskAssignee{}
-		assigneesPayload := []string{}
-		if err := json.Unmarshal([]byte(r.FormValue("assignees")), &assigneesPayload); err == nil {
-			for _, m := range assigneesPayload {
-				assignee := models.TaskAssignee{
-					TaskID:    task.ID,
-					UserID:    m,
-					Status:    task.Status,
-					CreatedAt: &t,
-					CreatedBy: user.ID,
-					UpdatedAt: &t,
-					UpdatedBy: user.ID,
-				}
-				if statusDone {
-					assignee.ActualHours = task.ActualHours
-					assignee.CompletedAt = task.CompletedAt
-				}
-				assignees = append(assignees, assignee)
-			}
-		}
+		// assignees := []models.TaskAssignee{}
+		// assigneesPayload := []string{}
+		// if err := json.Unmarshal([]byte(r.FormValue("assignees")), &assigneesPayload); err == nil {
+		// 	for _, m := range assigneesPayload {
+		// 		assignee := models.TaskAssignee{
+		// 			TaskID:    task.ID,
+		// 			UserID:    m,
+		// 			Status:    task.Status,
+		// 			CreatedAt: &t,
+		// 			CreatedBy: user.ID,
+		// 			UpdatedAt: &t,
+		// 			UpdatedBy: user.ID,
+		// 		}
+		// 		if statusDone {
+		// 			assignee.ActualHours = task.ActualHours
+		// 			assignee.CompletedAt = task.CompletedAt
+		// 		}
+		// 		assignees = append(assignees, assignee)
+		// 	}
+		// }
 
-		db.PgSql.Create(&assignees)
+		// db.PgSql.Create(&assignees)
 
 		tags := []models.TaskTag{}
 		var tagsPayload []string

@@ -383,7 +383,7 @@ templ AssigneeInput(id string, name string, placeholder string, initial []models
                         }
                     },
                     addTag(item) {
-                        if (!this.tags.some(t => t.id === item.id)) this.tags.push(item);
+                        if (!this.tags.some(t => t.id === item.id)) this.tags=[];this.tags.push(item);
                         this.input = '';
                         this.filtered = [];
                         this.highlighted = -1;
@@ -475,6 +475,7 @@ templ AssigneeInput(id string, name string, placeholder string, initial []models
         </div>
 
         <!-- hidden -->
-        <input id={id} type="hidden" :name="name" x-model={name} :value="JSON.stringify(tags.map(t => t.id))" />
+        // <input id={id} type="hidden" :name="name" x-model={name} :value="JSON.stringify(tags.map(t => t.id))" />
+        <input id={id} type="hidden" :name="name" x-model={name} :value="tags.map(t => t.id)[0]" />
     </div>
 }

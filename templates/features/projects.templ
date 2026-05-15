@@ -4,7 +4,7 @@ import (
 	"fmt"
     "time"
     "strings"
-	"strconv"
+	// "strconv"
 
 	"etop/utils"
     "etop/models"
@@ -136,7 +136,7 @@ templ Project(role string, project models.Project) {
                                                         @ui.Button("assignee-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
                                                         }) {
-                                                            Assignees <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                                            Assignee <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
                                                         }
                                                     }
                                                     @ui.TableHead("", nil) {
@@ -176,30 +176,30 @@ templ Project(role string, project models.Project) {
                                                             {task.Title}
                                                         }
                                                         @ui.TableCell("py-1.5 px-2", nil) {
-                                                            if len(task.Assignees) > 0 {
+                                                            // if len(task.Assignees) > 0 {
                                                                 <div class="flex justify-start">
-                                                                    if task.Assignees != nil {
-                                                                        @ui.Avatar(task.Assignees[0].User.Username, task.Assignees[0].User.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{})
-                                                                        {task.Assignees[0].User.FullName}
+                                                                    if task.UserID != "" {
+                                                                        @ui.Avatar(task.Assignee.Username, task.Assignee.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{})
+                                                                        {task.Assignee.FullName}
                                                                     } else {
                                                                         {"Unassigned"}
                                                                     }                                                           
-                                                                    @ui.Tooltip(func() string {
-                                                                        if task.Assignees != nil {
-                                                                            assignees := ""
-                                                                            for i, assignee := range task.Assignees {
-                                                                                assignees += strconv.Itoa(i+1)+". "+assignee.User.FullName+"\n"
-                                                                            }
-                                                                            return assignees
-                                                                        }
-                                                                        return "Unassigned"
-                                                                    }(), "w-64 z-39", nil) {
-                                                                        if len(task.Assignees) > 1 {
-                                                                            <span class="text-muted-foreground cursor-pointer">&nbsp; and {len(task.Assignees)-1} more</span>
-                                                                        }
-                                                                    }
+                                                                    // @ui.Tooltip(func() string {
+                                                                    //     if task.Assignee != nil {
+                                                                    //         assignees := ""
+                                                                    //         for i, assignee := range task.Assignees {
+                                                                    //             assignees += strconv.Itoa(i+1)+". "+assignee.User.FullName+"\n"
+                                                                    //         }
+                                                                    //         return assignees
+                                                                    //     }
+                                                                    //     return "Unassigned"
+                                                                    // }(), "w-64 z-39", nil) {
+                                                                    //     if len(task.Assignees) > 1 {
+                                                                    //         <span class="text-muted-foreground cursor-pointer">&nbsp; and {len(task.Assignees)-1} more</span>
+                                                                    //     }
+                                                                    // }
                                                                 </div>
-                                                            } 
+                                                            // } 
                                                         }
                                                         @ui.TableCell("py-1.5 px-2", templ.Attributes{
                                                             ":class": fmt.Sprintf("%v<=3?'text-red-500':(%v<=7?'text-orange-500':(%v<=14?'text-yellow-600':'text-muted-foreground'))", (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24), (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24), (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24)),

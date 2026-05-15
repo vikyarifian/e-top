@@ -91,7 +91,7 @@ templ Task(task models.Task, user dto.UserAuth) {
                     <div class="flex flex-col md:flex-row justify-between items-start">
                         <div>
                             <div class="flex items-center gap-2"><div class="text-xl flex-1 font-semibold">{task.Title}</div></div>
-
+                            
                             <div class="text-xs text-muted-foreground mb-4">
                                 Created at {task.CreatedAt.Format("Mon, 02 Jan 2006")}
                             </div>
@@ -107,13 +107,13 @@ templ Task(task models.Task, user dto.UserAuth) {
                                 //     "x-text":fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),
                                 // })
                                 @ui.Statusbar([]ui.StatusStep{
-                                    {Label: "New", Sub: "", Active: true},
+                                    {Label: "New", Sub: "", Active: false},
                                     {Label: "Progress", Sub: "1h", Active: false},
-                                    {Label: "Solved", Sub: "9d", Active: false},
+                                    {Label: "Solved", Sub: "9d", Active: true},
                                 }, "")
                             </div>
                             @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
-                                @ui.DropdownTrigger("p-1", nil) {
+                                @ui.DropdownTrigger("mt-1 ml-2 p-1", nil) {
                                     <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
                                 }
                                 @ui.DropdownContent("", nil) {
@@ -147,21 +147,22 @@ templ Task(task models.Task, user dto.UserAuth) {
                             Description
                         </div>
 
-                        <div class="flex items-center gap-2 p-2"><div class="text-sm text-pretty flex-1 text-muted-foreground">{task.Description}</div></div> 
+                        <div class="flex items-center gap-2 p-2"><div class="text-sm text-pretty flex-1">{task.Description}</div></div> 
                     </div>
 
                     <div class="mb-4">
                         <div class="text-sm font-medium text-muted-foreground mb-0">
-                            Assignees
+                            Assignee
                         </div>
 
                         <div class="flex items-center gap-2 p-2">
-                            <div class="flex">
-                                for _, assignee := range task.Assignees {
-                                    @ui.Tooltip(assignee.User.FullName, "flex w-[120px]", nil) {
-                                        @ui.Avatar(assignee.User.FullName, assignee.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
-                                    }
-                                }
+                            <div class="flex justify-start">
+                                // for _, assignee := range task.Assignees {
+                                    // @ui.Tooltip(task.Assignee.FullName, "flex w-[120px]", nil) {
+                                        @ui.Avatar(task.Assignee.FullName, task.Assignee.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer", nil) 
+                                        <span class="flex text-sm ml-2 mt-1">{task.Assignee.FullName}</span>
+                                    // }
+                                // }
                             </div>
                         </div> 
                     </div>
@@ -251,7 +252,7 @@ templ CreateTaskForm(projectID string, typ string) {
                     description: '',
                     status: 'TO_DO',
                     priority: '',
-                    assignees: [],
+                    //assignees: [],
                     titleError: '',
                     descriptionError: '',
                     statusError: '',
@@ -289,7 +290,7 @@ templ CreateTaskForm(projectID string, typ string) {
                                 this.description = '';
                                 this.status = '';
                                 this.priority = '';
-                                this.assignees = [];
+                                // this.assignees = [];
                                 this.titleError = '';
                                 this.descriptionError = '';
                                 this.statusError = '';
@@ -393,9 +394,9 @@ templ CreateTaskForm(projectID string, typ string) {
                         // </div>
                     </div>
                     @ui.FormItem("mb-4", nil) {
-                        @ui.FormLabel("assignees", "Assignees", "", nil)
-                        @components.AssigneeInput("assignees",
-                            "assignees",
+                        @ui.FormLabel("assignee", "Assignee", "", nil)
+                        @components.AssigneeInput("assignee",
+                            "assignee",
                             "Type a assignee...",
                             []models.UserRole{},  
                             services.GetProjectMembers(projectID),

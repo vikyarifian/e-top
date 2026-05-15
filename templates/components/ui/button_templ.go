@@ -199,7 +199,7 @@ func Statusbar(steps []StatusStep, class string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><template x-for=\"(step, idx) in steps\" :key=\"idx\"><button type=\"button\" :class=\"step.Active ? 'o_arrow_button o_arrow_button_current text-green-600 font-bold' : 'o_arrow_button '\" role=\"radio\" :aria-checked=\"step.Active ? 'true' : 'false'\" :data-value=\"step.ID\" :z-index=\"(-1 * (10+idx))\"><span class=\"pl-6 \" x-text=\"step.Label\"></span><span class=\"o_step_sub\" x-text=\"step.Sub\" x-show=\"step.Sub\"></span></button></template><div class=\"ml-2 text-gray-500\">...</div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"><template x-for=\"(step, idx) in steps\" :key=\"idx\"><button type=\"button\" :class=\"step.Active ? 'o_arrow_button o_arrow_button_current text-green-600 font-bold' : 'o_arrow_button '\" role=\"radio\" :aria-checked=\"step.Active ? 'true' : 'false'\" :data-value=\"step.ID\" :style=\"`z-index: ${steps.length - idx}`\"><span class=\"pl-6 \" x-text=\"step.Label\"></span><span class=\"o_step_sub\" x-text=\"step.Sub\" x-show=\"step.Sub\"></span></button></template><!-- Tombol titik tiga --><button type=\"button\" class=\"o_arrow_button cursor-not-allowed\" aria-label=\"More steps\" :style=\"`z-index: ${steps.length - steps.length}`\"><span class=\"tracking-widest pl-6\">···</span></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
