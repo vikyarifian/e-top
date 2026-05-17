@@ -209,16 +209,48 @@ templ Project(role string, project models.Project) {
                                                             } 
                                                         }
                                                         @ui.TableCell("py-1.5 px-2", nil) {
-                                                            @ui.Badge(task.Priority, "", "", templ.Attributes{
-                                                                ":class": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Priority),
-                                                                "x-text": fmt.Sprintf("task_priorities.filter(c=>c.priority.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Priority),
-                                                            })
+                                                            @ui.Tooltip(task.Priority.Label, "", nil){
+                                                            <div class="flex items-center">
+                                                                for i := 1; i <= 3; i++ {
+                                                                    if i <= task.Priority.Level {
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            class="w-6 h-6 text-yellow-400 fill-yellow-400 p-0.4 rounded"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke="currentColor"
+                                                                            stroke-width="1.5"
+                                                                        >
+                                                                            <path
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"
+                                                                                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"
+                                                                            />
+                                                                        </svg>
+                                                                    } else {
+                                                                        <svg
+                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                            class="w-6 h-6 text-gray-500 p-0.4 rounded"
+                                                                            fill="none"
+                                                                            viewBox="0 0 24 24"
+                                                                            stroke="currentColor"
+                                                                            stroke-width="1.5"
+                                                                        >
+                                                                            <path
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"
+                                                                                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"
+                                                                            />
+                                                                        </svg>
+                                                                    }
+                                                                }
+                                                            </div>
+                                                            }
+                                                            // @ui.Badge(task.Priority.Label, task.Priority.Label, task.Priority.Color, templ.Attributes{})
                                                         }
                                                         @ui.TableCell("py-1.5 px-2", nil) {
-                                                            <span class="text-xs rounded-md pl-1 pr-1" 
-                                                                :class={fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status)} 
-                                                                x-text={fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status)}
-                                                            ></span>
+                                                            <span class={fmt.Sprintf("text-xs rounded-md pl-2 pr-2 py-0.5 %s", task.Status.Color)} 
+                                                            >{task.Status.Label}</span>
                                                             // @ui.Badge(task.Priority, "", "", templ.Attributes{
                                                             //     ":class": fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status),
                                                             //     "x-text": fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),

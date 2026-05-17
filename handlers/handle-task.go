@@ -38,7 +38,7 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 				return db.Preload("User")
 			}).Preload("Project", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("Members")
-			}).First(&task).Error; err != nil {
+			}).Preload("Status").Preload("Priority").First(&task).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
 			}
@@ -66,7 +66,7 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 				return db //.Preload("User")
 			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
 			return db.Preload("User")
-		}).Find(&tasks)
+		}).Preload("Status").Preload("Priority").Find(&tasks)
 		return layouts.Layout("Tasks", user, features.Tasks(tasks)).Render(r.Context(), w)
 	case http.MethodPost:
 		id := r.URL.Query().Get("id")
@@ -79,7 +79,7 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 				return db.Preload("User")
 			}).Preload("Project", func(db *gorm.DB) *gorm.DB {
 				return db.Preload("Members")
-			}).First(&task).Error; err != nil {
+			}).Preload("Status").Preload("Priority").First(&task).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return pages.NotFound().Render(r.Context(), w)
 			}
@@ -105,7 +105,7 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 		var tasks []models.Task
 		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).Preload("Assignee", func(db *gorm.DB) *gorm.DB {
 			return db //.Preload("User")
-		}).Preload("Watchers").Order("no").Find(&tasks)
+		}).Preload("Watchers").Order("no").Preload("Status").Preload("Priority").Find(&tasks)
 		return features.Tasks(tasks).Render(r.Context(), w)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
@@ -170,10 +170,17 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 			}
 		}
 
-		task.Status = r.FormValue("status")
-		if len(strings.Trim(task.Status, " ")) < 1 {
-			task.Status = "TO_DO"
+		statusIDStr := r.FormValue("status_id")
+		if strings.Trim(statusIDStr, " ") == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Status is required!", "", nil).Render(r.Context(), w)
 		}
+		sid, err := strconv.Atoi(statusIDStr)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Invalid status id!", "", nil).Render(r.Context(), w)
+		}
+		task.StatusID = sid
 
 		task.StartDate = &t
 
@@ -181,8 +188,9 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 		validStatus := false
 		statusDone := false
 		for _, s := range taskStatus {
-			if strings.EqualFold(strings.Trim(s.Status, " "), strings.Trim(task.Status, " ")) {
+			if s.No == task.StatusID {
 				validStatus = true
+				task.StatusLabel = s.Status
 				if s.Value == 5 {
 					statusDone = true
 					tc := time.Now().Add(1 * time.Minute)
@@ -206,17 +214,25 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 
 		task.EstimatedHours = float32(utils.TimeDiff(*task.StartDate, *task.DueDate).Hours())
 
-		task.Priority = r.FormValue("priority")
-		if len(strings.Trim(task.Priority, " ")) < 1 {
+		priorityValue := strings.TrimSpace(r.FormValue("priority_id"))
+		if len(priorityValue) < 1 {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("task-error", "warning", "", "Priority is required!", "", nil).Render(r.Context(), w)
 		}
 
+		priorityID, err := strconv.Atoi(priorityValue)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Invalid priority id!", "", nil).Render(r.Context(), w)
+		}
+		task.PriorityID = priorityID
+
 		taskPriorities := services.GetTaskPriorities()
 		validPriority := false
 		for _, p := range taskPriorities {
-			if p.Priority == task.Priority {
+			if p.No == task.PriorityID {
 				validPriority = true
+				task.PriorityLabel = p.Priority
 				break
 			}
 		}
