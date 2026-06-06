@@ -1429,7 +1429,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "\" class=\"px-1 py-0.5 text-xs rounded-md border\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "\" class=\"px-1 py-0.5 text-xs rounded-md border dark:bg-accent\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -1444,7 +1444,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 						return templ_7745c5c3_Err
 					}
 					if strings.Trim(member.Role, " ") == "OWNER" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "<option value=\"OWNER\"")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, "<option value=\"OWNER\" class=\"\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}

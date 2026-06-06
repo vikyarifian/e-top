@@ -6,6 +6,7 @@ import (
 
     "etop/utils"
     "etop/models"
+	"etop/services"
 	"etop/templates/components"
 )
 
@@ -18,9 +19,9 @@ templ TaskActivities(activities []models.Log) {
         <div class="space-y-3 text-sm">
             if len(activities) > 0 {
                 for _,activity := range activities {
-                    <div class="flex items-start gap-2">
+                    <div class="flex items-start gap-2" x-data={fmt.Sprintf("{details:%s,task_statuses:%s}",string(utils.MustJSON(activity.Details)), string(utils.MustJSON(services.GetTaskStatuses())))} >
                         @components.ActivityIcon(activity.Action, "", nil)
-                        <div x-data={fmt.Sprintf("{details:%s}",string(utils.MustJSON(activity.Details)))} class="mt-0">
+                        <div class="mt-0">
                             <p>
                                 <span class="font-medium">{strings.Split(activity.User.FullName," ")[0]}</span> 
                                 <span x-text="details.description" />

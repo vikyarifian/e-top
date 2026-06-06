@@ -124,7 +124,7 @@ func DropdownTrigger(class string, attrs templ.Attributes) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		var templ_7745c5c3_Var7 = []any{"flex cursor-pointer select-none items-center gap-1 rounded-md p-2 text-sm outline-none", class}
+		var templ_7745c5c3_Var7 = []any{"flex cursor-pointer select-none items-center gap-1 p-2 text-sm outline-none", class}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var7...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

@@ -13,8 +13,13 @@ type Task struct {
 	ProjectID   string  `gorm:"column:project_id;not null;index" json:"project_id" form:"project_id"`
 	Project     Project `gorm:"foreignKey:ProjectID;references:ID"`
 
-	Status   string `gorm:"column:status;default:'TO_DO'" json:"status"`
-	Priority string `gorm:"column:priority;default:'MEDIUM'" json:"priority"`
+	StatusID    int        `gorm:"column:status_id;default:0" json:"status_id,omitempty" form:"status_id"`
+	StatusLabel string     `gorm:"column:status" json:"status_label,omitempty" form:"status_label"`
+	Status      TaskStatus `gorm:"foreignKey:StatusID;references:No;" json:"status"`
+	// Priority    string     `gorm:"column:priority;default:'MEDIUM'" json:"priority"`
+	PriorityID    int          `gorm:"column:priority_id;default:0" json:"priority_id,omitempty" form:"priority_id"`
+	PriorityLabel string       `gorm:"column:priority" json:"priority_label,omitempty" form:"priority_label"`
+	Priority      TaskPriority `gorm:"foreignKey:PriorityID;references:No;" json:"priority"`
 
 	// Many-to-many: assignees
 	// Assignees []TaskAssignee `gorm:"foreignKey:TaskID;references:ID" json:"assignees,omitempty"`
@@ -78,20 +83,22 @@ type TaskWatchers struct {
 }
 
 type TaskStatus struct {
-	No     int    `gorm:"column:no;primaryKey" json:"-" form:"-"`
+	No     int    `gorm:"column:no;primaryKey" json:"no" form:"no"`
 	Status string `gorm:"column:status;not null;" json:"status" form:"status"`
 	Label  string `gorm:"column:label;not null;" json:"label" form:"label"`
 	Color  string `gorm:"column:color;not null;" json:"color" form:"color"`
 	Form   int    `gorm:"form" json:"form,omitempty" form:"form"`
 	Value  int    `gorm:"value" json:"value,omitempty" form:"value"`
+	Level  int    `gorm:"level" json:"level,omitempty" form:"level"`
 }
 
 type TaskPriority struct {
-	No       int    `gorm:"column:no;primaryKey" json:"-" form:"-"`
+	No       int    `gorm:"column:no;primaryKey" json:"no" form:"no"`
 	Priority string `gorm:"column:priority;not null;" json:"priority" form:"priority"`
 	Label    string `gorm:"column:label;not null;" json:"label" form:"label"`
 	Color    string `gorm:"column:color;not null;" json:"color" form:"color"`
 	Value    int    `gorm:"value" json:"value,omitempty" form:"value"`
+	Level    int    `gorm:"level" json:"level,omitempty" form:"level"`
 }
 
 // Subtask model
@@ -122,7 +129,7 @@ type TaskTag struct {
 //     title TEXT NOT NULL,
 //     description TEXT,
 //     project_id VARCHAR(255),
-//     status VARCHAR(50) DEFAULT 'TO_DO' CHECK (status IN ('TO_DO','IN_PROGRESS','IN_REVIEW','DONE','CANCELLED')),
+//     status_id INT DEFAULT 0 REFERENCES task_statuses(no),
 //     priority VARCHAR(50) DEFAULT 'MEDIUM' CHECK (priority IN ('LOW','MEDIUM','HIGH')),
 //     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE RESTRICT,
 // 	   start_date TIMESTAMP,

@@ -4,7 +4,7 @@ templ ActivityIcon(action string, class string, attrs templ.Attributes) {
     switch action {
         case "created_dept":
             <div class="flex bg-green-600/10 p-1 rounded-md">
-                <i data-lucide="square-check" class={"h-4 w-4 text-green-600 rounded-full", class} {attrs...} />
+                <i data-lucide="file-plus" class={"h-4 w-4 text-green-600 rounded-full", class} {attrs...} />
             </div>
         case "updated_dept":
             <div class="bg-blue-600/10 p-1 rounded-md">
@@ -12,11 +12,14 @@ templ ActivityIcon(action string, class string, attrs templ.Attributes) {
             </div>
         case "created_task":
             <div class="flex bg-green-600/10 p-1 rounded-md">
-                <i data-lucide="square-check" class={"h-4 w-4 text-green-600 rounded-full", class} {attrs...} />
+                <i data-lucide="file-plus" class={"h-4 w-4 text-green-600 rounded-full", class} {attrs...} />
             </div>
         case "updated_task":
             <div class="bg-blue-600/10 p-1 rounded-md">
-                <i data-lucide="square-pen" class={"h-4 w-4 text-blue-600 rounded-full", class} {attrs...} />
+                <i x-show="!details.new_status_id || details.new_status_id === 0" data-lucide="square-pen" class={"h-4 w-4 text-blue-600 rounded-full", class} {attrs...} />
+                <i x-show="details.new_status_id>0 && task_statuses.filter((s) => s.no === details.new_status_id)[0].status === 'IN_PROGRESS'" data-lucide="refresh-cw" class={"h-4 w-4 text-yellow-600 rounded-full", class} {attrs...} />
+                <i x-show="details.new_status_id>0 && task_statuses.filter((s) => s.no === details.new_status_id)[0].status === 'TO_DO'" data-lucide="clock" class={"h-4 w-4 text-red-500 rounded-full", class} {attrs...} />
+                <i x-show="details.new_status_id>0 && task_statuses.filter((s) => s.no === details.new_status_id)[0].status === 'DONE'" data-lucide="circle-check-big" class={"h-4 w-4 text-green-600 rounded-full font-bold", class} {attrs...} />
             </div>
         case "completed_task":
             <div class="bg-green-500/10 p-1 rounded-md">
@@ -24,7 +27,7 @@ templ ActivityIcon(action string, class string, attrs templ.Attributes) {
             </div>
         case "created_subtask":
             <div class="bg-emerald-600/10 p-1 rounded-md">
-                <i data-lucide="square-check" class={"h-4 w-4 text-emerald-600 rounded-full", class} {attrs...} />
+                <i data-lucide="file-plus" class={"h-4 w-4 text-emerald-600 rounded-full", class} {attrs...} />
             </div>
         case "updated_subtask":
             <div class="bg-blue-600/10 p-1 rounded-md">
@@ -32,7 +35,7 @@ templ ActivityIcon(action string, class string, attrs templ.Attributes) {
             </div>
         case "created_project":
             <div class="flex bg-green-600/10 p-1 rounded-md">
-                <i data-lucide="square-check" class={"h-4 w-4 text-green-600 rounded-full", class} {attrs...} />
+                <i data-lucide="file-plus" class={"h-4 w-4 text-green-600 rounded-full", class} {attrs...} />
             </div>
         case "updated_project":
             <div class="bg-blue-600/10 p-1 rounded-md">
@@ -44,7 +47,7 @@ templ ActivityIcon(action string, class string, attrs templ.Attributes) {
             </div>
         case "created_workspace":
             <div class="flex bg-green-600/10 p-1 rounded-md">
-                <i data-lucide="square-check" class={"h-4 w-4 text-green-600 rounded-full", class} {attrs...} />
+                <i data-lucide="file-plus" class={"h-4 w-4 text-green-600 rounded-full", class} {attrs...} />
             </div>
         case "updated_workspace":
             <div class="bg-blue-600/10 p-1 rounded-md">
