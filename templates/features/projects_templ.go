@@ -848,7 +848,7 @@ func Project(role string, project models.Project) templ.Component {
 														return templ_7745c5c3_Err
 													}
 												} else {
-													templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 text-gray-500 p-0.4 rounded\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z\"></path></svg>")
+													templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<svg xmlns=\"http://www.w3.org/2000/svg\" class=\"w-6 h-6 text-gray-300 p-0.4 rounded\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\" stroke-width=\"1.5\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z\"></path></svg>")
 													if templ_7745c5c3_Err != nil {
 														return templ_7745c5c3_Err
 													}

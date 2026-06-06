@@ -634,13 +634,13 @@ templ EditWorkspaceForm(workspace models.Workspace) {
 
                             <select id={fmt.Sprintf("role-%v", i)} 
                                 @change={fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID)}
-                                class="px-1 py-0.5 text-xs rounded-md border"
+                                class="px-1 py-0.5 text-xs rounded-md border dark:bg-accent"
                                 if strings.Trim(member.Role, " ") == "OWNER" {
                                     disabled
                                 }
                             >
                                 if strings.Trim(member.Role, " ") == "OWNER" {
-                                    <option value="OWNER" 
+                                    <option value="OWNER" class=""
                                         if strings.Trim(member.Role, " ") == "OWNER" {
                                             selected
                                         }

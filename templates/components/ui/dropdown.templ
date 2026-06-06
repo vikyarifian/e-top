@@ -25,7 +25,7 @@ templ DropdownTrigger(class string, attrs templ.Attributes) {
         type="button"
         @click.stop="$store.dropdown.toggle(id)"
         :aria-expanded="$store.dropdown.isOpen(id)"
-        class={"flex cursor-pointer select-none items-center gap-1 rounded-md p-2 text-sm outline-none",class}
+        class={"flex cursor-pointer select-none items-center gap-1 p-2 text-sm outline-none",class}
         {attrs...}
     >
         {children...}

@@ -20,20 +20,25 @@ templ Task(task models.Task, user dto.UserAuth) {
                 task_id: '', 
                 user_id: '',
                 isWatching: false,
+                task_statuses: [],
                 taskWatch() {
                     htmx.ajax('POST', '/task-watch?task_id='+this.task_id+'&user_id='+this.user_id+'&status='+!this.isWatching, {source: document.getElementById('task-watch'), target: '#toaster', swap: 'innerHtml'});
                 },
                 init() {
                     document.body.addEventListener('htmx:afterRequest', (evt) => {
+                        console.log(evt.detail.elt.id);
                         if (evt.detail.successful && evt.detail.elt.id === 'task-watch') {
                             this.isWatching = !this.isWatching;
                             htmx.ajax('GET', '/task-watch?task_id='+this.task_id, {target: '#task-watchers', swap: 'innerHtml'});
                             htmx.ajax('GET', '/task-activities?task_id='+this.task_id, {target: '#task-activities', swap: 'innerHtml'});
                         }
+                        if (evt.detail.successful && evt.detail.elt.id === 'update-task') {
+                            htmx.ajax('GET', '/tasks?id='+this.task_id, {target: '#content', swap: 'innerHtml'});
+                        }
                     })
                 }
             }" 
-        x-init={fmt.Sprintf("task_id = '%s'; user_id = '%s'; isWatching = %t; ", task.ID, user.ID, services.IsUserWatchingTask(task, user.ID))}
+        x-init={fmt.Sprintf("task_id = '%s'; user_id = '%s'; isWatching = %t; task_statuses = %s;", task.ID, user.ID, services.IsUserWatchingTask(task, user.ID), string(utils.MustJSON(services.GetTaskStatuses()))) }
     >
         <div class="flex items-center justify-between">
             <div>
@@ -111,7 +116,59 @@ templ Task(task models.Task, user dto.UserAuth) {
                                 //     {Label: "Progress", Sub: "1h", Active: false},
                                 //     {Label: "Solved", Sub: "9d", Active: true},
                                 // }, "")
-                                @ui.Statusbar(task.Status, services.GetTaskStatuses(), "")
+                                @ui.Statusbar(task.Status, services.GetTaskStatuses(), "") {
+                                    if task.Assignee.ID == user.ID || task.CreatedBy == user.ID {
+                                        @ui.DropdownContent("top-5", nil) {
+                                            if task.Assignee.ID == user.ID {
+                                                <template x-for="(status, index) in task_statuses.filter(c=>c.form==1)" :key="index">
+                                                    @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+                                                        "id":"update-task",
+                                                        ":hx-post": fmt.Sprintf("'/update-task?id=%s&status_id=' + status.no", task.ID),
+                                                        "hx-target": "#content",
+                                                        "hx-swap": "innerHtml",
+                                                        "hx-push-url": "false",
+                                                        "hx-indicator": ".htmx-loader,.loaded-content",
+                                                        "x-show": fmt.Sprintf("status.no != %v && status.form == 1 && status.level==%v", task.Status.No, task.Status.Level+1),
+                                                    }) {
+                                                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                                        <span x-text="status.label"></span>
+                                                    }
+                                                </template>
+                                                // @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+                                                //     "hx-post": "/update-tasks?id="+task.ID+"&status_id=1",
+                                                //     "hx-target": "#content",
+                                                //     "hx-swap": "innerHtml",
+                                                //     "hx-push-url": "true",
+                                                //     "hx-indicator": ".htmx-loader,.loaded-content",
+                                                // }) {
+                                                //     <i data-lucide="edit" class="w-4 h-4"></i>
+                                                //     Edit Status
+                                                // }
+                                            }
+                                            if task.CreatedBy == user.ID {
+                                                @ui.DropdownSeparator("", nil)
+                                                @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
+                                                    "hx-post": "/tasks?id="+task.ID+"#edit-task-form",
+                                                    "hx-target": "#content",
+                                                    "hx-swap": "innerHtml",
+                                                    "hx-push-url": "true",
+                                                    "hx-indicator": ".htmx-loader,.loaded-content",
+                                                }) {
+                                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                                    Edit Task
+                                                }
+                                                // @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100" , templ.Attributes{
+                                                //     "hx-post": "/delete-task?id="+task.ID+"#edit-task-form",
+                                                //     "hx-target": "#toaster",
+                                                //     "hx-swap": "innerHtml",
+                                                // }) {
+                                                //     <i data-lucide="edit" class="w-4 h-4"></i>
+                                                //     Delete Task
+                                                // }
+                                            }
+                                        }
+                                    }
+                                }
                             </div>
                             // @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
                             //     @ui.DropdownTrigger("mt-1 ml-2 p-1", nil) {
@@ -174,7 +231,7 @@ templ Task(task models.Task, user dto.UserAuth) {
                                                 <!-- bintang kosong -->
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
-                                                    class="w-6 h-6 text-gray-500 p-0.4 rounded"
+                                                    class="w-6 h-6 text-gray-300 p-0.4 rounded"
                                                     fill="none"
                                                     viewBox="0 0 24 24"
                                                     stroke="currentColor"

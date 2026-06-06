@@ -113,6 +113,71 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 	}
 }
 
+func HandleUpdateTask(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case http.MethodPost:
+		var task models.Task
+		var taskStatus models.TaskStatus
+		r.ParseForm()
+		t := time.Now().Local()
+		user, _ := auth.GetAuth(w, r)
+
+		if err := db.PgSql.Where("id=?", r.FormValue("id")).First(&task).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return ui.Toast("task-error", "warning", "", "Task not found!", "", nil).Render(r.Context(), w)
+		}
+
+		oldStatusID := task.StatusID
+
+		if task.CreatedBy != user.ID {
+			w.WriteHeader(http.StatusForbidden)
+			return ui.Toast("task-error", "warning", "", "You don't have permission to update this task!", "", nil).Render(r.Context(), w)
+		}
+
+		if err := db.PgSql.Where("no=?", r.FormValue("status_id")).First(&taskStatus).Error; err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Invalid status!", "", nil).Render(r.Context(), w)
+		}
+
+		task.StatusID = taskStatus.No
+		task.StatusLabel = taskStatus.Status
+		task.UpdatedAt = &t
+		task.UpdatedBy = user.ID
+		if err := db.PgSql.Save(&task).Error; err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return ui.Toast("task-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+		}
+
+		logDescription := "updated task status to " + taskStatus.Label
+		if taskStatus.Value == 5 {
+			tc := time.Now().Add(1 * time.Minute)
+			task.CompletedAt = &tc
+			task.ActualHours = float32(utils.TimeDiff(*task.StartDate, tc).Hours())
+			logDescription += " and marked it as completed"
+		} else {
+			task.CompletedAt = nil
+			task.ActualHours = 0
+		}
+		services.AddLog(user.ID, "updated_task", "Task", task.ID, map[string]any{
+			"description":   logDescription,
+			"new_status_id": taskStatus.No,
+			"old_status_id": oldStatusID,
+		})
+
+		db.PgSql.Where("id=?", task.ID).Preload("Assignee", func(db *gorm.DB) *gorm.DB {
+			return db //.Preload("User")
+		}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("User")
+		}).Preload("Project", func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Members")
+		}).Preload("Status").Preload("Priority").First(&task)
+		return features.Task(task, user).Render(r.Context(), w)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return nil
+	}
+}
+
 func HandleTask(w http.ResponseWriter, r *http.Request) error {
 	switch r.Method {
 	case http.MethodPost:
@@ -171,12 +236,19 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 		}
 
 		statusIDStr := r.FormValue("status_id")
-		if strings.Trim(statusIDStr, " ") == "" {
-			w.WriteHeader(http.StatusBadRequest)
-			return ui.Toast("task-error", "warning", "", "Status is required!", "", nil).Render(r.Context(), w)
+		taskStatus := services.GetTaskStatuses()
+		if strings.Trim(statusIDStr, " ") == "" || statusIDStr == "0" {
+			for _, s := range taskStatus {
+				if s.Level == 1 && s.Form == 1 {
+					statusIDStr = strconv.Itoa(s.No)
+				}
+			}
+			// w.WriteHeader(http.StatusBadRequest)
+			// return ui.Toast("task-error", "warning", "", "Status is required!", "", nil).Render(r.Context(), w)
 		}
 		sid, err := strconv.Atoi(statusIDStr)
 		if err != nil {
+
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("task-error", "warning", "", "Invalid status id!", "", nil).Render(r.Context(), w)
 		}
@@ -184,7 +256,6 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 
 		task.StartDate = &t
 
-		taskStatus := services.GetTaskStatuses()
 		validStatus := false
 		statusDone := false
 		for _, s := range taskStatus {
@@ -200,6 +271,7 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 				break
 			}
 		}
+
 		if !validStatus {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("task-error", "warning", "", "Invalid status!", "", nil).Render(r.Context(), w)
