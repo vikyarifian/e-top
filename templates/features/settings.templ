@@ -1,0 +1,507 @@
+package features
+
+import (
+    "fmt"
+
+    "etop/dto"
+    "etop/utils"
+    "etop/templates/components"
+    "etop/templates/components/ui"
+	"etop/models"
+    "etop/services"
+)
+
+templ Settings(tab string, user dto.UserAuth) {
+    <div class="space-y-6" data-title="Settings">
+        <div>
+            <h2 class="text-3xl font-bold tracking-tight">Settings</h2>
+            <p class="text-muted-foreground p-1">Manage settings and preferences here</p>
+        </div>
+
+        <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm">
+            <div class="flex flex-wrap gap-2 border-b border-border border-b-0 bg-background px-2 py-3 pb-0 z-10">
+                // <button class="rounded-t-lg border border-border px-4 py-2 text-sm font-medium bg-card border-b-0 ">General</button>
+                // <button class="rounded-t-lg border border-border px-4 py-2 text-sm font-medium bg-background text-muted-foreground">Security</button>
+                // <button class="rounded-t-lg border border-border px-4 py-2 text-sm font-medium bg-background text-muted-foreground">Notifications</button>
+                <button class="rounded-t-lg border border-border px-4 py-2 text-sm  "
+                        :class={fmt.Sprintf("'general' === '%s' || '%s' === '' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab, tab)}
+                        hx-post="/settings?tab=general"
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-indicator=".htmx-loader,.loaded-content"
+                        >General</button>
+                <button class="rounded-t-lg border border-border px-4 py-2 text-sm  "
+                        :class={fmt.Sprintf("'security' === '%s' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab)}
+                        hx-post="/settings?tab=security"
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-indicator=".htmx-loader,.loaded-content"
+                        >Security</button>
+                <button class="rounded-t-lg border border-border px-4 py-2 text-sm  "
+                        :class={fmt.Sprintf("'notifications' === '%s' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab)}
+                        hx-post="/settings?tab=notifications"
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-indicator=".htmx-loader,.loaded-content"
+                        >Notifications</button>
+                if user.Level == "ADMIN" {
+                    <button class="rounded-t-lg border border-border px-4 py-2 text-sm  "
+                            :class={fmt.Sprintf("'users' === '%s'? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab)}
+                            hx-post="/settings?tab=users"
+                            hx-target="#content"
+                            hx-swap="innerHTML"
+                            hx-push-url="true"
+                            hx-indicator=".htmx-loader,.loaded-content"
+                            >Users</button>
+                    <button class="rounded-t-lg border border-border px-4 py-2 text-sm  "
+                            :class={fmt.Sprintf("'departments' === '%s' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab)}
+                            hx-post="/settings?tab=departments"
+                            hx-target="#content"
+                            hx-swap="innerHTML"
+                            hx-push-url="true"
+                            hx-indicator=".htmx-loader,.loaded-content"
+                            >Departments</button>
+                }
+            </div>
+            <hr class="border-border pt-0 pb-0 top-0 z-0" />
+            <div class="min-h-[calc(100vh-16rem)] overflow-auto p-2">
+                // <span class="text-sm text-muted-foreground p-4">Select a settings category to view and edit your preferences.</span>
+                {children...}
+            </div>
+        </div>
+    </div>
+}
+
+templ GeneralSettings(user dto.UserAuth) {
+    @Settings("general", user) {
+        <div class="space-y-6" data-title="General Settings"
+            x-data="{
+                    user: {},
+                    nameError: '',
+                    usernameError: '',
+                    validateName() {
+                        this.nameError = (this.user.full_name.trim() === '')
+                            ? 'Name is required'
+                            : '';
+                    },
+                    validateUsername() {
+                        this.usernameError = (this.user.username.trim() === '')
+                            ? 'Username is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateName();
+                        this.validateUsername();
+                        
+                        if (this.nameError || this.usernameError) {
+                            return; 
+                        }
+                    },
+                }"
+            x-init={fmt.Sprintf("user= %s", string(utils.MustJSON(user)))}
+        >
+            <div class="text-card-foreground shadow-sm p-4">
+                <h3 class="text-lg font-medium mb-4">Profile Information</h3>
+                <div class="space-y-4">
+                    @ui.Form("/update-profile", "put", "w-lg", templ.Attributes{
+                            "id":"edit-profile-form",
+                            "hx-target": "#toaster",
+                            "hx-swap": "innerHtml",
+                            "hx-disabled-elt":"#btn-update-profile,#full_name",
+                            "x-ref": "form",
+                            "hx-indicator": ".htmx-loader,.loaded-content",
+                            "@submit.prevent":"validateForm($event)",
+                    }) {
+                        <input id="id" x-show="false" type="hidden" name="id" x-model="user.id" />
+                        @ui.FormItem("mb-4", nil) {
+                            @ui.FormLabel("full_name", "Name", "", nil)
+                            @ui.FormControl("full_name", "full_name", "text", "Name", "", "", templ.Attributes{
+                                "autocomplete":"full_name",
+                                "x-model": "user.full_name",
+                                "@blur": "validateName",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "nameError != ''",
+                                    "x-text": "nameError",
+                                },
+                            )                            
+                            @ui.FormLabel("username", "Username", "", nil)
+                            @ui.FormControl("username", "username", "text", "Username", "", "", templ.Attributes{
+                                "autocomplete":"username",
+                                "x-model": "user.username",
+                                "@blur": "validateUsername",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "usernameError != ''",
+                                    "x-text": "usernameError",
+                                },
+                            )    
+                            @ui.FormLabel("email", "Email", "", nil)
+                            @ui.FormControl("email", "email", "text", "Email", "", "", templ.Attributes{
+                                "autocomplete":"email",
+                                "x-model": "user.email",
+                                "disabled": "true",
+                            })
+                        }
+                        <div>
+                            <button id="btn-update-profile" type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                Save Changes
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+templ SecuritySettings(user dto.UserAuth) {
+    @Settings("security", user) {
+        <div class="space-y-6" data-title="Security Settings"
+            x-data="{
+                    user: {},
+                    current_password: '',
+                    currentPasswordError: '',
+                    new_password: '',
+                    newPasswordError: '',
+                    confirm_password: '',
+                    confirmPasswordError: '',
+                    validateCurrentPassword() {
+                        this.currentPasswordError = (this.current_password.trim() === '')
+                            ? 'Current Password is required'
+                            : '';
+                    },                    
+                    validateNewPassword() {
+                        this.newPasswordError = (this.new_password.trim() === '')
+                            ? 'New Password is required'
+                            : '';
+                    },                    
+                    validateConfirmPassword() {
+                        this.confirmPasswordError = (this.confirm_password.trim() === '')
+                            ? 'Confirm Password is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateCurrentPassword();
+                        this.validateNewPassword();
+                        this.validateConfirmPassword();
+                        
+                        if (this.currentPasswordError || this.newPasswordError || this.confirmPasswordError) {
+                            return; 
+                        }
+                    },
+                }"
+            x-init={fmt.Sprintf("user= %s", string(utils.MustJSON(user)))}
+        >
+            <div class="text-card-foreground shadow-sm p-4">
+                <h3 class="text-lg font-medium mb-4">Change Password</h3>
+                <div class="space-y-4">
+                    @ui.Form("/update-password", "put", "w-lg", templ.Attributes{
+                            "id":"edit-profile-form",
+                            "hx-target": "#toaster",
+                            "hx-swap": "innerHtml",
+                            "hx-disabled-elt":"#btn-update-password,#current_password,#new_password,#confirm_password",
+                            "x-ref": "form",
+                            "hx-indicator": ".htmx-loader,.loaded-content",
+                            "@submit.prevent":"validateForm($event)",
+                    }) {
+                        <input id="id" x-show="false" type="hidden" name="id" x-model="user.id" />
+                        @ui.FormItem("mb-4", nil) {
+                            @ui.FormLabel("current_password", "Current Password", "", nil)
+                            @ui.FormControl("current_password", "current_password", "password", "Current Password", "", "", templ.Attributes{
+                                "autocomplete":"current_password",
+                                "x-model": "current_password",
+                                "@blur": "validateCurrentPassword",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "currentPasswordError != ''",
+                                    "x-text": "currentPasswordError",
+                                },
+                            )                            
+                            @ui.FormLabel("new_password", "New Password", "", nil)
+                            @ui.FormControl("new_password", "new_password", "password", "New Password", "", "", templ.Attributes{
+                                "autocomplete":"new_password",
+                                "x-model": "new_password",
+                                "@blur": "validateNewPassword",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "newPasswordError != ''",
+                                    "x-text": "newPasswordError",
+                                },
+                            )  
+                            @ui.FormLabel("confirm_password", "Email", "", nil)
+                            @ui.FormControl("confirm_password", "confirm_password", "password", "Confirm Password", "", "", templ.Attributes{
+                                "autocomplete":"confirm_password",
+                                "x-model": "confirm_password",
+                                "@blur": "validateConfirmPassword",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "confirmPasswordError != ''",
+                                    "x-text": "confirmPasswordError",
+                                },
+                            )  
+                        }
+                        <div>
+                            <button id="btn-update-password" type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                Update Password
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+
+templ NotificationSettings(user dto.UserAuth, userSettings []models.UserSetting) {
+    @Settings("notifications", user) {
+        <div class="space-y-6" data-title="Notification Settings"
+            x-data="{
+                user_settings:[],
+            }"
+            x-init={fmt.Sprintf("user_settings= %s", string(utils.MustJSON(userSettings)))}
+        >
+            <div class="text-card-foreground shadow-sm p-4">
+                    <h3 class="text-lg font-medium mb-4">Push Notifications</h3>
+                    <div class="space-y-4">
+                        @ui.Form("/update-notification", "put", "w-lg", templ.Attributes{
+                                "id":"edit-notification-form",
+                                "hx-target": "#toaster",
+                                "hx-swap": "innerHtml",
+                                "hx-disabled-elt":"#btn-update-notification",
+                                "x-ref": "form",
+                                "hx-indicator": ".htmx-loader,.loaded-content",
+                        }) {
+                            <template x-for="(data, index) in user_settings" :key="index">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" :checked="data.value" @change="data.value = $event.target.checked" class="h-4 w-4 text-primary focus:ring-primary border-border rounded cursor-pointer" />
+                                    <label for="label" class="text-sm font-medium" x-text="data.setting.label"></label>
+                                </div>
+                            </template>
+                            <input
+                                type="hidden"
+                                name="user_settings"
+                                :value="JSON.stringify(user_settings)"
+                            />
+                            <div>
+                                <button id="btn-update-notification" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                    Save Preferences
+                                </button>
+                            </div>
+                        }
+                    </div>
+                
+            </div>
+        </div>
+    }
+}
+
+templ DeptSettings(user dto.UserAuth, depts []models.Department) {
+    @Settings("departments", user) {
+        <div class="space-y-6" data-title="Department Settings">
+            <div class="text-card-foreground shadow-sm p-4">
+                // <h3 class="text-lg font-medium mb-4">Departments</h3>
+                <div class="space-y-4">
+                    if len(depts) == 0 {
+                        @components.NoData("No departments found", "Create your first department", nil) {
+                            @ui.Button("create-department", "outline", "xs", "circle-plus", "Create Department", "", templ.Attributes{
+                                "type": "button",
+                                "@click":"$store.modal.open('create-department-modal')",
+                            })
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        @CreateDept("w-96", nil)
+    }
+}
+
+templ CreateDept(class string, attrs templ.Attributes) {
+    @components.ResponsiveModal("create-department-modal", "Create Department", class) {
+        <div id="create-department-form" x-data="{
+                        init() {
+                            document.body.addEventListener('modal:opened', (evt) => {
+                                if (evt.detail.id === 'create-department-modal') {
+                                    htmx.ajax('GET', '/create-department-form', {target: '#create-department-form', swap: 'innerHtml'})
+                                }
+                            });
+                            document.body.addEventListener('modal:closed', (evt) => {
+                                if (evt.detail.id === 'create-department-modal') {
+                                    document.getElementById('create-department-form').innerHTML = '';
+                                }
+                            });
+                        }
+                    }"
+        >
+            
+        </div>
+    }
+}
+
+templ CreateDeptForm() {
+    <div
+        x-data="{
+                    name: '',
+                    description: '',
+                    color: '',
+                    selectedColor: '',
+                    dept_head_id: '',
+                    members: [],
+                    nameError: '',
+                    descriptionError : '',
+                    colorError: '',
+                    validateName() {
+                        this.nameError = (this.name.trim() === '')
+                            ? 'Name is required'
+                            : '';
+                        this.name = this.name.charAt(0).toUpperCase() + this.name.slice(1);
+                    },
+                    validateColor() {
+                        this.colorError = (this.color.trim() === '')
+                            ? 'Color is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateName();
+                        //this.validateColor();
+                        
+                        if (this.nameError || this.validateColor()) {
+                            return; 
+                        }
+                    },
+                    resetForm() {
+                        this.tags = [];
+                        this.name = '';
+                        this.description = '';
+                        this.color = '';
+                        this.dept_head_id= '';
+                        this.selectedColor = '';
+                        this.members = [];
+                        this.nameError = '';
+                        this.descriptionError = '';
+                        this.colorError = '';
+                    },
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'create-department-form') {
+                                $store.modal.close('create-department-modal');
+                                this.resetForm();
+                                htmx.ajax('GET', '/department-switcher', {target: '#department-switcher', swap: 'innerHtml'})
+                                if (window.location.pathname === '/departments') {
+                                    htmx.ajax('POST', '/departments', { 
+                                        target: '#content', 
+                                        swap: 'innerHTML' 
+                                    })
+                                }
+                            }
+                        });
+
+                        document.body.addEventListener('modal:closed', (evt) => {
+                            if (evt.detail.id === 'create-department-modal') {
+                                this.resetForm();
+                            }
+                        });
+                    }
+                }"
+    >
+        @ui.Form("/department", "post", "", templ.Attributes{
+                "id":"create-department-form",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#create-button,#name,#description,#colorOption",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("name", "Name", "", nil)
+                @ui.FormControl("name", "name", "text", "Department Name", "", "", templ.Attributes{
+                    "autocomplete":"name",
+                    "x-model": "name",
+                    "@blur": "validateName",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "nameError != ''",
+                        "x-text": "nameError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("description", "Description", "", nil)
+                @ui.FormControl("description", "description", "textarea", "Department Description", "", "", templ.Attributes{
+                    "autocomplete":"description",
+                    "x-model": "description",
+                    "@blur": "description=description.charAt(0).toUpperCase() + description.slice(1)",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "descriptionError != ''",
+                        "x-text": "descriptionError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("", "Color", "", nil)
+                <div id="colorOption"
+                    class="flex items-center space-x-3 mt-2"
+                >
+                    <template x-for="color in colorOptions" :key="color.name">
+                        <button 
+                            type="button"
+                            class="h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
+                            :class="[
+                                color.class, 
+                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'
+                            ]"
+                            @click="selectedColor = color.class;"
+                            :title="color.class"
+                        ></button>
+                    </template>
+
+                    <!-- Hidden input buat form -->
+                    <input type="hidden" id="color" name="color" x-model="color" :value="selectedColor">
+                    @ui.FormMessage("", "", templ.Attributes{
+                            "x-show": "selectedColor === ''",
+                            "x-text": "colorError",
+                        },
+                    )
+                </div>
+            }
+            @ui.FormItem("mb-4", nil) {
+                @ui.FormLabel("dept_head_id", "Manager", "", nil)
+                @components.ManagerInput("dept_head_id",
+                    "dept_head_id",
+                    "Type a user...",
+                    []models.User{},  
+                    services.GetNonManager(),
+                    "",
+                    nil,
+                )
+                @ui.FormMessage("", "", templ.Attributes{},
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("members", "Members", "", nil)
+                @components.MemberInput("members",
+                    "members",
+                    "Type a member...",
+                    []models.UserRole{},  
+                    services.GetUserWithoutDept(),
+                    "",
+                    nil,
+                )
+                @ui.FormMessage("", "", templ.Attributes{},
+                )
+            }
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
+}

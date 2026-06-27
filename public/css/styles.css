@@ -684,6 +684,10 @@ video {
   top: 100%;
 }
 
+.z-0 {
+  z-index: 0;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -1011,6 +1015,10 @@ video {
 
 .min-h-\[80px\] {
   min-height: 80px;
+}
+
+.min-h-\[calc\(100vh-16rem\)\] {
+  min-height: calc(100vh - 16rem);
 }
 
 .min-h-screen {
@@ -1401,8 +1409,8 @@ video {
        column-gap: 0.5rem;
 }
 
-.gap-y-2 {
-  row-gap: 0.5rem;
+.gap-y-1 {
+  row-gap: 0.25rem;
 }
 
 .-space-x-2 > :not([hidden]) ~ :not([hidden]) {
@@ -1505,6 +1513,11 @@ video {
   border-radius: calc(var(--radius) - 4px);
 }
 
+.rounded-t-lg {
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+}
+
 .border {
   border-width: 1px;
 }
@@ -1515,6 +1528,10 @@ video {
 
 .border-b {
   border-bottom-width: 1px;
+}
+
+.border-b-0 {
+  border-bottom-width: 0px;
 }
 
 .border-l {
@@ -2375,6 +2392,11 @@ video {
   padding-bottom: 0.5rem;
 }
 
+.py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
 .pb-0 {
   padding-bottom: 0px;
 }
@@ -3216,6 +3238,10 @@ video {
 .focus\:ring-blue-500:focus {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
+}
+
+.focus\:ring-primary:focus {
+  --tw-ring-color: hsl(var(--primary));
 }
 
 .focus\:ring-ring:focus {
