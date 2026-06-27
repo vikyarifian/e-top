@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -194,11 +195,11 @@ func DbMutation() {
 	err = db.PgSql.Find(&taskStatuses).Error
 
 	if len(taskStatuses) == 0 || err != nil {
-		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "TO_DO", Label: "To Do", Color: "bg-red-400 text-primary dark:bg-red-500", Form: 1, Value: 2})
-		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-yellow-400 text-primary dark:bg-yellow-500", Form: 1, Value: 3})
-		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "IN_REVIEW", Label: "In Review", Color: "bg-blue-400 text-primary dark:bg-blue-500", Form: 0, Value: 4})
-		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "DONE", Label: "Done", Color: "bg-emerald-400 text-primary dark:bg-emerald-500", Form: 1, Value: 5})
-		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-pink-400 text-primary dark:bg-pink-500", Form: 0, Value: 0})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "TO_DO", Label: "To Do", Color: "bg-red-400 text-primary dark:bg-red-500", Form: 1, Value: 2, Level: 1})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "IN_PROGRESS", Label: "In Progress", Color: "bg-yellow-400 text-primary dark:bg-yellow-500", Form: 1, Value: 3, Level: 2})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "IN_REVIEW", Label: "In Review", Color: "bg-blue-400 text-primary dark:bg-blue-500", Form: 0, Value: 4, Level: 2})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "DONE", Label: "Done", Color: "bg-emerald-400 text-primary dark:bg-emerald-500", Form: 1, Value: 5, Level: 3})
+		taskStatuses = append(taskStatuses, models.TaskStatus{Status: "CANCELLED", Label: "Cancelled", Color: "bg-pink-400 text-primary dark:bg-pink-500", Form: 0, Value: 0, Level: 3})
 		if err := db.PgSql.Create(&taskStatuses).Error; err != nil {
 			println(err.Error())
 		}
@@ -208,10 +209,21 @@ func DbMutation() {
 	err = db.PgSql.Find(&taskPriorities).Error
 
 	if len(taskPriorities) == 0 || err != nil {
-		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "LOW", Label: "Low", Color: "bg-green-400 dark:bg-green-600/30", Value: 1})
-		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "MEDIUM", Label: "Medium", Color: "bg-yellow-400 dark:bg-yellow-600/30 ", Value: 3})
-		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "HIGH", Label: "High", Color: "bg-red-400 dark:bg-red-600/30", Value: 5})
+		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "LOW", Label: "Low", Color: "bg-green-400 dark:bg-green-600/30", Value: 1, Level: 1})
+		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "MEDIUM", Label: "Medium", Color: "bg-yellow-400 dark:bg-yellow-600/30 ", Value: 3, Level: 2})
+		taskPriorities = append(taskPriorities, models.TaskPriority{Priority: "HIGH", Label: "High", Color: "bg-red-400 dark:bg-red-600/30", Value: 5, Level: 3})
 		if err := db.PgSql.Create(&taskPriorities).Error; err != nil {
+			println(err.Error())
+		}
+	}
+
+	settings := []models.Setting{}
+	err = db.PgSql.Find(&settings).Error
+
+	if len(settings) == 0 || err != nil {
+		settings = append(settings, models.Setting{ID: GenerateHash(strconv.Itoa(1)), Name: "updated_task", Label: "Task Updates"})
+		settings = append(settings, models.Setting{ID: GenerateHash(strconv.Itoa(2)), Name: "updated_project", Label: "Project Updates"})
+		if err := db.PgSql.Create(&settings).Error; err != nil {
 			println(err.Error())
 		}
 	}

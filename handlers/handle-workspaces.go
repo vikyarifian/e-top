@@ -266,8 +266,6 @@ func HandleWorkspace(w http.ResponseWriter, r *http.Request) error {
 				var member = models.WorkspaceMember{}
 				db.PgSql.Where("user_id=? and workspace_id=?", m.UserID, workspace.ID).First(&member)
 				member.Role = m.Role
-				print(m.User.FullName)
-				print(m.Role)
 				db.PgSql.Save(&member)
 			}
 

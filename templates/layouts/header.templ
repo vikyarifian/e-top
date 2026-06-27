@@ -1,11 +1,11 @@
 package layouts
 
 import  (
-    "etop/dto"
+    "etop/models"
     "etop/templates/components"
 )
 
-templ Header(user dto.UserAuth) {
+templ Header(user models.User) {
     <!-- Header -->
     <header class="h-16 bg-card border-b border-border px-4 flex items-center justify-between">
         <div class="flex items-center gap-4"

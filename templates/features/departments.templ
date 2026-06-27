@@ -1,0 +1,91 @@
+package features
+
+import (
+    "strings"
+    "strconv"
+    
+	"etop/models"
+	"etop/dto"
+    "etop/templates/components"
+    "etop/templates/components/ui"
+    "etop/templates/pages"
+)
+
+templ Departments(depts []models.Department, user dto.UserAuth) {
+    if user.Level != "ADMIN" {
+        @pages.Forbidden()
+    } else {
+        
+        <div data-title="Departments" class="space-y-6">
+            <div class="flex items-center justify-between ">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight">Departments</h2>
+                    <p class="text-muted-foreground p-1">View all of departments here</p>
+                </div>
+                <div>
+                    @ui.Button("create-department", "", "sm", "", "", "", templ.Attributes{
+                        "type": "button",
+                        "@click":"$store.modal.open('create-department-modal')",
+                    }) {
+                        <i data-lucide="circle-plus" class="w-4 h-4 "></i><span x-text="`${isMobile ? 'New' : 'New Department'}`"></span>
+                    }
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                if len(depts) == 0 {
+                    @components.NoData("No departments found", "Create a department to get started", nil) {
+                        @ui.Button("create-department", "outline", "xs", "circle-plus", "Create Department", "", templ.Attributes{
+                            "type": "button",
+                            "@click":"$store.modal.open('create-department-modal')",
+                        })
+                    }
+                }
+                for _, dept := range depts {
+                    <div
+                        hx-post={"/departments?id="+dept.ID}
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-indicator=".htmx-loader,.loaded-content" 
+                        class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-4 transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer"
+                    >
+                        <div class="flex items-center justify-between space-y-0 pb-2">
+                            <div class="flex gap-2">
+                                <div class="p-1">
+                                    <div class={"w-7 h-7 p-2 rounded-md text-white flex items-center justify-center text-xs font-semibold " , dept.Color}>
+                                        {strings.ToUpper(dept.Name[0:1])}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div>
+                                        <h3 class="tracking-tight font-semibold">{dept.Name}</h3>
+                                        <div class="text-xs text-muted-foreground">Created at {dept.CreatedAt.Format("Mon, 02 Jan 2006")}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-row justify-between items-center">
+                                <svg data-lucide="users" class="w-4 h-4 mr-1 text-muted-foreground" /> 
+                                <span class="text-xs text-muted-foreground">{strconv.Itoa(len(dept.Members))}</span>
+                            </div>
+                        </div>
+                        <div class="min-h-[50px] p-1">
+                            // <div class="text-2xl font-bold">+2350</div>
+                            <p class="text-md">{dept.Description}</p>
+                        </div>
+                        <div class="pt-4 pb-4">
+                            @components.DottedSeparator("", "#d4d4d8", "1px", "", "", "horizontal")
+                        </div>
+                        <div class="text-sm text-muted-foreground">view department details</div>
+                    </div>
+                }
+            </div>
+            
+        </div>
+    }
+}
+
+templ Department(dept models.Department) {
+	
+}

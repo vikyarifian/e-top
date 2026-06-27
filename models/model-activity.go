@@ -30,7 +30,21 @@ type Log struct {
 	UserID string `gorm:"column:user_id;not null;type:uuid" json:"user_id"`
 	User   User   `gorm:"foreignKey:UserID;references:ID"`
 
-	Action string `gorm:"column:action;type:varchar(50);not null;check:action IN ('created_task','updated_task','created_subtask','updated_subtask','completed_task','created_project','updated_project','completed_project','created_workspace','updated_workspace','added_comment','added_member','removed_member','joined_workspace','transferred_workspace_ownership','added_attachment')" json:"action"`
+	Action string `gorm:"column:action;type:varchar(50);not null;check:action IN ('created_user','updated_user','created_task',
+					'declined_workspace',
+					'invited_workspace',
+					'updated_workspace',
+					'updated_task',
+					'created_project',
+					'unwatched_task',
+					'joined_workspace',
+					'created_workspace',
+					'login_user',
+					'updated_project',
+					'watched_task',
+					'verified_user',
+					'forgot_password_user',
+					'registered_user')" json:"action"`
 
 	ResourceType string `gorm:"column:resource_type;type:varchar(50);not null;check:resource_type IN ('Task','Project','Workspace','Comment','User')" json:"resource_type"`
 	ResourceID   string `gorm:"column:resource_id;type:uuid;not null" json:"resource_id"`
@@ -93,32 +107,21 @@ type Reaction struct {
 //     user_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 
 //     action VARCHAR(128) NOT NULL CHECK (action IN (
-//         'created_dept',
-//         'updated_dept',
-//         'created_task',
-//         'updated_task',
-//         'created_subtask',
-//         'updated_subtask',
-//         'completed_task',
-//         'created_project',
-//         'updated_project',
-//         'completed_project',
-//         'created_workspace',
-//         'updated_workspace',
-//			'watched_task',
-//			'unwatched_task',
-//         'added_comment',
-//         'added_member',
-//         'removed_member',
-//		   'invited_workspace',
-//         'joined_workspace',
-//         'transferred_workspace_ownership',
-//         'added_attachment',
-//		   'registered_user',
-//			'login_user',
-//			'forgot_password_user',
-//			'resend_email_user',
-//			'verified_user'
+// 'created_user','updated_user','created_task',
+// 'declined_workspace',
+// 'invited_workspace',
+// 'updated_workspace',
+// 'updated_task',
+// 'created_project',
+// 'unwatched_task',
+// 'joined_workspace',
+// 'created_workspace',
+// 'login_user',
+// 'updated_project',
+// 'watched_task',
+// 'verified_user',
+// 'forgot_password_user',
+// 'registered_user'
 //     )),
 
 //     resource_type VARCHAR(128) NOT NULL CHECK (resource_type IN ('User','Dept','Workspace','Project','Task','Comment')),
@@ -169,7 +172,7 @@ type Reaction struct {
 //         'transferred_workspace_ownership',
 //         'added_attachment',
 // 		   'registered_user',
-// 			'login_user',
+// 			'login_user','updated_user','created_user',
 // 			'forgot_password_user',
 // 			'resend_email_user',
 // 			'verified_user'

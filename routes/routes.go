@@ -66,6 +66,9 @@ func SetRoutes() {
 	mux.HandleFunc("/join-workspace", auth.RequireAuth(handlers.Make(handlers.HandleJoinWorkspace)))
 	mux.HandleFunc("/workspaces", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaces)))
 
+	// mux.HandleFunc("/department", auth.RequireAuth(handlers.Make(handlers.HandleDepartment)))
+	mux.HandleFunc("/departments", auth.RequireAuth(handlers.Make(handlers.HandleDepartments)))
+
 	mux.HandleFunc("/project", auth.RequireAuth(handlers.Make(handlers.HandleProject)))
 	mux.HandleFunc("/projects", auth.RequireAuth(handlers.Make(handlers.HandleProjects)))
 	mux.HandleFunc("/create-project-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateProjectForm)))
@@ -79,7 +82,14 @@ func SetRoutes() {
 
 	mux.HandleFunc("/task-activities", auth.RequireAuth(handlers.Make(handlers.HandleTaskActivities)))
 
+	mux.HandleFunc("/settings", auth.RequireAuth(handlers.Make(handlers.HandleSettings)))
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
+
+	mux.HandleFunc("/update-profile", auth.RequireAuth(handlers.Make(handlers.HandleProfile)))
+	mux.HandleFunc("/update-password", auth.RequireAuth(handlers.Make(handlers.HandleChangePassword)))
+	mux.HandleFunc("/update-notification", auth.RequireAuth(handlers.Make(handlers.HandleNotificationSetting)))
+	mux.HandleFunc("/create-department-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateDepartmentForm)))
+	mux.HandleFunc("/department", auth.RequireAuth(handlers.Make(handlers.HandleDepartment)))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" || r.URL.Path == "" {
