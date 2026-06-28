@@ -93,7 +93,7 @@ func Layout(title string, user dto.UserAuth, content ...templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Header(services.GetUser(user)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Header(services.GetUser(user), services.GetUserNotifications(user.ID, 10)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

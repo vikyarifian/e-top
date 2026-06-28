@@ -256,14 +256,12 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 		task.StartDate = &t
 
 		validStatus := false
-		statusDone := false
 
 		for _, s := range taskStatus {
 			if s.No == task.StatusID {
 				validStatus = true
 				task.StatusLabel = s.Status
 				if s.Value == 5 {
-					statusDone = true
 					tc := time.Now().Add(1 * time.Minute)
 					task.CompletedAt = &tc
 					task.ActualHours = float32(utils.TimeDiff(*task.StartDate, tc).Hours())
@@ -331,13 +329,8 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 		task.CreatedBy = user.ID
 		task.UpdatedAt = &t
 		task.UpdatedBy = user.ID
-		if statusDone {
-			task.ActualHours = task.ActualHours
-			task.CompletedAt = task.CompletedAt
-		}
-
 		if task.Type != "PROJECT" {
-			if task.Assignee.ID != user.ID {
+			if task.UserID != user.ID {
 				task.Type = "TICKET"
 			} else {
 				task.Type = "DAILY"

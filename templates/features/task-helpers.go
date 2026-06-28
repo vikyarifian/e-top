@@ -32,3 +32,13 @@ func taskAssigneeList(task models.Task) []models.UserRole {
 	}
 	return []models.UserRole{}
 }
+
+func toggleSortDir(field string, page models.PageInfo) string {
+	if page.SortBy == field {
+		if page.SortDir == "asc" {
+			return "desc"
+		}
+		return "asc"
+	}
+	return "asc"
+}

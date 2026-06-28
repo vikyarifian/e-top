@@ -1,0 +1,118 @@
+package features
+
+import (
+    _"fmt"
+    "time"
+
+    "etop/models"
+    "etop/services"
+    "etop/templates/components"
+    "etop/templates/components/ui"
+)
+
+type notifGroup struct {
+    Label  string
+    Notifs []models.Notif
+}
+
+templ Notifications(userID string) {
+    <div class="mx-auto max-w-3xl space-y-6">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-bold">Notifications</h1>
+        </div>
+
+        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+
+        @NotificationGroups(services.GetUserNotifications(userID, 999))
+    </div>
+}
+
+templ NotificationGroups(notifs []models.Notif) {
+    @NotificationGroupList(notifs)
+}
+
+templ NotificationGroupList(notifs []models.Notif) {
+    if len(getNotifGroups(notifs)) == 0 {
+        <div class="text-center py-12 text-muted-foreground">
+            <p class="text-lg">No notifications yet</p>
+            <p class="text-sm mt-1">Activity from your tasks and projects will appear here</p>
+        </div>
+    } else {
+        for _, g := range getNotifGroups(notifs) {
+            @NotificationGroup(g.Label, g.Notifs)
+        }
+    }
+}
+
+templ NotificationGroup(label string, notifs []models.Notif) {
+    <div class="space-y-2 mb-6">
+        <h2 class="text-sm font-semibold text-muted-foreground px-1">{label}</h2>
+        <div class="space-y-1">
+            for _, n := range notifs {
+                @NotificationRow(n)
+            }
+        </div>
+    </div>
+}
+
+templ NotificationRow(n models.Notif) {
+    <div class="flex items-start gap-3 px-4 py-3 hover:bg-accent/50 cursor-pointer transition"
+        hx-post={components.NotifLink(n)}
+        hx-target="#content"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        hx-indicator=".htmx-loader,.loaded-content"
+    >
+        // <div class={fmt.Sprintf("size-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 %s", n.ActorColor)}>
+        //     {n.ActorName[:clamp(len(n.ActorName), 1)]}
+        // </div>
+        @ui.Avatar(n.ActorName, n.ActorColor, "xs", "mt-0.5", nil)
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between">
+                <span class="text-sm font-semibold">{n.ActorName}</span>
+                <span class="text-xs text-muted-foreground">{components.RelativeTime(n.Timestamp)}</span>
+            </div>
+            <p class="text-sm text-muted-foreground mt-0.5">{n.Description}</p>
+        </div>
+    </div>
+}
+
+func clamp(v, max int) int {
+    if v > max { return max }
+    return v
+}
+
+func getNotifGroups(notifs []models.Notif) []notifGroup {
+    now := time.Now().Truncate(24 * time.Hour)
+    today := []models.Notif{}
+    yesterday := []models.Notif{}
+    thisWeek := []models.Notif{}
+    earlier := []models.Notif{}
+    for _, n := range notifs {
+        days := int(now.Sub(n.Timestamp.Truncate(24 * time.Hour)).Hours() / 24)
+        switch {
+        case days == 0:
+            today = append(today, n)
+        case days == 1:
+            yesterday = append(yesterday, n)
+        case days >= 2 && days <= 7:
+            thisWeek = append(thisWeek, n)
+        default:
+            earlier = append(earlier, n)
+        }
+    }
+    groups := []notifGroup{}
+    if len(today) > 0 {
+        groups = append(groups, notifGroup{"Today", today})
+    }
+    if len(yesterday) > 0 {
+        groups = append(groups, notifGroup{"Yesterday", yesterday})
+    }
+    if len(thisWeek) > 0 {
+        groups = append(groups, notifGroup{"This Week", thisWeek})
+    }
+    if len(earlier) > 0 {
+        groups = append(groups, notifGroup{"Earlier", earlier})
+    }
+    return groups
+}
