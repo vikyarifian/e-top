@@ -11,6 +11,8 @@ import (
 	"etop/templates/pages"
 	"net/http"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 func HandleSettings(w http.ResponseWriter, r *http.Request) error {
@@ -47,8 +49,14 @@ func HandleSettings(w http.ResponseWriter, r *http.Request) error {
 			return layouts.Layout("Notification Settings", user, features.NotificationSettings(user, userSettings)).Render(r.Context(), w)
 		case "departments":
 			var depts []models.Department
-			db.PgSql.Find(&depts)
+			db.PgSql.Preload("Members", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).Preload("DeptHead").Order("no").Find(&depts)
 			return layouts.Layout("Department Settings", user, features.DeptSettings(user, depts)).Render(r.Context(), w)
+		case "users":
+			var users []models.User
+			db.PgSql.Order("no").Find(&users)
+			return layouts.Layout("User Settings", user, features.UserSettings(user, users)).Render(r.Context(), w)
 		default:
 			return features.Settings(tab, user).Render(r.Context(), w)
 		}
@@ -79,8 +87,14 @@ func HandleSettings(w http.ResponseWriter, r *http.Request) error {
 			return features.NotificationSettings(user, userSettings).Render(r.Context(), w)
 		case "departments":
 			var depts []models.Department
-			db.PgSql.Find(&depts)
+			db.PgSql.Preload("Members", func(db *gorm.DB) *gorm.DB {
+				return db.Preload("User")
+			}).Preload("DeptHead").Order("no").Find(&depts)
 			return features.DeptSettings(user, depts).Render(r.Context(), w)
+		case "users":
+			var users []models.User
+			db.PgSql.Order("no").Find(&users)
+			return features.UserSettings(user, users).Render(r.Context(), w)
 		default:
 			return features.Settings(tab, user).Render(r.Context(), w)
 		}

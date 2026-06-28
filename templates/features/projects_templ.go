@@ -649,7 +649,7 @@ func Project(role string, project models.Project) templ.Component {
 								}
 								return nil
 							})
-							templ_7745c5c3_Err = ui.TableRow("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var19), templ_7745c5c3_Buffer)
+							templ_7745c5c3_Err = ui.TableRow("bg-gray-200 hover:bg-gray-200", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var19), templ_7745c5c3_Buffer)
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
 							}
@@ -736,7 +736,7 @@ func Project(role string, project models.Project) templ.Component {
 											return templ_7745c5c3_Err
 										}
 										if task.UserID != "" {
-											templ_7745c5c3_Err = ui.Avatar(task.Assignee.Username, task.Assignee.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
+											templ_7745c5c3_Err = ui.Avatar(task.Assignee.FullName, task.Assignee.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
 											if templ_7745c5c3_Err != nil {
 												return templ_7745c5c3_Err
 											}

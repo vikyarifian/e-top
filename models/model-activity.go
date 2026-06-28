@@ -58,15 +58,15 @@ type Log struct {
 }
 
 type Comment struct {
-	ID string `gorm:"column:id;primaryKey;type:uuid;default:gen_random_uuid()" json:"id"`
+	ID int `gorm:"column:id;primaryKey;type:uuid;default:gen_random_uuid()" json:"id"`
 
 	Text string `gorm:"column:text;type:text;not null" json:"text"`
 
-	TaskID string `gorm:"column:task_id;type:uuid;not null" json:"task_id"`
+	TaskID string `gorm:"column:task_id;" json:"task_id"`
 	Task   *Task  `gorm:"foreignKey:TaskID;constraint:OnDelete:CASCADE" json:"task,omitempty"`
 
-	AuthorID string `gorm:"column:author_id;type:uuid;not null" json:"author_id"`
-	Author   *User  `gorm:"foreignKey:AuthorID;constraint:OnDelete:CASCADE" json:"author,omitempty"`
+	AuthorID string `gorm:"column:author_id;" json:"author_id"`
+	Author   *User  `gorm:"foreignKey:AuthorID;references:ID;constraint:OnDelete:CASCADE" json:"author,omitempty"`
 
 	// Mentions → simpan array objek (user_id, offset, length) ke JSONB
 	Mentions    []Mention `gorm:"-" json:"mentions,omitempty"` // pakai struct slice, disimpan manual ke JSONB
@@ -177,3 +177,20 @@ type Reaction struct {
 // 			'resend_email_user',
 // 			'verified_user'
 //     ));
+
+// CREATE TABLE comments (
+//     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+//     text TEXT NOT NULL,
+//     task_id VARCHAR(255) NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+//     author_id VARCHAR(255) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+//     mentions JSONB DEFAULT '[]',
+//     reactions JSONB DEFAULT '[]',
+//     attachments JSONB DEFAULT '[]',
+//     is_edited BOOLEAN DEFAULT FALSE,
+//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     created_by VARCHAR(255) NOT NULL,
+//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+//     updated_by VARCHAR(255) NOT NULL
+// );
+
+// CREATE INDEX idx_comments_task_id ON comments(task_id);

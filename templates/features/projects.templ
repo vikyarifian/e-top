@@ -124,7 +124,7 @@ templ Project(role string, project models.Project) {
                                     <div class="relative w-full overflow-auto scrollbar-thin">
                                         @ui.Table("w-full caption-bottom text-sm", nil) {
                                             @ui.TableHeader("", nil) {
-                                                @ui.TableRow("", nil) {
+                                                @ui.TableRow("bg-gray-200 hover:bg-gray-200", nil) {
                                                     @ui.TableHead("", nil) {
                                                         @ui.Button("title-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
@@ -179,7 +179,7 @@ templ Project(role string, project models.Project) {
                                                             // if len(task.Assignees) > 0 {
                                                                 <div class="flex justify-start">
                                                                     if task.UserID != "" {
-                                                                        @ui.Avatar(task.Assignee.Username, task.Assignee.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{})
+                                                                        @ui.Avatar(task.Assignee.FullName, task.Assignee.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{})
                                                                         {task.Assignee.FullName}
                                                                     } else {
                                                                         {"Unassigned"}

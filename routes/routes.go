@@ -81,6 +81,7 @@ func SetRoutes() {
 	mux.HandleFunc("/update-task", auth.RequireAuth(handlers.Make(handlers.HandleUpdateTask)))
 
 	mux.HandleFunc("/task-activities", auth.RequireAuth(handlers.Make(handlers.HandleTaskActivities)))
+	mux.HandleFunc("/task-comments", auth.RequireAuth(handlers.Make(handlers.HandleTaskComments)))
 
 	mux.HandleFunc("/settings", auth.RequireAuth(handlers.Make(handlers.HandleSettings)))
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
@@ -89,7 +90,14 @@ func SetRoutes() {
 	mux.HandleFunc("/update-password", auth.RequireAuth(handlers.Make(handlers.HandleChangePassword)))
 	mux.HandleFunc("/update-notification", auth.RequireAuth(handlers.Make(handlers.HandleNotificationSetting)))
 	mux.HandleFunc("/create-department-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateDepartmentForm)))
+	mux.HandleFunc("/edit-department-form", auth.RequireAuth(handlers.Make(handlers.HandleEditDepartmentForm)))
 	mux.HandleFunc("/department", auth.RequireAuth(handlers.Make(handlers.HandleDepartment)))
+	mux.HandleFunc("/invite-department-form", auth.RequireAuth(handlers.Make(handlers.HandleInviteDepartmentForm)))
+	mux.HandleFunc("/invite-department", auth.RequireAuth(handlers.Make(handlers.HandleInviteDepartment)))
+	mux.HandleFunc("/join-department", auth.RequireAuth(handlers.Make(handlers.HandleJoinDepartment)))
+	mux.HandleFunc("/create-user-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateUserForm)))
+	mux.HandleFunc("/edit-user-form", auth.RequireAuth(handlers.Make(handlers.HandleEditUserForm)))
+	mux.HandleFunc("/user", auth.RequireAuth(handlers.Make(handlers.HandleManageUser)))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" || r.URL.Path == "" {

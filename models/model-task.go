@@ -43,7 +43,7 @@ type Task struct {
 	Subtasks []Subtask `gorm:"foreignKey:TaskID;references:ID" json:"subtasks"`
 
 	// One-to-many comments
-	// Comments      []Comment    `gorm:"foreignKey:TaskID;references:ID" json:"comments"`
+	Comments      []Comment    `gorm:"foreignKey:TaskID;references:ID" json:"comments"`
 
 	// One-to-many attachments
 	Attachments []Attachment `gorm:"foreignKey:TaskID;references:ID" json:"attachments"`
