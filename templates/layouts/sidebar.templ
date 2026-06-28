@@ -5,7 +5,7 @@ import (
 )
 
 // Sidebar Layout
-templ Sidebar(mobile bool) {
+templ Sidebar(mobile bool, userID string) {
 	<div class="flex flex-col h-full">
 		<!-- Logo -->
 		<div class="h-16 min-h-16 flex items-center border-b border-border" :class="sidebarCollapsed && !isMobile ? 'px-4' : 'px-6'">
@@ -24,7 +24,7 @@ templ Sidebar(mobile bool) {
 		}
 		<!-- Navigation -->
 		<nav class="flex-1" :class="sidebarCollapsed && !isMobile ? 'p-2' : 'p-4'" :class="isMobile ? 'pt-0' : '' ">
-			@Navigation()
+			@Navigation(userID)
 		</nav>
 	</div>
 }

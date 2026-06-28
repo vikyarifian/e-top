@@ -4,15 +4,13 @@ import (
 	"etop/models"
 )
 
-func GetMenu() []models.Menu {
+func GetMenu(userID string) []models.Menu {
 	menus := []models.Menu{}
 	menus = append(menus, models.Menu{Label: "Dashboard", Href: "/dashboard", Icon: "home"})
 	menus = append(menus, models.Menu{Label: "Department", Href: "/department", Icon: "network"})
 	menus = append(menus, models.Menu{Label: "Workspaces", Href: "/workspaces", Icon: "briefcase-business"})
-	// menus = append(menus, models.Menu{Label: "Workspaces", Href: "/workspaces", Icon: "monitor-check"})
 	menus = append(menus, models.Menu{Label: "My Tasks", Href: "/my-tasks", Icon: "layout-list"})
-	// menus = append(menus, models.Menu{Label: "Members", Href: "/members", Icon: "users"})
-	menus = append(menus, models.Menu{Label: "Achieved", Href: "/achieve", Icon: "badge-check"})
+	menus = append(menus, models.Menu{Label: "Achieved", Count: int(CountAchievedTasks(userID)), Href: "/achieve", Icon: "badge-check"})
 	menus = append(menus, models.Menu{Label: "Settings", Href: "/settings", Icon: "settings"})
 
 	return menus

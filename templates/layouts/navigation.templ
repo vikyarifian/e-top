@@ -7,9 +7,9 @@ import (
     "etop/templates/components/ui"
 )
 
-templ Navigation() {
+templ Navigation(userID string) {
     <ul class="space-y-2" x-data="{ currentPath: window.location.pathname }">
-        for _, menu := range services.GetMenu() {
+        for _, menu := range services.GetMenu(userID) {
             <li>
                 <a 
                     x-show="!sidebarCollapsed || isMobile"
@@ -23,7 +23,10 @@ templ Navigation() {
                     @click={fmt.Sprintf("currentPath = '%s'; if (isMobile) sidebarOpen = false", menu.Href)}
                 >                  
                     <div x-show="!sidebarCollapsed || isMobile" class="w-5 h-5" data-lucide={menu.Icon} />
-                    <span x-show="!sidebarCollapsed || isMobile">{menu.Label}</span>
+                    <span x-show="!sidebarCollapsed || isMobile" class="flex-1">{menu.Label}</span>
+                    if menu.Count > 0 {
+                        <span x-show="!sidebarCollapsed || isMobile" class="ml-auto text-xs bg-primary text-primary-foreground rounded-full px-2 py-0.5">{fmt.Sprintf("%d", menu.Count)}</span>
+                    }
                 </a>
                 @ui.Tooltip(menu.Label, "mt-0 ml-4", templ.Attributes{
                     "x-show":"sidebarCollapsed && !isMobile",

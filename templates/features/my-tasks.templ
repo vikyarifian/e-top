@@ -1,0 +1,262 @@
+package features
+
+import (
+    "fmt"
+    "time"
+
+    "etop/dto"
+    "etop/utils"
+    "etop/models"
+    "etop/services"
+    "etop/templates/components"
+    "etop/templates/components/ui"
+)
+
+templ MyTasks(tasks []models.Task, user dto.UserAuth) {
+    <div class="mx-auto space-y-6" x-data="{
+        }">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-bold">My Tasks</h1>
+            @ui.Button("add-my-task", "primary", "sm", "plus", "Add Task", "", templ.Attributes{
+                "@click": "$store.modal.open('create-my-task-modal')",
+                "type": "button",
+            })
+        </div>
+
+        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+
+        if len(tasks) > 0 {
+            <div class="space-y-0 border rounded-lg overflow-hidden">
+                <div class="grid grid-cols-12 gap-2 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground">
+                    <div class="col-span-5">Task</div>
+                    <div class="col-span-2">Type</div>
+                    <div class="col-span-2">Status</div>
+                    <div class="col-span-1">Priority</div>
+                    <div class="col-span-2">Assignee</div>
+                </div>
+                for _, task := range tasks {
+                    <div class="grid grid-cols-12 gap-2 px-4 py-3 border-t border-border items-center hover:bg-muted/30 cursor-pointer transition"
+                        hx-post={fmt.Sprintf("/tasks?id=%s", task.ID)}
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                        hx-indicator=".htmx-loader,.loaded-content"
+                    >
+                        <div class="col-span-5">
+                            <div class="text-sm font-medium truncate">{task.Title}</div>
+                            if task.DueDate != nil {
+                                <div class="text-xs text-muted-foreground">
+                                    Due {task.DueDate.Format("Jan 2")}
+                                </div>
+                            }
+                        </div>
+                        <div class="col-span-2">
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                {task.Type}
+                            </span>
+                        </div>
+                        <div class="col-span-2">
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent"
+                                :class={fmt.Sprintf("task_statuses.filter(s=>s.no==%v)[0]?.color||'bg-gray-100'", task.Status.No)}>
+                                {task.Status.Label}
+                            </span>
+                        </div>
+                        <div class="col-span-1">
+                            <div class="flex items-center gap-0.5">
+                                for i := 1; i <= 3; i++ {
+                                    if i <= task.Priority.Level {
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
+                                        </svg>
+                                    } else {
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
+                                        </svg>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <div class="col-span-2 flex items-center gap-2">
+                            @ui.Avatar(task.Assignee.FullName, task.Assignee.Color, "xs", "h-6 w-6", nil)
+                            <span class="text-xs truncate">{task.Assignee.FullName}</span>
+                        </div>
+                    </div>
+                }
+            </div>
+        } else {
+            <div class="text-center py-12 text-muted-foreground">
+                <p class="text-lg">No tasks yet</p>
+                <p class="text-sm mt-1">Create your first task to get started</p>
+            </div>
+        }
+
+        @CreateMyTask("w-96")
+    </div>
+}
+
+templ CreateMyTask(class string) {
+    @components.ResponsiveModal("create-my-task-modal", "Create Task", class) {
+        <div
+            x-data="{
+                today: new Date(),
+                task_statuses: [],
+                task_priorities: [],
+                users: [],
+                typ: 'DAILY',
+                title: '',
+                description: '',
+                status_id: 1,
+                priority_id: 1,
+                due_date: '',
+                titleError: '',
+                descriptionError: '',
+                statusError: '',
+                priorityError: '',
+                validateTitle() {
+                    this.titleError = (this.title.trim() === '') ? 'Title is required' : '';
+                    this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);
+                },
+                validateStatus() {
+                    this.statusError = (this.status_id==0)
+                        ? 'Status is required'
+                        : '';
+                },
+                validatePriority() {
+                    this.priorityError = (this.priority_id == 0)
+                        ? 'Priority is required'
+                        : '';
+                },
+                validateForm(e) {
+                    e.preventDefault();
+                    this.validateTitle();
+                    this.validateStatus();
+                    
+                    if (this.titleError || this.statusError) {
+                        return; 
+                    }
+                },
+                init() {
+                    this._watchInterval = setInterval(() => {
+                        const el = document.getElementById('assignee');
+                        if (el && el.value !== undefined) {
+                            const val = el.value;
+                            this.typ = (val && val !== auth_id) ? 'TICKET' : 'DAILY';
+                        }
+                    }, 200);
+                    document.body.addEventListener('htmx:afterRequest', (evt) => {
+                        if (evt.detail.successful && evt.detail.pathInfo.requestPath === '/task' && evt.detail.requestConfig.verb === 'post') {
+                            $store.modal.close('create-my-task-modal');
+                            this.title = '';
+                            this.description = '';
+                            this.due_date = '';
+                            this.status_id = this.task_statuses.filter(t=>t.level==1)[0]?.no || 1;
+                            this.priority_id = 1;
+                            this.typ = 'DAILY';
+                            this.titleError = '';
+                            htmx.ajax('POST', '/my-tasks', { target: '#content', swap: 'innerHTML' });
+                        }
+                    });
+                }
+            }"
+            x-init={fmt.Sprintf("task_statuses= %s; task_priorities= %s; users= %s; this.status_id= task_statuses.filter(t=>t.level==1)[0].no; this.due_date= '%s';", string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())), string(utils.MustJSON(services.GetAllUserRole())), utils.FormatDate(time.Now()))}
+        >
+            @ui.Form("/task", "post", "space-y-6 w-lg", templ.Attributes{
+                    "id":"create-my-task-form",
+                    "hx-target": "#toaster",
+                    "hx-swap": "innerHtml",
+                    "hx-disabled-elt":"#create-my-task-btn,#title,#description",
+                    "x-ref": "form",
+                    "@submit.prevent":"validateForm($event)",
+            }) {
+                <input id="task-type-input" type="hidden" name="type" value="DAILY" />
+                <input type="hidden" name="project_id" value="" />
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("my-task-title", "Title", "", nil)
+                            @ui.FormControl("my-task-title", "title", "text", "Task title", "", "", templ.Attributes{
+                                "x-model": "title",
+                                "@blur": "validateTitle",
+                                "required": "",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                "x-show": "titleError != ''",
+                                "x-text": "titleError",
+                            })
+                        }
+                    </div>
+                    <div>
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("my-task-description", "Description", "", nil)
+                            @ui.FormControl("my-task-description", "description", "textarea", "Task description", "", "", templ.Attributes{
+                                "x-model": "description",
+                            })
+                        }
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            @ui.FormItem("", nil) {
+                                @ui.FormLabel("my-task-status", "Status", "", nil)
+                                <select id="my-task-status" name="status_id" x-model="status_id"
+                                    class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <template x-for="(s, idx) in task_statuses.filter(t=>t.form==1)" :key="idx">
+                                        <option :value="s.no" x-text="s.label" :selected="s.level==1"></option>
+                                    </template>
+                                </select>
+                            }
+                        </div>
+                        <div>
+                            @ui.FormItem("", nil) {
+                                @ui.FormLabel("my-task-priority", "Priority", "", nil)
+                                <select id="my-task-priority" name="priority_id" x-model="priority_id"
+                                    class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <template x-for="(p, idx) in task_priorities" :key="idx">
+                                        <option :value="p.no" x-text="p.label" :selected="p.level==1"></option>
+                                    </template>
+                                </select>
+                            }
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            @ui.FormItem("", nil) {
+                                @ui.FormLabel("my-task-due", "Due Date", "", nil)
+                                @ui.FormControl("my-task-due", "due_date", "date", "", "", "w-full", templ.Attributes{
+                                    "x-model": "due_date",
+                                })
+                            }
+                        </div>
+                        <div>
+                            @ui.FormItem("", nil) {
+                                @ui.FormLabel("my-task-type", "Type", "", nil)
+                                <div class="flex h-11 items-center px-3 rounded-md border bg-muted/30 text-sm">
+                                    <span x-text="typ === 'DAILY' ? 'Daily' : 'Ticket'"></span>
+                                    <span class="ml-2 text-xs text-muted-foreground" x-show="typ === 'TICKET'">(auto: assignee not self)</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("my-task-assignee", "Assignee", "", nil)
+                            @components.AssigneeInput("assignee",
+                                "assignee",
+                                "Type a assignee...",
+                                []models.UserRole{},
+                                services.GetAllUserRole(),
+                                "",
+                                nil,
+                            )
+                        }
+                    </div>
+                </div>
+                @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                <div class="flex justify-end">
+                    @ui.Button("create-my-task-btn", "", "", "", "Create", "", templ.Attributes{"type": "submit"})
+                </div>
+            }
+        </div>
+    }
+}
