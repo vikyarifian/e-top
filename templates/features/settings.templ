@@ -2,6 +2,7 @@ package features
 
 import (
     "fmt"
+    "strings"
 
     "etop/dto"
     "etop/utils"
@@ -305,7 +306,6 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department) {
     @Settings("departments", user) {
         <div class="space-y-6" data-title="Department Settings">
             <div class="text-card-foreground shadow-sm p-4">
-                // <h3 class="text-lg font-medium mb-4">Departments</h3>
                 <div class="space-y-4">
                     if len(depts) == 0 {
                         @components.NoData("No departments found", "Create your first department", nil) {
@@ -314,12 +314,521 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department) {
                                 "@click":"$store.modal.open('create-department-modal')",
                             })
                         }
+                    } else {
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-medium">Departments</h3>
+                                <p class="text-sm text-muted-foreground">Manage all departments</p>
+                            </div>
+                            <div>
+                                @ui.Button("create-dept-table", "", "sm", "circle-plus", "New Department", "", templ.Attributes{
+                                    "type": "button",
+                                    "@click":"$store.modal.open('create-department-modal')",
+                                })
+                            </div>
+                        </div>
+                        <div class="relative w-full overflow-auto scrollbar-thin">
+                            @ui.Table("w-full caption-bottom text-sm", nil) {
+                                @ui.TableHeader("", nil) {
+                                    @ui.TableRow("bg-gray-200 hover:bg-gray-200", nil) {
+                                        @ui.TableHead("", nil) {
+                                            @ui.Button("name-sort", "ghost", "sm", "", "", "", templ.Attributes{
+                                                "type": "button",
+                                            }) {
+                                                Name <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                            }
+                                        }
+                                        @ui.TableHead("", nil) {
+                                            @ui.Button("description-sort", "ghost", "sm", "", "", "", templ.Attributes{
+                                                "type": "button",
+                                            }) {
+                                                Description <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                            }
+                                        }
+                                        @ui.TableHead("", nil) {
+                                            @ui.Button("dept-head-sort", "ghost", "sm", "", "", "", templ.Attributes{
+                                                "type": "button",
+                                            }) {
+                                                Manager <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
+                                            }
+                                        }
+                                        @ui.TableHead("", nil) {
+                                            Actions
+                                        }
+                                    }
+                                }
+                                @ui.TableBody("p-2", nil) {
+                                    for _, d := range depts {
+                                        @ui.TableRow("cursor-pointer px-2", templ.Attributes{
+                                            "hx-post": "/depts?id="+d.ID,
+                                            "hx-target": "#content",
+                                            "hx-swap": "innerHtml",
+                                            "hx-push-url": "true",
+                                            "hx-indicator": ".htmx-loader,.loaded-content",
+                                        }) {
+                                            @ui.TableCell("py-1.5 px-4", nil) {
+                                                {d.Name}
+                                            }
+                                            @ui.TableCell("py-1.5 px-4", nil) {
+                                                {d.Description}
+                                            }
+                                            @ui.TableCell("py-1.5 px-1", nil) {
+                                                <div class="flex justify-start">
+                                                    @ui.Avatar(d.DeptHead.FullName, d.DeptHead.Color, "xs", "h-1 w-1 mr-1", templ.Attributes{})
+                                                    {d.DeptHead.FullName}
+                                                </div>
+                                            }
+                                            @ui.TableCell("py-1.5 px-1", nil) {
+                                                @ui.Button("edit-dept-"+d.ID, "ghost", "xs", "pencil", "", "", templ.Attributes{
+                                                    "type": "button",
+                                                    "@click.stop": "window.dept_id='"+d.ID+"'; $store.modal.open('edit-department-modal')",
+                                                })
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
                     }
                 </div>
             </div>
         </div>
         @CreateDept("w-96", nil)
+        @EditDept("w-96")
     }
+}
+
+templ UserSettings(user dto.UserAuth, users []models.User) {
+    @Settings("users", user) {
+        <div class="space-y-6" data-title="User Settings">
+            <div class="text-card-foreground shadow-sm p-4">
+                <div class="space-y-4">
+                    if len(users) == 0 {
+                        @components.NoData("No users found", "Create your first user", nil) {
+                            @ui.Button("create-user", "outline", "xs", "circle-plus", "Create User", "", templ.Attributes{
+                                "type": "button",
+                                "@click":"$store.modal.open('create-user-modal')",
+                            })
+                        }
+                    } else {
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-medium">Users</h3>
+                                <p class="text-sm text-muted-foreground">Manage all users</p>
+                            </div>
+                            <div>
+                                @ui.Button("create-user-table", "", "sm", "circle-plus", "New User", "", templ.Attributes{
+                                    "type": "button",
+                                    "@click":"$store.modal.open('create-user-modal')",
+                                })
+                            </div>
+                        </div>
+                        <div class="relative w-full overflow-auto scrollbar-thin">
+                            @ui.Table("w-full caption-bottom text-sm", nil) {
+                                @ui.TableHeader("", nil) {
+                                    @ui.TableRow("bg-gray-200 hover:bg-gray-200", nil) {
+                                        @ui.TableHead("", nil) {
+                                            Name
+                                        }
+                                        @ui.TableHead("", nil) {
+                                            Username
+                                        }
+                                        @ui.TableHead("", nil) {
+                                            Email
+                                        }
+                                        @ui.TableHead("", nil) {
+                                            Level
+                                        }
+                                        @ui.TableHead("", nil) {
+                                            Actions
+                                        }
+                                    }
+                                }
+                                @ui.TableBody("p-2", nil) {
+                                    for _, u := range users {
+                                        @ui.TableRow("px-2", nil) {
+                                            @ui.TableCell("py-1.5 px-4", nil) {
+                                                <div class="flex items-center gap-2">
+                                                    @ui.Avatar(u.FullName, u.Color, "xs", "h-6 w-6", templ.Attributes{})
+                                                    {u.FullName}
+                                                </div>
+                                            }
+                                            @ui.TableCell("py-1.5 px-4", nil) {
+                                                {u.Username}
+                                            }
+                                            @ui.TableCell("py-1.5 px-4", nil) {
+                                                {u.Email}
+                                            }
+                                            @ui.TableCell("py-1.5 px-4", nil) {
+                                                if u.Level == "ADMIN" {
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                                        {u.Level}
+                                                    </span>
+                                                } else {
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                                        {u.Level}
+                                                    </span>
+                                                }
+                                            }
+                                            @ui.TableCell("py-1.5 px-1", nil) {
+                                                @ui.Button("edit-user-"+u.ID, "ghost", "xs", "pencil", "", "", templ.Attributes{
+                                                    "type": "button",
+                                                    "@click.stop": "window.user_id='"+u.ID+"'; $store.modal.open('edit-user-modal')",
+                                                })
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        @CreateUser("w-96")
+        @EditUser("w-96")
+    }
+}
+
+templ EditUser(class string) {
+    @components.ResponsiveModal("edit-user-modal", "Edit User", class) {
+        <div id="edit-user-form" 
+            x-data="{
+                init() {
+                    document.body.addEventListener('modal:opened', (evt) => {
+                        if (evt.detail.id === 'edit-user-modal') {
+                            htmx.ajax('GET', '/edit-user-form?user_id='+window.user_id, {target: '#edit-user-form', swap: 'innerHtml'})
+                        }
+                    });
+                    document.body.addEventListener('modal:closed', (evt) => {
+                        if (evt.detail.id === 'edit-user-modal') {
+                            document.getElementById('edit-user-form').innerHTML = '';
+                        }
+                    });
+                }
+            }"
+        >
+        </div>
+    }
+}
+
+templ EditUserForm(user models.User) {
+    <div
+        x-data="{
+                    user: {},
+                    selectedColor: '',
+                    nameError: '',
+                    usernameError: '',
+                    validateName() {
+                        this.nameError = (this.user.full_name.trim() === '')
+                            ? 'Name is required'
+                            : '';
+                        this.user.full_name = this.user.full_name.charAt(0).toUpperCase() + this.user.full_name.slice(1);
+                    },
+                    validateUsername() {
+                        this.usernameError = (this.user.username.trim() === '')
+                            ? 'Username is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateName();
+                        this.validateUsername();
+                        if (this.nameError || this.usernameError) {
+                            return; 
+                        }
+                    },
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'edit-user-form') {
+                                $store.modal.close('edit-user-modal');
+                                htmx.ajax('POST', '/settings?tab=users', {
+                                    target: '#content',
+                                    swap: 'innerHTML'
+                                })
+                            }
+                        });
+                    }
+                }"
+        x-init={fmt.Sprintf("user=%s;selectedColor='%s'", string(utils.MustJSON(user)), user.Color)}
+    >
+        @ui.Form("/user", "put", "", templ.Attributes{
+                "id":"edit-user-form",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#edit-user-button,#full_name,#username",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            <input id="user_id" type="hidden" name="user_id" x-model="user.id" />
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("full_name", "Name", "", nil)
+                @ui.FormControl("full_name", "full_name", "text", "Full Name", user.FullName, "", templ.Attributes{
+                    "autocomplete":"name",
+                    "x-model": "user.full_name",
+                    "@blur": "validateName",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "nameError != ''",
+                        "x-text": "nameError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("username", "Username", "", nil)
+                @ui.FormControl("username", "username", "text", "Username", user.Username, "", templ.Attributes{
+                    "autocomplete":"username",
+                    "x-model": "user.username",
+                    "@blur": "validateUsername",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "usernameError != ''",
+                        "x-text": "usernameError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("email", "Email", "", nil)
+                @ui.FormControl("email", "email", "text", "Email", user.Email, "", templ.Attributes{
+                    "autocomplete":"email",
+                    "x-model": "user.email",
+                    "disabled": "true",
+                })
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("level", "Level", "", nil)
+                <select id="level" name="level" x-model="user.level" class="flex h-11 w-full block appearance-none rounded-md border border-input px-3 py-2 text-sm shadow-sm dark:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                    <option value="USER"
+                        if user.Level == "USER" {
+                            selected
+                        }
+                    >User</option>
+                    <option value="ADMIN"
+                        if user.Level == "ADMIN" {
+                            selected
+                        }
+                    >Admin</option>
+                </select>
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("", "Color", "", nil)
+                <div id="colorOption"
+                    class="flex items-center space-x-3 mt-2"
+                >
+                    <template x-for="color in colorOptions" :key="color.name">
+                        <button 
+                            type="button"
+                            class="h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
+                            :class="[
+                                color.class, 
+                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'
+                            ]"
+                            @click="selectedColor = color.class;"
+                            :title="color.class"
+                        ></button>
+                    </template>
+                    <input type="hidden" id="color" name="color" x-model="user.color" :value="selectedColor">
+                </div>
+            }
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("edit-user-button", "", "", "", "Save", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
+}
+
+templ CreateUser(class string) {
+    @components.ResponsiveModal("create-user-modal", "Create User", class) {
+        <div id="create-user-form" x-data="{
+                        init() {
+                            document.body.addEventListener('modal:opened', (evt) => {
+                                if (evt.detail.id === 'create-user-modal') {
+                                    htmx.ajax('GET', '/create-user-form', {target: '#create-user-form', swap: 'innerHtml'})
+                                }
+                            });
+                            document.body.addEventListener('modal:closed', (evt) => {
+                                if (evt.detail.id === 'create-user-modal') {
+                                    document.getElementById('create-user-form').innerHTML = '';
+                                }
+                            });
+                        }
+                    }"
+        >
+        </div>
+    }
+}
+
+templ CreateUserForm() {
+    <div
+        x-data="{
+                    full_name: '',
+                    username: '',
+                    email: '',
+                    password: '',
+                    level: 'USER',
+                    color: '',
+                    selectedColor: '',
+                    nameError: '',
+                    usernameError: '',
+                    emailError: '',
+                    passwordError: '',
+                    validateName() {
+                        this.nameError = (this.full_name.trim() === '')
+                            ? 'Name is required'
+                            : '';
+                        this.full_name = this.full_name.charAt(0).toUpperCase() + this.full_name.slice(1);
+                    },
+                    validateUsername() {
+                        this.usernameError = (this.username.trim() === '')
+                            ? 'Username is required'
+                            : '';
+                    },
+                    validateEmail() {
+                        this.emailError = (this.email.trim() === '')
+                            ? 'Email is required'
+                            : '';
+                    },
+                    validatePassword() {
+                        this.passwordError = (this.password.trim() === '')
+                            ? 'Password is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateName();
+                        this.validateUsername();
+                        this.validateEmail();
+                        this.validatePassword();
+                        if (this.nameError || this.usernameError || this.emailError || this.passwordError) {
+                            return; 
+                        }
+                    },
+                    resetForm() {
+                        this.full_name = '';
+                        this.username = '';
+                        this.email = '';
+                        this.password = '';
+                        this.level = 'USER';
+                        this.color = '';
+                        this.selectedColor = '';
+                        this.nameError = '';
+                        this.usernameError = '';
+                        this.emailError = '';
+                        this.passwordError = '';
+                    },
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'create-user-form') {
+                                $store.modal.close('create-user-modal');
+                                this.resetForm();
+                                htmx.ajax('POST', '/settings?tab=users', {
+                                    target: '#content',
+                                    swap: 'innerHTML'
+                                })
+                            }
+                        });
+                        document.body.addEventListener('modal:closed', (evt) => {
+                            if (evt.detail.id === 'create-user-modal') {
+                                this.resetForm();
+                            }
+                        });
+                    }
+                }"
+    >
+        @ui.Form("/user", "post", "", templ.Attributes{
+                "id":"create-user-form",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#create-user-button,#full_name,#username,#email,#password",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("full_name", "Name", "", nil)
+                @ui.FormControl("full_name", "full_name", "text", "Full Name", "", "", templ.Attributes{
+                    "autocomplete":"name",
+                    "x-model": "full_name",
+                    "@blur": "validateName",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "nameError != ''",
+                        "x-text": "nameError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("username", "Username", "", nil)
+                @ui.FormControl("username", "username", "text", "Username", "", "", templ.Attributes{
+                    "autocomplete":"username",
+                    "x-model": "username",
+                    "@blur": "validateUsername",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "usernameError != ''",
+                        "x-text": "usernameError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("email", "Email", "", nil)
+                @ui.FormControl("email", "email", "text", "Email", "", "", templ.Attributes{
+                    "autocomplete":"email",
+                    "x-model": "email",
+                    "@blur": "validateEmail",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "emailError != ''",
+                        "x-text": "emailError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("password", "Password", "", nil)
+                @ui.FormControl("password", "password", "password", "Password", "", "", templ.Attributes{
+                    "autocomplete":"new-password",
+                    "x-model": "password",
+                    "@blur": "validatePassword",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "passwordError != ''",
+                        "x-text": "passwordError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("level", "Level", "", nil)
+                <select id="level" name="level" x-model="level" class="flex h-11 w-full block appearance-none rounded-md border border-input px-3 py-2 text-sm shadow-sm dark:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring">
+                    <option value="USER">User</option>
+                    <option value="ADMIN">Admin</option>
+                </select>
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("", "Color", "", nil)
+                <div id="colorOption"
+                    class="flex items-center space-x-3 mt-2"
+                >
+                    <template x-for="color in colorOptions" :key="color.name">
+                        <button 
+                            type="button"
+                            class="h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
+                            :class="[
+                                color.class, 
+                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'
+                            ]"
+                            @click="selectedColor = color.class;"
+                            :title="color.class"
+                        ></button>
+                    </template>
+                    <input type="hidden" id="color" name="color" x-model="color" :value="selectedColor">
+                </div>
+            }
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("create-user-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
 }
 
 templ CreateDept(class string, attrs templ.Attributes) {
@@ -501,6 +1010,200 @@ templ CreateDeptForm() {
             @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             <div class="flex justify-end items-end">
                 @ui.Button("create-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
+}
+
+templ EditDept(class string) {
+    @components.ResponsiveModal("edit-department-modal", "Edit Department", class) {
+        <div id="edit-department-form" 
+            x-data="{
+                init() {
+                    document.body.addEventListener('modal:opened', (evt) => {
+                        if (evt.detail.id === 'edit-department-modal') {
+                            htmx.ajax('GET', '/edit-department-form?dept_id='+window.dept_id, {target: '#edit-department-form', swap: 'innerHtml'})
+                        }
+                    });
+                    document.body.addEventListener('modal:closed', (evt) => {
+                        if (evt.detail.id === 'edit-department-modal') {
+                            document.getElementById('edit-department-form').innerHTML = '';
+                        }
+                    });
+                }
+            }"
+        >
+        </div>
+    }
+}
+
+templ EditDeptForm(dept models.Department) {
+    <div
+        x-data="{
+                    dept: {},
+                    selectedColor: '',
+                    nameError: '',
+                    descriptionError : '',
+                    colorError: '',
+                    members: [],
+                    validateName() {
+                        this.nameError = (this.dept.name.trim() === '')
+                            ? 'Name is required'
+                            : '';
+                        this.dept.name = this.dept.name.charAt(0).toUpperCase() + this.dept.name.slice(1);
+                    },
+                    validateColor() {
+                        this.colorError = (this.dept.color.trim() === '')
+                            ? 'Color is required'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validateName();
+                        if (this.nameError || this.validateColor()) {
+                            return; 
+                        }
+                    },
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'edit-department-form') {
+                                $store.modal.close('edit-department-modal');
+                                htmx.ajax('POST', '/settings?tab=departments', {
+                                    target: '#content',
+                                    swap: 'innerHTML'
+                                })
+                            }
+                        });
+                    }
+                }"
+        x-init={fmt.Sprintf("dept=%s;selectedColor='%s'", string(utils.MustJSON(dept)), dept.Color)}
+    >
+        @ui.Form("/department", "put", "", templ.Attributes{
+                "id":"edit-department-form",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#edit-button,#name,#description,#colorOption",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            <input id="dept_id" type="hidden" name="dept_id" x-model="dept.id" />
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("name", "Name", "", nil)
+                @ui.FormControl("name", "name", "text", "Department Name", dept.Name, "", templ.Attributes{
+                    "autocomplete":"name",
+                    "x-model": "dept.name",
+                    "@blur": "validateName",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "nameError != ''",
+                        "x-text": "nameError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("description", "Description", "", nil)
+                @ui.FormControl("description", "description", "textarea", "Department Description", dept.Description, "", templ.Attributes{
+                    "autocomplete":"description",
+                    "x-model": "dept.description",
+                    "@blur": "dept.description=dept.description.charAt(0).toUpperCase() + dept.description.slice(1)",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "descriptionError != ''",
+                        "x-text": "descriptionError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("", "Color", "", nil)
+                <div id="colorOption"
+                    class="flex items-center space-x-3 mt-2"
+                >
+                    <template x-for="color in colorOptions" :key="color.name">
+                        <button 
+                            type="button"
+                            class="h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900"
+                            :class="[
+                                color.class, 
+                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'
+                            ]"
+                            @click="selectedColor = color.class;"
+                            :title="color.class"
+                        ></button>
+                    </template>
+                    <input type="hidden" id="color" name="color" x-model="dept.color" :value="selectedColor">
+                    @ui.FormMessage("", "", templ.Attributes{
+                            "x-show": "selectedColor === ''",
+                            "x-text": "colorError",
+                        },
+                    )
+                </div>
+            }
+            @ui.FormItem("mb-4", nil) {
+                @ui.FormLabel("dept_head_id", "Manager", "", nil)
+                @components.ManagerInput("dept_head_id",
+                    "dept_head_id",
+                    "Type a user...",
+                    []models.User{dept.DeptHead},
+                    services.GetNonManager(),
+                    "",
+                    nil,
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("members", "Members", "", nil)
+                <div
+                    x-data="{
+                        mems: [],
+                        init() {
+                            this.mems.forEach(m => {
+                                this.members.push({
+                                    user_id: m.user_id,
+                                    role: m.role,
+                                });
+                            });
+                        },
+                        updateRole(userId, role) {
+                            let m = [...this.members].find(x => x.user_id === userId);
+                            if (m) m.role = role;
+                        }
+                    }"
+                    class="pl-2 space-y-2 flex flex-col"
+                    x-init={fmt.Sprintf("mems=%s;init();", string(utils.MustJSON(dept.Members)))}
+                >
+                    for i, member := range dept.Members {
+                        <div class="inline-flex items-center gap-2">
+                            <span class="w-full flex items-center gap-2">
+                                @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                                {member.User.FullName}
+                            </span>
+                            <select id={fmt.Sprintf("role-%v", i)} 
+                                @change={fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID)}
+                                class="px-1 py-0.5 text-xs rounded-md border dark:bg-accent"
+                                if strings.Trim(member.Role, " ") == "MANAGER" {
+                                    disabled
+                                }
+                            >
+                                if strings.Trim(member.Role, " ") == "MANAGER" {
+                                    <option value="MANAGER" selected>Manager</option>
+                                }
+                                <option value="MEMBER"
+                                    if strings.Trim(member.Role, " ") == "MEMBER" {
+                                        selected
+                                    }
+                                >Member</option>
+                            </select>
+                        </div>
+                    }
+                    <input
+                        type="hidden"
+                        name="members" 
+                        :value="JSON.stringify(members)"
+                    />
+                </div>
+            }
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("edit-button", "", "", "", "Save", "", templ.Attributes{"type": "submit"}) 
             </div>
         }
     </div>

@@ -275,6 +275,19 @@ templ Task(task models.Task, user dto.UserAuth) {
                         </div> 
                     </div>
                 </div>
+
+                    <div class="bg-card rounded-lg p-4 shadow-sm mb-4" id="task-comments-container">
+                        <h3 class="text-lg font-medium mb-2">Comments</h3>
+                        @components.DottedSeparator("", "#d4d4d8", "2px mb-2", "", "", "horizontal")
+                        <div id="task-comments-list"
+                            hx-get={"/task-comments?task_id="+task.ID}
+                            hx-trigger="load"
+                            hx-target="#task-comments-list"
+                            hx-swap="innerHTML"
+                            class="mb-2"
+                        ></div>
+                        @TaskCommentForm(task.ID)
+                    </div>
             </div>
             <div class="lg:w-4/12">
                 <div id="task-watchers">@TaskWatchers(task.Watchers)</div>

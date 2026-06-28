@@ -1,0 +1,50 @@
+package features
+
+import (
+    "etop/models"
+    "etop/templates/components/ui"
+    "etop/utils"
+    "fmt"
+)
+
+templ TaskComments(comments []models.Comment) {
+    <div class="space-y-4">
+        if len(comments) > 0 {
+            for _, comment := range comments {
+                <div class="flex gap-3 p-3 bg-muted/30 rounded-lg">
+                    @ui.Avatar(comment.Author.FullName, comment.Author.Color, "sm", "h-6 w-6 flex-shrink-0", nil)
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="font-medium text-xs">{comment.Author.FullName}</span>
+                            <span class="text-xs text-muted-foreground">{utils.TimeAgo(*comment.CreatedAt)}</span>
+                        </div>
+                        <p class="text-sm mt-1 whitespace-pre-wrap break-words">{comment.Text}</p>
+                    </div>
+                </div>
+            }
+        } else {
+            <p class="text-sm text-muted-foreground text-center py-4">No comments yet.</p>
+        }
+    </div>
+}
+
+templ TaskCommentForm(taskID string) {
+    <form
+        hx-post={fmt.Sprintf("/task-comments?task_id=%s", taskID)}
+        hx-target="#task-comments-list"
+        hx-swap="innerHTML"
+        class="flex gap-2 mt-4"
+        x-data="{ text: '' }"
+        @submit="setTimeout(() => text = '', 50)"
+    >
+        <textarea
+            name="text"
+            x-model="text"
+            class="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            rows="2"
+            placeholder="Add a comment..."
+            required
+        ></textarea>
+        @ui.Button("add-comment", "", "", "h-6", "Send", "flex-shrink-0", templ.Attributes{"type": "submit"})
+    </form>
+}
