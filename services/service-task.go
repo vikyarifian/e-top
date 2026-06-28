@@ -21,6 +21,14 @@ func GetTaskPriorities() []models.TaskPriority {
 	return taskPriorities
 }
 
+func CountAchievedTasks(userID string) int64 {
+	var count int64
+	db.PgSql.Model(&models.Task{}).
+		Where("user_id = ? AND completed_at IS NOT NULL", userID).
+		Count(&count)
+	return count
+}
+
 func IsUserWatchingTask(task models.Task, userID string) bool {
 	for _, watcher := range task.Watchers {
 		if watcher.UserID == userID {

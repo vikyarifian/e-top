@@ -49,12 +49,9 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 					break
 				}
 			}
-			// for _, assignee := range task.Assignees {
-			if task.Assignee.ID == user.ID {
+			if task.Assignee.ID == user.ID || task.CreatedBy == user.ID {
 				authorized = true
-				// break
 			}
-			// }
 			if !authorized {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
@@ -90,12 +87,9 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 					break
 				}
 			}
-			// for _, assignee := range task.Assignees {
-			if task.Assignee.ID == user.ID {
+			if task.Assignee.ID == user.ID || task.CreatedBy == user.ID {
 				authorized = true
-				// break
 			}
-			// }
 			if !authorized {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
@@ -143,20 +137,25 @@ func HandleUpdateTask(w http.ResponseWriter, r *http.Request) error {
 		task.StatusLabel = taskStatus.Status
 		task.UpdatedAt = &t
 		task.UpdatedBy = user.ID
-		if err := db.PgSql.Save(&task).Error; err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return ui.Toast("task-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
-		}
 
 		logDescription := "updated task status to " + taskStatus.Label
 		if taskStatus.Value == 5 {
 			tc := time.Now().Add(1 * time.Minute)
 			task.CompletedAt = &tc
-			task.ActualHours = float32(utils.TimeDiff(*task.StartDate, tc).Hours())
+			if task.StartDate != nil {
+				task.ActualHours = float32(utils.TimeDiff(*task.StartDate, tc).Hours())
+			} else {
+				task.ActualHours = 0
+			}
 			logDescription += " and marked it as completed"
 		} else {
 			task.CompletedAt = nil
 			task.ActualHours = 0
+		}
+
+		if err := db.PgSql.Save(&task).Error; err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return ui.Toast("task-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
 		}
 		services.AddLog(user.ID, "updated_task", "Task", task.ID, map[string]any{
 			"description":   logDescription,
@@ -258,6 +257,7 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 
 		validStatus := false
 		statusDone := false
+
 		for _, s := range taskStatus {
 			if s.No == task.StatusID {
 				validStatus = true
@@ -336,6 +336,14 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 			task.CompletedAt = task.CompletedAt
 		}
 
+		if task.Type != "PROJECT" {
+			if task.Assignee.ID != user.ID {
+				task.Type = "TICKET"
+			} else {
+				task.Type = "DAILY"
+			}
+		}
+
 		if err := db.PgSql.Create(&task).Error; err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return ui.Toast("task-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
@@ -382,6 +390,121 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 		db.PgSql.Create(&tags)
 
 		return ui.Toast("task-success", "success", "", "Task created successfully.", "", nil).Render(r.Context(), w)
+
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return nil
+	}
+}
+
+func HandleEditTask(w http.ResponseWriter, r *http.Request) error {
+	switch r.Method {
+	case http.MethodPut:
+		user, _ := auth.GetAuth(w, r)
+		r.ParseForm()
+		t := time.Now().Local()
+
+		taskID := r.FormValue("task_id")
+		var task models.Task
+		if err := db.PgSql.Where("id=?", taskID).First(&task).Error; err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return ui.Toast("edit-task-error", "warning", "", "Task not found!", "", nil).Render(r.Context(), w)
+		}
+
+		canEdit := task.CreatedBy == user.ID || user.Level == "ADMIN"
+		if !canEdit && task.ProjectID != "" {
+			var member models.ProjectMember
+			if err := db.PgSql.Where("project_id=? AND user_id=? AND role IN ('ADMIN','OWNER')", task.ProjectID, user.ID).First(&member).Error; err == nil {
+				canEdit = true
+			}
+		}
+		if !canEdit {
+			w.WriteHeader(http.StatusForbidden)
+			return ui.Toast("edit-task-error", "warning", "", "You don't have permission to edit this task!", "", nil).Render(r.Context(), w)
+		}
+
+		logDetails := map[string]any{
+			"description": "updated task",
+		}
+
+		title := strings.TrimSpace(r.FormValue("title"))
+		if title == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("edit-task-error", "warning", "", "Title is required!", "", nil).Render(r.Context(), w)
+		}
+		if task.Title != title {
+			logDetails["old_title"] = task.Title
+			logDetails["new_title"] = title
+		}
+		task.Title = title
+
+		desc := r.FormValue("description")
+		if task.Description != desc {
+			logDetails["old_description"] = task.Description
+			logDetails["new_description"] = desc
+		}
+		task.Description = desc
+
+		statusIDStr := r.FormValue("status_id")
+		if statusIDStr != "" {
+			sid, _ := strconv.Atoi(statusIDStr)
+			var taskStatus models.TaskStatus
+			if err := db.PgSql.Where("no=?", sid).First(&taskStatus).Error; err == nil {
+				if task.StatusID != taskStatus.No {
+					logDetails["old_status_id"] = task.StatusID
+					logDetails["new_status_id"] = taskStatus.No
+				}
+				task.StatusID = taskStatus.No
+				task.StatusLabel = taskStatus.Status
+			}
+		}
+
+		priorityIDStr := r.FormValue("priority_id")
+		if priorityIDStr != "" {
+			pid, _ := strconv.Atoi(priorityIDStr)
+			var taskPriority models.TaskPriority
+			if err := db.PgSql.Where("no=?", pid).First(&taskPriority).Error; err == nil {
+				if task.PriorityID != taskPriority.No {
+					logDetails["old_priority_id"] = task.PriorityID
+					logDetails["new_priority_id"] = taskPriority.No
+				}
+				task.PriorityID = taskPriority.No
+				task.PriorityLabel = taskPriority.Priority
+			}
+		}
+
+		dueDateStr := r.FormValue("due_date")
+		if dueDateStr != "" {
+			parsed, err := time.Parse("2006-01-02", dueDateStr)
+			if err == nil {
+				task.DueDate = &parsed
+			}
+		} else {
+			task.DueDate = nil
+		}
+
+		assigneeID := r.FormValue("assignee")
+		if assigneeID != "" {
+			task.UserID = assigneeID
+		}
+
+		task.UpdatedAt = &t
+		task.UpdatedBy = user.ID
+		if task.Type != "PROJECT" {
+			if task.Assignee.ID != user.ID {
+				task.Type = "TICKET"
+			} else {
+				task.Type = "DAILY"
+			}
+		}
+		if err := db.PgSql.Save(&task).Error; err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return ui.Toast("edit-task-error", "error", "", err.Error(), "", nil).Render(r.Context(), w)
+		}
+
+		services.AddLog(user.ID, "updated_task", "Task", task.ID, logDetails)
+
+		return ui.Toast("edit-task-success", "success", "", "Task updated successfully.", "", nil).Render(r.Context(), w)
 
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)

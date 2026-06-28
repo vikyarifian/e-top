@@ -67,6 +67,17 @@ templ Task(task models.Task, user dto.UserAuth) {
                             {task.Project.Title}
                         </h2>
                         <svg x-show="!isMobile" class="size-4 mr-2 ml-2 pt-1 text-muted-foreground" data-lucide="chevron-right" />
+                    } else {
+                        <h2 x-show="!isMobile" class="text-3xl font-semibold text-muted-foreground hover:opacity-75 transition cursor-pointer"
+                            hx-post="/my-tasks"
+                            hx-target="#content"
+                            hx-swap="innerHTML"
+                            hx-push-url="true"
+                            hx-indicator=".htmx-loader,.loaded-content"
+                        >
+                            My Tasks
+                        </h2>
+                        <svg x-show="!isMobile" class="size-4 mr-2 ml-2 pt-1 text-muted-foreground" data-lucide="chevron-right" />
                     }
                     <h2 class="text-3xl font-semibold">{task.Title}</h2>
                 </div>
@@ -145,14 +156,11 @@ templ Task(task models.Task, user dto.UserAuth) {
                                                 //     Edit Status
                                                 // }
                                             }
-                                            if task.CreatedBy == user.ID {
+                                            if canEditTask(task, user) {
                                                 @ui.DropdownSeparator("", nil)
                                                 @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
-                                                    "hx-post": "/tasks?id="+task.ID+"#edit-task-form",
-                                                    "hx-target": "#content",
-                                                    "hx-swap": "innerHtml",
-                                                    "hx-push-url": "true",
-                                                    "hx-indicator": ".htmx-loader,.loaded-content",
+                                                    "@click": "$store.modal.open('edit-task-modal')",
+                                                    "type": "button",
                                                 }) {
                                                     <i data-lucide="edit" class="w-4 h-4"></i>
                                                     Edit Task
@@ -297,9 +305,10 @@ templ Task(task models.Task, user dto.UserAuth) {
                     hx-trigger="load"
                     hx-target="#task-activities" 
                 />
-            </div>
         </div>
+        @EditTaskForm(task)
     </div>
+</div>
 }
 
 templ TaskWatchers(watchers []models.TaskWatchers) {
@@ -544,4 +553,145 @@ templ CreateTaskForm(projectID string, typ string) {
             </div>
         }
     </div>
+}
+
+templ EditTaskForm(task models.Task) {
+    @components.ResponsiveModal("edit-task-modal", "Edit Task", "w-96") {
+        <div
+            x-data="{
+                task_id: '',
+                title: '',
+                description: '',
+                status_id: 1,
+                priority_id: 1,
+                due_date: '',
+                task_statuses: [],
+                task_priorities: [],
+                titleError: '',
+                validateTitle() {
+                    this.titleError = (this.title.trim() === '') ? 'Title is required' : '';
+                },
+                submitForm(e) {
+                    e.preventDefault();
+                    this.validateTitle();
+                    if (this.titleError) return;
+                    const el = document.getElementById('edit-assignee');
+                    htmx.ajax('PUT', '/edit-task', {
+                        source: e.target,
+                        target: '#toaster',
+                        swap: 'innerHtml',
+                        values: {
+                            task_id: this.task_id,
+                            title: this.title,
+                            description: this.description,
+                            status_id: this.status_id,
+                            priority_id: this.priority_id,
+                            due_date: this.due_date,
+                            assignee: el ? el.value : '',
+                        }
+                    });
+                },
+                init() {
+                    document.body.addEventListener('htmx:afterRequest', (evt) => {
+                        if (evt.detail.successful && evt.detail.pathInfo.requestPath === '/edit-task') {
+                            $store.modal.close('edit-task-modal');
+                            htmx.ajax('POST', '/tasks?id='+this.task_id, {target: '#content', swap: 'innerHTML'});
+                        }
+                    });
+                }
+            }"
+            x-init={fmt.Sprintf("task_id='%s'; title=%s; description=%s; status_id=%v; priority_id=%v; due_date='%s'; task_statuses=%s; task_priorities=%s;", task.ID, string(utils.MustJSON(task.Title)), string(utils.MustJSON(task.Description)), task.Status.No, task.Priority.No, taskDueDate(task.DueDate), string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())))}
+        >
+            @ui.Form("", "put", "", templ.Attributes{
+                "id": "edit-task-form",
+                "@submit.prevent": "submitForm($event)",
+            }) {
+                <input type="hidden" name="task_id" x-model="task_id" />
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("edit-title", "Title", "", nil)
+                            @ui.FormControl("edit-title", "title", "text", "Task title", "", "", templ.Attributes{
+                                "x-model": "title",
+                                "@blur": "validateTitle",
+                            })
+                            @ui.FormMessage("", "", templ.Attributes{
+                                "x-show": "titleError != ''",
+                                "x-text": "titleError",
+                            })
+                        }
+                    </div>
+                    <div>
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("edit-description", "Description", "", nil)
+                            @ui.FormControl("edit-description", "description", "textarea", "Task description", "", "", templ.Attributes{
+                                "x-model": "description",
+                            })
+                        }
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            @ui.FormItem("", nil) {
+                                @ui.FormLabel("edit-status", "Status", "", nil)
+                                <select id="edit-status" name="status_id" x-model="status_id"
+                                    class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <template x-for="(s, idx) in task_statuses.filter(t=>t.form==1)" :key="idx">
+                                        <option :value="s.no" x-text="s.label" :selected="s.no === status_id"></option>
+                                    </template>
+                                </select>
+                            }
+                        </div>
+                        <div>
+                            @ui.FormItem("", nil) {
+                                @ui.FormLabel("edit-priority", "Priority", "", nil)
+                                <select id="edit-priority" name="priority_id" x-model="priority_id"
+                                    class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <template x-for="(p, idx) in task_priorities" :key="idx">
+                                        <option :value="p.no" x-text="p.label" :selected="p.no === priority_id"></option>
+                                    </template>
+                                </select>
+                            }
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            @ui.FormItem("", nil) {
+                                @ui.FormLabel("edit-due", "Due Date", "", nil)
+                                @ui.FormControl("edit-due", "due_date", "date", "", "", "w-full", templ.Attributes{
+                                    "x-model": "due_date",
+                                })
+                            }
+                        </div>
+                        <div>
+                            @ui.FormItem("", nil) {
+                                @ui.FormLabel("edit-type", "Type", "", nil)
+                                <div class="flex h-11 items-center px-3 rounded-md border bg-muted/30 text-sm">
+                                    {task.Type}
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div>
+                        @ui.FormItem("", nil) {
+                            @ui.FormLabel("edit-assignee", "Assignee", "", nil)
+                            @components.AssigneeInput("edit-assignee",
+                                "assignee",
+                                "Type a assignee...",
+                                taskAssigneeList(task),
+                                services.GetAllUserRole(),
+                                "",
+                                nil,
+                            )
+                        }
+                    </div>
+                </div>
+                @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+                <div class="flex justify-end">
+                    @ui.Button("edit-task-btn", "", "", "", "Save", "", templ.Attributes{"type": "submit"})
+                </div>
+            }
+        </div>
+    }
 }
