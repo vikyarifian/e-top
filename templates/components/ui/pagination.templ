@@ -1,0 +1,62 @@
+package ui
+
+import (
+    "fmt"
+
+    "etop/models"
+)
+
+templ Pagination(baseURL string, page models.PageInfo, params string) {
+    if page.TotalPages > 1 {
+        <div class="flex items-center justify-between px-4 py-3 border-t border-border">
+            <div class="text-xs text-muted-foreground">
+                {fmt.Sprintf("Showing %d to %d of %d", (page.Page-1)*page.PerPage+1, min(page.Page*page.PerPage, int(page.Total)), page.Total)}
+            </div>
+            <div class="flex items-center gap-1">
+                @Button("prev-page", "outline", "xs", "chevron-left", "Previous", "", templ.Attributes{
+                    "hx-post": fmt.Sprintf("%s?page=%d&sort_by=%s&sort_dir=%s%s", baseURL, page.Page-1, page.SortBy, page.SortDir, params),
+                    "hx-target": "#content",
+                    "hx-swap": "innerHTML",
+                    "hx-push-url": "true",
+                    "hx-indicator": ".htmx-loader,.loaded-content",
+                    "disabled": disabledIf(page.Page <= 1),
+                })
+                for i := 1; i <= page.TotalPages; i++ {
+                    if i == page.Page {
+                        @Button(fmt.Sprintf("page-%d", i), "primary", "xs", "", fmt.Sprintf("%d", i), "", templ.Attributes{
+                            "disabled": "true",
+                        })
+                    } else if i == 1 || i == page.TotalPages || (i >= page.Page-1 && i <= page.Page+1) {
+                        @Button(fmt.Sprintf("page-%d", i), "outline", "xs", "", fmt.Sprintf("%d", i), "", templ.Attributes{
+                            "hx-post": fmt.Sprintf("%s?page=%d&sort_by=%s&sort_dir=%s%s", baseURL, i, page.SortBy, page.SortDir, params),
+                            "hx-target": "#content",
+                            "hx-swap": "innerHTML",
+                            "hx-push-url": "true",
+                            "hx-indicator": ".htmx-loader,.loaded-content",
+                        })
+                    } else if i == page.Page-2 || i == page.Page+2 {
+                        <span class="px-1 text-xs text-muted-foreground">...</span>
+                    }
+                }
+                @Button("next-page", "outline", "xs", "chevron-right", "Next", "", templ.Attributes{
+                    "hx-post": fmt.Sprintf("%s?page=%d&sort_by=%s&sort_dir=%s%s", baseURL, page.Page+1, page.SortBy, page.SortDir, params),
+                    "hx-target": "#content",
+                    "hx-swap": "innerHTML",
+                    "hx-push-url": "true",
+                    "hx-indicator": ".htmx-loader,.loaded-content",
+                    "disabled": disabledIf(page.Page >= page.TotalPages),
+                })
+            </div>
+        </div>
+    }
+}
+
+func min(a, b int) int {
+    if a < b { return a }
+    return b
+}
+
+func disabledIf(cond bool) string {
+    if cond { return "true" }
+    return ""
+}

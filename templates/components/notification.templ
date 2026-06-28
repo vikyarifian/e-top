@@ -1,99 +1,142 @@
 package components
 
 import (
+    "fmt"
+    "time"
+    "strings"
+
+    "etop/models"
     "etop/templates/components/ui"
 )
 
-type Notif struct {
-    Title string
-    Content string
-}
-
-templ Notification(notif []Notif) {
+templ Notification(notif []models.Notif, userID string) {
     @ui.Dropdown("notifButton", "", nil) {
-		@ui.DropdownTrigger("flex items-center p-2 rounded-md hover:bg-accent", templ.Attributes{
-		}) {
-			<div data-lucide="bell" class="w-6 h-6"  stroke="currentColor" />
-		}
+        @ui.DropdownTrigger("flex items-center p-2 rounded-md hover:bg-accent", templ.Attributes{}) {
+            <div data-lucide="bell" class="w-6 h-6" stroke="currentColor" />
+            // if len(notif) > 0 {
+            //     <span class="absolute -top-1 -right-1 size-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{fmt.Sprintf("%d", len(notif))}</span>
+            // }
+        }
 
-		/* Panel dropdown */
-		@ui.DropdownContent("", templ.Attributes{
-            ":class":"isMobile ? 'w-72' : 'w-96'",
+        @ui.DropdownContent("", templ.Attributes{
+            ":class": "isMobile ? 'w-72' : 'w-96'",
+            "class": "max-h-[70vh] overflow-y-auto",
         }) {
-			@ui.DropdownLabel(false, "flex items-center justify-center font-sm", nil) {
+            @ui.DropdownLabel(false, "flex items-center justify-center font-sm", nil) {
                 Notifications
             }
 
             @ui.DropdownSeparator("", nil)
 
-            // Item 1 - Pesan Baru
-			@NotifContent("wq", "Bdu", "Bdu", "sent you a message yesterday sent you a message yesterday")
-            @NotifContent("qw","Andi", "Andi", "sent you a message last year last year")
-			@NotifContent("as", "Cahy", "Cahy", "sent you a message please reply")
-            
-            @ui.DropdownSeparator("", nil)
-
-            // Item 2 - System Update
-            @ui.DropdownItem(false, false, "hover:bg-accent", nil) {
-                <div class="flex gap-3 items-start">
-                    <div class="size-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
-                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3"/>
-                        </svg>
-                    </div>
-                    <div class="flex flex-col text-sm">
-                        <span class="font-medium">System Update</span>
-                        <span class="text-xs opacity-70">Version 2.1 installed</span>
-                        <span class="text-xs opacity-50">10 min ago</span>
-                    </div>
+            if len(notif) == 0 {
+                <div class="py-8 text-center text-sm text-muted-foreground">
+                    No notifications yet
                 </div>
-            }
-
-            // Item 3 - Reminder
-            @ui.DropdownItem(false, false, "hover:bg-accent", nil) {
-                <div class="flex gap-3 items-start">
-                    <div class="size-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center">
-                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3"/>
-                        </svg>
-                    </div>
-                    <div class="flex flex-col text-sm">
-                        <span class="font-medium">Meeting Reminder</span>
-                        <span class="text-xs opacity-70">Project kickoff at 3:00 PM</span>
-                        <span class="text-xs opacity-50">30 min ago</span>
-                    </div>
-                </div>
+            } else {
+                for _, n := range notif {
+                    @NotifContent(n)
+                    // @NotifItem(n)
+                }
             }
 
             @ui.DropdownSeparator("", nil)
 
-            @ui.DropdownItem(false, false, "justify-center text-blue-600 font-sm cursor-pointer", nil) {
+            @ui.DropdownItem(false, false, "justify-center text-blue-600 font-sm cursor-pointer hover:bg-accent", templ.Attributes{
+                "hx-post": "/notifications",
+                "hx-target": "#content",
+                "hx-swap": "innerHTML",
+                "hx-push-url": "true",
+            }) {
                 View all notifications
             }
-		}
-	}
+        }
+    }
 }
 
-templ NotifContent(id string, from string, title string, message string) {
-    @ui.DropdownItem(false, false, "hover:bg-accent", nil) {
-        <div class="flex gap-2 items-start w-full">
-            @ui.Avatar(from, "bg-emerald-400", "xs", "mt-0.5", nil) 
+templ NotifContent(n models.Notif) {
+    @ui.DropdownItem(false, false, "hover:bg-accent", templ.Attributes{
+        "hx-post": NotifLink(n),
+        "hx-target": "#content",
+        "hx-swap": "innerHTML",
+        "hx-push-url": "true",
+        "hx-indicator": ".htmx-loader,.loaded-content",
+        "class": "cursor-pointer",
+    }) {
+        <div class="flex gap-2 items-start w-full cursor-pointer">
+            @ui.Avatar(n.ActorName, n.ActorColor, "xs", "mt-0.5", nil) 
             <div class="flex flex-col text-sm">
-                <span class="font-medium">{title}</span>
-                <span class="text-xs opacity-70">{message}</span>
-                <span class="text-xs opacity-50">2 min ago</span>
+                <span class="font-medium">{n.ResourceType}</span>
+                <span class="text-xs opacity-70">{strings.Trim(n.ActorName," ")+" "+n.Description}</span>
+                <span class="text-xs opacity-50">{RelativeTime(n.Timestamp)}</span>
             </div>
             @ui.DropdownSub("ml-auto flex items-center", nil) {
-                @ui.DropdownSubTrigger("sub"+id, false, "p-1", nil) {
+                @ui.DropdownSubTrigger("sub"+n.ResourceID, false, "p-1", nil) {
                     <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
                 }
-                @ui.DropdownSubContent("sub"+id, "", nil) {
-                    <div>Hide this</div>
-                    <div>Nonactive all</div>
+                @ui.DropdownSubContent("sub"+n.ResourceID, "", nil) {
+                    // <div>Hide this</div>
+                    // <div>Nonactive all</div>
                 }
             }
         </div>
+    }
+}
+
+templ NotifItem(n models.Notif) {
+    @ui.DropdownItem(false, false, "hover:bg-accent", templ.Attributes{
+        "hx-post": NotifLink(n),
+        "hx-target": "#content",
+        "hx-swap": "innerHTML",
+        "hx-push-url": "true",
+        "hx-indicator": ".htmx-loader,.loaded-content",
+        "class": "cursor-pointer",
+    }) {
+        <div class="flex gap-3 items-start w-full py-1">
+            <div class={fmt.Sprintf("size-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 %s", n.ActorColor)}>
+                {n.ActorName[:min(len(n.ActorName), 1)]}
+            </div>
+            <div class="flex flex-col text-sm min-w-0">
+                <span class="font-medium truncate">{n.ActorName}</span>
+                <span class="text-xs text-muted-foreground line-clamp-2">{n.Description}</span>
+                <span class="text-xs text-muted-foreground/60 mt-0.5">{RelativeTime(n.Timestamp)}</span>
+            </div>
+        </div>
+    }
+}
+
+func RelativeTime(t time.Time) string {
+    d := time.Since(t)
+    if d < time.Minute {
+        return "just now"
+    }
+    if d < time.Hour {
+        return fmt.Sprintf("%d min ago", int(d.Minutes()))
+    }
+    if d < 24*time.Hour {
+        return fmt.Sprintf("%d hour(s) ago", int(d.Hours()))
+    }
+    if d < 7*24*time.Hour {
+        return fmt.Sprintf("%d day(s) ago", int(d.Hours()/24))
+    }
+    return t.Format("Jan 2, 2006")
+}
+
+func min(a, b int) int {
+    if a < b { return a }
+    return b
+}
+
+func NotifLink(n models.Notif) string {
+    switch n.ResourceType {
+    case "Task":
+        return "/tasks?id=" + n.ResourceID
+    case "Project":
+        return "/projects?id=" + n.ResourceID
+    case "Workspace":
+        return "/workspaces?id=" + n.ResourceID
+    case "Comment":
+        return "/tasks?id=" + n.ResourceID
+    default:
+        return "/dashboard"
     }
 }

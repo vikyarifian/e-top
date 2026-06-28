@@ -39,7 +39,6 @@ func HandleEditProjectForm(w http.ResponseWriter, r *http.Request) error {
 }
 
 func HandleProjects(w http.ResponseWriter, r *http.Request) error {
-	// user, _ := auth.GetAuth(w, r)
 	user, _ := auth.GetJwtClaims(w, r)
 	switch r.Method {
 	case http.MethodGet:
@@ -49,11 +48,7 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 			if err := db.PgSql.Where("id=?", id).
 				Preload("Members", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
-				}).Preload("Tasks", func(db *gorm.DB) *gorm.DB {
-				return db.Order("created_at").Preload("Status").Preload("Priority").Preload("Assignee", func(db *gorm.DB) *gorm.DB {
-					return db //.Preload("User")
-				})
-			}).Preload("Workspace").Order("no").First(&project).Error; err != nil {
+				}).Preload("Workspace").Order("no").First(&project).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
 			}
@@ -69,7 +64,25 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 			if !authorized {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
-			return layouts.Layout("Project", user, features.Project(userRole, project)).Render(r.Context(), w)
+			page, perPage, sortBy, sortDir := parsePageParams(r)
+			var total int64
+			db.PgSql.Model(&models.Task{}).Where("project_id = ?", project.ID).Count(&total)
+			var tasks []models.Task
+			db.PgSql.Where("project_id = ?", project.ID).
+				Preload("Assignee", func(db *gorm.DB) *gorm.DB { return db }).
+				Preload("Status").Preload("Priority").
+				Order(sortBy + " " + sortDir).
+				Limit(perPage).Offset((page - 1) * perPage).
+				Find(&tasks)
+			pageInfo := models.PageInfo{
+				Page:       page,
+				PerPage:    perPage,
+				Total:      total,
+				TotalPages: int((total + int64(perPage) - 1) / int64(perPage)),
+				SortBy:     sortBy,
+				SortDir:    sortDir,
+			}
+			return layouts.Layout("Project", user, features.Project(userRole, project, tasks, pageInfo)).Render(r.Context(), w)
 		}
 
 		var projects []models.Project
@@ -85,11 +98,7 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 			if err := db.PgSql.Where("id=?", id).
 				Preload("Members", func(db *gorm.DB) *gorm.DB {
 					return db.Preload("User")
-				}).Preload("Tasks", func(db *gorm.DB) *gorm.DB {
-				return db.Order("created_at").Preload("Status").Preload("Priority").Preload("Assignee", func(db *gorm.DB) *gorm.DB {
-					return db //.Preload("User")
-				})
-			}).Preload("Workspace").Order("no").First(&project).Error; err != nil {
+				}).Preload("Workspace").Order("no").First(&project).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return pages.NotFound().Render(r.Context(), w)
 			}
@@ -105,7 +114,25 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 			if !authorized {
 				return pages.Forbidden().Render(r.Context(), w)
 			}
-			return features.Project(userRole, project).Render(r.Context(), w)
+			page, perPage, sortBy, sortDir := parsePageParams(r)
+			var total int64
+			db.PgSql.Model(&models.Task{}).Where("project_id = ?", project.ID).Count(&total)
+			var tasks []models.Task
+			db.PgSql.Where("project_id = ?", project.ID).
+				Preload("Assignee", func(db *gorm.DB) *gorm.DB { return db }).
+				Preload("Status").Preload("Priority").
+				Order(sortBy + " " + sortDir).
+				Limit(perPage).Offset((page - 1) * perPage).
+				Find(&tasks)
+			pageInfo := models.PageInfo{
+				Page:       page,
+				PerPage:    perPage,
+				Total:      total,
+				TotalPages: int((total + int64(perPage) - 1) / int64(perPage)),
+				SortBy:     sortBy,
+				SortDir:    sortDir,
+			}
+			return features.Project(userRole, project, tasks, pageInfo).Render(r.Context(), w)
 		}
 
 		var projects []models.Project

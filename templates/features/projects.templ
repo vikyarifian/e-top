@@ -13,7 +13,7 @@ import (
     "etop/templates/components/ui"
 )
 
-templ Project(role string, project models.Project) {
+templ Project(role string, project models.Project, tasks []models.Task, page models.PageInfo) {
     if role == "OWNER" || role == "ADMIN"  || role == "MEMBER" {
         @CreateTask(project.ID, "PROJECT", "w-[900px]", nil)
     }
@@ -112,7 +112,7 @@ templ Project(role string, project models.Project) {
                             @components.DottedSeparator("", "#d4d4d8", "0.5px", "", "", "horizontal")
                         </div>
                         @ui.TabsContent("table", "overflow-auto mt-0 scrollbar-thin", nil) {
-                            if len(project.Tasks) == 0 {
+                            if len(tasks) == 0 {
                                 @components.NoData("No tasks found", "Create your first task", nil) {
                                     @ui.Button("create-task", "outline", "xs", "circle-plus", "Create Task", "", templ.Attributes{
                                         "type": "button",
@@ -128,6 +128,10 @@ templ Project(role string, project models.Project) {
                                                     @ui.TableHead("", nil) {
                                                         @ui.Button("title-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
+                                                            "hx-post": fmt.Sprintf("/projects?id=%s&page=1&sort_by=title&sort_dir=%s", project.ID, toggleSortDir("title", page)),
+                                                            "hx-target": "#content",
+                                                            "hx-swap": "innerHTML",
+                                                            "hx-push-url": "true",
                                                         }) {
                                                             Title <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
                                                         }
@@ -135,6 +139,10 @@ templ Project(role string, project models.Project) {
                                                     @ui.TableHead("", nil) {
                                                         @ui.Button("assignee-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
+                                                            "hx-post": fmt.Sprintf("/projects?id=%s&page=1&sort_by=assignee&sort_dir=%s", project.ID, toggleSortDir("assignee", page)),
+                                                            "hx-target": "#content",
+                                                            "hx-swap": "innerHTML",
+                                                            "hx-push-url": "true",
                                                         }) {
                                                             Assignee <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
                                                         }
@@ -142,6 +150,10 @@ templ Project(role string, project models.Project) {
                                                     @ui.TableHead("", nil) {
                                                         @ui.Button("due-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
+                                                            "hx-post": fmt.Sprintf("/projects?id=%s&page=1&sort_by=due_date&sort_dir=%s", project.ID, toggleSortDir("due_date", page)),
+                                                            "hx-target": "#content",
+                                                            "hx-swap": "innerHTML",
+                                                            "hx-push-url": "true",
                                                         }) {
                                                             Due Date <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
                                                         }
@@ -149,6 +161,10 @@ templ Project(role string, project models.Project) {
                                                     @ui.TableHead("", nil) {
                                                         @ui.Button("priority-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
+                                                            "hx-post": fmt.Sprintf("/projects?id=%s&page=1&sort_by=priority&sort_dir=%s", project.ID, toggleSortDir("priority", page)),
+                                                            "hx-target": "#content",
+                                                            "hx-swap": "innerHTML",
+                                                            "hx-push-url": "true",
                                                         }) {
                                                             Priority <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
                                                         }
@@ -156,6 +172,10 @@ templ Project(role string, project models.Project) {
                                                     @ui.TableHead("", nil) {
                                                         @ui.Button("status-sort", "ghost", "sm", "", "", "", templ.Attributes{
                                                             "type": "button",
+                                                            "hx-post": fmt.Sprintf("/projects?id=%s&page=1&sort_by=status&sort_dir=%s", project.ID, toggleSortDir("status", page)),
+                                                            "hx-target": "#content",
+                                                            "hx-swap": "innerHTML",
+                                                            "hx-push-url": "true",
                                                         }) {
                                                             Status <i data-lucide="arrow-up-down" class="w-4 h-4 mr-1"></i>
                                                         }
@@ -164,7 +184,7 @@ templ Project(role string, project models.Project) {
                                                 }
                                             }
                                             @ui.TableBody("p-2", nil) {
-                                                for _, task := range project.Tasks {
+                                                for _, task := range tasks {
                                                     @ui.TableRow("cursor-pointer px-2", templ.Attributes{
                                                         "hx-post": "/tasks?id="+task.ID,
                                                         "hx-target": "#content",
@@ -176,128 +196,49 @@ templ Project(role string, project models.Project) {
                                                             {task.Title}
                                                         }
                                                         @ui.TableCell("py-1.5 px-2", nil) {
-                                                            // if len(task.Assignees) > 0 {
-                                                                <div class="flex justify-start">
-                                                                    if task.UserID != "" {
-                                                                        @ui.Avatar(task.Assignee.FullName, task.Assignee.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{})
-                                                                        {task.Assignee.FullName}
-                                                                    } else {
-                                                                        {"Unassigned"}
-                                                                    }                                                           
-                                                                    // @ui.Tooltip(func() string {
-                                                                    //     if task.Assignee != nil {
-                                                                    //         assignees := ""
-                                                                    //         for i, assignee := range task.Assignees {
-                                                                    //             assignees += strconv.Itoa(i+1)+". "+assignee.User.FullName+"\n"
-                                                                    //         }
-                                                                    //         return assignees
-                                                                    //     }
-                                                                    //     return "Unassigned"
-                                                                    // }(), "w-64 z-39", nil) {
-                                                                    //     if len(task.Assignees) > 1 {
-                                                                    //         <span class="text-muted-foreground cursor-pointer">&nbsp; and {len(task.Assignees)-1} more</span>
-                                                                    //     }
-                                                                    // }
-                                                                </div>
-                                                            // } 
+                                                            <div class="flex justify-start">
+                                                                if task.UserID != "" {
+                                                                    @ui.Avatar(task.Assignee.FullName, task.Assignee.Color, "xs", "h-4 w-4 mr-2", templ.Attributes{})
+                                                                    {task.Assignee.FullName}
+                                                                } else {
+                                                                    {"Unassigned"}
+                                                                }
+                                                            </div>
                                                         }
                                                         @ui.TableCell("py-1.5 px-2", templ.Attributes{
                                                             ":class": fmt.Sprintf("%v<=3?'text-red-500':(%v<=7?'text-orange-500':(%v<=14?'text-yellow-600':'text-muted-foreground'))", (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24), (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24), (utils.TimeDiff(time.Now(),*task.DueDate).Hours()/24)),
                                                         }) {
                                                             if task.DueDate != nil {
                                                                 {task.DueDate.Format("Mon, 02 Jan 2006")}
-                                                            } 
+                                                            }
                                                         }
                                                         @ui.TableCell("py-1.5 px-2", nil) {
                                                             @ui.Tooltip(task.Priority.Label, "", nil){
                                                             <div class="flex items-center">
                                                                 for i := 1; i <= 3; i++ {
                                                                     if i <= task.Priority.Level {
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            class="w-6 h-6 text-yellow-400 fill-yellow-400 p-0.4 rounded"
-                                                                            fill="none"
-                                                                            viewBox="0 0 24 24"
-                                                                            stroke="currentColor"
-                                                                            stroke-width="1.5"
-                                                                        >
-                                                                            <path
-                                                                                stroke-linecap="round"
-                                                                                stroke-linejoin="round"
-                                                                                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"
-                                                                            />
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-yellow-400 fill-yellow-400 p-0.4 rounded" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
                                                                         </svg>
                                                                     } else {
-                                                                        <svg
-                                                                            xmlns="http://www.w3.org/2000/svg"
-                                                                            class="w-6 h-6 text-gray-300 p-0.4 rounded"
-                                                                            fill="none"
-                                                                            viewBox="0 0 24 24"
-                                                                            stroke="currentColor"
-                                                                            stroke-width="1.5"
-                                                                        >
-                                                                            <path
-                                                                                stroke-linecap="round"
-                                                                                stroke-linejoin="round"
-                                                                                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"
-                                                                            />
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-300 p-0.4 rounded" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
                                                                         </svg>
                                                                     }
                                                                 }
                                                             </div>
                                                             }
-                                                            // @ui.Badge(task.Priority.Label, task.Priority.Label, task.Priority.Color, templ.Attributes{})
                                                         }
                                                         @ui.TableCell("py-1.5 px-2", nil) {
-                                                            <span class={fmt.Sprintf("text-xs rounded-md pl-2 pr-2 py-0.5 %s", task.Status.Color)} 
+                                                            <span class={fmt.Sprintf("text-xs rounded-md pl-2 pr-2 py-0.5 %s", task.Status.Color)}
                                                             >{task.Status.Label}</span>
-                                                            // @ui.Badge(task.Priority, "", "", templ.Attributes{
-                                                            //     ":class": fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].color", task.Status),
-                                                            //     "x-text": fmt.Sprintf("task_statutes.filter(c=>c.status.trim().toUpperCase()==='%s'.trim().toUpperCase())[0].label", task.Status),
-                                                            // })
                                                         }
-                                                        // @ui.TableCell("py-1.5 px-2 w-1 z-80", nil) {
-                                                        //     @ui.Dropdown(strconv.Itoa(task.No), "", nil) {
-                                                        //         @ui.DropdownTrigger("p-1", nil) {
-                                                        //             <div data-lucide="ellipsis-vertical" class="w-4 h-4" />
-                                                        //         }
-                                                        //         @ui.DropdownContent("", nil) {
-                                                        //             @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
-                                                        //                 "hx-post": "/tasks?id="+task.ID,
-                                                        //                 "hx-target": "#content",
-                                                        //                 "hx-swap": "innerHtml",
-                                                        //                 "hx-push-url": "true",
-                                                        //                 "hx-indicator": ".htmx-loader,.loaded-content",
-                                                        //             }) {
-                                                        //                 <i data-lucide="clipboard-check" class="w-4 h-4"></i>
-                                                        //                 Task Details
-                                                        //             }
-                                                        //             @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-sm cursor-pointer hover:bg-accent" , templ.Attributes{
-                                                        //                 "hx-post": "/tasks?id="+task.ID+"#edit-task-form",
-                                                        //                 "hx-target": "#content",
-                                                        //                 "hx-swap": "innerHtml",
-                                                        //                 "hx-push-url": "true",
-                                                        //                 "hx-indicator": ".htmx-loader,.loaded-content",
-                                                        //             }) {
-                                                        //                 <i data-lucide="edit" class="w-4 h-4"></i>
-                                                        //                 Edit Task
-                                                        //             }
-                                                        //             @ui.DropdownItem(false, false, "h-10 flex items-start justify-start text-amber-700 text-sm cursor-pointer dark:hover:bg-gray-400 hover:bg-red-100" , templ.Attributes{
-                                                        //                 "hx-post": "/delete-task?id="+task.ID+"#edit-task-form",
-                                                        //                 "hx-target": "#toaster",
-                                                        //                 "hx-swap": "innerHtml",
-                                                        //             }) {
-                                                        //                 <i data-lucide="edit" class="w-4 h-4"></i>
-                                                        //                 Delete Task
-                                                        //             }
-                                                        //         }
-                                                        //     }
-                                                        // }
                                                     }
                                                 }
                                             }
                                         }
                                     </div>
+                                    @ui.Pagination(fmt.Sprintf("/projects?id=%s", project.ID), page, "")
                                 </div>
                             }
                         }

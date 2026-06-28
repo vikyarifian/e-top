@@ -5,7 +5,7 @@ import  (
     "etop/templates/components"
 )
 
-templ Header(user models.User) {
+templ Header(user models.User, notif []models.Notif) {
     <!-- Header -->
     <header class="h-16 bg-card border-b border-border px-4 flex items-center justify-between">
         <div class="flex items-center gap-4"
@@ -62,7 +62,7 @@ templ Header(user models.User) {
                 <div x-show="!darkMode" data-lucide="moon" class="w-6 h-6"  stroke="currentColor" />
                 <div x-show="darkMode" data-lucide="sun" class="w-6 h-6"  stroke="currentColor" />
             </button>
-            @components.Notification([]components.Notif{})
+            @components.Notification(notif, user.ID)
             @components.AvatarButton(user.FullName, user.Email)
         </div>
     </header>
