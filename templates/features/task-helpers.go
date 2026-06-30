@@ -33,6 +33,13 @@ func taskAssigneeList(task models.Task) []models.UserRole {
 	return []models.UserRole{}
 }
 
+func tern(cond bool, a, b string) string {
+	if cond {
+		return a
+	}
+	return b
+}
+
 func toggleSortDir(field string, page models.PageInfo) string {
 	if page.SortBy == field {
 		if page.SortDir == "asc" {

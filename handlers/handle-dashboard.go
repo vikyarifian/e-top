@@ -4,17 +4,19 @@ import (
 	"net/http"
 
 	"etop/auth"
+	"etop/services"
 	"etop/templates/layouts"
 	"etop/templates/pages"
 )
 
 func HandleDashboard(w http.ResponseWriter, r *http.Request) error {
 	authUser, _ := auth.GetAuth(w, r)
+	data := services.GetDashboardData(authUser.ID)
 	switch r.Method {
 	case http.MethodGet:
-		return layouts.Layout("Dashboard", authUser, pages.Dashboard(authUser)).Render(r.Context(), w)
+		return layouts.Layout("Dashboard", authUser, pages.Dashboard(authUser, data)).Render(r.Context(), w)
 	case http.MethodPost:
-		return pages.Dashboard(authUser).Render(r.Context(), w)
+		return pages.Dashboard(authUser, data).Render(r.Context(), w)
 	default:
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil

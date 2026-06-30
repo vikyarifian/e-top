@@ -2,6 +2,7 @@ package features
 
 import (
     "fmt"
+    "strconv"
 
     "etop/dto"
     "etop/models"
@@ -9,7 +10,7 @@ import (
     "etop/templates/components/ui"
 )
 
-templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo) {
+templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, years []int, selectedYear string) {
     <div class="mx-auto space-y-6">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold">Achieved</h1>
@@ -17,6 +18,28 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo) {
         </div>
 
         @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+
+        if len(years) > 0 {
+            <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-sm font-medium text-muted-foreground">Year:</span>
+                <button type="button"
+                    class={fmt.Sprintf("px-3 py-1 text-sm rounded-md border transition %s", tern(selectedYear == "", "bg-primary text-primary-foreground border-primary", "bg-background hover:bg-accent border-border"))}
+                    hx-post="/achieve?page=1"
+                    hx-target="#content"
+                    hx-swap="innerHTML"
+                    hx-push-url="true"
+                >All</button>
+                for _, y := range years {
+                    <button type="button"
+                        class={fmt.Sprintf("px-3 py-1 text-sm rounded-md border transition %s", tern(selectedYear == strconv.Itoa(y), "bg-primary text-primary-foreground border-primary", "bg-background hover:bg-accent border-border"))}
+                        hx-post={fmt.Sprintf("/achieve?page=1&year=%d", y)}
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        hx-push-url="true"
+                    >{strconv.Itoa(y)}</button>
+                }
+            </div>
+        }
 
         if len(tasks) > 0 {
             <div class="space-y-0 border rounded-lg overflow-hidden">

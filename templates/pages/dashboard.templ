@@ -1,79 +1,219 @@
 package pages
 
 import (
+	"fmt"
+
 	"etop/dto"
+	"etop/services"
 )
 
-// Dashboard Page
-templ Dashboard(userAuth dto.UserAuth) {
+templ Dashboard(userAuth dto.UserAuth, data services.DashboardData) {
 	<div class="space-y-6" data-title="Dashboard">
 		<div>
 			<h2 class="text-3xl font-bold tracking-tight">Dashboard</h2>
-			<p class="text-muted-foreground p-1">Welcome {userAuth.FullName} to your dashboard</p>
+			<p class="text-muted-foreground p-1">Welcome back, {userAuth.FullName}</p>
 		</div>
 
-		<!-- Stats Cards -->
-		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-			<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
-				<div class="flex items-center justify-between space-y-0 pb-2">
-					<h3 class="tracking-tight text-sm font-medium">Total Revenue</h3>
-					<svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path>
-					</svg>
-				</div>
-				<div>
-					<div class="text-2xl font-bold">$45,231.89</div>
-					<p class="text-xs text-muted-foreground">+20.1% from last month</p>
-				</div>
-			</div>
-			
-			<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
-				<div class="flex items-center justify-between space-y-0 pb-2">
-					<h3 class="tracking-tight text-sm font-medium">Subscriptions</h3>
-					<svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-					</svg>
-				</div>
-				<div>
-					<div class="text-2xl font-bold">+2350</div>
-					<p class="text-xs text-muted-foreground">+180.1% from last month</p>
-				</div>
-			</div>
+		@kpiCards(data)
 
-			<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
-				<div class="flex items-center justify-between space-y-0 pb-2">
-					<h3 class="tracking-tight text-sm font-medium">Sales</h3>
-					<svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
-					</svg>
-				</div>
-				<div>
-					<div class="text-2xl font-bold">+12,234</div>
-					<p class="text-xs text-muted-foreground">+19% from last month</p>
-				</div>
-			</div>
+		@summaryCards(data)
 
-			<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
-				<div class="flex items-center justify-between space-y-0 pb-2">
-					<h3 class="tracking-tight text-sm font-medium">Active Now</h3>
-					<svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-					</svg>
-				</div>
-				<div>
-					<div class="text-2xl font-bold">+573</div>
-					<p class="text-xs text-muted-foreground">+201 since last hour</p>
-				</div>
-			</div>
+		<div class="grid gap-6 lg:grid-cols-2">
+			@statusChart(data)
+			@typeChart(data)
 		</div>
 
-		<!-- Chart Area -->
-		<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
-			<h3 class="font-semibold leading-none tracking-tight mb-4">Overview</h3>
-			<div class="h-64 flex items-center justify-center text-muted-foreground">
-				Detailed analytics chart placeholder
+		@monthlyChart(data)
+	</div>
+}
+
+templ kpiCards(data services.DashboardData) {
+	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+		@kpiCard("Task Completion Rate", fmt.Sprintf("%.1f%%", data.TCR), "TCR", data.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30")
+		@kpiCard("On-Time Rate", fmt.Sprintf("%.1f%%", data.OTR), "OTR", data.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30")
+		@kpiCard("Priority Score", fmt.Sprintf("%.1f%%", data.TPS), "TPS", data.TPS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
+		@kpiCard("Work Efficiency", fmt.Sprintf("%.1f%%", data.WER), "WER", data.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30")
+	</div>
+}
+
+templ kpiCard(title, display, short string, value float64, textColor, bgColor string) {
+	<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+		<div class="flex items-center justify-between mb-4">
+			<h3 class="text-sm font-medium text-muted-foreground">{title}</h3>
+			<span class={"inline-flex items-center rounded-md px-2 py-1 text-xs font-bold ", bgColor, " ", textColor}>{short}</span>
+		</div>
+		<div class="flex items-center gap-4">
+			@circleProgress(value, textColor)
+			<div>
+				<div class={"text-2xl font-bold ", textColor}>{display}</div>
+				<div class="w-32 mt-1">
+					<div class="h-1.5 rounded-full bg-muted overflow-hidden">
+						<div class={"h-full rounded-full transition-all duration-500 ", progressBarColor(value)} style={fmt.Sprintf("width: %.1f%%", clampPercentage(value))}></div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 }
 
+templ circleProgress(value float64, strokeColor string) {
+	<svg class="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
+		<circle cx="18" cy="18" r="15.5" fill="none" stroke="hsl(var(--muted))" stroke-width="2.5"/>
+		<circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="2.5"
+			stroke-dasharray={fmt.Sprintf("%.1f %s", circumference(value), 100)}
+			stroke-linecap="round" class={strokeColor}/>
+	</svg>
+}
+
+templ summaryCards(data services.DashboardData) {
+	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+		<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+			<div class="flex items-center justify-between">
+				<h3 class="text-sm font-medium text-muted-foreground">Workspaces</h3>
+				<svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+				</svg>
+			</div>
+			<div class="mt-2">
+				<div class="text-2xl font-bold">{data.WorkspaceCount}</div>
+				<p class="text-xs text-muted-foreground">Active workspaces</p>
+			</div>
+		</div>
+		<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+			<div class="flex items-center justify-between">
+				<h3 class="text-sm font-medium text-muted-foreground">Projects</h3>
+				<svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+				</svg>
+			</div>
+			<div class="mt-2">
+				<div class="text-2xl font-bold">{data.ProjectCount}</div>
+				<p class="text-xs text-muted-foreground">Active projects</p>
+			</div>
+		</div>
+		<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+			<div class="flex items-center justify-between">
+				<h3 class="text-sm font-medium text-muted-foreground">Total Tasks</h3>
+				<svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+				</svg>
+			</div>
+			<div class="mt-2">
+				<div class="text-2xl font-bold">{data.TaskCount}</div>
+				<p class="text-xs text-muted-foreground">{fmt.Sprintf("%d completed (%.0f%%)", data.DoneCount, data.TCR)}</p>
+			</div>
+		</div>
+		<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+			<div class="flex items-center justify-between">
+				<h3 class="text-sm font-medium text-muted-foreground">Team Members</h3>
+				<svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
+				</svg>
+			</div>
+			<div class="mt-2">
+				<div class="text-2xl font-bold">{data.MemberCount}</div>
+				<p class="text-xs text-muted-foreground">Across all workspaces</p>
+			</div>
+		</div>
+	</div>
+}
+
+templ statusChart(data services.DashboardData) {
+	<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+		<h3 class="font-semibold leading-none tracking-tight mb-4">Task Status Distribution</h3>
+		if len(data.StatusDistribution) > 0 {
+			@statusBarChart(data.StatusDistribution, maxDistCount(data.StatusDistribution))
+		} else {
+			<p class="text-sm text-muted-foreground py-8 text-center">No tasks yet</p>
+		}
+	</div>
+}
+
+templ statusBarChart(dist []services.StatusCount, maxCount int64) {
+	<div class="space-y-3">
+		for _, s := range dist {
+			<div class="flex items-center gap-3">
+				<span class="text-sm font-medium w-24 truncate">{s.Label}</span>
+				<div class="flex-1 h-5 rounded-md bg-muted overflow-hidden">
+					<div class={"h-full rounded-md transition-all duration-500 ", statusColor(s.Color)} style={fmt.Sprintf("width: %.1f%%", float64(s.Count) / float64(maxCount) * 100)}></div>
+				</div>
+				<span class="text-sm text-muted-foreground w-12 text-right">{s.Count}</span>
+			</div>
+		}
+	</div>
+}
+
+templ typeChart(data services.DashboardData) {
+	<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+		<h3 class="font-semibold leading-none tracking-tight mb-4">Task Type Breakdown</h3>
+		if len(data.TypeDistribution) > 0 {
+			@donutChart(data.TypeDistribution, sumTypeCount(data.TypeDistribution), computeSegments(data.TypeDistribution, sumTypeCount(data.TypeDistribution)))
+		} else {
+			<p class="text-sm text-muted-foreground py-8 text-center">No tasks yet</p>
+		}
+	</div>
+}
+
+templ donutChart(types []services.TypeCount, total int64, segs []segmentData) {
+	<div class="flex flex-col items-center gap-4">
+		<svg class="w-36 h-36" viewBox="0 0 36 36">
+			@donutChartCircles(segs)
+		</svg>
+		<div class="flex flex-wrap gap-3 justify-center">
+			for _, t := range types {
+				<div class="flex items-center gap-1.5">
+					<span class={"inline-block w-2.5 h-2.5 rounded-full ", typeColor(t.Type)}></span>
+					<span class="text-xs text-muted-foreground">{t.Type} ({fmt.Sprintf("%.0f%%", float64(t.Count) / float64(total) * 100)})</span>
+				</div>
+			}
+		</div>
+	</div>
+}
+
+templ donutChartCircles(segs []segmentData) {
+	for _, s := range segs {
+		<circle cx="18" cy="18" r="13" fill="none" stroke={s.Color} stroke-width="3"
+			stroke-dasharray={fmt.Sprintf("%.1f %.1f", s.Length, s.Circumference - s.Length)}
+			stroke-dashoffset={fmt.Sprintf("%.1f", -s.Offset)}
+			stroke-linecap="butt"/>
+	}
+	<circle cx="18" cy="18" r="8" fill="hsl(var(--card))"/>
+}
+
+templ monthlyChart(data services.DashboardData) {
+	<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+		<h3 class="font-semibold leading-none tracking-tight mb-4">Monthly Completion (Last 6 Months)</h3>
+		if len(data.MonthlyCompletion) > 0 {
+			@monthlyBarChart(data.MonthlyCompletion, maxMonthlyCount(data.MonthlyCompletion))
+		} else {
+			<p class="text-sm text-muted-foreground py-8 text-center">No completed tasks in the last 6 months</p>
+		}
+	</div>
+}
+
+templ monthlyBarChart(months []services.MonthlyCount, maxCount int64) {
+	<div>
+		<div class="flex items-end gap-3 h-40">
+			// for _, m := range months {
+			// 	<svg class="flex-1" viewBox="0 0 40 160" preserveAspectRatio="none">
+			// 		<rect x="4" y={fmt.Sprintf("%.1f", 160 - float64(m.Count) / float64(maxCount) * 140)} width="32" height={fmt.Sprintf("%.1f", float64(m.Count) / float64(maxCount) * 140)}
+			// 			rx="4" class="fill-blue-500 dark:fill-blue-400 hover:opacity-80 transition-opacity"/>
+			// 	</svg>
+			// }
+		</div>
+		<div class="flex gap-3 mt-2">
+			for _, m := range months {
+				<div class="flex-1 text-center">
+					<span class="text-xs text-muted-foreground">{monthLabel(m.Month)}</span>
+				</div>
+			}
+		</div>
+		<div class="flex gap-3 mt-1">
+			for _, m := range months {
+				<div class="flex-1 text-center">
+					<span class="text-xs font-medium">{m.Count}</span>
+				</div>
+			}
+		</div>
+	</div>
+}
