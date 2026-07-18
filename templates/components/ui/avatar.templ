@@ -20,10 +20,18 @@ templ Avatar(text string, color string, size string, class string, attrs templ.A
 				}
 			{attrs...}
 		>
-			<span class="text-sm font-medium text-primary-foreground">{ strings.Trim(strings.ToUpper(text[0:1])," ") }</span>
+			<span class="text-sm font-medium text-primary-foreground">{ avatarInitial(text) }</span>
 		</div>
 		{children...}
 	</div>
+}
+
+func avatarInitial(text string) string {
+	text = strings.TrimSpace(text)
+	if text == "" {
+		return "?"
+	}
+	return strings.ToUpper(text[0:1])
 }
 
 templ AvatarImage(src string, alt string, class string, attrs templ.Attributes) {

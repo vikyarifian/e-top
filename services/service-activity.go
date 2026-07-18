@@ -17,19 +17,29 @@ func AddLog(userID string, action string, resourceType string, resourceID string
 	return nil
 }
 
-func GetUserNotifications(userID string, limit int) []models.Notif {
-	var logs []models.Log
-	userIDs := []string{userID}
-	_ = userIDs
+const userNotifFilter = `
+	user_id = ?
+	OR (resource_type = 'Task' AND resource_id IN (SELECT id FROM tasks WHERE (user_id = ? OR created_by = ?)))
+	OR (resource_type = 'Project' AND resource_id IN (SELECT project_id FROM project_members WHERE user_id = ?))
+`
 
-	db.PgSql.Where(`
-		user_id = ?
-		OR (resource_type = 'Task' AND resource_id IN (SELECT id FROM tasks WHERE (user_id = ? OR created_by = ?)))
-		OR (resource_type = 'Project' AND resource_id IN (SELECT project_id FROM project_members WHERE user_id = ?))
-	`, userID, userID, userID, userID).
+func GetUserNotifications(userID string, limit int) []models.Notif {
+	notifs, _ := GetUserNotificationsPaged(userID, limit, 0)
+	return notifs
+}
+
+func GetUserNotificationsPaged(userID string, limit int, offset int) ([]models.Notif, int64) {
+	var total int64
+	db.PgSql.Model(&models.Log{}).
+		Where(userNotifFilter, userID, userID, userID, userID).
+		Count(&total)
+
+	var logs []models.Log
+	db.PgSql.Where(userNotifFilter, userID, userID, userID, userID).
 		Preload("User").
 		Order("created_at DESC").
 		Limit(limit).
+		Offset(offset).
 		Find(&logs)
 
 	notifs := make([]models.Notif, 0, len(logs))
@@ -60,7 +70,7 @@ func GetUserNotifications(userID string, limit int) []models.Notif {
 			ActorColor:   actorColor,
 		})
 	}
-	return notifs
+	return notifs, total
 }
 
 func actionLabel(action string) string {

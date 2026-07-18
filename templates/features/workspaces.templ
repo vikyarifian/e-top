@@ -4,6 +4,7 @@ import (
     "fmt"
     "strings"
 	"strconv"
+	"time"
 
     "etop/utils"
 	"etop/models"
@@ -56,9 +57,9 @@ templ Workspace(role string, workspace models.Workspace, contributors []models.U
                 }
             </div>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-start gap-2">
             <span class="text-sm text-muted-foreground mr-2">Members : </span>
-            <div class="flex">
+            <div class="flex flex-wrap gap-y-1.5">
                 for _,member := range workspace.Members {
                     @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "w-[180px]", nil) {
                         @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
@@ -109,7 +110,7 @@ templ Workspace(role string, workspace models.Workspace, contributors []models.U
                                         x-text={fmt.Sprintf("project_statuses.filter(c=>c.status==='%s')[0].label.trim()", project.Status)}
                                     ></span>
                                 </div>
-                                <div class="text-xs text-muted-foreground">Start at {project.StartDate.Format("Mon, 02 Jan 2006")}</div>
+                                @displayStartDate(project.StartDate)
                                 // <div class="text-xs text-muted-foreground">Due at {project.DueDate.Format("Mon, 02 Jan 2006")}</div>
                             </div>
                         </div>
@@ -285,8 +286,14 @@ templ WorkspaceSwitcher(options []ui.SelectOption) {
                 <div data-lucide="circle-plus" class="w-4 h-4"></div>
                 <span>Create Workspace</span>
             </div>
-		</div>
-	</div>
+         </div>
+    </div>
+}
+
+templ displayStartDate(t *time.Time) {
+    <div class="text-xs text-muted-foreground">
+        Start at {formatDateOrDash(t)}
+    </div>
 }
 
 templ CreateWorkspace(class string, attrs templ.Attributes) {
@@ -791,9 +798,9 @@ templ JoinWorkspace(workspace models.Workspace) {
                 
             </div>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex items-start gap-2">
             <span class="text-sm text-muted-foreground mr-2">Members : </span>
-            <div class="flex">
+            <div class="flex flex-wrap gap-y-1.5">
                 for _,member := range workspace.Members {
                     @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "w-[180px]", nil) {
                         @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
