@@ -1,11 +1,10 @@
 package features
 
 import (
-    _"fmt"
+    "fmt"
     "time"
 
     "etop/models"
-    "etop/services"
     "etop/templates/components"
     "etop/templates/components/ui"
 )
@@ -15,15 +14,17 @@ type notifGroup struct {
     Notifs []models.Notif
 }
 
-templ Notifications(userID string) {
+templ Notifications(notifs []models.Notif, page models.PageInfo) {
     <div class="mx-auto max-w-3xl space-y-6">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold">Notifications</h1>
+            <span class="text-sm text-muted-foreground">{fmt.Sprintf("%d notification(s)", page.Total)}</span>
         </div>
 
         @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
 
-        @NotificationGroups(services.GetUserNotifications(userID, 999))
+        @NotificationGroups(notifs)
+        @ui.Pagination("/notifications", page, "")
     </div>
 }
 
@@ -82,37 +83,36 @@ func clamp(v, max int) int {
     return v
 }
 
+var indoMonths = []string{"", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"}
+
+func indoDate(t time.Time) string {
+    return fmt.Sprintf("%d %s %d", t.Day(), indoMonths[int(t.Month())], t.Year())
+}
+
 func getNotifGroups(notifs []models.Notif) []notifGroup {
-    now := time.Now().Truncate(24 * time.Hour)
-    today := []models.Notif{}
-    yesterday := []models.Notif{}
-    thisWeek := []models.Notif{}
-    earlier := []models.Notif{}
-    for _, n := range notifs {
-        days := int(now.Sub(n.Timestamp.Truncate(24 * time.Hour)).Hours() / 24)
-        switch {
-        case days == 0:
-            today = append(today, n)
-        case days == 1:
-            yesterday = append(yesterday, n)
-        case days >= 2 && days <= 7:
-            thisWeek = append(thisWeek, n)
-        default:
-            earlier = append(earlier, n)
-        }
-    }
+    // Bandingkan tanggal wall-clock: created_at tersimpan sebagai jam Jakarta
+    // (walau terbaca berlabel UTC), jadi Format memberi tanggal yang benar.
+    todayStr := time.Now().Format("2006-01-02")
+    yesterdayStr := time.Now().AddDate(0, 0, -1).Format("2006-01-02")
+
     groups := []notifGroup{}
-    if len(today) > 0 {
-        groups = append(groups, notifGroup{"Today", today})
-    }
-    if len(yesterday) > 0 {
-        groups = append(groups, notifGroup{"Yesterday", yesterday})
-    }
-    if len(thisWeek) > 0 {
-        groups = append(groups, notifGroup{"This Week", thisWeek})
-    }
-    if len(earlier) > 0 {
-        groups = append(groups, notifGroup{"Earlier", earlier})
+    idx := map[string]int{}
+    for _, n := range notifs {
+        var label string
+        switch n.Timestamp.Format("2006-01-02") {
+        case todayStr:
+            label = "Today"
+        case yesterdayStr:
+            label = "Yesterday"
+        default:
+            label = indoDate(n.Timestamp)
+        }
+        if i, ok := idx[label]; ok {
+            groups[i].Notifs = append(groups[i].Notifs, n)
+        } else {
+            idx[label] = len(groups)
+            groups = append(groups, notifGroup{label, []models.Notif{n}})
+        }
     }
     return groups
 }

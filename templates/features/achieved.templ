@@ -6,25 +6,54 @@ import (
 
     "etop/dto"
     "etop/models"
+    "etop/services"
     "etop/templates/components"
     "etop/templates/components/ui"
 )
 
-templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, years []int, selectedYear string) {
+templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, years []int, selectedYear string, eval services.AchievedEvaluation, viewUsers []models.User, selectedUser string) {
     <div class="mx-auto space-y-6">
-        <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-bold">Achieved</h1>
-            <span class="text-sm text-muted-foreground">{fmt.Sprintf("%d task(s) completed", page.Total)}</span>
+        <div>
+            <h2 class="text-3xl font-bold tracking-tight">Penilaian Kinerja</h2>
+            <p class="text-muted-foreground p-1">Evaluasi kinerja berdasarkan tugas yang telah diselesaikan</p>
         </div>
 
-        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+        // <!-- Achieved Tasks Section -->
+        // <div class="flex items-center justify-between">
+        //     <h2 class="text-2xl font-bold">Daftar Tugas</h2>
+        //     <span class="text-sm text-muted-foreground">{fmt.Sprintf("%d task(s)", page.Total)}</span>
+        // </div>
 
+        <!-- User Filter (admin / dept head) -->
+        if len(viewUsers) > 0 {
+            <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-sm font-medium text-muted-foreground">User:</span>
+                <select name="user_id"
+                    class="px-3 py-1 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                    hx-post={achieveURL("/achieve", 1, "created_at", "desc", selectedYear, "")}
+                    hx-trigger="change"
+                    hx-target="#content"
+                    hx-swap="innerHTML"
+                    hx-push-url="true"
+                    hx-indicator=".htmx-loader,.loaded-content"
+                >
+                    <option value={user.ID} selected?={selectedUser == ""}>{user.FullName}</option>
+                    for _, vu := range viewUsers {
+                        if vu.ID != user.ID {
+                            <option value={vu.ID} selected?={selectedUser == vu.ID}>{vu.FullName}</option>
+                        }
+                    }
+                </select>
+            </div>
+        }
+
+        <!-- Year Filter -->
         if len(years) > 0 {
             <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-sm font-medium text-muted-foreground">Year:</span>
                 <button type="button"
                     class={fmt.Sprintf("px-3 py-1 text-sm rounded-md border transition %s", tern(selectedYear == "", "bg-primary text-primary-foreground border-primary", "bg-background hover:bg-accent border-border"))}
-                    hx-post="/achieve?page=1"
+                    hx-post={achieveURL("/achieve", 1, "created_at", "desc", "", selectedUser)}
                     hx-target="#content"
                     hx-swap="innerHTML"
                     hx-push-url="true"
@@ -32,7 +61,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                 for _, y := range years {
                     <button type="button"
                         class={fmt.Sprintf("px-3 py-1 text-sm rounded-md border transition %s", tern(selectedYear == strconv.Itoa(y), "bg-primary text-primary-foreground border-primary", "bg-background hover:bg-accent border-border"))}
-                        hx-post={fmt.Sprintf("/achieve?page=1&year=%d", y)}
+                        hx-post={achieveURL("/achieve", 1, "created_at", "desc", strconv.Itoa(y), selectedUser)}
                         hx-target="#content"
                         hx-swap="innerHTML"
                         hx-push-url="true"
@@ -41,13 +70,149 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
             </div>
         }
 
+        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+
+        <!-- Evaluation Dashboard -->
+        <!-- KPI Cards with Circular Progress (like Dashboard) -->
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            @kpiCircleCard("Task Completion Rate", fmt.Sprintf("%.1f%%", eval.TCR), "TCR", eval.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30")
+            @kpiCircleCard("On-Time Rate", fmt.Sprintf("%.1f%%", eval.OTR), "OTR", eval.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30")
+            @kpiCircleCard("Priority Score", fmt.Sprintf("%.1f%%", eval.TPS), "TPS", eval.TPS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
+            @kpiCircleCard("Work Efficiency", fmt.Sprintf("%.1f%%", eval.WER), "WER", eval.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30")
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-medium text-muted-foreground">Total Tasks</h3>
+                    <svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-bold">{eval.TaskCount}</div>
+                    <p class="text-xs text-muted-foreground">{fmt.Sprintf("%d completed (%.0f%%)", eval.DoneCount, eval.TCR)}</p>
+                </div>
+            </div>
+            <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-medium text-muted-foreground">On Time</h3>
+                    <svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-bold">{eval.OnTimeCount}</div>
+                    <p class="text-xs text-muted-foreground">{fmt.Sprintf("%.0f%% of completed tasks", eval.OTR)}</p>
+                </div>
+            </div>
+            <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-medium text-muted-foreground">Projects</h3>
+                    <svg class="h-4 w-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                </div>
+                <div class="mt-2">
+                    <div class="text-2xl font-bold">{eval.ProjectCount}</div>
+                    <p class="text-xs text-muted-foreground">Active projects</p>
+                </div>
+            </div>
+            <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-medium text-muted-foreground">Final Score</h3>
+                    <span class={fmt.Sprintf("inline-flex items-center rounded-md px-2 py-1 text-xs font-bold %s", evalBadgeColor(eval.Category))}>{eval.Category}</span>
+                </div>
+                <div class="mt-2 flex items-center gap-3">
+                    <div class={fmt.Sprintf("text-2xl font-bold %s", evalScoreColor(eval.Category))}>{fmt.Sprintf("%.1f", eval.FinalScore)}</div>
+                    <div class="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                        <div class={fmt.Sprintf("h-full rounded-full %s", evalProgressColor(eval.Category))} style={fmt.Sprintf("width: %.1f%%", clampEval(eval.FinalScore))}></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid gap-6 lg:grid-cols-2">
+            <!-- Status Distribution Chart -->
+            <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+                <h3 class="font-semibold leading-none tracking-tight mb-4">Task Status Distribution</h3>
+                if len(eval.StatusDistribution) > 0 {
+                    <div class="space-y-3">
+                        for _, s := range eval.StatusDistribution {
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-medium w-24 truncate">{s.Label}</span>
+                                <div class="flex-1 h-5 rounded-md bg-muted overflow-hidden">
+                                    <div class={"h-full rounded-md transition-all duration-500 ", statusColor(s.Color)} style={fmt.Sprintf("width: %.1f%%", float64(s.Count) / float64(maxDistCount(eval.StatusDistribution)) * 100)}></div>
+                                </div>
+                                <span class="text-sm text-muted-foreground w-12 text-right">{s.Count}</span>
+                            </div>
+                        }
+                    </div>
+                } else {
+                    <p class="text-sm text-muted-foreground py-8 text-center">No completed tasks</p>
+                }
+            </div>
+            <!-- Type Breakdown Chart (Donut) -->
+            <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+                <h3 class="font-semibold leading-none tracking-tight mb-4">Task Type Breakdown</h3>
+                if len(eval.TypeDistribution) > 0 {
+                    <div class="flex flex-col items-center gap-4">
+                        <svg class="w-36 h-36" viewBox="0 0 36 36">
+                            @donutChartCircles(computeSegments(eval.TypeDistribution, sumTypeCount(eval.TypeDistribution)))
+                        </svg>
+                        <div class="flex flex-wrap gap-3 justify-center">
+                            for _, t := range eval.TypeDistribution {
+                                <div class="flex items-center gap-1.5">
+                                    <span class={"inline-block w-2.5 h-2.5 rounded-full ", typeColor(t.Type)}></span>
+                                    <span class="text-xs text-muted-foreground">{t.Type} ({fmt.Sprintf("%.0f%%", float64(t.Count) / float64(sumTypeCount(eval.TypeDistribution)) * 100)})</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                } else {
+                    <p class="text-sm text-muted-foreground py-8 text-center">No data</p>
+                }
+            </div>
+        </div>
+
+        <!-- Monthly Completion Chart -->
+        <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+            <h3 class="font-semibold leading-none tracking-tight mb-4">Monthly Completion (Last 6 Months)</h3>
+            if len(eval.MonthlyCompletion) > 0 {
+                <div>
+                    <div class="flex items-end gap-3 h-40">
+                        for _, m := range eval.MonthlyCompletion {
+                            <div class="flex-1 flex flex-col items-center justify-end h-full">
+                                <div class="w-full rounded-t-md bg-blue-500 dark:bg-blue-400 hover:opacity-80 transition-opacity" style={fmt.Sprintf("height: %.1f%%", float64(m.Count) / float64(maxMonthlyCount(eval.MonthlyCompletion)) * 100)}></div>
+                            </div>
+                        }
+                    </div>
+                    <div class="flex gap-3 mt-2">
+                        for _, m := range eval.MonthlyCompletion {
+                            <div class="flex-1 text-center">
+                                <span class="text-xs text-muted-foreground">{monthLabel(m.Month)}</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="flex gap-3 mt-1">
+                        for _, m := range eval.MonthlyCompletion {
+                            <div class="flex-1 text-center">
+                                <span class="text-xs font-medium">{m.Count}</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            } else {
+                <p class="text-sm text-muted-foreground py-8 text-center">No completed tasks in the last 6 months</p>
+            }
+        </div>
+
+        @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+
+        <!-- Task List -->
         if len(tasks) > 0 {
             <div class="space-y-0 border rounded-lg overflow-hidden">
                 <div class="grid grid-cols-12 gap-2 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground">
                     <div class="col-span-5">
                         @ui.Button("sort-title", "ghost", "xs", "arrow-up-down", "Task", "", templ.Attributes{
                             "type": "button",
-                            "hx-post": fmt.Sprintf("/achieve?page=1&sort_by=title&sort_dir=%s", toggleSortDir("title", page)),
+                            "hx-post": achieveURL("/achieve", 1, "title", toggleSortDir("title", page), selectedYear, selectedUser),
                             "hx-target": "#content",
                             "hx-swap": "innerHTML",
                             "hx-push-url": "true",
@@ -56,7 +221,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     <div class="col-span-2">
                         @ui.Button("sort-type", "ghost", "xs", "arrow-up-down", "Type", "", templ.Attributes{
                             "type": "button",
-                            "hx-post": fmt.Sprintf("/achieve?page=1&sort_by=type&sort_dir=%s", toggleSortDir("type", page)),
+                            "hx-post": achieveURL("/achieve", 1, "type", toggleSortDir("type", page), selectedYear, selectedUser),
                             "hx-target": "#content",
                             "hx-swap": "innerHTML",
                             "hx-push-url": "true",
@@ -65,7 +230,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     <div class="col-span-2">
                         @ui.Button("sort-status", "ghost", "xs", "arrow-up-down", "Status", "", templ.Attributes{
                             "type": "button",
-                            "hx-post": fmt.Sprintf("/achieve?page=1&sort_by=status&sort_dir=%s", toggleSortDir("status", page)),
+                            "hx-post": achieveURL("/achieve", 1, "status", toggleSortDir("status", page), selectedYear, selectedUser),
                             "hx-target": "#content",
                             "hx-swap": "innerHTML",
                             "hx-push-url": "true",
@@ -74,7 +239,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     <div class="col-span-1">
                         @ui.Button("sort-priority", "ghost", "xs", "arrow-up-down", "Priority", "", templ.Attributes{
                             "type": "button",
-                            "hx-post": fmt.Sprintf("/achieve?page=1&sort_by=priority&sort_dir=%s", toggleSortDir("priority", page)),
+                            "hx-post": achieveURL("/achieve", 1, "priority", toggleSortDir("priority", page), selectedYear, selectedUser),
                             "hx-target": "#content",
                             "hx-swap": "innerHTML",
                             "hx-push-url": "true",
@@ -83,7 +248,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     <div class="col-span-2">
                         @ui.Button("sort-assignee", "ghost", "xs", "arrow-up-down", "Assignee", "", templ.Attributes{
                             "type": "button",
-                            "hx-post": fmt.Sprintf("/achieve?page=1&sort_by=assignee&sort_dir=%s", toggleSortDir("assignee", page)),
+                            "hx-post": achieveURL("/achieve", 1, "assignee", toggleSortDir("assignee", page), selectedYear, selectedUser),
                             "hx-target": "#content",
                             "hx-swap": "innerHTML",
                             "hx-push-url": "true",
@@ -107,26 +272,18 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                             }
                         </div>
                         <div class="col-span-2">
-                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                {task.Type}
-                            </span>
+                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">{task.Type}</span>
                         </div>
                         <div class="col-span-2">
-                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                {task.Status.Label}
-                            </span>
+                            <span class={"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent ", task.Status.Color}>{task.Status.Label}</span>
                         </div>
                         <div class="col-span-1">
                             <div class="flex items-center gap-0.5">
                                 for i := 1; i <= 3; i++ {
                                     if i <= task.Priority.Level {
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
-                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/></svg>
                                     } else {
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
-                                        </svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/></svg>
                                     }
                                 }
                             </div>
@@ -138,7 +295,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     </div>
                 }
             </div>
-            @ui.Pagination("/achieve", page, "")
+            @ui.Pagination("/achieve", page, tern(selectedYear != "", "&year="+selectedYear, "") + tern(selectedUser != "", "&user_id="+selectedUser, ""))
         } else {
             <div class="text-center py-12 text-muted-foreground">
                 <p class="text-lg">No achieved tasks yet</p>
@@ -146,4 +303,39 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
             </div>
         }
     </div>
+}
+
+templ kpiCircleCard(title, display, short string, value float64, textColor, bgColor string) {
+    <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-muted-foreground">{title}</h3>
+            <span class={"inline-flex items-center rounded-md px-2 py-1 text-xs font-bold ", bgColor, " ", textColor}>{short}</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <svg class="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
+                <circle cx="18" cy="18" r="15.5" fill="none" stroke="hsl(var(--muted))" stroke-width="2.5"/>
+                <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-dasharray={fmt.Sprintf("%.1f %s", circumference(value), 100)}
+                    stroke-linecap="round" class={textColor}/>
+            </svg>
+            <div>
+                <div class={"text-2xl font-bold ", textColor}>{display}</div>
+                <div class="w-32 mt-1">
+                    <div class="h-1.5 rounded-full bg-muted overflow-hidden">
+                        <div class={"h-full rounded-full transition-all duration-500 ", progressBarColor(value)} style={fmt.Sprintf("width: %.1f%%", clampPercentage(value))}></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+templ donutChartCircles(segs []segmentData) {
+    for _, s := range segs {
+        <circle cx="18" cy="18" r="13" fill="none" stroke={s.Color} stroke-width="3"
+            stroke-dasharray={fmt.Sprintf("%.1f %.1f", s.Length, s.Circumference - s.Length)}
+            stroke-dashoffset={fmt.Sprintf("%.1f", -s.Offset)}
+            stroke-linecap="butt"/>
+    }
+    <circle cx="18" cy="18" r="8" fill="hsl(var(--card))"/>
 }

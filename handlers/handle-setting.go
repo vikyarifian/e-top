@@ -15,6 +15,46 @@ import (
 	"gorm.io/gorm"
 )
 
+func settingsDepts(r *http.Request) ([]models.Department, models.PageInfo) {
+	page, perPage, _, _ := parsePageParams(r)
+
+	var total int64
+	db.PgSql.Model(&models.Department{}).Count(&total)
+
+	var depts []models.Department
+	db.PgSql.Preload("Members", func(db *gorm.DB) *gorm.DB {
+		return db.Preload("User")
+	}).Preload("DeptHead").Order("no").
+		Limit(perPage).Offset((page - 1) * perPage).
+		Find(&depts)
+
+	return depts, models.PageInfo{
+		Page:       page,
+		PerPage:    perPage,
+		Total:      total,
+		TotalPages: int((total + int64(perPage) - 1) / int64(perPage)),
+	}
+}
+
+func settingsUsers(r *http.Request) ([]models.User, models.PageInfo) {
+	page, perPage, _, _ := parsePageParams(r)
+
+	var total int64
+	db.PgSql.Model(&models.User{}).Count(&total)
+
+	var users []models.User
+	db.PgSql.Order("no").
+		Limit(perPage).Offset((page - 1) * perPage).
+		Find(&users)
+
+	return users, models.PageInfo{
+		Page:       page,
+		PerPage:    perPage,
+		Total:      total,
+		TotalPages: int((total + int64(perPage) - 1) / int64(perPage)),
+	}
+}
+
 func HandleSettings(w http.ResponseWriter, r *http.Request) error {
 	tab := r.URL.Query().Get("tab")
 	if tab == "" {
@@ -48,15 +88,11 @@ func HandleSettings(w http.ResponseWriter, r *http.Request) error {
 			db.PgSql.Where("user_id=?", user.ID).Preload("Setting").Find(&userSettings)
 			return layouts.Layout("Notification Settings", user, features.NotificationSettings(user, userSettings)).Render(r.Context(), w)
 		case "departments":
-			var depts []models.Department
-			db.PgSql.Preload("Members", func(db *gorm.DB) *gorm.DB {
-				return db.Preload("User")
-			}).Preload("DeptHead").Order("no").Find(&depts)
-			return layouts.Layout("Department Settings", user, features.DeptSettings(user, depts)).Render(r.Context(), w)
+			depts, pageInfo := settingsDepts(r)
+			return layouts.Layout("Department Settings", user, features.DeptSettings(user, depts, pageInfo)).Render(r.Context(), w)
 		case "users":
-			var users []models.User
-			db.PgSql.Order("no").Find(&users)
-			return layouts.Layout("User Settings", user, features.UserSettings(user, users)).Render(r.Context(), w)
+			users, pageInfo := settingsUsers(r)
+			return layouts.Layout("User Settings", user, features.UserSettings(user, users, pageInfo)).Render(r.Context(), w)
 		default:
 			return features.Settings(tab, user).Render(r.Context(), w)
 		}
@@ -86,15 +122,11 @@ func HandleSettings(w http.ResponseWriter, r *http.Request) error {
 			db.PgSql.Where("user_id=?", user.ID).Preload("Setting").Find(&userSettings)
 			return features.NotificationSettings(user, userSettings).Render(r.Context(), w)
 		case "departments":
-			var depts []models.Department
-			db.PgSql.Preload("Members", func(db *gorm.DB) *gorm.DB {
-				return db.Preload("User")
-			}).Preload("DeptHead").Order("no").Find(&depts)
-			return features.DeptSettings(user, depts).Render(r.Context(), w)
+			depts, pageInfo := settingsDepts(r)
+			return features.DeptSettings(user, depts, pageInfo).Render(r.Context(), w)
 		case "users":
-			var users []models.User
-			db.PgSql.Order("no").Find(&users)
-			return features.UserSettings(user, users).Render(r.Context(), w)
+			users, pageInfo := settingsUsers(r)
+			return features.UserSettings(user, users, pageInfo).Render(r.Context(), w)
 		default:
 			return features.Settings(tab, user).Render(r.Context(), w)
 		}

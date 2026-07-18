@@ -7,6 +7,7 @@ import (
 
     "etop/models"
     "etop/templates/components/ui"
+    "etop/utils"
 )
 
 templ Notification(notif []models.Notif, userID string) {
@@ -105,7 +106,9 @@ templ NotifItem(n models.Notif) {
 }
 
 func RelativeTime(t time.Time) string {
-    d := time.Since(t)
+    // created_at tersimpan sebagai wall-clock Jakarta tapi terbaca berlabel UTC;
+    // TimeDiff menormalkan kedua sisi ke wall-clock yang sama.
+    d := utils.TimeDiff(t, time.Now())
     if d < time.Minute {
         return "just now"
     }

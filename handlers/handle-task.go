@@ -123,7 +123,7 @@ func HandleUpdateTask(w http.ResponseWriter, r *http.Request) error {
 
 		oldStatusID := task.StatusID
 
-		if task.CreatedBy != user.ID {
+		if task.CreatedBy != user.ID && task.UserID != user.ID {
 			w.WriteHeader(http.StatusForbidden)
 			return ui.Toast("task-error", "warning", "", "You don't have permission to update this task!", "", nil).Render(r.Context(), w)
 		}
@@ -449,6 +449,21 @@ func HandleEditTask(w http.ResponseWriter, r *http.Request) error {
 				}
 				task.StatusID = taskStatus.No
 				task.StatusLabel = taskStatus.Status
+
+				if taskStatus.Value == 5 {
+					if task.CompletedAt == nil {
+						tc := time.Now().Add(1 * time.Minute)
+						task.CompletedAt = &tc
+						if task.StartDate != nil {
+							task.ActualHours = float32(utils.TimeDiff(*task.StartDate, tc).Hours())
+						} else {
+							task.ActualHours = 0
+						}
+					}
+				} else {
+					task.CompletedAt = nil
+					task.ActualHours = 0
+				}
 			}
 		}
 
@@ -471,6 +486,9 @@ func HandleEditTask(w http.ResponseWriter, r *http.Request) error {
 			parsed, err := time.Parse("2006-01-02", dueDateStr)
 			if err == nil {
 				task.DueDate = &parsed
+				if task.StartDate != nil {
+					task.EstimatedHours = float32(utils.TimeDiff(*task.StartDate, parsed).Hours())
+				}
 			}
 		} else {
 			task.DueDate = nil

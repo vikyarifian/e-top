@@ -302,7 +302,7 @@ templ NotificationSettings(user dto.UserAuth, userSettings []models.UserSetting)
     }
 }
 
-templ DeptSettings(user dto.UserAuth, depts []models.Department) {
+templ DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models.PageInfo) {
     @Settings("departments", user) {
         <div class="space-y-6" data-title="Department Settings">
             <div class="text-card-foreground shadow-sm p-4">
@@ -389,6 +389,7 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department) {
                                 }
                             }
                         </div>
+                        @ui.Pagination("/settings", pageInfo, "&tab=departments")
                     }
                 </div>
             </div>
@@ -398,7 +399,7 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department) {
     }
 }
 
-templ UserSettings(user dto.UserAuth, users []models.User) {
+templ UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageInfo) {
     @Settings("users", user) {
         <div class="space-y-6" data-title="User Settings">
             <div class="text-card-foreground shadow-sm p-4">
@@ -481,6 +482,7 @@ templ UserSettings(user dto.UserAuth, users []models.User) {
                                 }
                             }
                         </div>
+                        @ui.Pagination("/settings", pageInfo, "&tab=users")
                     }
                 </div>
             </div>

@@ -85,9 +85,9 @@ templ Project(role string, project models.Project, tasks []models.Task, page mod
             </div>
         </div>
         
-        <div class="flex items-center gap-2">
+        <div class="flex items-start gap-2">
             <span class="text-sm text-muted-foreground mr-2">Contributors : </span>
-            <div class="flex">
+            <div class="flex flex-wrap gap-y-1.5">
                 for _,contributor := range project.Members {
                     @ui.Tooltip(strings.Split(contributor.User.FullName," ")[0]+" ("+contributor.Role+")", "w-[180px]", nil) {
                         @ui.Avatar(contributor.User.FullName, contributor.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
@@ -103,14 +103,14 @@ templ Project(role string, project models.Project, tasks []models.Task, page mod
             @ui.Tabs("tabs", "table", "", nil) {
                 <div className="h-full flex flex-col overflow-auto p-4">                
                     <div className="flex flex-col gap-y-1 lg:flex-row justify-between items-center">
-                        @ui.TabsList("w-full lg:w-auto mb-2", nil) {
-                            @ui.TabsTrigger("table", "Table", "h-8 w-full lg:w-auto", nil)  
-                            @ui.TabsTrigger("kanban", "Kanban", "h-8 w-full lg:w-auto", nil)  
-                            @ui.TabsTrigger("calendar", "Calendar", "h-8 w-full lg:w-auto", nil)  
-                        }
-                        <div class="mb-2">
-                            @components.DottedSeparator("", "#d4d4d8", "0.5px", "", "", "horizontal")
-                        </div>
+                        // @ui.TabsList("w-full lg:w-auto mb-2", nil) {
+                        //     @ui.TabsTrigger("table", "Table", "h-8 w-full lg:w-auto", nil)  
+                        //     @ui.TabsTrigger("kanban", "Kanban", "h-8 w-full lg:w-auto", nil)  
+                        //     @ui.TabsTrigger("calendar", "Calendar", "h-8 w-full lg:w-auto", nil)  
+                        // }
+                        // <div class="mb-2">
+                        //     @components.DottedSeparator("", "#d4d4d8", "0.5px", "", "", "horizontal")
+                        // </div>
                         @ui.TabsContent("table", "overflow-auto mt-0 scrollbar-thin", nil) {
                             if len(tasks) == 0 {
                                 @components.NoData("No tasks found", "Create your first task", nil) {
@@ -238,7 +238,7 @@ templ Project(role string, project models.Project, tasks []models.Task, page mod
                                             }
                                         }
                                     </div>
-                                    @ui.Pagination(fmt.Sprintf("/projects?id=%s", project.ID), page, "")
+                                    @ui.Pagination("/projects", page, fmt.Sprintf("&id=%s", project.ID))
                                 </div>
                             }
                         }
