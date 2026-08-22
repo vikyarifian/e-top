@@ -59,7 +59,7 @@ func Pagination(baseURL string, page models.PageInfo, params string) templ.Compo
 				"hx-swap":      "innerHTML",
 				"hx-push-url":  "true",
 				"hx-indicator": ".htmx-loader,.loaded-content",
-				"disabled":     disabledIf(page.Page <= 1),
+				"disabled":     page.Page <= 1,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -67,7 +67,7 @@ func Pagination(baseURL string, page models.PageInfo, params string) templ.Compo
 			for i := 1; i <= page.TotalPages; i++ {
 				if i == page.Page {
 					templ_7745c5c3_Err = Button(fmt.Sprintf("page-%d", i), "primary", "xs", "", fmt.Sprintf("%d", i), "", templ.Attributes{
-						"disabled": "true",
+						"disabled": true,
 					}).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
@@ -96,7 +96,7 @@ func Pagination(baseURL string, page models.PageInfo, params string) templ.Compo
 				"hx-swap":      "innerHTML",
 				"hx-push-url":  "true",
 				"hx-indicator": ".htmx-loader,.loaded-content",
-				"disabled":     disabledIf(page.Page >= page.TotalPages),
+				"disabled":     page.Page >= page.TotalPages,
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -115,13 +115,6 @@ func min(a, b int) int {
 		return a
 	}
 	return b
-}
-
-func disabledIf(cond bool) string {
-	if cond {
-		return "true"
-	}
-	return ""
 }
 
 var _ = templruntime.GeneratedTemplate

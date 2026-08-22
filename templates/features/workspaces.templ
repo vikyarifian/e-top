@@ -58,25 +58,15 @@ templ Workspace(role string, workspace models.Workspace, contributors []models.U
             </div>
         </div>
         <div class="flex items-start gap-2">
-            <span class="text-sm text-muted-foreground mr-2">Members : </span>
-            <div class="flex flex-wrap gap-y-1.5">
+            <span class="text-sm text-muted-foreground mr-2 shrink-0">Members : </span>
+            <div class="flex flex-wrap gap-1">
                 for _,member := range workspace.Members {
                     @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "w-[180px]", nil) {
-                        @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                        @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer", nil) 
                     }
                 }
             </div>
         </div>
-        // <div class="flex items-center gap-2">
-        //     <span class="text-sm text-muted-foreground mr-2">Contributors : </span>
-        //     <div class="flex">
-        //         for _,contributor := range contributors {
-        //             @ui.Tooltip(strings.Split(contributor.FullName," ")[0]+" (CONTRIBUTOR)", "w-[180px]", nil) {
-        //                 @ui.Avatar(contributor.FullName, contributor.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
-        //             }
-        //         }
-        //     </div>
-        // </div>
 
         <!-- Stats Cards -->
         <div class="text-xl font-semibold leading-none tracking-tight ">
@@ -799,11 +789,11 @@ templ JoinWorkspace(workspace models.Workspace) {
             </div>
         </div>
         <div class="flex items-start gap-2">
-            <span class="text-sm text-muted-foreground mr-2">Members : </span>
-            <div class="flex flex-wrap gap-y-1.5">
+            <span class="text-sm text-muted-foreground mr-2 shrink-0">Members : </span>
+            <div class="flex flex-wrap gap-1">
                 for _,member := range workspace.Members {
                     @ui.Tooltip(strings.Split(member.User.FullName," ")[0]+" ("+strings.Trim(member.Role, " ")+")", "w-[180px]", nil) {
-                        @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil) 
+                        @ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer", nil) 
                     }
                 }
             </div>

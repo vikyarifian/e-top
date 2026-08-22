@@ -212,7 +212,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></div><div class=\"flex items-start gap-2\"><span class=\"text-sm text-muted-foreground mr-2\">Members : </span><div class=\"flex flex-wrap gap-y-1.5\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</div></div><div class=\"flex items-start gap-2\"><span class=\"text-sm text-muted-foreground mr-2 shrink-0\">Members : </span><div class=\"flex flex-wrap gap-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -229,7 +229,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -279,7 +279,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue("/projects?id=" + project.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 96, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 86, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 			if templ_7745c5c3_Err != nil {
@@ -292,7 +292,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(project.Title)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 107, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 97, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -305,7 +305,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("project_statuses.filter(c=>c.status==='%s')[0].color", project.Status))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 109, Col: 131}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 99, Col: 131}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var14)
 			if templ_7745c5c3_Err != nil {
@@ -318,7 +318,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("project_statuses.filter(c=>c.status==='%s')[0].label.trim()", project.Status))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 110, Col: 138}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 100, Col: 138}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 			if templ_7745c5c3_Err != nil {
@@ -339,7 +339,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(project.Members)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 119, Col: 107}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 109, Col: 107}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 			if templ_7745c5c3_Err != nil {
@@ -352,7 +352,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 			var templ_7745c5c3_Var17 string
 			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(project.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 123, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 113, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 			if templ_7745c5c3_Err != nil {
@@ -365,7 +365,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(project.Progress)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 131, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 121, Col: 57}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 			if templ_7745c5c3_Err != nil {
@@ -386,7 +386,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(project.Tasks)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 138, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 128, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -416,7 +416,7 @@ func Workspace(role string, workspace models.Workspace, contributors []models.Us
 					var templ_7745c5c3_Var21 string
 					templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(project.DueDate.Format("Mon, 02 Jan 2006"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 145, Col: 93}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 135, Col: 93}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 					if templ_7745c5c3_Err != nil {
@@ -543,7 +543,7 @@ func Workspaces(workspaces []models.Workspace) templ.Component {
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue("/workspaces?id=" + workspace.ID)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 191, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 181, Col: 59}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 			if templ_7745c5c3_Err != nil {
@@ -578,7 +578,7 @@ func Workspaces(workspaces []models.Workspace) templ.Component {
 			var templ_7745c5c3_Var28 string
 			templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(workspace.Name[0:1]))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 202, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 192, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 			if templ_7745c5c3_Err != nil {
@@ -591,7 +591,7 @@ func Workspaces(workspaces []models.Workspace) templ.Component {
 			var templ_7745c5c3_Var29 string
 			templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 207, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 197, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 			if templ_7745c5c3_Err != nil {
@@ -604,7 +604,7 @@ func Workspaces(workspaces []models.Workspace) templ.Component {
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.CreatedAt.Format("Mon, 02 Jan 2006"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 208, Col: 137}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 198, Col: 137}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -617,7 +617,7 @@ func Workspaces(workspaces []models.Workspace) templ.Component {
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(len(workspace.Members)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 214, Col: 109}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 204, Col: 109}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -630,7 +630,7 @@ func Workspaces(workspaces []models.Workspace) templ.Component {
 			var templ_7745c5c3_Var32 string
 			templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Description)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 219, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 209, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 			if templ_7745c5c3_Err != nil {
@@ -685,7 +685,7 @@ func WorkspaceSwitcher(options []ui.SelectOption) templ.Component {
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspaceSwitcher(%s)", string(utils.MustJSON(options[0]))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 233, Col: 82}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 223, Col: 82}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
 		if templ_7745c5c3_Err != nil {
@@ -704,7 +704,7 @@ func WorkspaceSwitcher(options []ui.SelectOption) templ.Component {
 				var templ_7745c5c3_Var35 string
 				templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("selectWorkspace({ value: '%s', label: '%s', color: '%s' })", item.Value, item.Label, item.Color))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 272, Col: 145}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 262, Col: 145}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
 				if templ_7745c5c3_Err != nil {
@@ -739,7 +739,7 @@ func WorkspaceSwitcher(options []ui.SelectOption) templ.Component {
 				var templ_7745c5c3_Var38 string
 				templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(item.Label[0:1]))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 275, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 265, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 				if templ_7745c5c3_Err != nil {
@@ -752,7 +752,7 @@ func WorkspaceSwitcher(options []ui.SelectOption) templ.Component {
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(item.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 277, Col: 45}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 267, Col: 45}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 				if templ_7745c5c3_Err != nil {
@@ -808,7 +808,7 @@ func displayStartDate(t *time.Time) templ.Component {
 		var templ_7745c5c3_Var41 string
 		templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(formatDateOrDash(t))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 295, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 285, Col: 37}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 		if templ_7745c5c3_Err != nil {
@@ -1174,7 +1174,7 @@ func EditWorkspace(workspaceID string, class string, attrs templ.Attributes) tem
 			var templ_7745c5c3_Var52 string
 			templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace_id='%s'", workspaceID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 472, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 462, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var52)
 			if templ_7745c5c3_Err != nil {
@@ -1222,7 +1222,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var54 string
 		templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace=%s;selectedColor='%s'", string(utils.MustJSON(workspace)), workspace.Color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 545, Col: 114}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 535, Col: 114}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var54)
 		if templ_7745c5c3_Err != nil {
@@ -1413,7 +1413,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 				var templ_7745c5c3_Var60 string
 				templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("mems=%s;init();", string(utils.MustJSON(workspace.Members))))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 632, Col: 101}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 622, Col: 101}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var60)
 				if templ_7745c5c3_Err != nil {
@@ -1435,7 +1435,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					var templ_7745c5c3_Var61 string
 					templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(member.User.FullName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 639, Col: 53}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 629, Col: 53}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 					if templ_7745c5c3_Err != nil {
@@ -1448,7 +1448,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					var templ_7745c5c3_Var62 string
 					templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("role-%v", i))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 642, Col: 65}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 632, Col: 65}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var62)
 					if templ_7745c5c3_Err != nil {
@@ -1461,7 +1461,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					var templ_7745c5c3_Var63 string
 					templ_7745c5c3_Var63, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 643, Col: 109}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 633, Col: 109}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var63)
 					if templ_7745c5c3_Err != nil {
@@ -1613,7 +1613,7 @@ func InviteWorkspace(workspaceID string, class string, attrs templ.Attributes) t
 			var templ_7745c5c3_Var66 string
 			templ_7745c5c3_Var66, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace_id='%s'", workspaceID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 689, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 679, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var66)
 			if templ_7745c5c3_Err != nil {
@@ -1661,7 +1661,7 @@ func InviteWorkspaceForm(workspace models.Workspace, users []models.UserRole, in
 		var templ_7745c5c3_Var68 string
 		templ_7745c5c3_Var68, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace=%s;", string(utils.MustJSON(workspace))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 723, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 713, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var68)
 		if templ_7745c5c3_Err != nil {
@@ -1696,7 +1696,7 @@ func InviteWorkspaceForm(workspace models.Workspace, users []models.UserRole, in
 		var templ_7745c5c3_Var71 string
 		templ_7745c5c3_Var71, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(workspace.Name[0:1]))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 728, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 718, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var71))
 		if templ_7745c5c3_Err != nil {
@@ -1709,7 +1709,7 @@ func InviteWorkspaceForm(workspace models.Workspace, users []models.UserRole, in
 		var templ_7745c5c3_Var72 string
 		templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 731, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 721, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var72))
 		if templ_7745c5c3_Err != nil {
@@ -1987,7 +1987,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var82 string
 		templ_7745c5c3_Var82, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(workspace.Name[0:1]))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 790, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 780, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var82))
 		if templ_7745c5c3_Err != nil {
@@ -2000,7 +2000,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var83 string
 		templ_7745c5c3_Var83, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 793, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 783, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var83))
 		if templ_7745c5c3_Err != nil {
@@ -2013,13 +2013,13 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var84 string
 		templ_7745c5c3_Var84, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 795, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 785, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var84))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 135, "</p></div><div></div></div><div class=\"flex items-start gap-2\"><span class=\"text-sm text-muted-foreground mr-2\">Members : </span><div class=\"flex flex-wrap gap-y-1.5\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 135, "</p></div><div></div></div><div class=\"flex items-start gap-2\"><span class=\"text-sm text-muted-foreground mr-2 shrink-0\">Members : </span><div class=\"flex flex-wrap gap-1\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2036,7 +2036,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer -space-x-2 -ml-2", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.Avatar(member.User.FullName, member.User.Color, "sm", "h-8 w-8 border-2 border-background overflow-hidden cursor-pointer", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2054,7 +2054,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var86 string
 		templ_7745c5c3_Var86, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 815, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 805, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var86))
 		if templ_7745c5c3_Err != nil {
@@ -2067,7 +2067,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var87 string
 		templ_7745c5c3_Var87, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 817, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 807, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var87))
 		if templ_7745c5c3_Err != nil {
@@ -2080,7 +2080,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var88 string
 		templ_7745c5c3_Var88, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace_id = '%s';", workspace.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 820, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 810, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var88)
 		if templ_7745c5c3_Err != nil {
