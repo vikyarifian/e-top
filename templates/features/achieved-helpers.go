@@ -120,6 +120,76 @@ func progressBarColor(v float64) string {
 	return "bg-red-500"
 }
 
+// ---- jejak audit inferensi Fuzzy Tsukamoto ----
+
+type fuzzyVarRow struct {
+	Name   string
+	Value  float64
+	Rendah float64
+	Sedang float64
+	Tinggi float64
+}
+
+// fuzzyVarRows menyusun tabel fuzzifikasi keempat variabel input.
+func fuzzyVarRows(e services.AchievedEvaluation) []fuzzyVarRow {
+	vals := [4]float64{e.TCR, e.OTR, e.TPS, e.WER}
+	rows := make([]fuzzyVarRow, 0, 4)
+	for i, name := range services.FuzzyVarNames {
+		mu := services.FuzzyMembership(vals[i])
+		rows = append(rows, fuzzyVarRow{
+			Name:   name,
+			Value:  vals[i],
+			Rendah: mu[services.SetRendah],
+			Sedang: mu[services.SetSedang],
+			Tinggi: mu[services.SetTinggi],
+		})
+	}
+	return rows
+}
+
+func sumAlpha(rules []services.FuzzyRule) float64 {
+	var s float64
+	for _, r := range rules {
+		s += r.Alpha
+	}
+	return s
+}
+
+func sumAlphaZ(rules []services.FuzzyRule) float64 {
+	var s float64
+	for _, r := range rules {
+		s += r.Alpha * r.Z
+	}
+	return s
+}
+
+func rulePremise(r services.FuzzyRule) string {
+	labels := r.PremiseLabels()
+	s := ""
+	for i, name := range services.FuzzyVarNames {
+		if i > 0 {
+			s += " · "
+		}
+		s += name + " " + labels[i]
+	}
+	return s
+}
+
+func ruleBadgeColor(output string) string {
+	switch output {
+	case "Sangat Baik":
+		return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+	case "Baik":
+		return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+	case "Cukup":
+		return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+	case "Buruk":
+		return "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+	default:
+		return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+	}
+}
+
 func clampPercentage(v float64) float64 {
 	if v < 0 {
 		return 0

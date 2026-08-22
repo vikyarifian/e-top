@@ -47,8 +47,13 @@ type AchievedEvaluation struct {
 	OTR        float64
 	TPS        float64
 	WER        float64
-	FinalScore float64
-	Category   string
+	FinalScore  float64
+	Category    string
+	ActiveRules []FuzzyRule
+	// Evaluable bernilai false bila tidak ada tugas pada periode evaluasi.
+	// Dalam keadaan itu seluruh indikator bernilai 0 dan inferensi akan
+	// menghasilkan Sangat Buruk, padahal ketiadaan data bukan kinerja buruk.
+	Evaluable bool
 
 	TaskCount    int64
 	DoneCount    int64
@@ -63,11 +68,14 @@ type AchievedEvaluation struct {
 func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 	var e AchievedEvaluation
 
+	// Periode evaluasi ditentukan oleh tahun penugasan (created_at). Seluruh
+	// indikator dihitung atas kohor tugas yang sama agar pembilang tidak pernah
+	// melebihi penyebut ketika sebuah tugas diselesaikan pada tahun berikutnya.
 	doneQuery := db.PgSql.Model(&models.Task{}).
 		Where("user_id = ? AND completed_at IS NOT NULL", userID)
 	if year != "" {
 		if y, err := strconv.Atoi(year); err == nil {
-			doneQuery = doneQuery.Where("EXTRACT(YEAR FROM completed_at) = ?", y)
+			doneQuery = doneQuery.Where("EXTRACT(YEAR FROM created_at) = ?", y)
 		}
 	}
 	doneQuery.Count(&e.DoneCount)
@@ -85,7 +93,7 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 		Where("user_id = ? AND completed_at IS NOT NULL AND completed_at <= due_date", userID)
 	if year != "" {
 		if y, err := strconv.Atoi(year); err == nil {
-			onTimeQuery = onTimeQuery.Where("EXTRACT(YEAR FROM completed_at) = ?", y)
+			onTimeQuery = onTimeQuery.Where("EXTRACT(YEAR FROM created_at) = ?", y)
 		}
 	}
 	onTimeQuery.Count(&e.OnTimeCount)
@@ -111,7 +119,8 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 	if year != "" {
 		if _, err := strconv.Atoi(year); err == nil {
 			yearFilterTask = " AND EXTRACT(YEAR FROM t.created_at) = " + year
-			yearFilterDone = " AND EXTRACT(YEAR FROM t.completed_at) = " + year
+			// kohor yang sama dipakai untuk agregasi tugas selesai
+			yearFilterDone = yearFilterTask
 		}
 	}
 
@@ -145,20 +154,15 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 			AND t.estimated_hours > 0
 			AND t.actual_hours > 0`+yearFilterDone, userID).Scan(&werResult)
 	e.WER = werResult.Value
+	if e.WER > 100 {
+		e.WER = 100
+	}
 
-	e.FinalScore = e.TCR*0.3 + e.OTR*0.3 + e.TPS*0.2 + e.WER*0.2
-
-	switch {
-	case e.FinalScore >= 85:
-		e.Category = "Sangat Baik"
-	case e.FinalScore >= 70:
-		e.Category = "Baik"
-	case e.FinalScore >= 55:
-		e.Category = "Cukup"
-	case e.FinalScore >= 40:
-		e.Category = "Buruk"
-	default:
-		e.Category = "Sangat Buruk"
+	e.Evaluable = e.TaskCount > 0
+	if e.Evaluable {
+		e.FinalScore, e.Category, e.ActiveRules = FuzzyTsukamoto(e.TCR, e.OTR, e.TPS, e.WER)
+	} else {
+		e.Category = "Belum Dapat Dinilai"
 	}
 
 	db.PgSql.Raw(`
@@ -285,6 +289,9 @@ func GetDashboardData(userID string) DashboardData {
 			AND t.actual_hours > 0
 	`, userID, userID).Scan(&werResult)
 	d.WER = werResult.Value
+	if d.WER > 100 {
+		d.WER = 100
+	}
 
 	db.PgSql.Raw(`
 		SELECT ts.label, ts.color, COUNT(t.no) as count
