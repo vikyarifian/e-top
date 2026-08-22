@@ -203,6 +203,98 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
             }
         </div>
 
+        <!-- Fuzzy Tsukamoto Inference Trace -->
+        <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+            <div class="flex items-center justify-between mb-1">
+                <h3 class="font-semibold leading-none tracking-tight">Fuzzy Tsukamoto Inference Trace</h3>
+                <span class="text-xs text-muted-foreground">{fmt.Sprintf("%d of %d rules fired", len(eval.ActiveRules), len(services.FuzzyRules()))}</span>
+            </div>
+            <p class="text-xs text-muted-foreground mb-4">Fuzzification, rule inference, and defuzzification behind the final score</p>
+
+            if !eval.Evaluable {
+                <p class="text-sm text-muted-foreground py-6 text-center">Tidak ada tugas pada periode ini, sehingga penilaian tidak dilakukan</p>
+            } else {
+            <!-- Step 1: Fuzzification -->
+            <h4 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">1. Fuzzification</h4>
+            <div class="overflow-x-auto mb-6">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-border text-xs text-muted-foreground">
+                            <th class="text-left font-medium py-2 pr-4">Variable</th>
+                            <th class="text-right font-medium py-2 pr-4">Crisp value</th>
+                            <th class="text-right font-medium py-2 pr-4">μ Rendah</th>
+                            <th class="text-right font-medium py-2 pr-4">μ Sedang</th>
+                            <th class="text-right font-medium py-2">μ Tinggi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        for _, v := range fuzzyVarRows(eval) {
+                            <tr class="border-b border-border/50">
+                                <td class="py-2 pr-4 font-medium">{v.Name}</td>
+                                <td class="py-2 pr-4 text-right tabular-nums">{fmt.Sprintf("%.2f", v.Value)}</td>
+                                <td class="py-2 pr-4 text-right tabular-nums text-muted-foreground">{fmt.Sprintf("%.4f", v.Rendah)}</td>
+                                <td class="py-2 pr-4 text-right tabular-nums text-muted-foreground">{fmt.Sprintf("%.4f", v.Sedang)}</td>
+                                <td class="py-2 text-right tabular-nums text-muted-foreground">{fmt.Sprintf("%.4f", v.Tinggi)}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Step 2: Rule inference -->
+            <h4 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">2. Active rules (α &gt; 0)</h4>
+            if len(eval.ActiveRules) > 0 {
+                <div class="overflow-x-auto mb-6">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-border text-xs text-muted-foreground">
+                                <th class="text-left font-medium py-2 pr-4">Rule</th>
+                                <th class="text-left font-medium py-2 pr-4">Antecedent</th>
+                                <th class="text-left font-medium py-2 pr-4">Consequent</th>
+                                <th class="text-right font-medium py-2 pr-4">α</th>
+                                <th class="text-right font-medium py-2 pr-4">z</th>
+                                <th class="text-right font-medium py-2">α × z</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            for _, r := range eval.ActiveRules {
+                                <tr class="border-b border-border/50">
+                                    <td class="py-2 pr-4 font-mono text-xs">{r.Code}</td>
+                                    <td class="py-2 pr-4 text-xs text-muted-foreground">{rulePremise(r)}</td>
+                                    <td class="py-2 pr-4">
+                                        <span class={fmt.Sprintf("inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium %s", ruleBadgeColor(r.Output))}>{r.Output}</span>
+                                    </td>
+                                    <td class="py-2 pr-4 text-right tabular-nums">{fmt.Sprintf("%.4f", r.Alpha)}</td>
+                                    <td class="py-2 pr-4 text-right tabular-nums">{fmt.Sprintf("%.2f", r.Z)}</td>
+                                    <td class="py-2 text-right tabular-nums text-muted-foreground">{fmt.Sprintf("%.2f", r.Alpha * r.Z)}</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="font-medium">
+                                <td class="py-2 pr-4" colspan="3">Total</td>
+                                <td class="py-2 pr-4 text-right tabular-nums">{fmt.Sprintf("%.4f", sumAlpha(eval.ActiveRules))}</td>
+                                <td class="py-2 pr-4"></td>
+                                <td class="py-2 text-right tabular-nums">{fmt.Sprintf("%.2f", sumAlphaZ(eval.ActiveRules))}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Step 3: Defuzzification -->
+                <h4 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">3. Defuzzification (weighted average)</h4>
+                <div class="rounded-md bg-muted/50 px-4 py-3 text-sm">
+                    <span class="font-mono">
+                        {fmt.Sprintf("Z = Σ(α×z) / Σα = %.2f / %.4f = %.2f", sumAlphaZ(eval.ActiveRules), sumAlpha(eval.ActiveRules), eval.FinalScore)}
+                    </span>
+                    <span class={fmt.Sprintf("ml-2 inline-flex items-center rounded px-1.5 py-0.5 text-xs font-bold %s", evalBadgeColor(eval.Category))}>{eval.Category}</span>
+                </div>
+            } else {
+                <p class="text-sm text-muted-foreground py-6 text-center">No rule fired — there is no task data for this period</p>
+            }
+            }
+        </div>
+
         @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
 
         <!-- Task List -->

@@ -7,3 +7,7 @@ bin
 *.db
 tailwindcss
 *.exe
+
+# artefak lokal, jangan dipublikasikan
+*.dump
+*.exe~
