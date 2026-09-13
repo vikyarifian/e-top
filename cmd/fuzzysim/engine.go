@@ -126,10 +126,10 @@ func (c *Config) setsOf(i int) []FuzzySet {
 }
 
 type Rule struct {
-	Code    string
-	SetIdx  []int // indeks himpunan per variabel
-	Output  string
-	OutIdx  int
+	Code   string
+	SetIdx []int // indeks himpunan per variabel
+	Output string
+	OutIdx int
 }
 
 type FiredRule struct {
@@ -278,7 +278,7 @@ func (c *Config) Score(x []float64) float64 {
 
 // ---------- definisi konfigurasi yang diuji ----------
 
-var defaultVars = []string{"TCR", "OTR", "TPS", "WER"}
+var defaultVars = []string{"TCR", "OTR", "TVS", "WER"}
 
 func setsBahu() []FuzzySet {
 	return []FuzzySet{
@@ -326,7 +326,7 @@ func setsTrapesium() []FuzzySet {
 	return []FuzzySet{
 		{"Rendah", trapezoid(-1e-9, 30, sP1, sP2)},
 		{"Sedang", trapezoid(sP1, 55, 70, sP3)},
-		{"Tinggi", trapezoid(sP2, 80, 100, 100 + 1e-9)},
+		{"Tinggi", trapezoid(sP2, 80, 100, 100+1e-9)},
 	}
 }
 
@@ -371,9 +371,9 @@ func mfConfigs() []*Config {
 func inputConfigs() []*Config {
 	return []*Config{
 		newConfig("N2", "2 variabel: TCR, OTR", setsSegitiga(), []string{"TCR", "OTR"}),
-		newConfig("N3", "3 variabel: TCR, OTR, TPS", setsSegitiga(), []string{"TCR", "OTR", "TPS"}),
-		newConfig("N4", "4 variabel: TCR, OTR, TPS, WER (rancangan sistem)", setsSegitiga(), []string{"TCR", "OTR", "TPS", "WER"}),
-		newConfig("N5", "5 variabel: TCR, OTR, TPS, WER, WLR", setsSegitiga(), []string{"TCR", "OTR", "TPS", "WER", "WLR"}),
+		newConfig("N3", "3 variabel: TCR, OTR, TVS", setsSegitiga(), []string{"TCR", "OTR", "TVS"}),
+		newConfig("N4", "4 variabel: TCR, OTR, TVS, WER (rancangan sistem)", setsSegitiga(), []string{"TCR", "OTR", "TVS", "WER"}),
+		newConfig("N5", "5 variabel: TCR, OTR, TVS, WER, WLR", setsSegitiga(), []string{"TCR", "OTR", "TVS", "WER", "WLR"}),
 	}
 }
 

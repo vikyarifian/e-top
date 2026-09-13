@@ -68,6 +68,20 @@ func main() {
 		expMono()
 	case "calib":
 		expCalibrated()
+	case "kaidah":
+		expKaidah()
+	case "bobot":
+		expBobot()
+	case "kredit":
+		expKredit()
+	case "merata":
+		expMerata()
+	case "terbobot":
+		expTerbobot()
+	case "kandidat":
+		expKandidat()
+	case "nilai":
+		expNilai()
 	case "all":
 		expRules()
 		expManual()
@@ -78,6 +92,7 @@ func main() {
 		expSensitivity()
 		expLinear()
 		expCalibrated()
+		expKaidah()
 	default:
 		fmt.Println("perintah tidak dikenal:", cmd)
 	}
@@ -115,10 +130,10 @@ func expRules() {
 	n := 0
 	for tcr := 0.0; tcr <= 100; tcr += 5 {
 		for otr := 0.0; otr <= 100; otr += 5 {
-			for tps := 0.0; tps <= 100; tps += 5 {
+			for tvs := 0.0; tvs <= 100; tvs += 5 {
 				for wer := 0.0; wer <= 100; wer += 5 {
-					zApp, cApp, _ := services.FuzzyTsukamoto(tcr, otr, tps, wer)
-					zSim, cSim, _, _ := a.Infer([]float64{tcr, otr, tps, wer})
+					zApp, cApp, _ := services.FuzzyTsukamoto(tcr, otr, tvs, wer)
+					zSim, cSim, _, _ := a.Infer([]float64{tcr, otr, tvs, wer})
 					d := math.Abs(zApp - zSim)
 					if d > maxDiff {
 						maxDiff = d
@@ -172,7 +187,7 @@ func expManual() {
 		z, cat, fired, _ := a.Infer(k.X)
 		zApp, catApp, _ := services.FuzzyTsukamoto(k.X[0], k.X[1], k.X[2], k.X[3])
 		p("\n--- %s ---\n", k.Nama)
-		p("Input : TCR=%.2f OTR=%.2f TPS=%.2f WER=%.2f\n", k.X[0], k.X[1], k.X[2], k.X[3])
+		p("Input : TCR=%.2f OTR=%.2f TVS=%.2f WER=%.2f\n", k.X[0], k.X[1], k.X[2], k.X[3])
 		p("Fuzzifikasi:\n")
 		for i, v := range a.VarNames {
 			p("  %-4s = %6.2f  ->  mu_Rendah=%.4f  mu_Sedang=%.4f  mu_Tinggi=%.4f\n",
@@ -212,9 +227,9 @@ func expBoundary() {
 	step := 5.0
 	for tcr := 0.0; tcr <= 100; tcr += 5 {
 		for otr := 0.0; otr <= 100; otr += 5 {
-			for tps := 0.0; tps <= 100; tps += 5 {
+			for tvs := 0.0; tvs <= 100; tvs += 5 {
 				for wer := 0.0; wer <= 100; wer += 5 {
-					base := []float64{tcr, otr, tps, wer}
+					base := []float64{tcr, otr, tvs, wer}
 					z0 := a.Score(base)
 					for i := 0; i < 4; i++ {
 						if base[i]+step > 100 {
@@ -241,9 +256,9 @@ func expBoundary() {
 	maxJump, at := 0.0, []float64{}
 	for tcr := 30.0; tcr <= 70; tcr += 2 {
 		for otr := 30.0; otr <= 70; otr += 2 {
-			for tps := 30.0; tps <= 70; tps += 2 {
+			for tvs := 30.0; tvs <= 70; tvs += 2 {
 				for wer := 30.0; wer <= 70; wer += 2 {
-					b := []float64{tcr, otr, tps, wer}
+					b := []float64{tcr, otr, tvs, wer}
 					z0 := a.Score(b)
 					for i := 0; i < 4; i++ {
 						nx := append([]float64{}, b...)
@@ -273,9 +288,10 @@ type Row struct {
 	All    int64
 	Done   int64
 	OnTime int64
+	Judged int64
 	TCR    float64
 	OTR    float64
-	TPS    float64
+	TVS    float64
 	WER    float64
 	WLR    float64
 }
@@ -365,19 +381,26 @@ func evalKPI(db *gorm.DB, userID string, year string) Row {
 	db.Raw(`SELECT COUNT(*) FROM tasks t WHERE t.user_id = ?`+ft, userID).Scan(&r.All)
 	db.Raw(`SELECT COUNT(*) FROM tasks t WHERE t.user_id = ? AND t.completed_at IS NOT NULL`+fd, userID).Scan(&r.Done)
 	db.Raw(`SELECT COUNT(*) FROM tasks t WHERE t.user_id = ? AND t.completed_at IS NOT NULL AND t.completed_at <= t.due_date`+fd, userID).Scan(&r.OnTime)
+	// penyebut OTR: tugas yang nasibnya sudah pasti
+	db.Raw(`SELECT COUNT(*) FROM tasks t WHERE t.user_id = ? AND (t.completed_at IS NOT NULL OR (t.due_date IS NOT NULL AND t.due_date < now()))`+ft, userID).Scan(&r.Judged)
 	if r.All > 0 {
 		r.TCR = float64(r.Done) / float64(r.All) * 100
 	}
-	if r.Done > 0 {
-		r.OTR = float64(r.OnTime) / float64(r.Done) * 100
+	if r.Judged > 0 {
+		r.OTR = float64(r.OnTime) / float64(r.Judged) * 100
 	}
 	var wAll, wDone float64
-	db.Raw(`SELECT COALESCE(SUM(tp.level),0) FROM tasks t JOIN task_priorities tp ON tp.no=t.priority_id
+	// nilai tugas = bobot prioritas x bobot dampak, sama seperti services.tvsWeightSQL
+	db.Raw(`SELECT COALESCE(SUM(COALESCE(tp.weight,0)*COALESCE(ti.weight,0)),0) FROM tasks t
+		JOIN task_priorities tp ON tp.no=t.priority_id
+		JOIN task_impacts ti ON ti.no=t.impact_id
 		WHERE t.user_id = ?`+ft, userID).Scan(&wAll)
-	db.Raw(`SELECT COALESCE(SUM(tp.level),0) FROM tasks t JOIN task_priorities tp ON tp.no=t.priority_id
+	db.Raw(`SELECT COALESCE(SUM(COALESCE(tp.weight,0)*COALESCE(ti.weight,0)),0) FROM tasks t
+		JOIN task_priorities tp ON tp.no=t.priority_id
+		JOIN task_impacts ti ON ti.no=t.impact_id
 		WHERE t.user_id = ? AND t.completed_at IS NOT NULL`+fd, userID).Scan(&wDone)
 	if wAll > 0 {
-		r.TPS = wDone / wAll * 100
+		r.TVS = wDone / wAll * 100
 	}
 	db.Raw(`SELECT COALESCE(AVG((t.estimated_hours/NULLIF(t.actual_hours,0))*100),0) FROM tasks t
 		WHERE t.user_id = ? AND t.completed_at IS NOT NULL AND t.estimated_hours>0 AND t.actual_hours>0`+fd, userID).Scan(&r.WER)
@@ -404,18 +427,18 @@ func expData() {
 	header("EKSPERIMEN 4 - DATA OPERASIONAL DARI BASIS DATA etop2")
 	a := baseline()
 	p("%-24s %-6s %6s %6s %7s %7s %7s %7s %7s %8s %-13s %s\n",
-		"Karyawan", "Per", "Tugas", "Sels", "TCR", "OTR", "TPS", "WER", "WLR", "Z", "Kategori", "n_aturan")
+		"Karyawan", "Per", "Tugas", "Sels", "TCR", "OTR", "TVS", "WER", "WLR", "Z", "Kategori", "n_aturan")
 	for _, r := range rows() {
-		z, c, fired, _ := a.Infer([]float64{r.TCR, r.OTR, r.TPS, r.WER})
+		z, c, fired, _ := a.Infer([]float64{r.TCR, r.OTR, r.TVS, r.WER})
 		p("%-24s %-6s %6d %6d %7.2f %7.2f %7.2f %7.2f %7.2f %8.2f %-13s %d\n",
-			trunc(r.User, 24), r.Period, r.All, r.Done, r.TCR, r.OTR, r.TPS, r.WER, r.WLR, z, c, len(fired))
+			trunc(r.User, 24), r.Period, r.All, r.Done, r.TCR, r.OTR, r.TVS, r.WER, r.WLR, z, c, len(fired))
 	}
 
-	p("\n4.1 Anomali data yang terdeteksi (TCR atau TPS melebihi 100 persen)\n")
+	p("\n4.1 Anomali data yang terdeteksi (TCR atau TVS melebihi 100 persen)\n")
 	an := 0
 	for _, r := range rows() {
-		if r.TCR > 100.0001 || r.TPS > 100.0001 {
-			p("  %-24s %-6s TCR=%.2f TPS=%.2f (tugas=%d, selesai=%d)\n", trunc(r.User, 24), r.Period, r.TCR, r.TPS, r.All, r.Done)
+		if r.TCR > 100.0001 || r.TVS > 100.0001 {
+			p("  %-24s %-6s TCR=%.2f TVS=%.2f (tugas=%d, selesai=%d)\n", trunc(r.User, 24), r.Period, r.TCR, r.TVS, r.All, r.Done)
 			an++
 		}
 	}
@@ -428,7 +451,7 @@ func expData() {
 		if r.Period != "GAB" {
 			continue
 		}
-		z, c, _, _ := a.Infer([]float64{r.TCR, r.OTR, r.TPS, r.WER})
+		z, c, _, _ := a.Infer([]float64{r.TCR, r.OTR, r.TVS, r.WER})
 		dist[c]++
 		uniq[math.Round(z*100)/100] = true
 	}
@@ -467,7 +490,7 @@ func expMF() {
 		p("%-24s", trunc(r.User, 24))
 		cats := []string{}
 		for _, c := range cfgs {
-			z, cat, _, _ := c.Infer([]float64{r.TCR, r.OTR, r.TPS, r.WER})
+			z, cat, _, _ := c.Infer([]float64{r.TCR, r.OTR, r.TVS, r.WER})
 			p(" %10.2f", z)
 			cats = append(cats, cat)
 			series[c.Name] = append(series[c.Name], z)
@@ -576,7 +599,7 @@ func expMF() {
 		p("\n")
 	}
 
-	p("\n5.6 Perilaku pada zona jenuh: variasi OTR dan WER saat TCR=TPS=100\n")
+	p("\n5.6 Perilaku pada zona jenuh: variasi OTR dan WER saat TCR=TVS=100\n")
 	p("%-6s %-6s", "OTR", "WER")
 	for _, c := range cfgs {
 		p(" %10s", c.Name)
@@ -636,7 +659,7 @@ func expInputs() {
 		if r.Period != "GAB" {
 			continue
 		}
-		full := []float64{r.TCR, r.OTR, r.TPS, r.WER, r.WLR}
+		full := []float64{r.TCR, r.OTR, r.TVS, r.WER, r.WLR}
 		p("%-24s %8.2f", trunc(r.User, 24), r.WLR)
 		var c4, c5 string
 		for _, c := range cfgs {

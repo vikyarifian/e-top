@@ -77,7 +77,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             @kpiCircleCard("Task Completion Rate", fmt.Sprintf("%.1f%%", eval.TCR), "TCR", eval.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30")
             @kpiCircleCard("On-Time Rate", fmt.Sprintf("%.1f%%", eval.OTR), "OTR", eval.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30")
-            @kpiCircleCard("Priority Score", fmt.Sprintf("%.1f%%", eval.TPS), "TPS", eval.TPS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
+            @kpiCircleCard("Value Score", fmt.Sprintf("%.1f%%", eval.TVS), "TVS", eval.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
             @kpiCircleCard("Work Efficiency", fmt.Sprintf("%.1f%%", eval.WER), "WER", eval.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30")
         </div>
 
@@ -407,7 +407,7 @@ templ kpiCircleCard(title, display, short string, value float64, textColor, bgCo
             <svg class="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
                 <circle cx="18" cy="18" r="15.5" fill="none" stroke="hsl(var(--muted))" stroke-width="2.5"/>
                 <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-dasharray={fmt.Sprintf("%.1f %s", circumference(value), 100)}
+                    stroke-dasharray={fmt.Sprintf("%.1f %d", circumference(value), 100)}
                     stroke-linecap="round" class={textColor}/>
             </svg>
             <div>

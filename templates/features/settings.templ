@@ -65,6 +65,14 @@ templ Settings(tab string, user dto.UserAuth) {
                             hx-push-url="true"
                             hx-indicator=".htmx-loader,.loaded-content"
                             >Departments</button>
+                    <button class="rounded-t-lg border border-border px-4 py-2 text-sm  "
+                            :class={fmt.Sprintf("'task-config' === '%s' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab)}
+                            hx-post="/settings?tab=task-config"
+                            hx-target="#content"
+                            hx-swap="innerHTML"
+                            hx-push-url="true"
+                            hx-indicator=".htmx-loader,.loaded-content"
+                            >Task Config</button>
                 }
             </div>
             <hr class="border-border pt-0 pb-0 top-0 z-0" />
@@ -1209,4 +1217,194 @@ templ EditDeptForm(dept models.Department) {
             </div>
         }
     </div>
+}
+
+// TaskConfigSettings adalah halaman pengaturan acuan prioritas dan dampak.
+// Kedua tabel inilah yang menentukan nilai sebuah tugas, yaitu hasil kali
+// bobot prioritas dan bobot dampaknya, yang kemudian menjadi dasar indikator
+// Task Value Score. Kolom max_due_minutes menentukan batas terlama sebuah
+// tugas boleh diberi tenggat.
+templ TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, impacts []models.TaskImpact, colors []models.ColorOption) {
+    @Settings("task-config", user) {
+        <div class="space-y-6" data-title="Task Config Settings"
+            x-data="{
+                priorities: [],
+                impacts: [],
+                colors: [],
+                hariMenit(m) {
+                    const menit = Number(m) || 0;
+                    if (!menit) return 'no limit';
+                    const hari = Math.floor(menit / 1440);
+                    const sisa = menit % 1440;
+                    let teks = '';
+                    if (hari) teks += hari + ' day' + (hari > 1 ? 's' : '');
+                    if (sisa) teks += (teks ? ' ' : '') + sisa + ' min';
+                    return teks;
+                },
+                nilaiTugas(wp, wi) {
+                    return (Number(wp) * Number(wi)).toFixed(4);
+                },
+            }"
+            x-init={ fmt.Sprintf("priorities= %s; impacts= %s; colors= %s;",
+                string(utils.MustJSON(priorities)),
+                string(utils.MustJSON(impacts)),
+                string(utils.MustJSON(colors))) }
+        >
+            <div class="text-card-foreground shadow-sm p-4">
+                @ui.Form("/task-config", "put", "", templ.Attributes{
+                        "id": "task-config-form",
+                        "hx-target": "#toaster",
+                        "hx-swap": "innerHtml",
+                        "hx-disabled-elt": "#btn-save-task-config",
+                        "x-ref": "form",
+                        "hx-indicator": ".htmx-loader,.loaded-content",
+                }) {
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium">Task Priorities</h3>
+                        <p class="text-sm text-muted-foreground mb-3">
+                            Weight is the priority share of a task value. Max due is the longest
+                            a task with this priority may be scheduled, counted in minutes from
+                            its start date. Set it to 0 to remove the limit. Color holds whatever
+                            the row already uses, either a plain name or a full Tailwind class, so
+                            edit it only if you know which form this table expects.
+                        </p>
+                        <div class="relative w-full overflow-auto scrollbar-thin">
+                            <table class="w-full caption-bottom text-sm">
+                                <thead>
+                                    <tr class="bg-gray-200 hover:bg-gray-200 dark:bg-accent">
+                                        <th class="px-3 py-2 text-left font-medium">Code</th>
+                                        <th class="px-3 py-2 text-left font-medium">Label</th>
+                                        <th class="px-3 py-2 text-left font-medium">Color</th>
+                                        <th class="px-3 py-2 text-right font-medium">Value</th>
+                                        <th class="px-3 py-2 text-right font-medium">Level</th>
+                                        <th class="px-3 py-2 text-right font-medium">Weight</th>
+                                        <th class="px-3 py-2 text-right font-medium">Max due (min)</th>
+                                        <th class="px-3 py-2 text-left font-medium"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(p, i) in priorities" :key="i">
+                                        <tr class="border-b border-border">
+                                            <td class="px-3 py-1.5">
+                                                <input type="text" x-model="p.priority" class="h-9 w-28 rounded-md border border-input bg-transparent px-2 text-sm uppercase" />
+                                            </td>
+                                            <td class="px-3 py-1.5">
+                                                <input type="text" x-model="p.label" class="h-9 w-32 rounded-md border border-input bg-transparent px-2 text-sm" />
+                                            </td>
+                                            <td class="px-3 py-1.5">
+                                                <input type="text" x-model="p.color" list="color-suggestions" class="h-9 w-56 rounded-md border border-input bg-transparent px-2 text-sm" />
+                                            </td>
+                                            <td class="px-3 py-1.5 text-right">
+                                                <input type="number" step="1" x-model.number="p.value" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            </td>
+                                            <td class="px-3 py-1.5 text-right">
+                                                <input type="number" step="1" x-model.number="p.level" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            </td>
+                                            <td class="px-3 py-1.5 text-right">
+                                                <input type="number" step="0.001" min="0" x-model.number="p.weight" class="h-9 w-24 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            </td>
+                                            <td class="px-3 py-1.5 text-right">
+                                                <input type="number" step="1" min="0" x-model.number="p.max_due_minutes" class="h-9 w-28 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            </td>
+                                            <td class="px-3 py-1.5 text-xs text-muted-foreground" x-text="hariMenit(p.max_due_minutes)"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium">Task Impacts</h3>
+                        <p class="text-sm text-muted-foreground mb-3">
+                            Impact is how widely a task is felt if it is left undone. Its weight is
+                            the second factor of a task value.
+                        </p>
+                        <div class="relative w-full overflow-auto scrollbar-thin">
+                            <table class="w-full caption-bottom text-sm">
+                                <thead>
+                                    <tr class="bg-gray-200 hover:bg-gray-200 dark:bg-accent">
+                                        <th class="px-3 py-2 text-left font-medium">Code</th>
+                                        <th class="px-3 py-2 text-left font-medium">Label</th>
+                                        <th class="px-3 py-2 text-left font-medium">Color</th>
+                                        <th class="px-3 py-2 text-right font-medium">Value</th>
+                                        <th class="px-3 py-2 text-right font-medium">Level</th>
+                                        <th class="px-3 py-2 text-right font-medium">Weight</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(im, i) in impacts" :key="i">
+                                        <tr class="border-b border-border">
+                                            <td class="px-3 py-1.5">
+                                                <input type="text" x-model="im.impact" class="h-9 w-28 rounded-md border border-input bg-transparent px-2 text-sm uppercase" />
+                                            </td>
+                                            <td class="px-3 py-1.5">
+                                                <input type="text" x-model="im.label" class="h-9 w-32 rounded-md border border-input bg-transparent px-2 text-sm" />
+                                            </td>
+                                            <td class="px-3 py-1.5">
+                                                <input type="text" x-model="im.color" list="color-suggestions" class="h-9 w-56 rounded-md border border-input bg-transparent px-2 text-sm" />
+                                            </td>
+                                            <td class="px-3 py-1.5 text-right">
+                                                <input type="number" step="1" x-model.number="im.value" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            </td>
+                                            <td class="px-3 py-1.5 text-right">
+                                                <input type="number" step="1" x-model.number="im.level" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            </td>
+                                            <td class="px-3 py-1.5 text-right">
+                                                <input type="number" step="0.001" min="0" x-model.number="im.weight" class="h-9 w-24 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <h3 class="text-lg font-medium">Task Value Preview</h3>
+                        <p class="text-sm text-muted-foreground mb-3">
+                            A task value is the priority weight times the impact weight. Task Value
+                            Score is the sum of the values of the tasks that are done, divided by
+                            the sum of the values of all tasks in the period.
+                        </p>
+                        <div class="relative w-full overflow-auto scrollbar-thin">
+                            <table class="w-full caption-bottom text-sm">
+                                <thead>
+                                    <tr class="bg-gray-200 hover:bg-gray-200 dark:bg-accent">
+                                        <th class="px-3 py-2 text-left font-medium">Priority \ Impact</th>
+                                        <template x-for="(im, i) in impacts" :key="i">
+                                            <th class="px-3 py-2 text-right font-medium" x-text="im.label"></th>
+                                        </template>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(p, i) in priorities" :key="i">
+                                        <tr class="border-b border-border">
+                                            <td class="px-3 py-1.5 font-medium" x-text="p.label"></td>
+                                            <template x-for="(im, j) in impacts" :key="j">
+                                                <td class="px-3 py-1.5 text-right tabular-nums" x-text="nilaiTugas(p.weight, im.weight)"></td>
+                                            </template>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <datalist id="color-suggestions">
+                        <template x-for="(c, ci) in colors" :key="ci">
+                            <option :value="c.name"></option>
+                        </template>
+                    </datalist>
+                    <input type="hidden" name="priorities" :value="JSON.stringify(priorities)" />
+                    <input type="hidden" name="impacts" :value="JSON.stringify(impacts)" />
+                    <div>
+                        <button id="btn-save-task-config" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            Save Configuration
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
 }

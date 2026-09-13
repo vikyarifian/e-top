@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
+
 	"etop/auth"
 	"etop/db"
 	"etop/models"
@@ -18,6 +20,27 @@ import (
 
 	"gorm.io/gorm"
 )
+
+// dueDateLimitError memeriksa apakah tenggat masih berada dalam batas yang
+// ditetapkan prioritas tugas. Perbandingan dilakukan pada tataran tanggal,
+// tanpa jam, agar selisih zona waktu antara tanggal masukan dan waktu server
+// tidak ikut terhitung. Hasilnya berupa pesan kesalahan, atau kosong bila
+// tenggat masih sah. Prioritas dengan batas 0 tidak dibatasi.
+func dueDateLimitError(priorityID int, startDate, dueDate time.Time) string {
+	maxMenit := services.MaxDueMinutesFor(priorityID)
+	if maxMenit <= 0 {
+		return ""
+	}
+	hari := func(t time.Time) time.Time {
+		return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+	}
+	batas := hari(startDate).Add(time.Duration(maxMenit) * time.Minute)
+	if hari(dueDate).After(batas) {
+		return fmt.Sprintf("Due date exceeds the limit for this priority, max %s",
+			batas.Format("2006-01-02"))
+	}
+	return ""
+}
 
 func HandleCreateTaskFrom(w http.ResponseWriter, r *http.Request) error {
 	project_id := r.URL.Query().Get("project_id")
@@ -58,7 +81,10 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 			return layouts.Layout("Task", user, features.Task(task, user)).Render(r.Context(), w)
 		}
 		var tasks []models.Task
-		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).
+		// Penugasan kini disimpan sebagai satu kolom user_id pada tabel tasks;
+		// tabel task_assignees sudah ditinggalkan dan selalu kosong, sehingga
+		// penyaringan lewat tabel itu membuat daftar tak pernah berisi.
+		db.PgSql.Where("user_id = ? OR created_by = ?", user.ID, user.ID).
 			Preload("Assignee", func(db *gorm.DB) *gorm.DB {
 				return db //.Preload("User")
 			}).Preload("Watchers", func(db *gorm.DB) *gorm.DB {
@@ -97,7 +123,7 @@ func HandleTasks(w http.ResponseWriter, r *http.Request) error {
 		}
 
 		var tasks []models.Task
-		db.PgSql.Where("id in (SELECT task_id FROM task_assignees WHERE user_id=?)", user.ID).Preload("Assignee", func(db *gorm.DB) *gorm.DB {
+		db.PgSql.Where("user_id = ? OR created_by = ?", user.ID, user.ID).Preload("Assignee", func(db *gorm.DB) *gorm.DB {
 			return db //.Preload("User")
 		}).Preload("Watchers").Order("no").Preload("Status").Preload("Priority").Find(&tasks)
 		return features.Tasks(tasks).Render(r.Context(), w)
@@ -311,6 +337,40 @@ func HandleTask(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("task-error", "warning", "", "Invalid priority!", "", nil).Render(r.Context(), w)
 		}
 
+		// Luas dampak tugas. Bila formulir tidak mengirimkannya, dipakai baris
+		// acuan pertama, yaitu dampak terluas, agar ketiadaan data tidak
+		// menguntungkan siapa pun.
+		taskImpacts := services.GetTaskImpacts()
+		impactID := 0
+		if v := strings.TrimSpace(r.FormValue("impact_id")); v != "" {
+			impactID, err = strconv.Atoi(v)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return ui.Toast("task-error", "warning", "", "Invalid impact id!", "", nil).Render(r.Context(), w)
+			}
+		} else if len(taskImpacts) > 0 {
+			impactID = taskImpacts[0].No
+		}
+		validImpact := false
+		for _, im := range taskImpacts {
+			if im.No == impactID {
+				validImpact = true
+				task.ImpactID = im.No
+				task.ImpactLabel = im.Impact
+				break
+			}
+		}
+		if !validImpact {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", "Invalid impact!", "", nil).Render(r.Context(), w)
+		}
+
+		// Batas terlama sebuah tugas boleh diberi tenggat, menurut prioritasnya.
+		if pesan := dueDateLimitError(task.PriorityID, *task.StartDate, dueDate); pesan != "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-error", "warning", "", pesan, "", nil).Render(r.Context(), w)
+		}
+
 		if dueDate.Before(*task.StartDate) {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("task-error", "warning", "", "Due date cannot be before today!", "", nil).Render(r.Context(), w)
@@ -481,10 +541,29 @@ func HandleEditTask(w http.ResponseWriter, r *http.Request) error {
 			}
 		}
 
+		if impactIDStr := r.FormValue("impact_id"); impactIDStr != "" {
+			iid, _ := strconv.Atoi(impactIDStr)
+			var taskImpact models.TaskImpact
+			if err := db.PgSql.Where("no=?", iid).First(&taskImpact).Error; err == nil {
+				if task.ImpactID != taskImpact.No {
+					logDetails["old_impact_id"] = task.ImpactID
+					logDetails["new_impact_id"] = taskImpact.No
+				}
+				task.ImpactID = taskImpact.No
+				task.ImpactLabel = taskImpact.Impact
+			}
+		}
+
 		dueDateStr := r.FormValue("due_date")
 		if dueDateStr != "" {
 			parsed, err := time.Parse("2006-01-02", dueDateStr)
 			if err == nil {
+				if task.StartDate != nil {
+					if pesan := dueDateLimitError(task.PriorityID, *task.StartDate, parsed); pesan != "" {
+						w.WriteHeader(http.StatusBadRequest)
+						return ui.Toast("task-error", "warning", "", pesan, "", nil).Render(r.Context(), w)
+					}
+				}
 				task.DueDate = &parsed
 				if task.StartDate != nil {
 					task.EstimatedHours = float32(utils.TimeDiff(*task.StartDate, parsed).Hours())

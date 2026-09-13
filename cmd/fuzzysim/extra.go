@@ -29,7 +29,7 @@ func expLinear() {
 		if r.Period != "GAB" {
 			continue
 		}
-		x := []float64{r.TCR, r.OTR, r.TPS, r.WER}
+		x := []float64{r.TCR, r.OTR, r.TVS, r.WER}
 		l := linearScore(x)
 		za, ca, _, _ := a.Infer(x)
 		zb, cb, _, _ := b.Infer(x)
@@ -41,7 +41,7 @@ func expLinear() {
 	p("\nKorelasi peringkat Spearman: Linier vs A = %.4f ; Linier vs B = %.4f ; A vs B = %.4f\n",
 		spearman(vl, va), spearman(vl, vb), spearman(va, vb))
 
-	p("\n8.2 Perilaku di sekitar ambang kategori (TCR=TPS=100, WER=70, OTR disapu)\n")
+	p("\n8.2 Perilaku di sekitar ambang kategori (TCR=TVS=100, WER=70, OTR disapu)\n")
 	p("%-8s %10s %-13s %10s %-13s %10s %-13s\n", "OTR", "Linier", "kategori", "Fuzzy A", "kategori", "Fuzzy B", "kategori")
 	prevL, prevA, prevB := "", "", ""
 	jumpL, jumpA, jumpB := 0, 0, 0
@@ -127,7 +127,7 @@ func observed() [4][]float64 {
 		if r.Period == "GAB" {
 			continue
 		}
-		for i, x := range []float64{r.TCR, r.OTR, r.TPS, r.WER} {
+		for i, x := range []float64{r.TCR, r.OTR, r.TVS, r.WER} {
 			if x > 100 {
 				x = 100
 			}
@@ -222,7 +222,7 @@ func expCalibrated() {
 		if r.Period != "GAB" {
 			continue
 		}
-		x := []float64{r.TCR, r.OTR, r.TPS, r.WER}
+		x := []float64{r.TCR, r.OTR, r.TVS, r.WER}
 		p("%-24s", trunc(r.User, 24))
 		ce, cf := "", ""
 		for _, c := range cfgs {
@@ -270,7 +270,7 @@ func expCalibrated() {
 		if r.Period != "GAB" {
 			continue
 		}
-		z, cat, _, _ := f.Infer([]float64{r.TCR, r.OTR, r.TPS, r.WER})
+		z, cat, _, _ := f.Infer([]float64{r.TCR, r.OTR, r.TVS, r.WER})
 		list = append(list, ur{r.User, z, cat})
 	}
 	sort.Slice(list, func(i, j int) bool { return list[i].z > list[j].z })

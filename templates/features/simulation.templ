@@ -1,0 +1,428 @@
+package features
+
+import (
+    "fmt"
+    "strconv"
+
+    "etop/dto"
+    "etop/services"
+)
+
+templ Simulation(page services.SimulationPage, user dto.UserAuth) {
+    <div class="mx-auto space-y-6" data-title="Simulasi Fuzzy Tsukamoto">
+        <div>
+            <h2 class="text-3xl font-bold tracking-tight">Simulasi Fuzzy Tsukamoto</h2>
+            <p class="text-muted-foreground p-1">
+                Menguji rancangan inferensi secara langsung: nilai indikator diambil dari basis data,
+                lalu dapat diubah bersama fungsi keanggotaannya untuk melihat pengaruhnya terhadap hasil akhir
+            </p>
+        </div>
+        <form id="sim-form"
+            hx-post="/simulation"
+            hx-target="#sim-body"
+            hx-swap="innerHTML"
+            hx-trigger="change, submit"
+            hx-indicator=".htmx-loader"
+        >
+            <div id="sim-body" class="space-y-6">
+                @SimulationBody(page, user)
+            </div>
+        </form>
+    </div>
+}
+
+templ SimulationBody(page services.SimulationPage, user dto.UserAuth) {
+    <input type="hidden" name="applied" value={ page.Applied }/>
+
+    <!-- 1. Sumber data -->
+    <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="font-semibold leading-none tracking-tight">1. Sumber Data</h3>
+            <span class="text-xs text-muted-foreground">
+                { fmt.Sprintf("%d tugas, %d selesai", page.Data.TaskCount, page.Data.DoneCount) }
+            </span>
+        </div>
+        <p class="text-xs text-muted-foreground mb-4">Nilai awal indikator dihitung dari tugas yang tercatat pada basis data</p>
+        <div class="flex flex-wrap items-end gap-4">
+            if len(page.ViewUsers) > 0 {
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-medium text-muted-foreground">Karyawan</label>
+                    <select name="user_id" class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-w-[220px]">
+                        <option value={ user.ID } selected?={ page.SelectedUser == "" }>{ user.FullName }</option>
+                        for _, vu := range page.ViewUsers {
+                            if vu.ID != user.ID {
+                                <option value={ vu.ID } selected?={ page.SelectedUser == vu.ID }>{ vu.FullName }</option>
+                            }
+                        }
+                    </select>
+                </div>
+            }
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-muted-foreground">Periode</label>
+                <select name="year" class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring">
+                    <option value="" selected?={ page.SelectedYear == "" }>Seluruh periode</option>
+                    for _, y := range page.Years {
+                        <option value={ strconv.Itoa(y) } selected?={ page.SelectedYear == strconv.Itoa(y) }>{ strconv.Itoa(y) }</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" name="action" value="reload"
+                class="px-3 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-accent transition">
+                Muat ulang nilai dari basis data
+            </button>
+        </div>
+        if !page.Data.Available {
+            <p class="text-sm text-amber-600 dark:text-amber-400 mt-3">
+                Tidak ada tugas pada periode ini. Seluruh indikator bernilai nol, silakan ubah nilainya secara manual di bawah.
+            </p>
+        }
+    </div>
+
+    <!-- 2. Input -->
+    <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="font-semibold leading-none tracking-tight">2. Input (Variabel Masukan)</h3>
+            <div class="flex items-center gap-2">
+                <label class="text-xs font-medium text-muted-foreground">Jumlah variabel</label>
+                <select name="nvar" class="px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground">
+                    for n := 2; n <= len(services.SimVarCatalog); n++ {
+                        <option value={ strconv.Itoa(n) } selected?={ page.NVar == n }>{ strconv.Itoa(n) }</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <p class="text-xs text-muted-foreground mb-4">
+            Geser atau ketik untuk mengubah nilai. Angka dalam kurung adalah nilai asli dari basis data.
+        </p>
+        <div class="grid gap-4 md:grid-cols-2">
+            for i, v := range page.Cfg.Vars {
+                <div class="space-y-1.5" x-data={ fmt.Sprintf("{ v: '%s' }", simNum(v.Value)) }>
+                    <div class="flex items-center justify-between">
+                        <label class="text-sm font-medium">
+                            <span class="inline-block w-2.5 h-2.5 rounded-full mr-1.5" style={ fmt.Sprintf("background:%s", simVarColor(i)) }></span>
+                            { v.Name }
+                            <span class="text-muted-foreground font-normal">— { v.Label }</span>
+                        </label>
+                        <span class="text-xs text-muted-foreground">
+                            ({ simNum(page.Data.Values[v.Name]) })
+                        </span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <input type="range" min="0" max="100" step="0.1" x-model="v"
+                            @change="$refs.num.dispatchEvent(new Event('change', { bubbles: true }))"
+                            class="flex-1 accent-primary cursor-pointer"/>
+                        <input x-ref="num" type="number" name={ "x_" + v.Name } min="0" max="100" step="0.01" x-model="v"
+                            class="w-24 px-2 py-1 text-sm text-right rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"/>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- 3. Fungsi keanggotaan -->
+    <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="font-semibold leading-none tracking-tight">3. Fungsi Keanggotaan (Membership Function)</h3>
+            <span class="text-xs text-muted-foreground">{ simPresetLabel(page.Preset) }</span>
+        </div>
+        <p class="text-xs text-muted-foreground mb-4">
+            Susunan ini berlaku sama untuk seluruh variabel input, sebagaimana rancangan pada aplikasi
+        </p>
+        <div class="flex flex-wrap items-end gap-4 mb-5">
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-muted-foreground">Prasetel</label>
+                <select name="preset" class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground min-w-[320px]">
+                    for _, p := range services.SimPresets() {
+                        <option value={ p.Value } selected?={ page.Preset == p.Value }>{ p.Label }</option>
+                    }
+                    if page.Preset == "custom" {
+                        <option value="custom" selected>Konfigurasi tersuai</option>
+                    }
+                </select>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="text-xs font-medium text-muted-foreground">Jumlah himpunan</label>
+                <select name="nset" class="px-2 py-1.5 text-sm rounded-md border border-border bg-background text-foreground">
+                    for n := 2; n <= 5; n++ {
+                        <option value={ strconv.Itoa(n) } selected?={ page.NSet == n }>{ strconv.Itoa(n) }</option>
+                    }
+                </select>
+            </div>
+            <div class="text-xs text-muted-foreground pb-2">
+                { fmt.Sprintf("%d himpunan pangkat %d variabel = %d aturan", page.NSet, page.NVar, page.Result.RuleTotal) }
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            for j, s := range page.Cfg.Sets {
+                <div class="flex flex-wrap items-end gap-3 p-3 rounded-md bg-muted/40">
+                    <div class="flex items-center gap-2 min-w-[130px]">
+                        <span class="inline-block w-3 h-3 rounded-sm" style={ fmt.Sprintf("background:%s", simSetColor(j)) }></span>
+                        <span class="text-sm font-medium">{ s.Label }</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs text-muted-foreground">Bentuk</label>
+                        <select name={ fmt.Sprintf("shape_%d", j) } class="px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground">
+                            for _, opt := range services.ShapeOptions {
+                                <option value={ opt.Value } selected?={ s.Shape == opt.Value }>{ opt.Label }</option>
+                            }
+                        </select>
+                    </div>
+                    for k, pname := range services.ShapeParams(s.Shape) {
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs text-muted-foreground">{ pname }</label>
+                            <input type="number" step="0.01" name={ fmt.Sprintf("p_%d_%d", j, k) }
+                                value={ simNum(simParamValue(s, k)) }
+                                class="w-24 px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"/>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Grafik fungsi keanggotaan -->
+        <div class="mt-5 overflow-x-auto">
+            <svg viewBox={ fmt.Sprintf("0 0 %.0f %.0f", simChartW, simChartH) } class="w-full max-w-3xl" style="min-width:520px">
+                <line x1={ simNum(simX(0)) } y1={ simNum(simY(0)) } x2={ simNum(simX(100)) } y2={ simNum(simY(0)) } stroke="currentColor" stroke-width="1" class="text-border"/>
+                <line x1={ simNum(simX(0)) } y1={ simNum(simY(0)) } x2={ simNum(simX(0)) } y2={ simNum(simY(1)) } stroke="currentColor" stroke-width="1" class="text-border"/>
+                for _, t := range simAxisTicks() {
+                    <line x1={ simNum(simX(t)) } y1={ simNum(simY(0)) } x2={ simNum(simX(t)) } y2={ simNum(simY(0) + 4) } stroke="currentColor" stroke-width="1" class="text-border"/>
+                    <text x={ simNum(simX(t)) } y={ simNum(simY(0) + 16) } text-anchor="middle" font-size="10" fill="currentColor" class="text-muted-foreground">{ simNum(t) }</text>
+                }
+                <text x={ simNum(simX(0) - 8) } y={ simNum(simY(1) + 4) } text-anchor="end" font-size="10" fill="currentColor" class="text-muted-foreground">1</text>
+                <text x={ simNum(simX(0) - 8) } y={ simNum(simY(0) + 4) } text-anchor="end" font-size="10" fill="currentColor" class="text-muted-foreground">0</text>
+                for j, s := range page.Cfg.Sets {
+                    <polyline points={ simCurvePoints(s) } fill="none" stroke={ simSetColor(j) } stroke-width="2"/>
+                }
+                for i, v := range page.Cfg.Vars {
+                    <line x1={ simNum(simX(v.Value)) } y1={ simNum(simY(0)) } x2={ simNum(simX(v.Value)) } y2={ simNum(simY(1)) } stroke={ simVarColor(i) } stroke-width="1.5" stroke-dasharray="4 3" opacity="0.85"/>
+                    <text x={ simNum(simX(v.Value) + 3) } y={ simNum(simY(1) + 9 + float64(i) * 11) } font-size="9" fill={ simVarColor(i) }>{ v.Name }</text>
+                }
+            </svg>
+            <div class="flex flex-wrap gap-4 mt-2">
+                for j, s := range page.Cfg.Sets {
+                    <div class="flex items-center gap-1.5">
+                        <span class="inline-block w-3 h-0.5" style={ fmt.Sprintf("background:%s", simSetColor(j)) }></span>
+                        <span class="text-xs text-muted-foreground">{ s.Label } ({ services.ShapeLabel(s.Shape) })</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Hasil -->
+    @simResultPanel(page)
+
+    <!-- 5. Perbandingan bentuk fungsi keanggotaan -->
+    <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+        <h3 class="font-semibold leading-none tracking-tight mb-1">5. Pengaruh Perubahan Bentuk Fungsi Keanggotaan</h3>
+        <p class="text-xs text-muted-foreground mb-4">
+            Nilai input yang sama dihitung ulang pada setiap bentuk. Konsekuen tetap monoton pada seluruh baris,
+            sehingga selisih hasil murni berasal dari sisi anteseden.
+        </p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border text-xs text-muted-foreground">
+                        <th class="text-left font-medium py-2 pr-4">Konfigurasi</th>
+                        <th class="text-right font-medium py-2 pr-4">Himpunan</th>
+                        <th class="text-right font-medium py-2 pr-4">Aturan</th>
+                        <th class="text-right font-medium py-2 pr-4">Aktif</th>
+                        <th class="text-right font-medium py-2 pr-4">Z</th>
+                        <th class="text-left font-medium py-2 pr-4">Kategori</th>
+                        <th class="text-right font-medium py-2">Selisih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    for _, row := range page.ShapeRows {
+                        <tr class={ "border-b border-border/50", templ.KV("bg-primary/5", row.Current) }>
+                            <td class="py-2 pr-4">
+                                <div class="font-medium">{ row.Label }</div>
+                                <div class="text-xs text-muted-foreground">{ row.Desc }</div>
+                            </td>
+                            <td class="py-2 pr-4 text-right tabular-nums">{ strconv.Itoa(row.SetCount) }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums">{ strconv.Itoa(row.RuleTotal) }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums">{ strconv.Itoa(row.ActiveCount) }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums font-medium">{ simNum(row.Score) }</td>
+                            <td class="py-2 pr-4">
+                                <span class={ fmt.Sprintf("inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium %s", ruleBadgeColor(row.Category)) }>{ row.Category }</span>
+                            </td>
+                            <td class="py-2 text-right tabular-nums text-muted-foreground">{ simDelta(row.Score, simScoreRef(page.ShapeRows)) }</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 6. Perbandingan jumlah variabel input -->
+    <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+        <h3 class="font-semibold leading-none tracking-tight mb-1">6. Pengaruh Penambahan Jumlah Variabel Input</h3>
+        <p class="text-xs text-muted-foreground mb-4">
+            Susunan himpunan yang sedang dipakai diterapkan pada jumlah variabel yang berbeda.
+            Jumlah aturan tumbuh eksponensial mengikuti jumlah himpunan pangkat jumlah variabel.
+        </p>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border text-xs text-muted-foreground">
+                        <th class="text-left font-medium py-2 pr-4">Variabel</th>
+                        <th class="text-right font-medium py-2 pr-4">Jumlah</th>
+                        <th class="text-right font-medium py-2 pr-4">Aturan</th>
+                        <th class="text-right font-medium py-2 pr-4">Aktif</th>
+                        <th class="text-right font-medium py-2 pr-4">ns/inferensi</th>
+                        <th class="text-right font-medium py-2 pr-4">Z</th>
+                        <th class="text-left font-medium py-2 pr-4">Kategori</th>
+                        <th class="text-right font-medium py-2">Selisih</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    for _, row := range page.VarRows {
+                        <tr class={ "border-b border-border/50", templ.KV("bg-primary/5", row.Current) }>
+                            <td class="py-2 pr-4 font-medium">{ row.Label }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums">{ strconv.Itoa(row.VarCount) }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums">{ strconv.Itoa(row.RuleTotal) }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums">{ strconv.Itoa(row.ActiveCount) }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums text-muted-foreground">{ fmt.Sprintf("%.0f", row.Nanos) }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums font-medium">{ simNum(row.Score) }</td>
+                            <td class="py-2 pr-4">
+                                <span class={ fmt.Sprintf("inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium %s", ruleBadgeColor(row.Category)) }>{ row.Category }</span>
+                            </td>
+                            <td class="py-2 text-right tabular-nums text-muted-foreground">{ simDelta(row.Score, simScoreRef(page.VarRows)) }</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    // <!-- 7. Cuplikan basis aturan -->
+    // <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+    //     <div class="flex items-center justify-between mb-1">
+    //         <h3 class="font-semibold leading-none tracking-tight">7. Basis Aturan (Inference Engine)</h3>
+    //         <span class="text-xs text-muted-foreground">
+    //             { fmt.Sprintf("menampilkan %d dari %d aturan", len(page.RuleSample), page.Result.RuleTotal) }
+    //         </span>
+    //     </div>
+    //     <p class="text-xs text-muted-foreground mb-4">
+    //         Aturan dibangkitkan dari kaidah: skor himpunan dijumlah, rasionya terhadap skor maksimum dipetakan
+    //         ke lima konsekuen, lalu OTR pada himpunan terendah membatasi konsekuen paling tinggi Cukup.
+    //     </p>
+    //     <div class="space-y-1">
+    //         for _, r := range page.RuleSample {
+    //             <div class="flex items-start gap-2 text-xs">
+    //                 <span class="font-mono text-muted-foreground w-10 shrink-0">{ r.Code }</span>
+    //                 <span class="text-muted-foreground">IF { r.Premise } THEN Kinerja</span>
+    //                 <span class={ fmt.Sprintf("inline-flex items-center rounded px-1.5 text-xs font-medium %s", ruleBadgeColor(r.Output)) }>{ r.Output }</span>
+    //             </div>
+    //         }
+    //     </div>
+    // </div>
+}
+
+templ simResultPanel(page services.SimulationPage) {
+    <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
+        <div class="flex items-center justify-between mb-1">
+            <h3 class="font-semibold leading-none tracking-tight">4. Proses dan Hasil Inferensi</h3>
+            <span class="text-xs text-muted-foreground">
+                { fmt.Sprintf("%d dari %d aturan menyala, %d berpengaruh, %.0f ns per inferensi",
+                    len(page.Result.Active), page.Result.RuleTotal,
+                    simEffectiveCount(page.Result.Active), page.Result.NanosPerInfer) }
+            </span>
+        </div>
+
+        <div class="rounded-md bg-muted/50 px-4 py-3 mb-6 flex flex-wrap items-center gap-4">
+            <div>
+                <div class="text-xs text-muted-foreground">Nilai kinerja</div>
+                <div class={ fmt.Sprintf("text-3xl font-bold %s", evalScoreColor(page.Result.Category)) }>{ simNum(page.Result.Score) }</div>
+            </div>
+            <div>
+                <div class="text-xs text-muted-foreground">Kategori</div>
+                <span class={ fmt.Sprintf("inline-flex items-center rounded-md px-2 py-1 text-sm font-bold %s", evalBadgeColor(page.Result.Category)) }>{ page.Result.Category }</span>
+            </div>
+            <div class="flex-1 min-w-[160px]">
+                <div class="h-2.5 rounded-full bg-muted overflow-hidden">
+                    <div class={ fmt.Sprintf("h-full rounded-full %s", evalProgressColor(page.Result.Category)) } style={ fmt.Sprintf("width: %.1f%%", clampEval(page.Result.Score)) }></div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Tahap 1 — Fuzzifikasi</h4>
+        <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border text-xs text-muted-foreground">
+                        <th class="text-left font-medium py-2 pr-4">Variabel</th>
+                        <th class="text-right font-medium py-2 pr-4">Nilai crisp</th>
+                        for _, s := range page.Cfg.Sets {
+                            <th class="text-right font-medium py-2 pr-4">{ "mu " + s.Label }</th>
+                        }
+                        <th class="text-right font-medium py-2">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    for _, v := range page.Result.Fuzzification {
+                        <tr class="border-b border-border/50">
+                            <td class="py-2 pr-4 font-medium">{ v.Name }</td>
+                            <td class="py-2 pr-4 text-right tabular-nums">{ simNum(v.Value) }</td>
+                            for _, st := range v.Sets {
+                                <td class={ "py-2 pr-4 text-right tabular-nums", templ.KV("text-muted-foreground/40", simIsZero(st.Degree)) }>{ simMu(st.Degree) }</td>
+                            }
+                            <td class={ fmt.Sprintf("py-2 text-right tabular-nums %s", simSumClass(v.SumMu)) }>{ simMu(v.SumMu) }</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <p class="text-xs text-muted-foreground mt-2">
+                Jumlah derajat keanggotaan yang selalu bernilai satu menandakan himpunan membentuk partisi yang utuh.
+            </p>
+        </div>
+
+        <h4 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Tahap 2 — Inferensi, fungsi implikasi MIN</h4>
+        if len(page.Result.Active) > 0 {
+            <div class="overflow-x-auto mb-6 max-h-96 overflow-y-auto">
+                <table class="w-full text-sm">
+                    <thead class="sticky top-0 bg-card">
+                        <tr class="border-b border-border text-xs text-muted-foreground">
+                            <th class="text-left font-medium py-2 pr-4">Aturan</th>
+                            <th class="text-left font-medium py-2 pr-4">Anteseden</th>
+                            <th class="text-left font-medium py-2 pr-4">Konsekuen</th>
+                            <th class="text-right font-medium py-2 pr-4">alpha</th>
+                            <th class="text-right font-medium py-2 pr-4">z</th>
+                            <th class="text-right font-medium py-2 pr-4">alpha x z</th>
+                            <th class="text-right font-medium py-2">Andil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        for _, r := range simSortedRules(page.Result.Active) {
+                            <tr class={ "border-b border-border/50", templ.KV("opacity-50", r.Alpha < 0.001) }>
+                                <td class="py-1.5 pr-4 font-mono text-xs">{ r.Code }</td>
+                                <td class="py-1.5 pr-4 text-xs text-muted-foreground">{ r.Premise }</td>
+                                <td class="py-1.5 pr-4">
+                                    <span class={ fmt.Sprintf("inline-flex items-center rounded px-1.5 py-0.5 text-xs font-medium %s", ruleBadgeColor(r.Output)) }>{ r.Output }</span>
+                                </td>
+                                <td class="py-1.5 pr-4 text-right tabular-nums">{ simMu(r.Alpha) }</td>
+                                <td class="py-1.5 pr-4 text-right tabular-nums">{ simNum(r.Z) }</td>
+                                <td class="py-1.5 pr-4 text-right tabular-nums text-muted-foreground">{ simNum(r.Alpha * r.Z) }</td>
+                                <td class="py-1.5 text-right tabular-nums text-muted-foreground">{ fmt.Sprintf("%.1f%%", simRuleShare(r.Alpha, page.Result.SumAlpha)) }</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <h4 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Tahap 3 — Defuzzifikasi rata-rata terbobot</h4>
+            <div class="rounded-md bg-muted/50 px-4 py-3 text-sm">
+                <span class="font-mono">
+                    { fmt.Sprintf("Z = jumlah(alpha x z) / jumlah(alpha) = %.4f / %.4f = %.4f",
+                        page.Result.SumAlphaZ, page.Result.SumAlpha, page.Result.Score) }
+                </span>
+                <span class={ fmt.Sprintf("ml-2 inline-flex items-center rounded px-1.5 py-0.5 text-xs font-bold %s", evalBadgeColor(page.Result.Category)) }>{ page.Result.Category }</span>
+            </div>
+        } else {
+            <p class="text-sm text-muted-foreground py-6 text-center">
+                Tidak ada aturan yang menyala. Nilai input berada di luar jangkauan seluruh himpunan.
+            </p>
+        }
+    </div>
+}

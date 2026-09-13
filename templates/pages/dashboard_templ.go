@@ -122,7 +122,7 @@ func kpiCards(data services.DashboardData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCard("Priority Score", fmt.Sprintf("%.1f%%", data.TPS), "TPS", data.TPS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCard("Value Score", fmt.Sprintf("%.1f%%", data.TVS), "TVS", data.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -328,7 +328,7 @@ func circleProgress(value float64, strokeColor string) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var17 string
-		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%.1f %s", circumference(value), 100))
+		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%.1f %d", circumference(value), 100))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 63, Col: 70}
 		}

@@ -34,7 +34,12 @@ type Task struct {
 	DueDate        *time.Time `gorm:"column:due_date;type:TIMESTAMP" json:"due_date,omitempty"`
 	CompletedAt    *time.Time `gorm:"column:completed_at;type:TIMESTAMP" json:"completed_at,omitempty"`
 	EstimatedHours float32    `gorm:"column:estimated_hours;default:0" json:"estimated_hours"`
-	ActualHours    float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
+	// Impact diadopsi dari iTop: luas dampak sebuah tugas. Polanya mengikuti
+	// Priority, yaitu satu kolom kode dan satu kolom penunjuk tabel acuan.
+	ImpactID    int        `gorm:"column:impact_id;default:1" json:"impact_id,omitempty" form:"impact_id"`
+	ImpactLabel string     `gorm:"column:impact;default:'HIGH'" json:"impact_label,omitempty" form:"impact_label"`
+	Impact      TaskImpact `gorm:"foreignKey:ImpactID;references:No;" json:"impact"`
+	ActualHours float32    `gorm:"column:actual_hours;default:0" json:"actual_hours"`
 
 	// Array of tags → simpan sebagai TEXT[] di Postgres
 	// Tags []string `gorm:"type:text[]" json:"tags"`
@@ -43,7 +48,7 @@ type Task struct {
 	Subtasks []Subtask `gorm:"foreignKey:TaskID;references:ID" json:"subtasks"`
 
 	// One-to-many comments
-	Comments      []Comment    `gorm:"foreignKey:TaskID;references:ID" json:"comments"`
+	Comments []Comment `gorm:"foreignKey:TaskID;references:ID" json:"comments"`
 
 	// One-to-many attachments
 	Attachments []Attachment `gorm:"foreignKey:TaskID;references:ID" json:"attachments"`
@@ -99,6 +104,27 @@ type TaskPriority struct {
 	Color    string `gorm:"column:color;not null;" json:"color" form:"color"`
 	Value    int    `gorm:"value" json:"value,omitempty" form:"value"`
 	Level    int    `gorm:"level" json:"level,omitempty" form:"level"`
+	// Weight adalah bobot nilai tugas, menurun dari tingkat tertinggi:
+	// 1,000 untuk High, 0,900 untuk Medium, dan 0,800 untuk Low.
+	Weight float64 `gorm:"column:weight" json:"weight,omitempty" form:"weight"`
+	// MaxDueMinutes adalah batas terlama sebuah tugas boleh diberi tenggat,
+	// dihitung dalam menit sejak tanggal mulai. Nilai 0 berarti tanpa batas.
+	MaxDueMinutes int `gorm:"column:max_due_minutes;default:0" json:"max_due_minutes" form:"max_due_minutes"`
+}
+
+// TaskImpact adalah acuan luas dampak sebuah tugas, diadopsi dari iTop.
+// Strukturnya menyerupai TaskPriority, termasuk bobotnya.
+type TaskImpact struct {
+	No     int    `gorm:"column:no;primaryKey" json:"no" form:"no"`
+	Impact string `gorm:"column:impact;not null;" json:"impact" form:"impact"`
+	Label  string `gorm:"column:label;not null;" json:"label" form:"label"`
+	Color  string `gorm:"column:color;not null;" json:"color" form:"color"`
+	Value  int    `gorm:"value" json:"value,omitempty" form:"value"`
+	Level  int    `gorm:"level" json:"level,omitempty" form:"level"`
+	// Weight menurun dari dampak terluas: 1,000 untuk High yang berarti
+	// selingkup departemen, 0,900 untuk Medium yang berarti selingkup layanan,
+	// dan 0,800 untuk Low yang hanya mengenai perorangan.
+	Weight float64 `gorm:"column:weight" json:"weight,omitempty" form:"weight"`
 }
 
 // Subtask model

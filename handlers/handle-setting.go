@@ -5,11 +5,14 @@ import (
 	"etop/auth"
 	"etop/db"
 	"etop/models"
+	"etop/services"
 	"etop/templates/components/ui"
 	"etop/templates/features"
 	"etop/templates/layouts"
 	"etop/templates/pages"
+	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 
 	"gorm.io/gorm"
@@ -93,6 +96,9 @@ func HandleSettings(w http.ResponseWriter, r *http.Request) error {
 		case "users":
 			users, pageInfo := settingsUsers(r)
 			return layouts.Layout("User Settings", user, features.UserSettings(user, users, pageInfo)).Render(r.Context(), w)
+		case "task-config":
+			return layouts.Layout("Task Config Settings", user,
+				features.TaskConfigSettings(user, services.GetTaskPriorities(), services.GetTaskImpacts(), services.GetColorOptions())).Render(r.Context(), w)
 		default:
 			return features.Settings(tab, user).Render(r.Context(), w)
 		}
@@ -127,6 +133,9 @@ func HandleSettings(w http.ResponseWriter, r *http.Request) error {
 		case "users":
 			users, pageInfo := settingsUsers(r)
 			return features.UserSettings(user, users, pageInfo).Render(r.Context(), w)
+		case "task-config":
+			return features.TaskConfigSettings(user, services.GetTaskPriorities(),
+				services.GetTaskImpacts(), services.GetColorOptions()).Render(r.Context(), w)
 		default:
 			return features.Settings(tab, user).Render(r.Context(), w)
 		}
@@ -165,4 +174,104 @@ func HandleNotificationSetting(w http.ResponseWriter, r *http.Request) error {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return nil
 	}
+}
+
+// HandleTaskConfig menyimpan acuan prioritas dan dampak tugas. Kedua tabel ini
+// menentukan nilai tiap tugas, yaitu hasil kali bobot prioritas dan bobot
+// dampak, sehingga perubahan di sini langsung mengubah indikator Task Value
+// Score pada halaman penilaian.
+func HandleTaskConfig(w http.ResponseWriter, r *http.Request) error {
+	user, err := auth.GetJwtClaims(w, r)
+	if err != nil || user.Level != "ADMIN" {
+		w.WriteHeader(http.StatusForbidden)
+		return ui.Toast("task-config-error", "danger", "", "You don't have permission to change this setting!", "", nil).Render(r.Context(), w)
+	}
+
+	if r.Method != http.MethodPut {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return nil
+	}
+
+	var priorities []models.TaskPriority
+	if err := json.Unmarshal([]byte(r.FormValue("priorities")), &priorities); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return ui.Toast("task-config-error", "danger", "", "Failed to read priority payload!", "", nil).Render(r.Context(), w)
+	}
+	var impacts []models.TaskImpact
+	if err := json.Unmarshal([]byte(r.FormValue("impacts")), &impacts); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return ui.Toast("task-config-error", "danger", "", "Failed to read impact payload!", "", nil).Render(r.Context(), w)
+	}
+
+	// Kode dan label tidak boleh kosong, sebab keduanya dipakai sebagai
+	// penanda pada formulir tugas dan pada berkas bukti penelitian.
+	for _, p := range priorities {
+		if strings.TrimSpace(p.Priority) == "" || strings.TrimSpace(p.Label) == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-config-error", "warning", "", "Priority code and label are required!", "", nil).Render(r.Context(), w)
+		}
+		if p.Weight < 0 || p.MaxDueMinutes < 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-config-error", "warning", "", "Weight and max due cannot be negative!", "", nil).Render(r.Context(), w)
+		}
+	}
+	for _, im := range impacts {
+		if strings.TrimSpace(im.Impact) == "" || strings.TrimSpace(im.Label) == "" {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-config-error", "warning", "", "Impact code and label are required!", "", nil).Render(r.Context(), w)
+		}
+		if im.Weight < 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return ui.Toast("task-config-error", "warning", "", "Weight cannot be negative!", "", nil).Render(r.Context(), w)
+		}
+	}
+
+	// Seluruh baris disimpan dalam satu transaksi agar tidak ada keadaan
+	// setengah tersimpan yang membuat nilai tugas tak menentu.
+	err = db.PgSql.Transaction(func(tx *gorm.DB) error {
+		for _, p := range priorities {
+			kode := strings.ToUpper(strings.TrimSpace(p.Priority))
+			if err := tx.Model(&models.TaskPriority{}).Where("no = ?", p.No).Updates(map[string]any{
+				"priority":        kode,
+				"label":           strings.TrimSpace(p.Label),
+				"color":           p.Color,
+				"value":           p.Value,
+				"level":           p.Level,
+				"weight":          p.Weight,
+				"max_due_minutes": p.MaxDueMinutes,
+			}).Error; err != nil {
+				return err
+			}
+			// Kolom kode pada tabel tugas mengikuti tabel acuannya.
+			if err := tx.Model(&models.Task{}).Where("priority_id = ?", p.No).
+				Update("priority", kode).Error; err != nil {
+				return err
+			}
+		}
+		for _, im := range impacts {
+			kode := strings.ToUpper(strings.TrimSpace(im.Impact))
+			if err := tx.Model(&models.TaskImpact{}).Where("no = ?", im.No).Updates(map[string]any{
+				"impact": kode,
+				"label":  strings.TrimSpace(im.Label),
+				"color":  im.Color,
+				"value":  im.Value,
+				"level":  im.Level,
+				"weight": im.Weight,
+			}).Error; err != nil {
+				return err
+			}
+			if err := tx.Model(&models.Task{}).Where("impact_id = ?", im.No).
+				Update("impact", kode).Error; err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		slog.Error("penyimpanan konfigurasi tugas gagal", "error", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return ui.Toast("task-config-error", "danger", "", "Failed to save task configuration!", "", nil).Render(r.Context(), w)
+	}
+
+	return ui.Toast("task-config-success", "success", "", "Task configuration saved successfully!", "", nil).Render(r.Context(), w)
 }
