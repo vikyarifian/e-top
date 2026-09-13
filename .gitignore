@@ -11,3 +11,11 @@ tailwindcss
 # artefak lokal, jangan dipublikasikan
 *.dump
 *.exe~
+
+# Bahan tugas akhir: memuat nama karyawan, isi tiket perusahaan, dan
+# dokumen yang bukan bagian dari aplikasi.
+skripsi/
+
+# Penyemai data penilaian: memuat nama karyawan beserta kategori
+# kinerjanya. Tetap dapat dijalankan secara lokal.
+cmd/seedeval/

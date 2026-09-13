@@ -15,9 +15,9 @@ func formatDateOrDash(t *time.Time) string {
 }
 
 type segmentData struct {
-	Color        string
-	Length       float64
-	Offset       float64
+	Color         string
+	Length        float64
+	Offset        float64
 	Circumference float64
 }
 
@@ -132,7 +132,7 @@ type fuzzyVarRow struct {
 
 // fuzzyVarRows menyusun tabel fuzzifikasi keempat variabel input.
 func fuzzyVarRows(e services.AchievedEvaluation) []fuzzyVarRow {
-	vals := [4]float64{e.TCR, e.OTR, e.TPS, e.WER}
+	vals := [4]float64{e.TCR, e.OTR, e.TVS, e.WER}
 	rows := make([]fuzzyVarRow, 0, 4)
 	for i, name := range services.FuzzyVarNames {
 		mu := services.FuzzyMembership(vals[i])

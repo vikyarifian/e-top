@@ -85,9 +85,11 @@ func SetRoutes() {
 	mux.HandleFunc("/task-comments", auth.RequireAuth(handlers.Make(handlers.HandleTaskComments)))
 
 	mux.HandleFunc("/achieve", auth.RequireAuth(handlers.Make(handlers.HandleAchieved)))
+	mux.HandleFunc("/simulation", auth.RequireAuth(handlers.Make(handlers.HandleSimulation)))
 	mux.HandleFunc("/notifications", auth.RequireAuth(handlers.Make(handlers.HandleNotifications)))
 	mux.HandleFunc("/my-tasks", auth.RequireAuth(handlers.Make(handlers.HandleMyTasks)))
 	mux.HandleFunc("/settings", auth.RequireAuth(handlers.Make(handlers.HandleSettings)))
+	mux.HandleFunc("/task-config", auth.RequireAuth(handlers.Make(handlers.HandleTaskConfig)))
 	// mux.HandleFunc("/", auth.RequireAuth(handlers.Make(handlers.HandleNotFound)))
 
 	mux.HandleFunc("/update-profile", auth.RequireAuth(handlers.Make(handlers.HandleProfile)))

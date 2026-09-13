@@ -384,11 +384,17 @@ templ CreateTaskForm(projectID string, typ string) {
                     status_id: 1,
                     priority_label: '',
                     priority_id: 1,
+                    task_impacts: [],
+                    impact_label: '',
+                    impact_id: 1,
+                    due_date: '',
                     //assignees: [],
                     titleError: '',
                     descriptionError: '',
                     statusError: '',
                     priorityError: '',
+                    impactError: '',
+                    dueDateError: '',
                     validateTitle() {
                         this.titleError = (this.title.trim() === '')
                             ? 'Title is required'
@@ -404,14 +410,57 @@ templ CreateTaskForm(projectID string, typ string) {
                         this.priorityError = (this.priority_id == 0)
                             ? 'Priority is required'
                             : '';
+                        this.validateDueDate();
+                    },
+                    validateImpact() {
+                        this.impactError = (this.impact_id == 0)
+                            ? 'Impact is required'
+                            : '';
+                    },
+                    // Batas tenggat diambil dari prioritas yang sedang dipilih.
+                    // Nilai 0 berarti prioritas itu tidak dibatasi.
+                    maxDueMinutes() {
+                        const p = this.task_priorities.filter(c => c.no == this.priority_id)[0];
+                        return (p && p.max_due_minutes) ? p.max_due_minutes : 0;
+                    },
+                    maxDueDate() {
+                        const menit = this.maxDueMinutes();
+                        if (!menit) return '';
+                        const d = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate());
+                        d.setMinutes(d.getMinutes() + menit);
+                        const pad = (x) => String(x).padStart(2, '0');
+                        return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+                    },
+                    maxDueLabel() {
+                        const menit = this.maxDueMinutes();
+                        if (!menit) return 'No due date limit for this priority';
+                        const hari = Math.floor(menit / 1440);
+                        const sisa = menit % 1440;
+                        let teks = '';
+                        if (hari) teks += hari + ' day' + (hari > 1 ? 's' : '');
+                        if (sisa) teks += (teks ? ' ' : '') + sisa + ' min';
+                        return 'Max ' + teks + ', until ' + this.maxDueDate();
+                    },
+                    validateDueDate() {
+                        if (!this.due_date) {
+                            this.dueDateError = 'Due date is required';
+                            return;
+                        }
+                        const batas = this.maxDueDate();
+                        this.dueDateError = (batas && this.due_date > batas)
+                            ? 'Due date exceeds the limit for this priority, max ' + batas
+                            : '';
                     },
                     validateForm(e) {
                         e.preventDefault();
                         this.validateTitle();
                         this.validateStatus();
-                        
-                        if (this.titleError || this.statusError) {
-                            return; 
+                        this.validatePriority();
+                        this.validateImpact();
+                        this.validateDueDate();
+
+                        if (this.titleError || this.statusError || this.priorityError || this.impactError || this.dueDateError) {
+                            return;
                         }
                     },
                     init() {
@@ -423,11 +472,15 @@ templ CreateTaskForm(projectID string, typ string) {
                                 this.status_label = '';
                                 this.priority_label = '';
                                 this.priority_id = 1;
+                                this.impact_label = '';
+                                this.impact_id = 1;
                                 // this.assignees = [];
                                 this.titleError = '';
                                 this.descriptionError = '';
                                 this.statusError = '';
                                 this.priorityError = '';
+                                this.impactError = '';
+                                this.dueDateError = '';
                                 const params = new URLSearchParams(window.location.search);
                                 if ('/projects?id='+params.get('id') === '/projects?id='+this.project_id) {
                                     htmx.ajax('POST', '/projects?id='+params.get('id'), { 
@@ -439,7 +492,7 @@ templ CreateTaskForm(projectID string, typ string) {
                         })
                     }
                 }"
-        x-init={fmt.Sprintf("project_id= '%s'; typ= '%s'; task_statuses= %s; this.status_id= task_statuses.filter(t=>t.level==1)[0].no; task_priorities= %s; this.priority_id= task_priorities.filter(c=>c.level==1)[0].no; this.priority_label = task_priorities.filter(c=>c.priority.toUpperCase()==='MEDIUM')[0].priority;", projectID, typ, string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())))}
+        x-init={fmt.Sprintf("project_id= '%s'; typ= '%s'; task_statuses= %s; this.status_id= task_statuses.filter(t=>t.level==1)[0].no; task_priorities= %s; this.priority_id= task_priorities.filter(c=>c.level==1)[0].no; this.priority_label = (task_priorities.filter(c=>c.priority.toUpperCase()==='MEDIUM')[0] || task_priorities[0] || {}).priority || ''; task_impacts= %s; if (task_impacts.length) { this.impact_id= task_impacts[0].no; this.impact_label= task_impacts[0].impact; } due_date= '%s'; this.validateDueDate();", projectID, typ, string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())), string(utils.MustJSON(services.GetTaskImpacts())), utils.FormatDate(time.Now()))}
     >
         @ui.Form("/task", "post", "w-lg", templ.Attributes{
                 "id":"create-task-form",
@@ -481,8 +534,18 @@ templ CreateTaskForm(projectID string, typ string) {
                     }
                     @ui.FormItem("mb-4", nil) {
                         @ui.FormLabel("due_date", "Due Date", "", nil)
-                        @ui.FormControl("due_date", "due_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{})
-                        @ui.FormMessage("", "", templ.Attributes{},
+                        @ui.FormControl("due_date", "due_date", "date", "", utils.FormatDate(time.Now()), "w-46", templ.Attributes{
+                            "x-model": "due_date",
+                            ":max": "maxDueDate()",
+                            "@change": "validateDueDate",
+                        })
+                        @ui.FormDescription("", "text-xs text-muted-foreground", templ.Attributes{
+                            "x-text": "maxDueLabel()",
+                        })
+                        @ui.FormMessage("", "", templ.Attributes{
+                                "x-show": "dueDateError != ''",
+                                "x-text": "dueDateError",
+                            },
                         )
                     }
                 </div>
@@ -521,6 +584,25 @@ templ CreateTaskForm(projectID string, typ string) {
                                         "x-show": "priorityError != ''",
                                         "x-text": "priorityError",
                                         ":value": "priority_id",
+                                    },
+                                )
+                            }
+                        </div>
+                        <div class="w-full">
+                            @ui.FormItem("w-44 mb-4", nil) {
+                                @ui.FormLabel("impact_id", "Impact", "", nil)
+                                @ui.FormControl("impact_id", "impact_id", "select", "Task Impact", "1", "", templ.Attributes{
+                                    "x-model": "impact_id",
+                                    "@blur": "validateImpact",
+                                }) {
+                                    <template x-for="(impact, index) in task_impacts" :key="index">
+                                        <option name="impact_id" x-text="impact.label" :value="impact.no"></option>
+                                    </template>
+                                }
+                                @ui.FormMessage("", "", templ.Attributes{
+                                        "x-show": "impactError != ''",
+                                        "x-text": "impactError",
+                                        ":value": "impact_id",
                                     },
                                 )
                             }
@@ -564,17 +646,53 @@ templ EditTaskForm(task models.Task) {
                 description: '',
                 status_id: 1,
                 priority_id: 1,
+                impact_id: 1,
                 due_date: '',
+                start_date: '',
                 task_statuses: [],
                 task_priorities: [],
+                task_impacts: [],
                 titleError: '',
+                dueDateError: '',
                 validateTitle() {
                     this.titleError = (this.title.trim() === '') ? 'Title is required' : '';
+                },
+                maxDueMinutes() {
+                    const p = this.task_priorities.filter(c => c.no == this.priority_id)[0];
+                    return (p && p.max_due_minutes) ? p.max_due_minutes : 0;
+                },
+                // Batas dihitung sejak tanggal mulai tugas, bukan sejak hari ini,
+                // agar tugas lama tidak ikut tergeser tenggatnya ketika disunting.
+                maxDueDate() {
+                    const menit = this.maxDueMinutes();
+                    if (!menit || !this.start_date) return '';
+                    const d = new Date(this.start_date + 'T00:00:00');
+                    if (isNaN(d)) return '';
+                    d.setMinutes(d.getMinutes() + menit);
+                    const pad = (x) => String(x).padStart(2, '0');
+                    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+                },
+                maxDueLabel() {
+                    const menit = this.maxDueMinutes();
+                    if (!menit) return 'No due date limit for this priority';
+                    const hari = Math.floor(menit / 1440);
+                    const sisa = menit % 1440;
+                    let teks = '';
+                    if (hari) teks += hari + ' day' + (hari > 1 ? 's' : '');
+                    if (sisa) teks += (teks ? ' ' : '') + sisa + ' min';
+                    return 'Max ' + teks + ', until ' + this.maxDueDate();
+                },
+                validateDueDate() {
+                    const batas = this.maxDueDate();
+                    this.dueDateError = (this.due_date && batas && this.due_date > batas)
+                        ? 'Due date exceeds the limit for this priority, max ' + batas
+                        : '';
                 },
                 submitForm(e) {
                     e.preventDefault();
                     this.validateTitle();
-                    if (this.titleError) return;
+                    this.validateDueDate();
+                    if (this.titleError || this.dueDateError) return;
                     const el = document.getElementById('edit-assignee');
                     htmx.ajax('PUT', '/edit-task', {
                         source: e.target,
@@ -586,6 +704,7 @@ templ EditTaskForm(task models.Task) {
                             description: this.description,
                             status_id: this.status_id,
                             priority_id: this.priority_id,
+                            impact_id: this.impact_id,
                             due_date: this.due_date,
                             assignee: el ? el.value : '',
                         }
@@ -600,7 +719,7 @@ templ EditTaskForm(task models.Task) {
                     });
                 }
             }"
-            x-init={fmt.Sprintf("task_id='%s'; title=%s; description=%s; status_id=%v; priority_id=%v; due_date='%s'; task_statuses=%s; task_priorities=%s;", task.ID, string(utils.MustJSON(task.Title)), string(utils.MustJSON(task.Description)), task.Status.No, task.Priority.No, taskDueDate(task.DueDate), string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())))}
+            x-init={fmt.Sprintf("task_id='%s'; title=%s; description=%s; status_id=%v; priority_id=%v; impact_id=%v; due_date='%s'; start_date='%s'; task_statuses=%s; task_priorities=%s; task_impacts=%s;", task.ID, string(utils.MustJSON(task.Title)), string(utils.MustJSON(task.Description)), task.Status.No, task.Priority.No, task.Impact.No, taskDueDate(task.DueDate), taskDueDate(task.StartDate), string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())), string(utils.MustJSON(services.GetTaskImpacts())))}
         >
             @ui.Form("", "put", "", templ.Attributes{
                 "id": "edit-task-form",
@@ -658,9 +777,32 @@ templ EditTaskForm(task models.Task) {
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             @ui.FormItem("", nil) {
+                                @ui.FormLabel("edit-impact", "Impact", "", nil)
+                                <select id="edit-impact" name="impact_id" x-model="impact_id"
+                                    class="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <template x-for="(im, idx) in task_impacts" :key="idx">
+                                        <option :value="im.no" x-text="im.label" :selected="im.no === impact_id"></option>
+                                    </template>
+                                </select>
+                            }
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            @ui.FormItem("", nil) {
                                 @ui.FormLabel("edit-due", "Due Date", "", nil)
                                 @ui.FormControl("edit-due", "due_date", "date", "", "", "w-full", templ.Attributes{
                                     "x-model": "due_date",
+                                    ":max": "maxDueDate()",
+                                    "@change": "validateDueDate",
+                                })
+                                @ui.FormDescription("", "text-xs text-muted-foreground", templ.Attributes{
+                                    "x-text": "maxDueLabel()",
+                                })
+                                @ui.FormMessage("", "", templ.Attributes{
+                                    "x-show": "dueDateError != ''",
+                                    "x-text": "dueDateError",
                                 })
                             }
                         </div>

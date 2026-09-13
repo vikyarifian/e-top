@@ -87,7 +87,7 @@ func ukur(c *Config, ref []float64) metrik {
 		if r.Period != "GAB" {
 			continue
 		}
-		z := c.Score([]float64{r.TCR, r.OTR, r.TPS, r.WER})
+		z := c.Score([]float64{r.TCR, r.OTR, r.TVS, r.WER})
 		vals = append(vals, z)
 		u[math.Round(z*100)/100] = true
 	}
@@ -122,7 +122,7 @@ func expTune() {
 	ref := []float64{}
 	for _, r := range rows() {
 		if r.Period == "GAB" {
-			ref = append(ref, f.Score([]float64{r.TCR, r.OTR, r.TPS, r.WER}))
+			ref = append(ref, f.Score([]float64{r.TCR, r.OTR, r.TVS, r.WER}))
 		}
 	}
 
@@ -202,9 +202,9 @@ func expTune() {
 		}
 		p("%-24s", trunc(r.User, 24))
 		for _, c := range kandidat {
-			p(" %10.2f", c.Score([]float64{r.TCR, r.OTR, r.TPS, r.WER}))
+			p(" %10.2f", c.Score([]float64{r.TCR, r.OTR, r.TVS, r.WER}))
 		}
-		_, cat, _, _ := kandidat[1].Infer([]float64{r.TCR, r.OTR, r.TPS, r.WER})
+		_, cat, _, _ := kandidat[1].Infer([]float64{r.TCR, r.OTR, r.TVS, r.WER})
 		p("   | %s\n", cat)
 	}
 

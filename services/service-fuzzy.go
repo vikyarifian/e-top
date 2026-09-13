@@ -2,9 +2,9 @@ package services
 
 // Inferensi Fuzzy Tsukamoto untuk penilaian kinerja.
 //
-// Variabel input TCR, OTR, TPS, dan WER bersemesta 0-100 dan masing-masing
-// memiliki tiga himpunan linguistik: Rendah, Sedang, dan Tinggi. Simpul
-// fungsi keanggotaan ditetapkan pada P = (40, 60, 90) sehingga ketiga
+// Variabel input TCR, OTR, TVS, dan WER bersemesta 0-100 dan masing-masing
+// memiliki tiga himpunan linguistik: Rendah, Sedang, dan Tinggi.
+// Simpulfungsi keanggotaan ditetapkan pada P = (40, 60, 90) sehingga ketiga
 // himpunan membentuk partisi yang derajat keanggotaannya selalu berjumlah 1.
 //
 // Konsekuen tiap aturan monoton, sehingga nilai crisp tiap aturan diperoleh
@@ -20,8 +20,7 @@ const (
 	SetTinggi = 2
 )
 
-// Simpul fungsi keanggotaan. P1 batas atas Rendah penuh, P2 puncak Sedang,
-// P3 batas bawah Tinggi penuh.
+// Simpul fungsi keanggotaan. P1 batas atas Rendah penuh, P2 puncak Sedang, P3 batas bawah Tinggi penuh.
 const (
 	P1 = 40.0
 	P2 = 60.0
@@ -29,7 +28,7 @@ const (
 )
 
 // FuzzyVarNames adalah urutan variabel input yang dipakai pada premis aturan.
-var FuzzyVarNames = [4]string{"TCR", "OTR", "TPS", "WER"}
+var FuzzyVarNames = [4]string{"TCR", "OTR", "TVS", "WER"}
 
 // FuzzySetNames adalah label himpunan linguistik sesuai indeksnya.
 var FuzzySetNames = [3]string{"Rendah", "Sedang", "Tinggi"}
@@ -39,7 +38,7 @@ var FuzzyOutputNames = [5]string{"Sangat Buruk", "Buruk", "Cukup", "Baik", "Sang
 
 type FuzzyRule struct {
 	Code    string
-	Premise [4]int // urutan TCR, OTR, TPS, WER; nilai SetRendah/SetSedang/SetTinggi
+	Premise [4]int // urutan TCR, OTR, TVS, WER; nilai SetRendah/SetSedang/SetTinggi
 	Output  string // Sangat Baik / Baik / Cukup / Buruk / Sangat Buruk
 	Alpha   float64
 	Z       float64
@@ -69,17 +68,6 @@ func (r FuzzyRule) Description() string {
 // fuzzyRules dibangkitkan sekali saat inisialisasi paket: 3^4 = 81 aturan.
 var fuzzyRules = buildFuzzyRules()
 
-// buildFuzzyRules membangkitkan basis aturan dari kaidah berikut.
-//
-// Derajat kebaikan tiap kombinasi diukur dari rasio skor himpunan
-//
-//	r = jumlah skor himpunan seluruh variabel / (jumlah variabel * 2)
-//
-// dengan skor Rendah = 0, Sedang = 1, dan Tinggi = 2. Rasio tersebut
-// dipetakan ke lima konsekuen dengan lebar pita yang sama. Selain itu
-// berlaku kaidah pembatas: bila OTR berada pada himpunan Rendah, konsekuen
-// dibatasi paling tinggi "Cukup", karena disiplin terhadap tenggat merupakan
-// syarat perlu bagi penilaian di atas cukup.
 func buildFuzzyRules() []FuzzyRule {
 	const nVar, nSet = 4, 3
 	total := nSet * nSet * nSet * nSet
@@ -120,8 +108,7 @@ func FuzzyRules() []FuzzyRule {
 	return out
 }
 
-// FuzzyMembership menghitung derajat keanggotaan sebuah nilai crisp
-// terhadap himpunan Rendah, Sedang, dan Tinggi.
+// FuzzyMembership menghitung derajat keanggotaan sebuah nilai crisp terhadap himpunan Rendah, Sedang, dan Tinggi.
 func FuzzyMembership(x float64) [3]float64 {
 	var mu [3]float64
 	switch {
@@ -147,8 +134,7 @@ func FuzzyMembership(x float64) [3]float64 {
 	return mu
 }
 
-// fuzzyZ adalah invers fungsi keanggotaan konsekuen yang monoton, dihitung
-// pada nilai alpha aturan.
+// fuzzyZ adalah invers fungsi keanggotaan konsekuen yang monoton, dihitung pada nilai alpha aturan.
 func fuzzyZ(output string, alpha float64) float64 {
 	switch output {
 	case "Sangat Baik": // monoton naik pada 80-100
@@ -181,9 +167,9 @@ func fuzzyCategory(z float64) string {
 
 // FuzzyTsukamoto menghitung nilai kinerja 0-100 beserta kategorinya
 // dan mengembalikan daftar aturan aktif (alpha > 0) untuk kebutuhan audit.
-func FuzzyTsukamoto(tcr, otr, tps, wer float64) (float64, string, []FuzzyRule) {
+func FuzzyTsukamoto(tcr, otr, tvs, wer float64) (float64, string, []FuzzyRule) {
 	var mu [4][3]float64
-	for i, v := range []float64{tcr, otr, tps, wer} {
+	for i, v := range []float64{tcr, otr, tvs, wer} {
 		mu[i] = FuzzyMembership(v)
 	}
 

@@ -262,7 +262,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCircleCard("Priority Score", fmt.Sprintf("%.1f%%", eval.TPS), "TPS", eval.TPS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCircleCard("Value Score", fmt.Sprintf("%.1f%%", eval.TVS), "TVS", eval.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1322,7 +1322,7 @@ func kpiCircleCard(title, display, short string, value float64, textColor, bgCol
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var74 string
-		templ_7745c5c3_Var74, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%.1f %s", circumference(value), 100))
+		templ_7745c5c3_Var74, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%.1f %d", circumference(value), 100))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 410, Col: 87}
 		}

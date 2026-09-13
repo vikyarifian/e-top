@@ -31,7 +31,7 @@ templ kpiCards(data services.DashboardData) {
 	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 		@kpiCard("Task Completion Rate", fmt.Sprintf("%.1f%%", data.TCR), "TCR", data.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30")
 		@kpiCard("On-Time Rate", fmt.Sprintf("%.1f%%", data.OTR), "OTR", data.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30")
-		@kpiCard("Priority Score", fmt.Sprintf("%.1f%%", data.TPS), "TPS", data.TPS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
+		@kpiCard("Value Score", fmt.Sprintf("%.1f%%", data.TVS), "TVS", data.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
 		@kpiCard("Work Efficiency", fmt.Sprintf("%.1f%%", data.WER), "WER", data.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30")
 	</div>
 }
@@ -60,7 +60,7 @@ templ circleProgress(value float64, strokeColor string) {
 	<svg class="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
 		<circle cx="18" cy="18" r="15.5" fill="none" stroke="hsl(var(--muted))" stroke-width="2.5"/>
 		<circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="2.5"
-			stroke-dasharray={fmt.Sprintf("%.1f %s", circumference(value), 100)}
+			stroke-dasharray={fmt.Sprintf("%.1f %d", circumference(value), 100)}
 			stroke-linecap="round" class={strokeColor}/>
 	</svg>
 }

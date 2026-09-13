@@ -1,6 +1,7 @@
 package services
 
 import (
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -17,7 +18,7 @@ type DashboardData struct {
 
 	TCR float64
 	OTR float64
-	TPS float64
+	TVS float64
 	WER float64
 
 	StatusDistribution []StatusCount
@@ -43,10 +44,10 @@ type MonthlyCount struct {
 }
 
 type AchievedEvaluation struct {
-	TCR        float64
-	OTR        float64
-	TPS        float64
-	WER        float64
+	TCR         float64
+	OTR         float64
+	TVS         float64
+	WER         float64
 	FinalScore  float64
 	Category    string
 	ActiveRules []FuzzyRule
@@ -59,18 +60,54 @@ type AchievedEvaluation struct {
 	DoneCount    int64
 	OnTimeCount  int64
 	ProjectCount int64
+	// JudgedCount adalah cacah tugas yang nasib ketepatan waktunya sudah
+	// pasti, yaitu tugas yang sudah selesai ditambah tugas yang belum selesai
+	// padahal tenggatnya telah lewat. Angka ini menjadi penyebut OTR.
+	JudgedCount int64
 
 	StatusDistribution []StatusCount
 	TypeDistribution   []TypeCount
 	MonthlyCompletion  []MonthlyCount
 }
 
+// Task Value Score menimbang setiap tugas dengan dua dimensi yang keduanya
+// tersimpan sebagai kolom weight pada tabel acuannya masing-masing:
+//
+//	task_priorities.weight  High 1,000  Medium 0,900  Low 0,800
+//	task_impacts.weight     High 1,000  Medium 0,900  Low 0,800
+//
+// Nilai sebuah tugas adalah hasil kali kedua bobot itu, sehingga berkisar
+// antara 0,640 dan 1,000. Tugas yang tidak memiliki acuan diabaikan dari
+// perhitungan, bukan diberi bobot bawaan, agar tidak memihak.
+const tvsWeightSQL = `COALESCE(tp.weight, 0) * COALESCE(ti.weight, 0)`
+
+// sumTaskValue menjumlahkan nilai seluruh tugas yang cocok dengan syarat
+// tambahan yang diberikan. Galat kueri dilaporkan, bukan dibiarkan menjadi
+// nol diam-diam: bila migrasi 001_task_value_score.sql belum dijalankan pada
+// basis data, tabel task_impacts tidak ada dan penjumlahan akan gagal. Tanpa
+// pelaporan, kegagalan itu tampak sebagai TVS nol seolah-olah karyawan tidak
+// menuntaskan satu tugas pun.
+func sumTaskValue(where string, args ...any) float64 {
+	var row struct{ TotalWeight float64 }
+	q := `
+		SELECT COALESCE(SUM(` + tvsWeightSQL + `), 0) as total_weight
+		FROM tasks t
+		JOIN task_priorities tp ON tp.no = t.priority_id
+		JOIN task_impacts ti ON ti.no = t.impact_id
+		WHERE ` + where
+	if err := db.PgSql.Raw(q, args...).Scan(&row).Error; err != nil {
+		slog.Error("perhitungan Task Value Score gagal",
+			"error", err,
+			"petunjuk", "jalankan db/migrations/001_task_value_score.sql pada basis data ini")
+		return 0
+	}
+	return row.TotalWeight
+}
+
 func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 	var e AchievedEvaluation
 
-	// Periode evaluasi ditentukan oleh tahun penugasan (created_at). Seluruh
-	// indikator dihitung atas kohor tugas yang sama agar pembilang tidak pernah
-	// melebihi penyebut ketika sebuah tugas diselesaikan pada tahun berikutnya.
+	// Periode evaluasi ditentukan oleh tahun penugasan (created_at). .
 	doneQuery := db.PgSql.Model(&models.Task{}).
 		Where("user_id = ? AND completed_at IS NOT NULL", userID)
 	if year != "" {
@@ -98,11 +135,25 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 	}
 	onTimeQuery.Count(&e.OnTimeCount)
 
+	// Penyebut OTR mencakup tugas yang sudah selesai dan tugas yang belum
+	// selesai padahal tenggatnya sudah lewat. Yang kedua sudah pasti terlambat,
+	// jadi tidak pantas dikecualikan. Tugas yang belum selesai dan tenggatnya
+	// belum tiba masih mungkin tepat waktu, sehingga belum dinilai.
+	judgedQuery := db.PgSql.Model(&models.Task{}).
+		Where("user_id = ? AND (completed_at IS NOT NULL OR (due_date IS NOT NULL AND due_date < ?))",
+			userID, time.Now())
+	if year != "" {
+		if y, err := strconv.Atoi(year); err == nil {
+			judgedQuery = judgedQuery.Where("EXTRACT(YEAR FROM created_at) = ?", y)
+		}
+	}
+	judgedQuery.Count(&e.JudgedCount)
+
 	if e.TaskCount > 0 {
 		e.TCR = float64(e.DoneCount) / float64(e.TaskCount) * 100
 	}
-	if e.DoneCount > 0 {
-		e.OTR = float64(e.OnTimeCount) / float64(e.DoneCount) * 100
+	if e.JudgedCount > 0 {
+		e.OTR = float64(e.OnTimeCount) / float64(e.JudgedCount) * 100
 	}
 
 	projectQuery := db.PgSql.Model(&models.Task{}).
@@ -124,22 +175,17 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 		}
 	}
 
+	// Task Value Score: perbandingan nilai tugas yang tuntas terhadap nilai
+	// seluruh tugas, dengan nilai tiap tugas diambil dari hasil kali bobot
+	// prioritas dan bobot dampaknya.
 	type PriorityWeight struct {
 		TotalWeight float64
 	}
 	var allWeight, doneWeight PriorityWeight
-	db.PgSql.Raw(`
-		SELECT COALESCE(SUM(tp.level), 0) as total_weight
-		FROM tasks t
-		JOIN task_priorities tp ON tp.no = t.priority_id
-		WHERE t.user_id = ?`+yearFilterTask, userID).Scan(&allWeight)
-	db.PgSql.Raw(`
-		SELECT COALESCE(SUM(tp.level), 0) as total_weight
-		FROM tasks t
-		JOIN task_priorities tp ON tp.no = t.priority_id
-		WHERE t.user_id = ? AND t.completed_at IS NOT NULL`+yearFilterDone, userID).Scan(&doneWeight)
+	allWeight.TotalWeight = sumTaskValue("t.user_id = ?"+yearFilterTask, userID)
+	doneWeight.TotalWeight = sumTaskValue("t.user_id = ? AND t.completed_at IS NOT NULL"+yearFilterDone, userID)
 	if allWeight.TotalWeight > 0 {
-		e.TPS = doneWeight.TotalWeight / allWeight.TotalWeight * 100
+		e.TVS = doneWeight.TotalWeight / allWeight.TotalWeight * 100
 	}
 
 	type Efficiency struct {
@@ -160,7 +206,7 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 
 	e.Evaluable = e.TaskCount > 0
 	if e.Evaluable {
-		e.FinalScore, e.Category, e.ActiveRules = FuzzyTsukamoto(e.TCR, e.OTR, e.TPS, e.WER)
+		e.FinalScore, e.Category, e.ActiveRules = FuzzyTsukamoto(e.TCR, e.OTR, e.TVS, e.WER)
 	} else {
 		e.Category = "Belum Dapat Dinilai"
 	}
@@ -253,27 +299,12 @@ func GetDashboardData(userID string) DashboardData {
 		d.OTR = float64(onTimeCount) / float64(d.DoneCount) * 100
 	}
 
-	type PriorityWeight struct {
-		TotalWeight float64
-	}
-	var allWeight PriorityWeight
-	db.PgSql.Raw(`
-		SELECT COALESCE(SUM(tp.level), 0) as total_weight
-		FROM tasks t
-		JOIN task_priorities tp ON tp.no = t.priority_id
-		WHERE t.user_id = ? OR t.created_by = ?
-	`, userID, userID).Scan(&allWeight)
-
-	var doneWeight PriorityWeight
-	db.PgSql.Raw(`
-		SELECT COALESCE(SUM(tp.level), 0) as total_weight
-		FROM tasks t
-		JOIN task_priorities tp ON tp.no = t.priority_id
-		WHERE (t.user_id = ? OR t.created_by = ?) AND t.completed_at IS NOT NULL
-	`, userID, userID).Scan(&doneWeight)
-
-	if allWeight.TotalWeight > 0 {
-		d.TPS = doneWeight.TotalWeight / allWeight.TotalWeight * 100
+	// Pembilang dan penyebut harus memakai skala bobot yang sama, yaitu hasil
+	// kali bobot prioritas dan bobot dampak.
+	allWeight := sumTaskValue("t.user_id = ? OR t.created_by = ?", userID, userID)
+	doneWeight := sumTaskValue("(t.user_id = ? OR t.created_by = ?) AND t.completed_at IS NOT NULL", userID, userID)
+	if allWeight > 0 {
+		d.TVS = doneWeight / allWeight * 100
 	}
 
 	type Efficiency struct {
