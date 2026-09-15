@@ -37,11 +37,10 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     hx-push-url="true"
                     hx-indicator=".htmx-loader,.loaded-content"
                 >
-                    <option value={user.ID} selected?={selectedUser == ""}>{user.FullName}</option>
+                    // Daftar sudah terurut menurut nama pada achievedViewUsers, dan
+                    // pilihan bawaannya ditetapkan pilihTargetPenilaian.
                     for _, vu := range viewUsers {
-                        if vu.ID != user.ID {
-                            <option value={vu.ID} selected?={selectedUser == vu.ID}>{vu.FullName}</option>
-                        }
+                        <option value={vu.ID} selected?={selectedUser == vu.ID}>{vu.FullName}</option>
                     }
                 </select>
             </div>

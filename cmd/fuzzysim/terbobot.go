@@ -195,7 +195,7 @@ func expTerbobot() {
 	petakUser := muatPetak()
 	jamUser := muatRasio()
 	w := skemaUji()[1]
-	cfg := cfgVarian(varianKaidah()[0])
+	cfg := cfgVarian(varianKaidah()[1]) // rancangan sistem: agregasi saja
 
 	nama := []string{}
 	for _, r := range rows() {

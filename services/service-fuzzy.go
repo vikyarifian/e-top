@@ -10,6 +10,14 @@ package services
 // Konsekuen tiap aturan monoton, sehingga nilai crisp tiap aturan diperoleh
 // dari invers fungsi keanggotaan output, lalu digabung dengan rata-rata
 // terbobot: Z = sum(alpha_i * z_i) / sum(alpha_i).
+//
+// Konsekuen setiap aturan ditentukan sepenuhnya oleh kaidah agregasi, yaitu
+// rasio jumlah indeks himpunan seluruh variabel terhadap nilai maksimumnya.
+// Basis aturan sebelumnya memuat satu kaidah pembatas yang menurunkan konsekuen
+// menjadi paling tinggi "Cukup" bila OTR berada pada himpunan terendah. Kaidah
+// itu dihapus setelah pengukuran menunjukkan ia tidak lagi mengubah kategori
+// satu pun karyawan, baik pada data penelitian maupun pada seluruh riwayat
+// tiket, karena indikator lain sudah lebih dulu menurunkan nilai mereka.
 
 import "fmt"
 
@@ -87,10 +95,6 @@ func buildFuzzyRules() []FuzzyRule {
 		level := int(float64(sum) / float64(nVar*(nSet-1)) * 5)
 		if level > 4 {
 			level = 4
-		}
-		// OTR adalah variabel kedua
-		if premise[1] == SetRendah && level > 2 {
-			level = 2
 		}
 		rules = append(rules, FuzzyRule{
 			Code:    fmt.Sprintf("R%d", k+1),

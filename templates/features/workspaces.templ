@@ -125,7 +125,7 @@ templ Workspace(role string, workspace models.Workspace, contributors []models.U
                             </div>
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center text-xs gap-2 text-muted-foreground">
-                                    <span>{strconv.Itoa(len(project.Tasks))}</span>
+                                    <span>{strconv.Itoa(project.TaskCount)}</span>
                                     <span>Tasks</span>
                                 </div>
                                 if project.DueDate != nil {

@@ -97,8 +97,8 @@ func expBobot() {
 	header("EKSPERIMEN 13 - DAPATKAH BOBOT MENGGANTIKAN KAIDAH PEMBATAS OTR")
 
 	petakUser := muatPetak()
-	dasar := cfgVarian(varianKaidah()[0])      // agregasi + pembatas
-	tanpaBatas := cfgVarian(varianKaidah()[1]) // agregasi saja
+	dasar := cfgVarian(varianKaidah()[0])      // agregasi + pembatas (rancangan lama)
+	tanpaBatas := cfgVarian(varianKaidah()[1]) // agregasi saja (rancangan sekarang)
 
 	// indikator lain diambil dari data operasional gabungan
 	type kpi struct{ TCR, OTR, WER float64 }

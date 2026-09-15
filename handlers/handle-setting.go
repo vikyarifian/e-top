@@ -20,12 +20,24 @@ import (
 
 func settingsDepts(r *http.Request) ([]models.Department, models.PageInfo) {
 	page, perPage, _, _ := parsePageParams(r)
+	cari := kataKunci(r)
+
+	// Kueri disusun ulang setiap kali dipakai; satu objek *gorm.DB yang sama
+	// tidak boleh dipakai untuk Count lalu Find karena syaratnya menumpuk.
+	saring := func() *gorm.DB {
+		q := db.PgSql.Model(&models.Department{})
+		if cari != "" {
+			pola := "%" + strings.ToLower(cari) + "%"
+			q = q.Where("LOWER(name) LIKE ? OR LOWER(COALESCE(description,'')) LIKE ?", pola, pola)
+		}
+		return q
+	}
 
 	var total int64
-	db.PgSql.Model(&models.Department{}).Count(&total)
+	saring().Count(&total)
 
 	var depts []models.Department
-	db.PgSql.Preload("Members", func(db *gorm.DB) *gorm.DB {
+	saring().Preload("Members", func(db *gorm.DB) *gorm.DB {
 		return db.Preload("User")
 	}).Preload("DeptHead").Order("no").
 		Limit(perPage).Offset((page - 1) * perPage).
@@ -36,17 +48,30 @@ func settingsDepts(r *http.Request) ([]models.Department, models.PageInfo) {
 		PerPage:    perPage,
 		Total:      total,
 		TotalPages: int((total + int64(perPage) - 1) / int64(perPage)),
+		Query:      cari,
 	}
 }
 
 func settingsUsers(r *http.Request) ([]models.User, models.PageInfo) {
 	page, perPage, _, _ := parsePageParams(r)
+	cari := kataKunci(r)
+
+	saring := func() *gorm.DB {
+		q := db.PgSql.Model(&models.User{})
+		if cari != "" {
+			pola := "%" + strings.ToLower(cari) + "%"
+			q = q.Where(
+				"LOWER(COALESCE(full_name,'')) LIKE ? OR LOWER(COALESCE(username,'')) LIKE ? OR LOWER(COALESCE(email,'')) LIKE ?",
+				pola, pola, pola)
+		}
+		return q
+	}
 
 	var total int64
-	db.PgSql.Model(&models.User{}).Count(&total)
+	saring().Count(&total)
 
 	var users []models.User
-	db.PgSql.Order("no").
+	saring().Order("no").
 		Limit(perPage).Offset((page - 1) * perPage).
 		Find(&users)
 
@@ -55,6 +80,7 @@ func settingsUsers(r *http.Request) ([]models.User, models.PageInfo) {
 		PerPage:    perPage,
 		Total:      total,
 		TotalPages: int((total + int64(perPage) - 1) / int64(perPage)),
+		Query:      cari,
 	}
 }
 
@@ -272,6 +298,11 @@ func HandleTaskConfig(w http.ResponseWriter, r *http.Request) error {
 		w.WriteHeader(http.StatusInternalServerError)
 		return ui.Toast("task-config-error", "danger", "", "Failed to save task configuration!", "", nil).Render(r.Context(), w)
 	}
+
+	// Acuan yang tersimpan berubah, maka singgahannya harus dibuang. Tanpa ini
+	// bobot dan batas tenggat yang baru tidak akan terpakai sampai aplikasi
+	// dijalankan ulang.
+	services.BersihkanSinggahanAcuan()
 
 	return ui.Toast("task-config-success", "success", "", "Task configuration saved successfully!", "", nil).Render(r.Context(), w)
 }

@@ -96,8 +96,8 @@ func cfgVarian(v varian) *Config {
 
 func varianKaidah() []varian {
 	return []varian{
-		{nama: "V1", ket: "agregasi + pembatas (rancangan sistem)", agregat: true, batas: true, tunggal: -1},
-		{nama: "V2", ket: "agregasi saja, pembatas dihapus", agregat: true, batas: false, tunggal: -1},
+		{nama: "V1", ket: "agregasi + pembatas (rancangan lama)", agregat: true, batas: true, tunggal: -1},
+		{nama: "V2", ket: "agregasi saja (rancangan sistem sekarang)", agregat: true, batas: false, tunggal: -1},
 		{nama: "V3", ket: "agregasi dihapus, konsekuen ikut TCR saja", agregat: false, batas: true, tunggal: 0},
 		{nama: "V4", ket: "agregasi dihapus, konsekuen seragam Cukup", agregat: false, batas: true, tunggal: -1, tetap: 2},
 		{nama: "V5", ket: "kedua kaidah dihapus, konsekuen seragam Cukup", agregat: false, batas: false, tunggal: -1, tetap: 2},

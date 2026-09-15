@@ -1,0 +1,74 @@
+package ui
+
+// SearchBox adalah kotak pencarian yang mengirim ulang isi halaman lewat htmx.
+//
+// Pengiriman dilakukan dengan memanggil htmx.ajax dari penangan peristiwa
+// Alpine, bukan lewat atribut hx-post. Alasannya soal urutan: htmx memeriksa
+// elemen sekali saat halaman dimuat, sedangkan atribut hasil pengikatan Alpine
+// (:hx-post) baru muncul setelah Alpine berjalan. Elemen yang punya hx-trigger
+// tanpa atribut kata kerja tidak akan pernah didaftarkan htmx, sehingga
+// mengetik maupun mengubah pilihan tidak menghasilkan permintaan sama sekali.
+//
+// Komponen ini memakai dua hal dari cakupan Alpine di sekitarnya:
+//
+//	q        kata kunci yang sedang diketik
+//	kirim()  fungsi yang menyusun alamat lalu memanggil htmx.ajax
+//
+//	id          pengenal unik elemen, wajib berbeda antar-halaman
+//	placeholder tulisan bayangan di dalam kotak
+templ SearchBox(id string, placeholder string) {
+	<div class="relative w-full sm:w-72">
+		<svg
+			data-lucide="search"
+			class="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+		></svg>
+		<input
+			id={ id }
+			type="search"
+			name="q"
+			autocomplete="off"
+			placeholder={ placeholder }
+			x-model="q"
+			@input.debounce.400ms="kirim()"
+			@search="kirim()"
+			@keydown.enter.prevent="kirim()"
+			class="flex h-9 w-full rounded-md border border-input bg-background pl-8 pr-8 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+		/>
+		<button
+			type="button"
+			x-show="q.length > 0"
+			x-cloak
+			@click="q=''; $nextTick(() => kirim())"
+			class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+			aria-label="Bersihkan pencarian"
+		>
+			<svg data-lucide="x" class="h-4 w-4"></svg>
+		</button>
+	</div>
+}
+
+// FilterSelect adalah daftar pilihan penyaring yang mengirim ulang isi halaman
+// begitu pilihannya berubah. Seperti SearchBox, ia memanggil kirim() dari
+// cakupan Alpine di sekitarnya sehingga seluruh penyaring pada satu halaman
+// ikut terkirim bersama.
+templ FilterSelect(id string, label string, model string, options []Opsi) {
+	<div class="flex items-center gap-1.5">
+		<label for={ id } class="text-xs text-muted-foreground whitespace-nowrap">{ label }</label>
+		<select
+			id={ id }
+			x-model={ model }
+			@change="kirim()"
+			class="flex h-9 rounded-md border border-input bg-background px-2 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+		>
+			for _, o := range options {
+				<option value={ o.Nilai }>{ o.Label }</option>
+			}
+		</select>
+	</div>
+}
+
+// Opsi adalah satu baris pilihan pada FilterSelect.
+type Opsi struct {
+	Nilai string
+	Label string
+}

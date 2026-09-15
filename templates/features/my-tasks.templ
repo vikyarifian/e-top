@@ -13,8 +13,7 @@ import (
 )
 
 templ MyTasks(tasks []models.Task, user dto.UserAuth, page models.PageInfo) {
-    <div class="mx-auto space-y-6" x-data="{
-        }">
+    <div class="mx-auto space-y-6" x-data={ myTasksScope(page) }>
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-bold">My Tasks</h1>
             @ui.Button("add-my-task", "primary", "sm", "plus", "Add Task", "", templ.Attributes{
@@ -25,111 +24,27 @@ templ MyTasks(tasks []models.Task, user dto.UserAuth, page models.PageInfo) {
 
         @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
 
-        if len(tasks) > 0 {
-            <div class="space-y-0 border rounded-lg overflow-hidden">
-                <div class="grid grid-cols-12 gap-2 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground">
-                    <div class="col-span-5">
-                        @ui.Button("sort-title", "ghost", "xs", "arrow-up-down", "Task", "", templ.Attributes{
-                            "type": "button",
-                            "hx-post": fmt.Sprintf("/my-tasks?page=1&sort_by=title&sort_dir=%s", toggleSortDir("title", page)),
-                            "hx-target": "#content",
-                            "hx-swap": "innerHTML",
-                            "hx-push-url": "true",
-                        })
-                    </div>
-                    <div class="col-span-2">
-                        @ui.Button("sort-type", "ghost", "xs", "arrow-up-down", "Type", "", templ.Attributes{
-                            "type": "button",
-                            "hx-post": fmt.Sprintf("/my-tasks?page=1&sort_by=type&sort_dir=%s", toggleSortDir("type", page)),
-                            "hx-target": "#content",
-                            "hx-swap": "innerHTML",
-                            "hx-push-url": "true",
-                        })
-                    </div>
-                    <div class="col-span-2">
-                        @ui.Button("sort-status", "ghost", "xs", "arrow-up-down", "Status", "", templ.Attributes{
-                            "type": "button",
-                            "hx-post": fmt.Sprintf("/my-tasks?page=1&sort_by=status&sort_dir=%s", toggleSortDir("status", page)),
-                            "hx-target": "#content",
-                            "hx-swap": "innerHTML",
-                            "hx-push-url": "true",
-                        })
-                    </div>
-                    <div class="col-span-1">
-                        @ui.Button("sort-priority", "ghost", "xs", "arrow-up-down", "Priority", "", templ.Attributes{
-                            "type": "button",
-                            "hx-post": fmt.Sprintf("/my-tasks?page=1&sort_by=priority&sort_dir=%s", toggleSortDir("priority", page)),
-                            "hx-target": "#content",
-                            "hx-swap": "innerHTML",
-                            "hx-push-url": "true",
-                        })
-                    </div>
-                    <div class="col-span-2">
-                        @ui.Button("sort-assignee", "ghost", "xs", "arrow-up-down", "Assignee", "", templ.Attributes{
-                            "type": "button",
-                            "hx-post": fmt.Sprintf("/my-tasks?page=1&sort_by=assignee&sort_dir=%s", toggleSortDir("assignee", page)),
-                            "hx-target": "#content",
-                            "hx-swap": "innerHTML",
-                            "hx-push-url": "true",
-                        })
-                    </div>
-                </div>
-                for _, task := range tasks {
-                    <div class="grid grid-cols-12 gap-2 px-4 py-3 border-t border-border items-center hover:bg-muted/30 cursor-pointer transition"
-                        hx-post={fmt.Sprintf("/tasks?id=%s", task.ID)}
-                        hx-target="#content"
-                        hx-swap="innerHTML"
-                        hx-push-url="true"
-                        hx-indicator=".htmx-loader,.loaded-content"
-                    >
-                        <div class="col-span-5">
-                            <div class="text-sm font-medium truncate">{task.Title}</div>
-                            if task.DueDate != nil {
-                                <div class="text-xs text-muted-foreground">
-                                    Due {task.DueDate.Format("Jan 2")}
-                                </div>
-                            }
-                        </div>
-                        <div class="col-span-2">
-                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                                {task.Type}
-                            </span>
-                        </div>
-                        <div class="col-span-2">
-                            <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent"
-                                :class={fmt.Sprintf("task_statuses.filter(s=>s.no==%v)[0]?.color||'bg-gray-100'", task.Status.No)}>
-                                {task.Status.Label}
-                            </span>
-                        </div>
-                        <div class="col-span-1">
-                            <div class="flex items-center gap-0.5">
-                                for i := 1; i <= 3; i++ {
-                                    if i <= task.Priority.Level {
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
-                                        </svg>
-                                    } else {
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
-                                        </svg>
-                                    }
-                                }
-                            </div>
-                        </div>
-                        <div class="col-span-2 flex items-center gap-2">
-                            @ui.Avatar(task.Assignee.FullName, task.Assignee.Color, "xs", "h-6 w-6", nil)
-                            <span class="text-xs truncate">{task.Assignee.FullName}</span>
-                        </div>
-                    </div>
-                }
+        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            @ui.SearchBox("search-my-tasks", "Cari judul atau keterangan")
+            <div class="flex flex-wrap items-center gap-3">
+                @ui.FilterSelect("filter-status", "Status", "status", statusOptions())
+                @ui.FilterSelect("filter-priority", "Priority", "priority", priorityOptions())
+                @ui.FilterSelect("filter-type", "Type", "type", typeOptions())
+                <button type="button"
+                    x-show="menyaring()"
+                    x-cloak
+                    @click="bersihkan()"
+                    class="inline-flex items-center gap-1 h-9 px-2.5 rounded-md border border-input text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition"
+                >
+                    <svg data-lucide="filter-x" class="h-3.5 w-3.5"></svg>
+                    Bersihkan
+                </button>
             </div>
-            @ui.Pagination("/my-tasks", page, "")
-        } else {
-            <div class="text-center py-12 text-muted-foreground">
-                <p class="text-lg">No tasks yet</p>
-                <p class="text-sm mt-1">Create your first task to get started</p>
-            </div>
-        }
+        </div>
+
+        <div id="my-tasks-list">
+            @MyTasksList(tasks, page)
+        </div>
 
         @CreateMyTask("w-96")
     </div>
@@ -298,6 +213,129 @@ templ CreateMyTask(class string) {
                     @ui.Button("create-my-task-btn", "", "", "", "Create", "", templ.Attributes{"type": "submit"})
                 </div>
             }
+        </div>
+    }
+}
+
+// MyTasksList adalah pecahan yang berisi daftar tugas beserta penomoran
+// halamannya. Hanya bagian inilah yang ditukar ketika pengguna mencari,
+// menyaring, mengurutkan, atau berpindah halaman, sehingga modal buat tugas
+// beserta kueri daftar penggunanya tidak ikut dijalankan ulang.
+templ MyTasksList(tasks []models.Task, page models.PageInfo) {
+    if page.Menyaring() {
+        <p class="text-xs text-muted-foreground -mt-3">
+            { fmt.Sprintf("%d tugas cocok dengan penyaring yang sedang berlaku.", page.Total) }
+        </p>
+    }
+
+    if len(tasks) > 0 {
+        <div class="space-y-0 border rounded-lg overflow-hidden">
+            <div class="grid grid-cols-12 gap-2 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground">
+                <div class="col-span-5">
+                    @ui.Button("sort-title", "ghost", "xs", "arrow-up-down", "Task", "", templ.Attributes{
+                        "type": "button",
+                        "hx-post": fmt.Sprintf("/my-tasks?page=1&part=list&sort_by=title&sort_dir=%s%s", toggleSortDir("title", page), page.Params()),
+                        "hx-target": "#my-tasks-list",
+                        "hx-swap": "innerHTML",
+                        "hx-push-url": "true",
+                    })
+                </div>
+                <div class="col-span-2">
+                    @ui.Button("sort-type", "ghost", "xs", "arrow-up-down", "Type", "", templ.Attributes{
+                        "type": "button",
+                        "hx-post": fmt.Sprintf("/my-tasks?page=1&part=list&sort_by=type&sort_dir=%s%s", toggleSortDir("type", page), page.Params()),
+                        "hx-target": "#my-tasks-list",
+                        "hx-swap": "innerHTML",
+                        "hx-push-url": "true",
+                    })
+                </div>
+                <div class="col-span-2">
+                    @ui.Button("sort-status", "ghost", "xs", "arrow-up-down", "Status", "", templ.Attributes{
+                        "type": "button",
+                        "hx-post": fmt.Sprintf("/my-tasks?page=1&part=list&sort_by=status&sort_dir=%s%s", toggleSortDir("status", page), page.Params()),
+                        "hx-target": "#my-tasks-list",
+                        "hx-swap": "innerHTML",
+                        "hx-push-url": "true",
+                    })
+                </div>
+                <div class="col-span-1">
+                    @ui.Button("sort-priority", "ghost", "xs", "arrow-up-down", "Priority", "", templ.Attributes{
+                        "type": "button",
+                        "hx-post": fmt.Sprintf("/my-tasks?page=1&part=list&sort_by=priority&sort_dir=%s%s", toggleSortDir("priority", page), page.Params()),
+                        "hx-target": "#my-tasks-list",
+                        "hx-swap": "innerHTML",
+                        "hx-push-url": "true",
+                    })
+                </div>
+                <div class="col-span-2">
+                    @ui.Button("sort-assignee", "ghost", "xs", "arrow-up-down", "Assignee", "", templ.Attributes{
+                        "type": "button",
+                        "hx-post": fmt.Sprintf("/my-tasks?page=1&part=list&sort_by=assignee&sort_dir=%s%s", toggleSortDir("assignee", page), page.Params()),
+                        "hx-target": "#my-tasks-list",
+                        "hx-swap": "innerHTML",
+                        "hx-push-url": "true",
+                    })
+                </div>
+            </div>
+            for _, task := range tasks {
+                <div class="grid grid-cols-12 gap-2 px-4 py-3 border-t border-border items-center hover:bg-muted/30 cursor-pointer transition"
+                    hx-post={fmt.Sprintf("/tasks?id=%s", task.ID)}
+                    hx-target="#content"
+                    hx-swap="innerHTML"
+                    hx-push-url="true"
+                    hx-indicator=".htmx-loader,.loaded-content"
+                >
+                    <div class="col-span-5">
+                        <div class="text-sm font-medium truncate">{task.Title}</div>
+                        if task.DueDate != nil {
+                            <div class="text-xs text-muted-foreground">
+                                Due {task.DueDate.Format("Jan 2")}
+                            </div>
+                        }
+                    </div>
+                    <div class="col-span-2">
+                        <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                            {task.Type}
+                        </span>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors border-transparent"
+                            :class={fmt.Sprintf("task_statuses.filter(s=>s.no==%v)[0]?.color||'bg-gray-100'", task.Status.No)}>
+                            {task.Status.Label}
+                        </span>
+                    </div>
+                    <div class="col-span-1">
+                        <div class="flex items-center gap-0.5">
+                            for i := 1; i <= 3; i++ {
+                                if i <= task.Priority.Level {
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
+                                    </svg>
+                                } else {
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.037 6.272h6.594c.969 0 1.371 1.24.588 1.81l-5.335 3.876 2.037 6.272c.3.921-.755 1.688-1.54 1.118L12 18.347l-5.332 3.928c-.784.57-1.838-.197-1.539-1.118l2.037-6.272-5.335-3.876c-.783-.57-.38-1.81.588-1.81h6.594z"/>
+                                    </svg>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="col-span-2 flex items-center gap-2">
+                        @ui.Avatar(task.Assignee.FullName, task.Assignee.Color, "xs", "h-6 w-6", nil)
+                        <span class="text-xs truncate">{task.Assignee.FullName}</span>
+                    </div>
+                </div>
+            }
+        </div>
+        @ui.PaginationTarget("/my-tasks", page, page.Params()+"&part=list", "my-tasks-list")
+    } else if page.Menyaring() {
+        <div class="text-center py-12 text-muted-foreground">
+            <p class="text-lg">Tidak ada tugas yang cocok</p>
+            <p class="text-sm mt-1">Ubah kata kunci atau penyaringnya, atau tekan Bersihkan.</p>
+        </div>
+    } else {
+        <div class="text-center py-12 text-muted-foreground">
+            <p class="text-lg">No tasks yet</p>
+            <p class="text-sm mt-1">Create your first task to get started</p>
         </div>
     }
 }

@@ -18,6 +18,31 @@ import (
 
 const notCancelledFilter = "status_id NOT IN (SELECT no FROM task_statuses WHERE status = 'CANCELLED')"
 
+// pilihTargetPenilaian menentukan karyawan yang datanya ditampilkan.
+//
+// Bila pengguna memilih seseorang lewat penyaring, pilihan itu dipakai selama
+// namanya memang ada pada daftar yang boleh ia lihat. Bila belum memilih,
+// yang dipakai adalah nama teratas pada daftar, yang sudah terurut menurut
+// abjad pada achievedViewUsers. Sebelumnya yang dipakai selalu pengguna yang
+// sedang masuk, sehingga atasan yang menilai banyak orang selalu melihat
+// dirinya sendiri lebih dulu.
+//
+// Pengguna yang daftarnya kosong, yaitu karyawan biasa tanpa anggota, tetap
+// melihat datanya sendiri.
+func pilihTargetPenilaian(user dto.UserAuth, viewUsers []models.User, requested string) (string, string) {
+	if requested != "" {
+		for _, vu := range viewUsers {
+			if vu.ID == requested {
+				return vu.ID, vu.ID
+			}
+		}
+	}
+	if len(viewUsers) > 0 {
+		return viewUsers[0].ID, viewUsers[0].ID
+	}
+	return user.ID, ""
+}
+
 // achievedViewUsers returns the users whose evaluation the viewer may see:
 // admins see every user that has tasks, department heads see their members.
 func achievedViewUsers(user dto.UserAuth) []models.User {
@@ -50,17 +75,7 @@ func HandleAchieved(w http.ResponseWriter, r *http.Request) error {
 
 	viewUsers := achievedViewUsers(user)
 
-	targetID := user.ID
-	selectedUser := ""
-	if requested := r.FormValue("user_id"); requested != "" && requested != user.ID {
-		for _, vu := range viewUsers {
-			if vu.ID == requested {
-				targetID = requested
-				selectedUser = requested
-				break
-			}
-		}
-	}
+	targetID, selectedUser := pilihTargetPenilaian(user, viewUsers, r.FormValue("user_id"))
 
 	var years []int
 	db.PgSql.Model(&models.Task{}).

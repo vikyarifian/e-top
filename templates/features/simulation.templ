@@ -17,6 +17,12 @@ templ Simulation(page services.SimulationPage, user dto.UserAuth) {
                 lalu dapat diubah bersama fungsi keanggotaannya untuk melihat pengaruhnya terhadap hasil akhir
             </p>
         </div>
+        // Penanda action disimpan pada isian tersembunyi, bukan pada tombol.
+        // htmx menyusun data permintaan dengan menelusuri form.elements, dan
+        // kumpulan itu memuat tombol. Dengan penanda menempel pada tombol,
+        // action=reload selalu ikut terkirim, bukan hanya ketika tombol itu yang
+        // ditekan, sehingga nilai indikator yang baru diubah kembali ke angka
+        // basis data.
         <form id="sim-form"
             hx-post="/simulation"
             hx-target="#sim-body"
@@ -24,6 +30,7 @@ templ Simulation(page services.SimulationPage, user dto.UserAuth) {
             hx-trigger="change, submit"
             hx-indicator=".htmx-loader"
         >
+            <input type="hidden" name="action" value=""/>
             <div id="sim-body" class="space-y-6">
                 @SimulationBody(page, user)
             </div>
@@ -47,26 +54,27 @@ templ SimulationBody(page services.SimulationPage, user dto.UserAuth) {
             if len(page.ViewUsers) > 0 {
                 <div class="flex flex-col gap-1">
                     <label class="text-xs font-medium text-muted-foreground">Karyawan</label>
-                    <select name="user_id" class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-w-[220px]">
-                        <option value={ user.ID } selected?={ page.SelectedUser == "" }>{ user.FullName }</option>
+                    <select name="user_id" onchange="this.form.querySelector('[name=action]').value='reload'"
+                        class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-w-[220px]">
+                        // Daftar sudah terurut menurut nama pada achievedViewUsers, dan
+                        // pilihan bawaannya ditetapkan pilihTargetPenilaian.
                         for _, vu := range page.ViewUsers {
-                            if vu.ID != user.ID {
-                                <option value={ vu.ID } selected?={ page.SelectedUser == vu.ID }>{ vu.FullName }</option>
-                            }
+                            <option value={ vu.ID } selected?={ page.SelectedUser == vu.ID }>{ vu.FullName }</option>
                         }
                     </select>
                 </div>
             }
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-muted-foreground">Periode</label>
-                <select name="year" class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring">
+                <select name="year" onchange="this.form.querySelector('[name=action]').value='reload'"
+                    class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring">
                     <option value="" selected?={ page.SelectedYear == "" }>Seluruh periode</option>
                     for _, y := range page.Years {
                         <option value={ strconv.Itoa(y) } selected?={ page.SelectedYear == strconv.Itoa(y) }>{ strconv.Itoa(y) }</option>
                     }
                 </select>
             </div>
-            <button type="submit" name="action" value="reload"
+            <button type="submit" onclick="this.form.querySelector('[name=action]').value='reload'"
                 class="px-3 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-accent transition">
                 Muat ulang nilai dari basis data
             </button>
@@ -84,16 +92,29 @@ templ SimulationBody(page services.SimulationPage, user dto.UserAuth) {
             <h3 class="font-semibold leading-none tracking-tight">2. Input (Variabel Masukan)</h3>
             <div class="flex items-center gap-2">
                 <label class="text-xs font-medium text-muted-foreground">Jumlah variabel</label>
-                <select name="nvar" class="px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground">
+                <select name="nvar" onchange="this.form.querySelector('[name=action]').value=''"
+                    class="px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground">
                     for n := 2; n <= len(services.SimVarCatalog); n++ {
                         <option value={ strconv.Itoa(n) } selected?={ page.NVar == n }>{ strconv.Itoa(n) }</option>
                     }
                 </select>
             </div>
         </div>
-        <p class="text-xs text-muted-foreground mb-4">
-            Geser atau ketik untuk mengubah nilai. Angka dalam kurung adalah nilai asli dari basis data.
-        </p>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <p class="text-xs text-muted-foreground">
+                Geser atau ketik untuk mengubah nilai. Angka dalam kurung adalah nilai asli dari basis data.
+            </p>
+            // Tombol ini mengirim ulang isian formulir apa adanya. Karena tidak
+            // membawa action=reload, penangan memakai nilai yang tampil di layar
+            // dan tidak membaca ulang basis data. Berguna ketika nilai diketik
+            // langsung pada kotak angka, sebab peristiwa change baru terpicu
+            // saat kotaknya ditinggalkan.
+            <button type="submit" onclick="this.form.querySelector('[name=action]').value=''"
+                class="inline-flex items-center gap-1.5 shrink-0 px-3 py-1.5 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition">
+                <svg data-lucide="refresh-cw" class="h-3.5 w-3.5"></svg>
+                Hitung Ulang
+            </button>
+        </div>
         <div class="grid gap-4 md:grid-cols-2">
             for i, v := range page.Cfg.Vars {
                 <div class="space-y-1.5" x-data={ fmt.Sprintf("{ v: '%s' }", simNum(v.Value)) }>
@@ -108,10 +129,15 @@ templ SimulationBody(page services.SimulationPage, user dto.UserAuth) {
                         </span>
                     </div>
                     <div class="flex items-center gap-3">
+                        // Menggeser hanya mengubah angka di layar. Perhitungan ulang
+                        // dijalankan tombol Hitung Ulang, sesuai permintaan pengelola.
                         <input type="range" min="0" max="100" step="0.1" x-model="v"
-                            @change="$refs.num.dispatchEvent(new Event('change', { bubbles: true }))"
                             class="flex-1 accent-primary cursor-pointer"/>
+                        // Peristiwa change ditahan di sini supaya tidak sampai ke
+                        // formulir. Mengubah nilai hanya mengubah angka di layar;
+                        // perhitungan ulang dijalankan tombol Hitung Ulang.
                         <input x-ref="num" type="number" name={ "x_" + v.Name } min="0" max="100" step="0.01" x-model="v"
+                            onchange="event.stopPropagation()"
                             class="w-24 px-2 py-1 text-sm text-right rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring"/>
                     </div>
                 </div>
@@ -131,7 +157,8 @@ templ SimulationBody(page services.SimulationPage, user dto.UserAuth) {
         <div class="flex flex-wrap items-end gap-4 mb-5">
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-muted-foreground">Prasetel</label>
-                <select name="preset" class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground min-w-[320px]">
+                <select name="preset" onchange="this.form.querySelector('[name=action]').value=''"
+                    class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground min-w-[320px]">
                     for _, p := range services.SimPresets() {
                         <option value={ p.Value } selected?={ page.Preset == p.Value }>{ p.Label }</option>
                     }
@@ -142,7 +169,8 @@ templ SimulationBody(page services.SimulationPage, user dto.UserAuth) {
             </div>
             <div class="flex flex-col gap-1">
                 <label class="text-xs font-medium text-muted-foreground">Jumlah himpunan</label>
-                <select name="nset" class="px-2 py-1.5 text-sm rounded-md border border-border bg-background text-foreground">
+                <select name="nset" onchange="this.form.querySelector('[name=action]').value=''"
+                    class="px-2 py-1.5 text-sm rounded-md border border-border bg-background text-foreground">
                     for n := 2; n <= 5; n++ {
                         <option value={ strconv.Itoa(n) } selected?={ page.NSet == n }>{ strconv.Itoa(n) }</option>
                     }

@@ -82,8 +82,8 @@ func expKredit() {
 	header("EKSPERIMEN 14 - DI TABEL MANA KREDIT KETERLAMBATAN DIPASANG")
 
 	petakUser := muatPetak()
-	w := skemaUji()[1] // bobot yang dipakai sistem: 1 / 0,9 / 0,8
-	cfg := cfgVarian(varianKaidah()[0])
+	w := skemaUji()[1]                  // bobot yang dipakai sistem: 1 / 0,9 / 0,8
+	cfg := cfgVarian(varianKaidah()[1]) // rancangan sistem: agregasi saja
 
 	type kpi struct{ TCR, OTR, WER float64 }
 	lain := map[string]kpi{}

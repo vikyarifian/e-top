@@ -2,8 +2,16 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-    bin = "./tmp/main"
-    cmd "go build -tags dev -o ./tmp/main ."
+    # Akhiran .exe wajib pada Windows: tanpa itu air menghasilkan berkas
+    # yang sah sebagai PE32+ tetapi tidak dapat dijalankan sistem, dan
+    # muncul dialog "How do you want to open this file" setiap kali.
+    #
+    # Tanda -tags dev sengaja tidak dipakai. Tag itu mengeluarkan
+    # static_prod.go dari kompilasi, sedangkan static_dev.go yang mestinya
+    # menggantikannya bertanda build "new", bukan "dev", dan memanggil
+    # http.FileServerFs serta os.DirFs yang tidak ada di pustaka standar.
+    bin = "tmp\main.exe"
+    cmd = "go build -o ./tmp/main.exe ."
 
     delay = 20
     exclude_dir = ["assets", "tmp", "vendor", "node_modules"]
