@@ -17,6 +17,10 @@ type Project struct {
 	CompletedAt *time.Time      `gorm:"column:completed_at;type:DATE" json:"completed_at,omitempty" form:"completed_at"`
 	Progress    int             `gorm:"column:progress;default:0" json:"progress" form:"progress"`
 	Tasks       []Task          `gorm:"foreignKey:ProjectID;references:ID" json:"tasks,omitempty"`
+	// TaskCount adalah jumlah tugas pada project ini. Kolom semu, diisi oleh
+	// services.IsiJumlahTugas agar tampilan tidak perlu memuat seluruh baris
+	// tugas hanya untuk menghitungnya.
+	TaskCount int `gorm:"-" json:"task_count"`
 	Members     []ProjectMember `gorm:"foreignKey:ProjectID;references:ID" json:"members,omitempty"`
 	Tags        []ProjectTag    `gorm:"foreignKey:ProjectID;references:ID" json:"tags,omitempty"`
 	IsArchived  bool            `gorm:"column:is_archived;default:false" json:"is_archived" form:"is_archived"`

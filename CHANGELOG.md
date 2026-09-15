@@ -69,6 +69,12 @@ tugas. Waktu muat halaman My Tasks turun sekitar sepuluh kali lipat.
 
 ### Kinerja
 
+- **Halaman rincian workspace tidak lagi memuat seluruh tugas.** Daftar tugas
+  tiap project dipakai hanya untuk menampilkan jumlahnya, tetapi dimuat penuh
+  lewat Preload. Bagi pengguna yang menjadi anggota project besar, membuka
+  satu workspace memerlukan 4,24 detik; kini 0,66 detik karena jumlahnya
+  diambil lewat satu kueri agregat.
+
 Diukur pada basis data berisi 35.004 tugas dan 349 pengguna, dalam keadaan
 sambungan hangat, tiga kali tiap permintaan.
 

@@ -90,7 +90,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 					return db.Preload("User")
 				}).Preload("Projects", func(db *gorm.DB) *gorm.DB {
 				return db.Where("id IN (SELECT project_id FROM project_members WHERE user_id=?)", user.ID).
-					Preload("Members").Preload("Tasks")
+					Preload("Members")
 			}).Order("no").First(&ws).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				return layouts.Layout("404 Not Found", user, pages.NotFound()).Render(r.Context(), w)
@@ -104,6 +104,9 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 					break
 				}
 			}
+			// Jumlah tugas diisi lewat satu kueri agregat; memuat seluruh barisnya
+			// hanya untuk dihitung memakan waktu berlipat pada data besar.
+			services.IsiJumlahTugas(ws.Projects)
 			for _, project := range ws.Projects {
 				for _, member := range project.Members {
 					if member.UserID == user.ID {
@@ -138,7 +141,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 					return db.Preload("User")
 				}).Preload("Projects", func(db *gorm.DB) *gorm.DB {
 				return db.Where("id IN (SELECT project_id FROM project_members WHERE user_id=?)", user.ID).
-					Preload("Members").Preload("Tasks")
+					Preload("Members")
 			}).Order("no").First(&ws).Error; err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				// return ui.Toast("workspace-error", "warning", "", "Workspace not found!", "", nil).Render(r.Context(), w)
@@ -153,6 +156,9 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 					break
 				}
 			}
+			// Jumlah tugas diisi lewat satu kueri agregat; memuat seluruh barisnya
+			// hanya untuk dihitung memakan waktu berlipat pada data besar.
+			services.IsiJumlahTugas(ws.Projects)
 			for _, project := range ws.Projects {
 				for _, member := range project.Members {
 					if member.UserID == user.ID {
@@ -457,7 +463,7 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 						Preload("Members", func(db *gorm.DB) *gorm.DB {
 							return db.Preload("User")
 						}).Preload("Projects", func(db *gorm.DB) *gorm.DB {
-						return db.Preload("Members").Preload("Tasks")
+						return db.Preload("Members")
 					}).Order("no").First(&ws)
 
 					userRole := ""
@@ -467,6 +473,9 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 							break
 						}
 					}
+					// Jumlah tugas diisi lewat satu kueri agregat; memuat seluruh barisnya
+					// hanya untuk dihitung memakan waktu berlipat pada data besar.
+					services.IsiJumlahTugas(ws.Projects)
 					for _, project := range ws.Projects {
 						for _, member := range project.Members {
 							if member.UserID == user.ID {
@@ -514,7 +523,7 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 							return db.Preload("User")
 						}).Preload("Projects", func(db *gorm.DB) *gorm.DB {
 						return db.Where("id IN (SELECT project_id FROM project_members WHERE user_id=?)", user.ID).
-							Preload("Members").Preload("Tasks")
+							Preload("Members")
 					}).Order("no").First(&ws)
 
 					userRole := ""
@@ -524,6 +533,9 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 							break
 						}
 					}
+					// Jumlah tugas diisi lewat satu kueri agregat; memuat seluruh barisnya
+					// hanya untuk dihitung memakan waktu berlipat pada data besar.
+					services.IsiJumlahTugas(ws.Projects)
 					for _, project := range ws.Projects {
 						for _, member := range project.Members {
 							if member.UserID == user.ID {
