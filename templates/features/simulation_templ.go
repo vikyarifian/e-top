@@ -37,7 +37,7 @@ func Simulation(page services.SimulationPage, user dto.UserAuth) templ.Component
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto space-y-6\" data-title=\"Simulasi Fuzzy Tsukamoto\"><div><h2 class=\"text-3xl font-bold tracking-tight\">Simulasi Fuzzy Tsukamoto</h2><p class=\"text-muted-foreground p-1\">Menguji rancangan inferensi secara langsung: nilai indikator diambil dari basis data, lalu dapat diubah bersama fungsi keanggotaannya untuk melihat pengaruhnya terhadap hasil akhir</p></div><form id=\"sim-form\" hx-post=\"/simulation\" hx-target=\"#sim-body\" hx-swap=\"innerHTML\" hx-trigger=\"submit\" hx-indicator=\".htmx-loader\" x-data=\"{\n                kirim(mode) {\n                    this.$refs.act.value = mode || '';\n                    this.$el.requestSubmit();\n                }\n            }\"><input type=\"hidden\" name=\"action\" x-ref=\"act\" value=\"\"><div id=\"sim-body\" class=\"space-y-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto space-y-6\" data-title=\"Simulasi Fuzzy Tsukamoto\"><div><h2 class=\"text-3xl font-bold tracking-tight\">Simulasi Fuzzy Tsukamoto</h2><p class=\"text-muted-foreground p-1\">Menguji rancangan inferensi secara langsung: nilai indikator diambil dari basis data, lalu dapat diubah bersama fungsi keanggotaannya untuk melihat pengaruhnya terhadap hasil akhir</p></div><form id=\"sim-form\" hx-post=\"/simulation\" hx-target=\"#sim-body\" hx-swap=\"innerHTML\" hx-trigger=\"change, submit\" hx-indicator=\".htmx-loader\"><input type=\"hidden\" name=\"action\" value=\"\"><div id=\"sim-body\" class=\"space-y-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -81,7 +81,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(page.Applied)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 49, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 42, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -94,7 +94,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d tugas, %d selesai", page.Data.TaskCount, page.Data.DoneCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 56, Col: 95}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 49, Col: 95}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -105,7 +105,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			return templ_7745c5c3_Err
 		}
 		if len(page.ViewUsers) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Karyawan</label> <select name=\"user_id\" @change=\"kirim('reload')\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-w-[220px]\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Karyawan</label> <select name=\"user_id\" onchange=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-w-[220px]\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -117,7 +117,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				var templ_7745c5c3_Var5 string
 				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(vu.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 69, Col: 49}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 62, Col: 49}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 				if templ_7745c5c3_Err != nil {
@@ -140,7 +140,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				var templ_7745c5c3_Var6 string
 				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(vu.FullName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 69, Col: 106}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 62, Col: 106}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -156,7 +156,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Periode</label> <select name=\"year\" @change=\"kirim('reload')\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring\"><option value=\"\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Periode</label> <select name=\"year\" onchange=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring\"><option value=\"\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -178,7 +178,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(strconv.Itoa(y))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 80, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 73, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
@@ -201,7 +201,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(y))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 80, Col: 126}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 73, Col: 126}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -212,7 +212,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</select></div><button type=\"button\" @click=\"kirim('reload')\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-accent transition\">Muat ulang nilai dari basis data</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</select></div><button type=\"submit\" onclick=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-accent transition\">Muat ulang nilai dari basis data</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -222,7 +222,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><!-- 2. Input --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">2. Input (Variabel Masukan)</h3><div class=\"flex items-center gap-2\"><label class=\"text-xs font-medium text-muted-foreground\">Jumlah variabel</label> <select name=\"nvar\" @change=\"kirim()\" class=\"px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><!-- 2. Input --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">2. Input (Variabel Masukan)</h3><div class=\"flex items-center gap-2\"><label class=\"text-xs font-medium text-muted-foreground\">Jumlah variabel</label> <select name=\"nvar\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -234,7 +234,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.ResolveAttributeValue(strconv.Itoa(n))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 105, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 98, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 			if templ_7745c5c3_Err != nil {
@@ -257,7 +257,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(n))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 105, Col: 104}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 98, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -268,7 +268,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</select></div></div><div class=\"flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4\"><p class=\"text-xs text-muted-foreground\">Geser atau ketik untuk mengubah nilai. Angka dalam kurung adalah nilai asli dari basis data.</p><button type=\"button\" @click=\"kirim()\" class=\"inline-flex items-center gap-1.5 shrink-0 px-3 py-1.5 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition\"><svg data-lucide=\"refresh-cw\" class=\"h-3.5 w-3.5\"></svg> Hitung Ulang</button></div><div class=\"grid gap-4 md:grid-cols-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</select></div></div><div class=\"flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4\"><p class=\"text-xs text-muted-foreground\">Geser atau ketik untuk mengubah nilai. Angka dalam kurung adalah nilai asli dari basis data.</p><button type=\"submit\" onclick=\"this.form.querySelector('[name=action]').value=''\" class=\"inline-flex items-center gap-1.5 shrink-0 px-3 py-1.5 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition\"><svg data-lucide=\"refresh-cw\" class=\"h-3.5 w-3.5\"></svg> Hitung Ulang</button></div><div class=\"grid gap-4 md:grid-cols-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -280,7 +280,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("{ v: '%s' }", simNum(v.Value)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 127, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 120, Col: 93}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 			if templ_7745c5c3_Err != nil {
@@ -293,7 +293,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var12 string
 			templ_7745c5c3_Var12, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("background:%s", simVarColor(i)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 130, Col: 139}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 123, Col: 139}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
@@ -306,7 +306,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 131, Col: 36}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 124, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -319,7 +319,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var14 string
 			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(v.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 132, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 125, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 			if templ_7745c5c3_Err != nil {
@@ -332,26 +332,26 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(simNum(page.Data.Values[v.Name]))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 135, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 128, Col: 63}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, ")</span></div><div class=\"flex items-center gap-3\"><input type=\"range\" min=\"0\" max=\"100\" step=\"0.1\" x-model=\"v\" class=\"flex-1 accent-primary cursor-pointer\"> <input x-ref=\"num\" type=\"number\" name=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, ")</span></div><div class=\"flex items-center gap-3\"><input type=\"range\" min=\"0\" max=\"100\" step=\"0.1\" x-model=\"v\" class=\"flex-1 accent-primary cursor-pointer\"><input x-ref=\"num\" type=\"number\" name=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var16 string
 			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue("x_" + v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 143, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 139, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" min=\"0\" max=\"100\" step=\"0.01\" x-model=\"v\" class=\"w-24 px-2 py-1 text-sm text-right rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring\"></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "\" min=\"0\" max=\"100\" step=\"0.01\" x-model=\"v\" onchange=\"event.stopPropagation()\" class=\"w-24 px-2 py-1 text-sm text-right rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring\"></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -363,13 +363,13 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var17 string
 		templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(simPresetLabel(page.Preset))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 155, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 152, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</span></div><p class=\"text-xs text-muted-foreground mb-4\">Susunan ini berlaku sama untuk seluruh variabel input, sebagaimana rancangan pada aplikasi</p><div class=\"flex flex-wrap items-end gap-4 mb-5\"><div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Prasetel</label> <select name=\"preset\" @change=\"kirim()\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground min-w-[320px]\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</span></div><p class=\"text-xs text-muted-foreground mb-4\">Susunan ini berlaku sama untuk seluruh variabel input, sebagaimana rancangan pada aplikasi</p><div class=\"flex flex-wrap items-end gap-4 mb-5\"><div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Prasetel</label> <select name=\"preset\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground min-w-[320px]\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -381,7 +381,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var18 string
 			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.ResolveAttributeValue(p.Value)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 166, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 163, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var18)
 			if templ_7745c5c3_Err != nil {
@@ -404,7 +404,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var19 string
 			templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(p.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 166, Col: 96}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 163, Col: 96}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 			if templ_7745c5c3_Err != nil {
@@ -421,7 +421,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</select></div><div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Jumlah himpunan</label> <select name=\"nset\" @change=\"kirim()\" class=\"px-2 py-1.5 text-sm rounded-md border border-border bg-background text-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</select></div><div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Jumlah himpunan</label> <select name=\"nset\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-2 py-1.5 text-sm rounded-md border border-border bg-background text-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -433,7 +433,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(strconv.Itoa(n))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 178, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 175, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 			if templ_7745c5c3_Err != nil {
@@ -456,7 +456,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var21 string
 			templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(n))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 178, Col: 104}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 175, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 			if templ_7745c5c3_Err != nil {
@@ -474,7 +474,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d himpunan pangkat %d variabel = %d aturan", page.NSet, page.NVar, page.Result.RuleTotal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 183, Col: 121}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 180, Col: 121}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -492,7 +492,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("background:%s", simSetColor(j)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 191, Col: 122}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 188, Col: 122}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -505,7 +505,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(s.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 192, Col: 67}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 189, Col: 67}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -518,7 +518,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var25 string
 			templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("shape_%d", j))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 196, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 193, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var25)
 			if templ_7745c5c3_Err != nil {
@@ -536,7 +536,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.ResolveAttributeValue(opt.Value)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 198, Col: 57}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 195, Col: 57}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var26)
 				if templ_7745c5c3_Err != nil {
@@ -559,7 +559,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				var templ_7745c5c3_Var27 string
 				templ_7745c5c3_Var27, templ_7745c5c3_Err = templ.JoinStringErrs(opt.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 198, Col: 106}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 195, Col: 106}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var27))
 				if templ_7745c5c3_Err != nil {
@@ -582,7 +582,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				var templ_7745c5c3_Var28 string
 				templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(pname)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 204, Col: 80}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 201, Col: 80}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 				if templ_7745c5c3_Err != nil {
@@ -595,7 +595,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				var templ_7745c5c3_Var29 string
 				templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("p_%d_%d", j, k))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 205, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 202, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var29)
 				if templ_7745c5c3_Err != nil {
@@ -608,7 +608,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simParamValue(s, k)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 206, Col: 67}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 203, Col: 67}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var30)
 				if templ_7745c5c3_Err != nil {
@@ -631,7 +631,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var31 string
 		templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("0 0 %.0f %.0f", simChartW, simChartH))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 216, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 213, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var31)
 		if templ_7745c5c3_Err != nil {
@@ -644,7 +644,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(0)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 217, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 214, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var32)
 		if templ_7745c5c3_Err != nil {
@@ -657,7 +657,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var33 string
 		templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(0)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 217, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 214, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var33)
 		if templ_7745c5c3_Err != nil {
@@ -670,7 +670,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var34 string
 		templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(100)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 217, Col: 90}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 214, Col: 90}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var34)
 		if templ_7745c5c3_Err != nil {
@@ -683,7 +683,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(0)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 217, Col: 113}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 214, Col: 113}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var35)
 		if templ_7745c5c3_Err != nil {
@@ -696,7 +696,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(0)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 218, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 215, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var36)
 		if templ_7745c5c3_Err != nil {
@@ -709,7 +709,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var37 string
 		templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(0)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 218, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 215, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var37)
 		if templ_7745c5c3_Err != nil {
@@ -722,7 +722,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(0)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 218, Col: 88}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 215, Col: 88}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var38)
 		if templ_7745c5c3_Err != nil {
@@ -735,7 +735,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var39 string
 		templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(1)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 218, Col: 111}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 215, Col: 111}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var39)
 		if templ_7745c5c3_Err != nil {
@@ -753,7 +753,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var40 string
 			templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(t)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 220, Col: 46}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 217, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var40)
 			if templ_7745c5c3_Err != nil {
@@ -766,7 +766,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var41 string
 			templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(0)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 220, Col: 69}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 217, Col: 69}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var41)
 			if templ_7745c5c3_Err != nil {
@@ -779,7 +779,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var42 string
 			templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(t)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 220, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 217, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var42)
 			if templ_7745c5c3_Err != nil {
@@ -792,7 +792,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var43 string
 			templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(0) + 4))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 220, Col: 119}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 217, Col: 119}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var43)
 			if templ_7745c5c3_Err != nil {
@@ -805,7 +805,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var44 string
 			templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(t)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 221, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 218, Col: 45}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var44)
 			if templ_7745c5c3_Err != nil {
@@ -818,7 +818,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var45 string
 			templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(0) + 16))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 221, Col: 72}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 218, Col: 72}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var45)
 			if templ_7745c5c3_Err != nil {
@@ -831,7 +831,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var46 string
 			templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(simNum(t))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 221, Col: 172}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 218, Col: 172}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 			if templ_7745c5c3_Err != nil {
@@ -849,7 +849,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var47 string
 		templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(0) - 8))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 223, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 220, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var47)
 		if templ_7745c5c3_Err != nil {
@@ -862,7 +862,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var48 string
 		templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(1) + 4))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 223, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 220, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var48)
 		if templ_7745c5c3_Err != nil {
@@ -875,7 +875,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var49 string
 		templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(0) - 8))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 224, Col: 45}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 221, Col: 45}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var49)
 		if templ_7745c5c3_Err != nil {
@@ -888,7 +888,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		var templ_7745c5c3_Var50 string
 		templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(0) + 4))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 224, Col: 71}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 221, Col: 71}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var50)
 		if templ_7745c5c3_Err != nil {
@@ -906,7 +906,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var51 string
 			templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.ResolveAttributeValue(simCurvePoints(s))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 226, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 223, Col: 56}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var51)
 			if templ_7745c5c3_Err != nil {
@@ -919,7 +919,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var52 string
 			templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.ResolveAttributeValue(simSetColor(j))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 226, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 223, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var52)
 			if templ_7745c5c3_Err != nil {
@@ -938,7 +938,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var53 string
 			templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(v.Value)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 229, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 226, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var53)
 			if templ_7745c5c3_Err != nil {
@@ -951,7 +951,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var54 string
 			templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(0)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 229, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 226, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var54)
 			if templ_7745c5c3_Err != nil {
@@ -964,7 +964,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var55 string
 			templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(v.Value)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 229, Col: 104}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 226, Col: 104}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var55)
 			if templ_7745c5c3_Err != nil {
@@ -977,7 +977,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var56 string
 			templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(1)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 229, Col: 127}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 226, Col: 127}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var56)
 			if templ_7745c5c3_Err != nil {
@@ -990,7 +990,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var57 string
 			templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.ResolveAttributeValue(simVarColor(i))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 229, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 226, Col: 153}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var57)
 			if templ_7745c5c3_Err != nil {
@@ -1003,7 +1003,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var58 string
 			templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simX(v.Value) + 3))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 230, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 227, Col: 55}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var58)
 			if templ_7745c5c3_Err != nil {
@@ -1016,7 +1016,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var59 string
 			templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.ResolveAttributeValue(simNum(simY(1) + 9 + float64(i)*11))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 230, Col: 99}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 227, Col: 99}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var59)
 			if templ_7745c5c3_Err != nil {
@@ -1029,7 +1029,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var60 string
 			templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.ResolveAttributeValue(simVarColor(i))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 230, Col: 137}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 227, Col: 137}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var60)
 			if templ_7745c5c3_Err != nil {
@@ -1042,7 +1042,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var61 string
 			templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 230, Col: 148}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 227, Col: 148}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 			if templ_7745c5c3_Err != nil {
@@ -1065,7 +1065,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var62 string
 			templ_7745c5c3_Var62, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("background:%s", simSetColor(j)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 236, Col: 113}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 233, Col: 113}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
 			if templ_7745c5c3_Err != nil {
@@ -1078,7 +1078,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var63 string
 			templ_7745c5c3_Var63, templ_7745c5c3_Err = templ.JoinStringErrs(s.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 237, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 234, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var63))
 			if templ_7745c5c3_Err != nil {
@@ -1091,7 +1091,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var64 string
 			templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(services.ShapeLabel(s.Shape))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 237, Col: 111}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 234, Col: 111}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
 			if templ_7745c5c3_Err != nil {
@@ -1140,7 +1140,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var67 string
 			templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(row.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 271, Col: 68}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 268, Col: 68}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
 			if templ_7745c5c3_Err != nil {
@@ -1153,7 +1153,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var68 string
 			templ_7745c5c3_Var68, templ_7745c5c3_Err = templ.JoinStringErrs(row.Desc)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 272, Col: 85}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 269, Col: 85}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var68))
 			if templ_7745c5c3_Err != nil {
@@ -1166,7 +1166,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var69 string
 			templ_7745c5c3_Var69, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(row.SetCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 274, Col: 102}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 271, Col: 102}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var69))
 			if templ_7745c5c3_Err != nil {
@@ -1179,7 +1179,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var70 string
 			templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(row.RuleTotal))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 275, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 272, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
 			if templ_7745c5c3_Err != nil {
@@ -1192,7 +1192,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var71 string
 			templ_7745c5c3_Var71, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(row.ActiveCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 276, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 273, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var71))
 			if templ_7745c5c3_Err != nil {
@@ -1205,7 +1205,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var72 string
 			templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.JoinStringErrs(simNum(row.Score))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 277, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 274, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var72))
 			if templ_7745c5c3_Err != nil {
@@ -1240,7 +1240,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var75 string
 			templ_7745c5c3_Var75, templ_7745c5c3_Err = templ.JoinStringErrs(row.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 279, Col: 177}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 276, Col: 177}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var75))
 			if templ_7745c5c3_Err != nil {
@@ -1253,7 +1253,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var76 string
 			templ_7745c5c3_Var76, templ_7745c5c3_Err = templ.JoinStringErrs(simDelta(row.Score, simScoreRef(page.ShapeRows)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 281, Col: 141}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 278, Col: 141}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var76))
 			if templ_7745c5c3_Err != nil {
@@ -1294,7 +1294,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var79 string
 			templ_7745c5c3_Var79, templ_7745c5c3_Err = templ.JoinStringErrs(row.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 313, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 310, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var79))
 			if templ_7745c5c3_Err != nil {
@@ -1307,7 +1307,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var80 string
 			templ_7745c5c3_Var80, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(row.VarCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 314, Col: 102}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 311, Col: 102}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var80))
 			if templ_7745c5c3_Err != nil {
@@ -1320,7 +1320,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var81 string
 			templ_7745c5c3_Var81, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(row.RuleTotal))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 315, Col: 103}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 312, Col: 103}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var81))
 			if templ_7745c5c3_Err != nil {
@@ -1333,7 +1333,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var82 string
 			templ_7745c5c3_Var82, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(row.ActiveCount))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 316, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 313, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var82))
 			if templ_7745c5c3_Err != nil {
@@ -1346,7 +1346,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var83 string
 			templ_7745c5c3_Var83, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0f", row.Nanos))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 317, Col: 128}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 314, Col: 128}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var83))
 			if templ_7745c5c3_Err != nil {
@@ -1359,7 +1359,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var84 string
 			templ_7745c5c3_Var84, templ_7745c5c3_Err = templ.JoinStringErrs(simNum(row.Score))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 318, Col: 105}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 315, Col: 105}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var84))
 			if templ_7745c5c3_Err != nil {
@@ -1394,7 +1394,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var87 string
 			templ_7745c5c3_Var87, templ_7745c5c3_Err = templ.JoinStringErrs(row.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 320, Col: 177}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 317, Col: 177}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var87))
 			if templ_7745c5c3_Err != nil {
@@ -1407,7 +1407,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			var templ_7745c5c3_Var88 string
 			templ_7745c5c3_Var88, templ_7745c5c3_Err = templ.JoinStringErrs(simDelta(row.Score, simScoreRef(page.VarRows)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 322, Col: 139}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 319, Col: 139}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var88))
 			if templ_7745c5c3_Err != nil {
@@ -1456,7 +1456,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 			len(page.Result.Active), page.Result.RuleTotal,
 			simEffectiveCount(page.Result.Active), page.Result.NanosPerInfer))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 361, Col: 85}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 358, Col: 85}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var90))
 		if templ_7745c5c3_Err != nil {
@@ -1491,7 +1491,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 		var templ_7745c5c3_Var93 string
 		templ_7745c5c3_Var93, templ_7745c5c3_Err = templ.JoinStringErrs(simNum(page.Result.Score))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 368, Col: 133}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 365, Col: 133}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var93))
 		if templ_7745c5c3_Err != nil {
@@ -1526,7 +1526,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 		var templ_7745c5c3_Var96 string
 		templ_7745c5c3_Var96, templ_7745c5c3_Err = templ.JoinStringErrs(page.Result.Category)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 372, Col: 174}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 369, Col: 174}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var96))
 		if templ_7745c5c3_Err != nil {
@@ -1561,7 +1561,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 		var templ_7745c5c3_Var99 string
 		templ_7745c5c3_Var99, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("width: %.1f%%", clampEval(page.Result.Score)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 376, Col: 180}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 373, Col: 180}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var99))
 		if templ_7745c5c3_Err != nil {
@@ -1579,7 +1579,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 			var templ_7745c5c3_Var100 string
 			templ_7745c5c3_Var100, templ_7745c5c3_Err = templ.JoinStringErrs("mu " + s.Label)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 389, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 386, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var100))
 			if templ_7745c5c3_Err != nil {
@@ -1602,7 +1602,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 			var templ_7745c5c3_Var101 string
 			templ_7745c5c3_Var101, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 397, Col: 70}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 394, Col: 70}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var101))
 			if templ_7745c5c3_Err != nil {
@@ -1615,7 +1615,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 			var templ_7745c5c3_Var102 string
 			templ_7745c5c3_Var102, templ_7745c5c3_Err = templ.JoinStringErrs(simNum(v.Value))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 398, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 395, Col: 91}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var102))
 			if templ_7745c5c3_Err != nil {
@@ -1651,7 +1651,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				var templ_7745c5c3_Var105 string
 				templ_7745c5c3_Var105, templ_7745c5c3_Err = templ.JoinStringErrs(simMu(st.Degree))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 400, Col: 160}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 397, Col: 160}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var105))
 				if templ_7745c5c3_Err != nil {
@@ -1687,7 +1687,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 			var templ_7745c5c3_Var108 string
 			templ_7745c5c3_Var108, templ_7745c5c3_Err = templ.JoinStringErrs(simMu(v.SumMu))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 402, Col: 127}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 399, Col: 127}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var108))
 			if templ_7745c5c3_Err != nil {
@@ -1733,7 +1733,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				var templ_7745c5c3_Var111 string
 				templ_7745c5c3_Var111, templ_7745c5c3_Err = templ.JoinStringErrs(r.Code)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 430, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 427, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var111))
 				if templ_7745c5c3_Err != nil {
@@ -1746,7 +1746,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				var templ_7745c5c3_Var112 string
 				templ_7745c5c3_Var112, templ_7745c5c3_Err = templ.JoinStringErrs(r.Premise)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 431, Col: 97}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 428, Col: 97}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var112))
 				if templ_7745c5c3_Err != nil {
@@ -1781,7 +1781,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				var templ_7745c5c3_Var115 string
 				templ_7745c5c3_Var115, templ_7745c5c3_Err = templ.JoinStringErrs(r.Output)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 433, Col: 173}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 430, Col: 173}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var115))
 				if templ_7745c5c3_Err != nil {
@@ -1794,7 +1794,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				var templ_7745c5c3_Var116 string
 				templ_7745c5c3_Var116, templ_7745c5c3_Err = templ.JoinStringErrs(simMu(r.Alpha))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 435, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 432, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var116))
 				if templ_7745c5c3_Err != nil {
@@ -1807,7 +1807,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				var templ_7745c5c3_Var117 string
 				templ_7745c5c3_Var117, templ_7745c5c3_Err = templ.JoinStringErrs(simNum(r.Z))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 436, Col: 93}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 433, Col: 93}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var117))
 				if templ_7745c5c3_Err != nil {
@@ -1820,7 +1820,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				var templ_7745c5c3_Var118 string
 				templ_7745c5c3_Var118, templ_7745c5c3_Err = templ.JoinStringErrs(simNum(r.Alpha * r.Z))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 437, Col: 125}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 434, Col: 125}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var118))
 				if templ_7745c5c3_Err != nil {
@@ -1833,7 +1833,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				var templ_7745c5c3_Var119 string
 				templ_7745c5c3_Var119, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.1f%%", simRuleShare(r.Alpha, page.Result.SumAlpha)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 438, Col: 165}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 435, Col: 165}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var119))
 				if templ_7745c5c3_Err != nil {
@@ -1852,7 +1852,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 			templ_7745c5c3_Var120, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Z = jumlah(alpha x z) / jumlah(alpha) = %.4f / %.4f = %.4f",
 				page.Result.SumAlphaZ, page.Result.SumAlpha, page.Result.Score))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 449, Col: 87}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 446, Col: 87}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var120))
 			if templ_7745c5c3_Err != nil {
@@ -1887,7 +1887,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 			var templ_7745c5c3_Var123 string
 			templ_7745c5c3_Var123, templ_7745c5c3_Err = templ.JoinStringErrs(page.Result.Category)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 451, Col: 180}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 448, Col: 180}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var123))
 			if templ_7745c5c3_Err != nil {
