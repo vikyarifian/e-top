@@ -51,9 +51,10 @@ tugas. Waktu muat halaman My Tasks turun sekitar sepuluh kali lipat.
   Sebelumnya seluruh isi halaman dirender ulang, termasuk modal buat tugas yang
   menarik seluruh baris tabel `users` dua kali. Pada basis data berisi 349
   pengguna, dua kueri itu memakan 903 dari 1.252 milidetik waktu halaman.
-- **Daftar karyawan pada halaman Achieved terurut menurut abjad.** Pengguna yang
-  sedang masuk tidak lagi dipaksa ke urutan pertama, melainkan hanya ditandai
-  terpilih ketika belum ada pilihan lain.
+- **Daftar karyawan pada halaman Achieved dan Simulasi terurut menurut abjad.**
+  Pengguna yang sedang masuk tidak lagi dipaksa ke urutan pertama, melainkan
+  hanya ditandai terpilih ketika belum ada pilihan lain. Berlaku pula bagi
+  kepala departemen yang melihat daftar anggotanya.
 
 ### Dihapus
 
