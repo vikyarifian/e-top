@@ -51,6 +51,16 @@ tugas. Waktu muat halaman My Tasks turun sekitar sepuluh kali lipat.
   Sebelumnya seluruh isi halaman dirender ulang, termasuk modal buat tugas yang
   menarik seluruh baris tabel `users` dua kali. Pada basis data berisi 349
   pengguna, dua kueri itu memakan 903 dari 1.252 milidetik waktu halaman.
+- **Penyaring karyawan tidak lagi membuka data pengguna yang sedang masuk.**
+  Yang terpilih pada muatan awal adalah nama teratas menurut abjad. Bagi
+  atasan yang menilai banyak orang, sebelumnya dirinya sendiri yang selalu
+  muncul lebih dulu. Karyawan yang tidak punya anggota tetap melihat datanya
+  sendiri.
+- **Halaman Simulasi mendapat tombol Hitung Ulang.** Tombol itu menghitung
+  ulang memakai nilai yang tampil di layar tanpa membaca basis data lagi,
+  berguna ketika angka diketik langsung pada kotaknya sebab peristiwa change
+  baru terpicu saat kotak ditinggalkan. Tombol memuat ulang dari basis data
+  tetap tersedia terpisah.
 - **Daftar karyawan pada halaman Achieved dan Simulasi terurut menurut abjad.**
   Pengguna yang sedang masuk tidak lagi dipaksa ke urutan pertama, melainkan
   hanya ditandai terpilih ketika belum ada pilihan lain. Berlaku pula bagi

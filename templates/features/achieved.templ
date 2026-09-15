@@ -37,12 +37,10 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     hx-push-url="true"
                     hx-indicator=".htmx-loader,.loaded-content"
                 >
-                    // Daftar sudah terurut menurut nama pada achievedViewUsers.
-                    // Pengguna yang sedang masuk tidak lagi dipaksa ke urutan
-                    // pertama; ia hanya ditandai terpilih ketika belum ada
-                    // pilihan lain.
+                    // Daftar sudah terurut menurut nama pada achievedViewUsers, dan
+                    // pilihan bawaannya ditetapkan pilihTargetPenilaian.
                     for _, vu := range viewUsers {
-                        <option value={vu.ID} selected?={selectedUser == vu.ID || (selectedUser == "" && vu.ID == user.ID)}>{vu.FullName}</option>
+                        <option value={vu.ID} selected?={selectedUser == vu.ID}>{vu.FullName}</option>
                     }
                 </select>
             </div>

@@ -48,11 +48,10 @@ templ SimulationBody(page services.SimulationPage, user dto.UserAuth) {
                 <div class="flex flex-col gap-1">
                     <label class="text-xs font-medium text-muted-foreground">Karyawan</label>
                     <select name="user_id" class="px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-w-[220px]">
-                        // Daftar sudah terurut menurut nama pada achievedViewUsers.
-                        // Pengguna yang sedang masuk tidak dipaksa ke urutan
-                        // pertama, hanya ditandai terpilih bila belum ada pilihan.
+                        // Daftar sudah terurut menurut nama pada achievedViewUsers, dan
+                        // pilihan bawaannya ditetapkan pilihTargetPenilaian.
                         for _, vu := range page.ViewUsers {
-                            <option value={ vu.ID } selected?={ page.SelectedUser == vu.ID || (page.SelectedUser == "" && vu.ID == user.ID) }>{ vu.FullName }</option>
+                            <option value={ vu.ID } selected?={ page.SelectedUser == vu.ID }>{ vu.FullName }</option>
                         }
                     </select>
                 </div>
@@ -91,9 +90,21 @@ templ SimulationBody(page services.SimulationPage, user dto.UserAuth) {
                 </select>
             </div>
         </div>
-        <p class="text-xs text-muted-foreground mb-4">
-            Geser atau ketik untuk mengubah nilai. Angka dalam kurung adalah nilai asli dari basis data.
-        </p>
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <p class="text-xs text-muted-foreground">
+                Geser atau ketik untuk mengubah nilai. Angka dalam kurung adalah nilai asli dari basis data.
+            </p>
+            // Tombol ini mengirim ulang isian formulir apa adanya. Karena tidak
+            // membawa action=reload, penangan memakai nilai yang tampil di layar
+            // dan tidak membaca ulang basis data. Berguna ketika nilai diketik
+            // langsung pada kotak angka, sebab peristiwa change baru terpicu
+            // saat kotaknya ditinggalkan.
+            <button type="submit"
+                class="inline-flex items-center gap-1.5 shrink-0 px-3 py-1.5 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition">
+                <svg data-lucide="refresh-cw" class="h-3.5 w-3.5"></svg>
+                Hitung Ulang
+            </button>
+        </div>
         <div class="grid gap-4 md:grid-cols-2">
             for i, v := range page.Cfg.Vars {
                 <div class="space-y-1.5" x-data={ fmt.Sprintf("{ v: '%s' }", simNum(v.Value)) }>

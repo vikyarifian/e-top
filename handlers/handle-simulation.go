@@ -100,18 +100,10 @@ func HandleSimulation(w http.ResponseWriter, r *http.Request) error {
 
 	viewUsers := achievedViewUsers(user)
 
-	// pemilihan karyawan yang datanya dipakai sebagai nilai awal
-	targetID := user.ID
-	selectedUser := ""
-	if requested := r.FormValue("user_id"); requested != "" && requested != user.ID {
-		for _, vu := range viewUsers {
-			if vu.ID == requested {
-				targetID = requested
-				selectedUser = requested
-				break
-			}
-		}
-	}
+	// Pemilihan karyawan yang datanya dipakai sebagai nilai awal. Aturannya
+	// sama dengan halaman penilaian: nama teratas menurut abjad, bukan pengguna
+	// yang sedang masuk.
+	targetID, selectedUser := pilihTargetPenilaian(user, viewUsers, r.FormValue("user_id"))
 	years := services.SimYears(targetID)
 	selectedYear := r.FormValue("year")
 	if selectedYear != "" {
