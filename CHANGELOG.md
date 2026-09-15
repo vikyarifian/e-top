@@ -56,6 +56,15 @@ tugas. Waktu muat halaman My Tasks turun sekitar sepuluh kali lipat.
   atasan yang menilai banyak orang, sebelumnya dirinya sendiri yang selalu
   muncul lebih dulu. Karyawan yang tidak punya anggota tetap melihat datanya
   sendiri.
+- **Halaman Simulasi hanya menghitung ulang lewat tombol.** Menggeser atau
+  mengetik nilai indikator tidak lagi mengirim apa pun; hasilnya diperbarui
+  ketika tombol Hitung Ulang ditekan. Sebelumnya setiap geseran memicu
+  pengiriman, dan nilai yang baru saja diubah justru kembali ke angka basis
+  data. Penyebabnya htmx menyusun data permintaan dari form.elements yang
+  juga memuat tombol, sehingga penanda action=reload pada tombol "Muat ulang
+  nilai dari basis data" ikut terkirim pada setiap perubahan. Penanda itu
+  kini disimpan pada isian tersembunyi, dan tiap kendali menentukan sendiri
+  apakah pengirimannya membaca basis data atau tidak.
 - **Halaman Simulasi mendapat tombol Hitung Ulang.** Tombol itu menghitung
   ulang memakai nilai yang tampil di layar tanpa membaca basis data lagi,
   berguna ketika angka diketik langsung pada kotaknya sebab peristiwa change
