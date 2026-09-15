@@ -399,10 +399,13 @@ func evalKPI(db *gorm.DB, userID string, year string) Row {
 		JOIN task_priorities tp ON tp.no=t.priority_id
 		JOIN task_impacts ti ON ti.no=t.impact_id
 		WHERE t.user_id = ? AND t.completed_at IS NOT NULL`+fd, userID).Scan(&wDone)
-	if wAll > 0 {
-		r.TVS = wDone / wAll * 100
+	// Penyebut TVS adalah cacah seluruh tugas, bukan jumlah bobotnya, mengikuti
+	// rumus yang berlaku pada services.GetAchievedEvaluation.
+	if r.All > 0 {
+		r.TVS = wDone / float64(r.All) * 100
 	}
-	db.Raw(`SELECT COALESCE(AVG((t.estimated_hours/NULLIF(t.actual_hours,0))*100),0) FROM tasks t
+	_ = wAll
+	db.Raw(`SELECT COALESCE(AVG(LEAST(1.0, t.estimated_hours/NULLIF(t.actual_hours,0)))*100,0) FROM tasks t
 		WHERE t.user_id = ? AND t.completed_at IS NOT NULL AND t.estimated_hours>0 AND t.actual_hours>0`+fd, userID).Scan(&r.WER)
 	if r.WER > 100 {
 		r.WER = 100

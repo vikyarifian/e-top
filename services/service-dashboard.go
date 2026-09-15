@@ -175,17 +175,12 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 		}
 	}
 
-	// Task Value Score: perbandingan nilai tugas yang tuntas terhadap nilai
-	// seluruh tugas, dengan nilai tiap tugas diambil dari hasil kali bobot
-	// prioritas dan bobot dampaknya.
-	type PriorityWeight struct {
-		TotalWeight float64
-	}
-	var allWeight, doneWeight PriorityWeight
-	allWeight.TotalWeight = sumTaskValue("t.user_id = ?"+yearFilterTask, userID)
-	doneWeight.TotalWeight = sumTaskValue("t.user_id = ? AND t.completed_at IS NOT NULL"+yearFilterDone, userID)
-	if allWeight.TotalWeight > 0 {
-		e.TVS = doneWeight.TotalWeight / allWeight.TotalWeight * 100
+	// Task Value Score: perbandingan nilai tugas yang tuntas terhadap
+	// jumlah seluruh tugas. Pembilang ialah jumlah nilai (bobot) tugas selesai;
+	// penyebut ialah cacah semua tugas milik karyawan pada periode itu.
+	tvsDoneWeight := sumTaskValue("t.user_id = ? AND t.completed_at IS NOT NULL"+yearFilterDone, userID)
+	if e.TaskCount > 0 {
+		e.TVS = tvsDoneWeight / float64(e.TaskCount) * 100
 	}
 
 	type Efficiency struct {
@@ -193,16 +188,15 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 	}
 	var werResult Efficiency
 	db.PgSql.Raw(`
-		SELECT COALESCE(AVG((t.estimated_hours / NULLIF(t.actual_hours, 0)) * 100), 0) as value
+		SELECT COALESCE(AVG(LEAST(1.0, t.estimated_hours / NULLIF(t.actual_hours, 0))) * 100, 0) as value
 		FROM tasks t
 		WHERE t.user_id = ?
 			AND t.completed_at IS NOT NULL
 			AND t.estimated_hours > 0
 			AND t.actual_hours > 0`+yearFilterDone, userID).Scan(&werResult)
+	// LEAST sudah membatasi tiap tugas pada 1, sehingga rata-ratanya mustahil
+	// melewati 100 dan tidak perlu dipotong lagi di sini.
 	e.WER = werResult.Value
-	if e.WER > 100 {
-		e.WER = 100
-	}
 
 	e.Evaluable = e.TaskCount > 0
 	if e.Evaluable {
@@ -301,10 +295,9 @@ func GetDashboardData(userID string) DashboardData {
 
 	// Pembilang dan penyebut harus memakai skala bobot yang sama, yaitu hasil
 	// kali bobot prioritas dan bobot dampak.
-	allWeight := sumTaskValue("t.user_id = ? OR t.created_by = ?", userID, userID)
 	doneWeight := sumTaskValue("(t.user_id = ? OR t.created_by = ?) AND t.completed_at IS NOT NULL", userID, userID)
-	if allWeight > 0 {
-		d.TVS = doneWeight / allWeight * 100
+	if d.TaskCount > 0 {
+		d.TVS = doneWeight / float64(d.TaskCount) * 100
 	}
 
 	type Efficiency struct {
@@ -312,17 +305,16 @@ func GetDashboardData(userID string) DashboardData {
 	}
 	var werResult Efficiency
 	db.PgSql.Raw(`
-		SELECT COALESCE(AVG((t.estimated_hours / NULLIF(t.actual_hours, 0)) * 100), 0) as value
+		SELECT COALESCE(AVG(LEAST(1.0, t.estimated_hours / NULLIF(t.actual_hours, 0))) * 100, 0) as value
 		FROM tasks t
 		WHERE (t.user_id = ? OR t.created_by = ?)
 			AND t.completed_at IS NOT NULL
 			AND t.estimated_hours > 0
 			AND t.actual_hours > 0
 	`, userID, userID).Scan(&werResult)
+	// LEAST sudah membatasi tiap tugas pada 1, jadi rata-ratanya mustahil
+	// melewati 100.
 	d.WER = werResult.Value
-	if d.WER > 100 {
-		d.WER = 100
-	}
 
 	db.PgSql.Raw(`
 		SELECT ts.label, ts.color, COUNT(t.no) as count

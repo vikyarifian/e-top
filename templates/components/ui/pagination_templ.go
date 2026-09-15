@@ -14,6 +14,8 @@ import (
 	"etop/models"
 )
 
+// Pagination menukar seluruh isi halaman. Dipakai oleh halaman yang memang
+// perlu dirender ulang sepenuhnya.
 func Pagination(baseURL string, page models.PageInfo, params string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -35,17 +37,49 @@ func Pagination(baseURL string, page models.PageInfo, params string) templ.Compo
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = PaginationTarget(baseURL, page, params, "content").Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+// PaginationTarget sama dengan Pagination, tetapi sasaran penukarannya dapat
+// ditentukan. Halaman yang hanya menukar daftarnya memakai ini agar bagian
+// halaman yang mahal dirender tidak ikut dijalankan ulang.
+func PaginationTarget(baseURL string, page models.PageInfo, params string, target string) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
 		if page.TotalPages > 1 {
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex items-center justify-between px-4 py-3 border-t border-border\"><div class=\"text-xs text-muted-foreground\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Showing %d to %d of %d", (page.Page-1)*page.PerPage+1, min(page.Page*page.PerPage, int(page.Total)), page.Total))
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Showing %d to %d of %d", (page.Page-1)*page.PerPage+1, min(page.Page*page.PerPage, int(page.Total)), page.Total))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/pagination.templ`, Line: 13, Col: 142}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/pagination.templ`, Line: 22, Col: 142}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -55,7 +89,7 @@ func Pagination(baseURL string, page models.PageInfo, params string) templ.Compo
 			}
 			templ_7745c5c3_Err = Button("prev-page", "outline", "xs", "chevron-left", "Previous", "", templ.Attributes{
 				"hx-post":      fmt.Sprintf("%s?page=%d&sort_by=%s&sort_dir=%s%s", baseURL, page.Page-1, page.SortBy, page.SortDir, params),
-				"hx-target":    "#content",
+				"hx-target":    "#" + target,
 				"hx-swap":      "innerHTML",
 				"hx-push-url":  "true",
 				"hx-indicator": ".htmx-loader,.loaded-content",
@@ -75,7 +109,7 @@ func Pagination(baseURL string, page models.PageInfo, params string) templ.Compo
 				} else if i == 1 || i == page.TotalPages || (i >= page.Page-1 && i <= page.Page+1) {
 					templ_7745c5c3_Err = Button(fmt.Sprintf("page-%d", i), "outline", "xs", "", fmt.Sprintf("%d", i), "", templ.Attributes{
 						"hx-post":      fmt.Sprintf("%s?page=%d&sort_by=%s&sort_dir=%s%s", baseURL, i, page.SortBy, page.SortDir, params),
-						"hx-target":    "#content",
+						"hx-target":    "#" + target,
 						"hx-swap":      "innerHTML",
 						"hx-push-url":  "true",
 						"hx-indicator": ".htmx-loader,.loaded-content",
@@ -92,7 +126,7 @@ func Pagination(baseURL string, page models.PageInfo, params string) templ.Compo
 			}
 			templ_7745c5c3_Err = Button("next-page", "outline", "xs", "chevron-right", "Next", "", templ.Attributes{
 				"hx-post":      fmt.Sprintf("%s?page=%d&sort_by=%s&sort_dir=%s%s", baseURL, page.Page+1, page.SortBy, page.SortDir, params),
-				"hx-target":    "#content",
+				"hx-target":    "#" + target,
 				"hx-swap":      "innerHTML",
 				"hx-push-url":  "true",
 				"hx-indicator": ".htmx-loader,.loaded-content",

@@ -3,6 +3,98 @@
 Seluruh perubahan penting pada aplikasi etop dicatat di berkas ini.
 Format mengikuti [Keep a Changelog](https://keepachangelog.com/id/1.1.0/).
 
+## [Belum dirilis] — 2026-09-15
+
+Tiga rumus indikator disesuaikan, kaidah pembatas pada basis aturan dihapus,
+serta pencarian dan penyaring ditambahkan pada daftar pengguna, departemen, dan
+tugas. Waktu muat halaman My Tasks turun sekitar sepuluh kali lipat.
+
+### Ditambahkan
+
+- **Pencarian pada Settings.** Tab Users mencari nama lengkap, username, dan
+  email; tab Departments mencari nama dan keterangan. Pencarian berjalan
+  seiring pengetikan dengan jeda 400 milidetik.
+- **Pencarian dan penyaring pada My Tasks.** Kotak pencarian menelusuri judul
+  dan keterangan tugas, disertai tiga penyaring untuk status, prioritas, dan
+  jenis, serta tombol untuk membersihkan semuanya sekaligus. Kata kunci dan
+  penyaring ikut terbawa oleh tombol halaman berikutnya maupun tombol
+  pengurutan.
+- **Komponen `ui.SearchBox` dan `ui.FilterSelect`.** Keduanya memakai kata kunci
+  dan fungsi penyusun alamat dari cakupan Alpine di sekitarnya, sehingga seluruh
+  penyaring pada satu halaman selalu terkirim bersama.
+- **Singgahan tabel acuan tugas.** `task_statuses`, `task_priorities`, dan
+  `task_impacts` disimpan di memori dan dibatalkan setelah Task Config disimpan.
+  Ketiganya sebelumnya ditembak ulang hingga enam kali pada setiap render
+  halaman My Tasks.
+- **Indeks tabel `tasks`** untuk `user_id`, `created_by`, `status_id`,
+  `priority_id`, dan `created_at`, satu indeks parsial untuk `completed_at`,
+  serta satu indeks gabungan `(user_id, created_at DESC)`.
+
+### Diubah
+
+- **Penyebut OTR mencakup seluruh tugas yang nasibnya sudah pasti**, yaitu tugas
+  yang sudah selesai ditambah tugas yang belum selesai padahal tenggatnya sudah
+  lewat. Sebelumnya hanya tugas yang selesai, sehingga menelantarkan tugas
+  justru menghasilkan OTR lebih baik daripada menyelesaikannya terlambat.
+- **Rumus WER membatasi tiap tugas sebelum dirata-ratakan:**
+
+      WER = rata-rata( min(1 ; estimasi / realisasi) ) x 100%
+
+  Sebelumnya rasio tiap tugas dirata-ratakan dulu baru dipotong pada 100. Tugas
+  yang selesai jauh lebih cepat dari perkiraan menghasilkan rasio ribuan dan
+  menarik rata-ratanya melewati 100; pada data pengujian, 15 dari 20 karyawan
+  tercatat sempurna. Setelah pembatasan per tugas, rentangnya menjadi 20,34
+  sampai 97,29.
+- **Penyebut TVS memakai cacah tugas**, bukan jumlah bobotnya.
+- **Daftar tugas pada My Tasks ditukar sebagai pecahan tersendiri.** Pencarian,
+  penyaring, pengurutan, dan penomoran halaman hanya menukar bagian daftar.
+  Sebelumnya seluruh isi halaman dirender ulang, termasuk modal buat tugas yang
+  menarik seluruh baris tabel `users` dua kali. Pada basis data berisi 349
+  pengguna, dua kueri itu memakan 903 dari 1.252 milidetik waktu halaman.
+- **Daftar karyawan pada halaman Achieved terurut menurut abjad.** Pengguna yang
+  sedang masuk tidak lagi dipaksa ke urutan pertama, melainkan hanya ditandai
+  terpilih ketika belum ada pilihan lain.
+
+### Dihapus
+
+- **Kaidah pembatas OTR pada basis aturan.** Kaidah itu menurunkan konsekuen
+  menjadi paling tinggi "Cukup" bila OTR berada pada himpunan terendah.
+  Pengukuran setelah ketiga perubahan rumus di atas menunjukkan kaidah itu tidak
+  lagi mengubah kategori satu pun karyawan, baik pada data penelitian maupun
+  pada seluruh riwayat tiket, karena indikator lain sudah lebih dulu menurunkan
+  nilai mereka. Konsekuen kini ditentukan sepenuhnya oleh kaidah agregasi.
+  Perbandingan kedua rancangan tetap tersedia pada eksperimen `kaidah` di
+  `cmd/fuzzysim`.
+
+### Kinerja
+
+Diukur pada basis data berisi 35.004 tugas dan 349 pengguna, dalam keadaan
+sambungan hangat, tiga kali tiap permintaan.
+
+| Permintaan | Sebelum | Sesudah |
+|---|---:|---:|
+| Mengetik di kotak pencarian My Tasks | 1,0–2,4 s | 0,11 s |
+| Mengubah penyaring My Tasks | 1,4–2,0 s | 0,11 s |
+| Membuka halaman My Tasks | 1,0–1,5 s | 0,16 s |
+
+Jumlah kueri per permintaan turun dari 11 menjadi 5 untuk pencarian dan 7 untuk
+halaman penuh. Ukuran jawaban turun dari 231 KB menjadi 63 KB.
+
+### Keamanan dan privasi
+
+- Folder `db/migrations/` dan `cmd/simdb/` dimasukkan ke `.gitignore` atas
+  permintaan pemilik proyek, dan berkas migrasi yang sebelumnya terlacak dicabut
+  dari pelacakan. **Akibatnya salinan repo tidak lagi memuat berkas migrasi,
+  sehingga pemasangan di mesin baru memerlukan salinan berkas itu secara
+  terpisah sebelum `cmd/migrate` dapat dijalankan.**
+- Luaran server berakhiran `.log` ikut diabaikan.
+
+### Pengujian
+
+- 75 kasus uji black box dijalankan terhadap build hasil perubahan. 74 sesuai;
+  satu kasus yang memeriksa keberadaan kategori "Buruk" tidak terpenuhi karena
+  basis data pengujian tidak memuat karyawan pada kategori itu.
+
 ## [Belum dirilis] — 2026-09-13
 
 Rangkaian perubahan ini mengganti indikator ketiga penilaian kinerja dari

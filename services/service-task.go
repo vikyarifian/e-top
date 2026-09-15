@@ -5,32 +5,6 @@ import (
 	"etop/models"
 )
 
-func GetTaskStatuses() []models.TaskStatus {
-	taskStatuses := []models.TaskStatus{}
-	if err := db.PgSql.Find(&taskStatuses).Error; err != nil {
-		return []models.TaskStatus{}
-	}
-	return taskStatuses
-}
-
-func GetTaskPriorities() []models.TaskPriority {
-	taskPriorities := []models.TaskPriority{}
-	if err := db.PgSql.Order("no").Find(&taskPriorities).Error; err != nil {
-		return []models.TaskPriority{}
-	}
-	return taskPriorities
-}
-
-// GetTaskImpacts mengembalikan acuan luas dampak tugas. Urutannya mengikuti
-// kolom no agar pilihan pada formulir selalu tampil dalam urutan yang sama.
-func GetTaskImpacts() []models.TaskImpact {
-	taskImpacts := []models.TaskImpact{}
-	if err := db.PgSql.Order("no").Find(&taskImpacts).Error; err != nil {
-		return []models.TaskImpact{}
-	}
-	return taskImpacts
-}
-
 // MaxDueMinutesFor mengembalikan batas tenggat milik sebuah prioritas.
 // Nilai 0 berarti prioritas itu tidak dibatasi.
 func MaxDueMinutesFor(priorityID int) int {

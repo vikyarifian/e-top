@@ -19,3 +19,14 @@ skripsi/
 # Penyemai data penilaian: memuat nama karyawan beserta kategori
 # kinerjanya. Tetap dapat dijalankan secara lokal.
 cmd/seedeval/
+
+# Berkas migrasi skema basis data, disimpan di luar repo atas permintaan
+# pemilik proyek. Jalankan cmd/migrate dengan salinan lokalnya.
+db/migrations/
+
+# Pembangun basis data simulasi: memuat pemetaan data iTop beserta alamat
+# folder kerja lokal. Tetap dapat dijalankan secara lokal.
+cmd/simdb/
+
+# Luaran server saat dijalankan dari baris perintah.
+*.log

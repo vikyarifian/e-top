@@ -178,19 +178,14 @@ func Category(z float64) string {
 // Prinsip: derajat kebaikan setiap kombinasi diukur dari rasio
 //   r = (jumlah skor himpunan seluruh variabel) / (n_variabel * (m_himpunan - 1))
 // lalu dipetakan ke lima kategori konsekuen dengan lebar pita yang sama.
-// Kaidah tambahan: bila OTR berada pada himpunan terendah, konsekuen
-// dibatasi maksimum "Cukup" karena disiplin tenggat adalah syarat perlu.
-// Untuk 4 variabel dan 2 himpunan, kaidah ini menghasilkan tepat 16 aturan
-// yang identik dengan tabel aturan pada services/service-fuzzy.go.
+//
+// Basis aturan sebelumnya memuat kaidah pembatas yang menurunkan konsekuen
+// menjadi paling tinggi "Cukup" bila OTR berada pada himpunan terendah. Kaidah
+// itu sudah dihapus dari sistem; perbandingan kedua rancangan tetap tersedia
+// pada eksperimen kaidah di cmd/fuzzysim/kaidah.go.
 
 func buildRules(varNames []string, nSets int) []Rule {
 	n := len(varNames)
-	otrPos := -1
-	for i, v := range varNames {
-		if v == "OTR" {
-			otrPos = i
-		}
-	}
 	total := 1
 	for i := 0; i < n; i++ {
 		total *= nSets
@@ -214,9 +209,7 @@ func buildRules(varNames []string, nSets int) []Rule {
 		if level > 4 {
 			level = 4
 		}
-		if otrPos >= 0 && idx[otrPos] == 0 && level > 2 {
-			level = 2
-		}
+
 		cp := make([]int, n)
 		copy(cp, idx)
 		rules = append(rules, Rule{

@@ -303,7 +303,7 @@ func expKandidat() {
 
 	// ---------------------------------------------------------- 17.6
 	p("\n17.6 Nilai akhir bila slot ketiga diganti tiga kandidat teratas\n")
-	cfg := cfgVarian(varianKaidah()[0])
+	cfg := cfgVarian(varianKaidah()[1]) // rancangan sistem: agregasi saja
 	// perbandingan dipilih tangan: TVS yang berlaku sekarang, dua kandidat
 	// berbasis kinerja, dan satu kandidat berbasis penugasan sebagai pembanding
 	pilih := []string{"TVS", "VDS", "DSS", "DSSw", "WLR"}

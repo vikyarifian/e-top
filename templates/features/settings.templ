@@ -315,26 +315,32 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models
         <div class="space-y-6" data-title="Department Settings">
             <div class="text-card-foreground shadow-sm p-4">
                 <div class="space-y-4">
-                    if len(depts) == 0 {
-                        @components.NoData("No departments found", "Create your first department", nil) {
-                            @ui.Button("create-department", "outline", "xs", "circle-plus", "Create Department", "", templ.Attributes{
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-medium">Departments</h3>
+                            <p class="text-sm text-muted-foreground">Manage all departments</p>
+                        </div>
+                        <div class="flex items-center gap-2" x-data={ settingsSearchScope("departments", pageInfo.Query) }>
+                            @ui.SearchBox("search-depts", "Cari nama atau keterangan", "content")
+                            @ui.Button("create-dept-table", "", "sm", "circle-plus", "New Department", "", templ.Attributes{
                                 "type": "button",
                                 "@click":"$store.modal.open('create-department-modal')",
                             })
-                        }
-                    } else {
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <h3 class="text-lg font-medium">Departments</h3>
-                                <p class="text-sm text-muted-foreground">Manage all departments</p>
-                            </div>
-                            <div>
-                                @ui.Button("create-dept-table", "", "sm", "circle-plus", "New Department", "", templ.Attributes{
+                        </div>
+                    </div>
+                    if len(depts) == 0 {
+                        if pageInfo.Menyaring() {
+                            @components.NoData("Tidak ada departemen yang cocok", "Ubah kata kuncinya, atau kosongkan untuk menampilkan seluruh departemen.", nil) {
+                            }
+                        } else {
+                            @components.NoData("No departments found", "Create your first department", nil) {
+                                @ui.Button("create-department", "outline", "xs", "circle-plus", "Create Department", "", templ.Attributes{
                                     "type": "button",
                                     "@click":"$store.modal.open('create-department-modal')",
                                 })
-                            </div>
-                        </div>
+                            }
+                        }
+                    } else {
                         <div class="relative w-full overflow-auto scrollbar-thin">
                             @ui.Table("w-full caption-bottom text-sm", nil) {
                                 @ui.TableHeader("", nil) {
@@ -397,7 +403,7 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models
                                 }
                             }
                         </div>
-                        @ui.Pagination("/settings", pageInfo, "&tab=departments")
+                        @ui.Pagination("/settings", pageInfo, "&tab=departments"+pageInfo.Params())
                     }
                 </div>
             </div>
@@ -412,26 +418,32 @@ templ UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageI
         <div class="space-y-6" data-title="User Settings">
             <div class="text-card-foreground shadow-sm p-4">
                 <div class="space-y-4">
-                    if len(users) == 0 {
-                        @components.NoData("No users found", "Create your first user", nil) {
-                            @ui.Button("create-user", "outline", "xs", "circle-plus", "Create User", "", templ.Attributes{
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                        <div>
+                            <h3 class="text-lg font-medium">Users</h3>
+                            <p class="text-sm text-muted-foreground">Manage all users</p>
+                        </div>
+                        <div class="flex items-center gap-2" x-data={ settingsSearchScope("users", pageInfo.Query) }>
+                            @ui.SearchBox("search-users", "Cari nama, username, atau email", "content")
+                            @ui.Button("create-user-table", "", "sm", "circle-plus", "New User", "", templ.Attributes{
                                 "type": "button",
                                 "@click":"$store.modal.open('create-user-modal')",
                             })
-                        }
-                    } else {
-                        <div class="flex items-center justify-between mb-4">
-                            <div>
-                                <h3 class="text-lg font-medium">Users</h3>
-                                <p class="text-sm text-muted-foreground">Manage all users</p>
-                            </div>
-                            <div>
-                                @ui.Button("create-user-table", "", "sm", "circle-plus", "New User", "", templ.Attributes{
+                        </div>
+                    </div>
+                    if len(users) == 0 {
+                        if pageInfo.Menyaring() {
+                            @components.NoData("Tidak ada pengguna yang cocok", "Ubah kata kuncinya, atau kosongkan untuk menampilkan seluruh pengguna.", nil) {
+                            }
+                        } else {
+                            @components.NoData("No users found", "Create your first user", nil) {
+                                @ui.Button("create-user", "outline", "xs", "circle-plus", "Create User", "", templ.Attributes{
                                     "type": "button",
                                     "@click":"$store.modal.open('create-user-modal')",
                                 })
-                            </div>
-                        </div>
+                            }
+                        }
+                    } else {
                         <div class="relative w-full overflow-auto scrollbar-thin">
                             @ui.Table("w-full caption-bottom text-sm", nil) {
                                 @ui.TableHeader("", nil) {
@@ -490,7 +502,7 @@ templ UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageI
                                 }
                             }
                         </div>
-                        @ui.Pagination("/settings", pageInfo, "&tab=users")
+                        @ui.Pagination("/settings", pageInfo, "&tab=users"+pageInfo.Params())
                     }
                 </div>
             </div>

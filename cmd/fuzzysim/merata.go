@@ -141,8 +141,8 @@ func expMerata() {
 	header("EKSPERIMEN 15 - BILA SEBARAN PRIORITAS DAN DAMPAK DIBUAT MERATA")
 
 	petakUser := muatPetak()
-	w := skemaUji()[1] // bobot sistem 1 / 0,9 / 0,8
-	cfg := cfgVarian(varianKaidah()[0])
+	w := skemaUji()[1]                  // bobot sistem 1 / 0,9 / 0,8
+	cfg := cfgVarian(varianKaidah()[1]) // rancangan sistem: agregasi saja
 
 	type kpi struct{ TCR, OTR, WER float64 }
 	lain := map[string]kpi{}

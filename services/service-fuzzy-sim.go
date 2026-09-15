@@ -226,19 +226,12 @@ type SimResult struct {
 }
 
 // buildSimRules membangkitkan basis aturan memakai kaidah yang sama dengan
-// services/service-fuzzy.go: skor tiap himpunan dijumlah, rasionya terhadap
-// skor maksimum dipetakan ke lima konsekuen, lalu berlaku kaidah pembatas
-// yaitu OTR pada himpunan terendah membatasi konsekuen paling tinggi Cukup.
+// services/service-fuzzy.go: skor tiap himpunan dijumlah, lalu rasionya
+// terhadap skor maksimum dipetakan ke lima konsekuen dengan lebar pita sama.
 func buildSimRules(cfg SimConfig) []SimRule {
 	nVar, nSet := len(cfg.Vars), len(cfg.Sets)
 	if nVar == 0 || nSet == 0 {
 		return nil
-	}
-	otrPos := -1
-	for i, v := range cfg.Vars {
-		if v.Name == "OTR" {
-			otrPos = i
-		}
 	}
 	total := 1
 	for i := 0; i < nVar; i++ {
@@ -264,9 +257,7 @@ func buildSimRules(cfg SimConfig) []SimRule {
 		if level > 4 {
 			level = 4
 		}
-		if otrPos >= 0 && idx[otrPos] == 0 && level > 2 {
-			level = 2
-		}
+
 		premise := ""
 		for i := range cfg.Vars {
 			if i > 0 {
