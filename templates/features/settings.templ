@@ -321,7 +321,7 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models
                             <p class="text-sm text-muted-foreground">Manage all departments</p>
                         </div>
                         <div class="flex items-center gap-2" x-data={ settingsSearchScope("departments", pageInfo.Query) }>
-                            @ui.SearchBox("search-depts", "Cari nama atau keterangan", "content")
+                            @ui.SearchBox("search-depts", "Cari nama atau keterangan")
                             @ui.Button("create-dept-table", "", "sm", "circle-plus", "New Department", "", templ.Attributes{
                                 "type": "button",
                                 "@click":"$store.modal.open('create-department-modal')",
@@ -424,7 +424,7 @@ templ UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageI
                             <p class="text-sm text-muted-foreground">Manage all users</p>
                         </div>
                         <div class="flex items-center gap-2" x-data={ settingsSearchScope("users", pageInfo.Query) }>
-                            @ui.SearchBox("search-users", "Cari nama, username, atau email", "content")
+                            @ui.SearchBox("search-users", "Cari nama, username, atau email")
                             @ui.Button("create-user-table", "", "sm", "circle-plus", "New User", "", templ.Attributes{
                                 "type": "button",
                                 "@click":"$store.modal.open('create-user-modal')",

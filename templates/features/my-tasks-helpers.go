@@ -12,13 +12,16 @@ import (
 // myTasksScope menyusun cakupan Alpine untuk halaman My Tasks.
 //
 // Kata kunci dan ketiga penyaring disimpan dalam satu cakupan bersama, lalu
-// fungsi url() menyusun alamat yang memuat semuanya sekaligus. Tanpa itu,
-// mengubah satu penyaring akan menghapus penyaring lain yang sedang aktif,
-// sebab tiap kendali hanya mengetahui nilainya sendiri.
+// url() menyusun alamat yang memuat semuanya sekaligus. Tanpa itu, mengubah
+// satu penyaring akan menghapus penyaring lain yang sedang aktif, sebab tiap
+// kendali hanya mengetahui nilainya sendiri.
 //
-// Nilai awalnya diambil dari keadaan yang sedang berlaku di server supaya
-// tampilan kendali tetap sesuai setelah halaman dimuat ulang atau setelah
-// pengguna menekan tombol kembali pada peramban.
+// Pengiriman memakai htmx.ajax, bukan atribut hx-post hasil pengikatan Alpine.
+// htmx memeriksa elemen sekali saat halaman dimuat; atribut yang baru dibuat
+// Alpine sesudahnya tidak akan pernah terdaftar, sehingga kendalinya diam saja.
+//
+// Nilai awal diambil dari keadaan yang sedang berlaku di server supaya tampilan
+// kendali tetap sesuai setelah halaman dimuat ulang.
 func myTasksScope(page models.PageInfo) string {
 	awal := map[string]string{
 		"q":        page.Query,
@@ -31,15 +34,33 @@ func myTasksScope(page models.PageInfo) string {
 		b = []byte(`{"q":"","status":"","priority":"","type":""}`)
 	}
 	return fmt.Sprintf(`Object.assign(%s, {
-		url() {
+		params() {
 			const p = new URLSearchParams();
 			p.set('page', '1');
 			if (this.q && this.q.trim()) p.set('q', this.q.trim());
 			if (this.status) p.set('status', this.status);
 			if (this.priority) p.set('priority', this.priority);
 			if (this.type) p.set('type', this.type);
+			return p;
+		},
+		url() {
+			const p = this.params();
 			p.set('part', 'list');
 			return '/my-tasks?' + p.toString();
+		},
+		kirim() {
+			htmx.ajax('POST', this.url(), { target: '#my-tasks-list', swap: 'innerHTML' });
+			// Alamat pada bilah peramban disamakan tanpa penanda pecahan, agar
+			// memuat ulang halaman menghasilkan halaman utuh dengan penyaring
+			// yang sama. replaceState dipakai supaya tiap ketukan tombol tidak
+			// menambah satu langkah pada riwayat peramban.
+			try {
+				history.replaceState({}, '', '/my-tasks?' + this.params().toString());
+			} catch (e) {}
+		},
+		bersihkan() {
+			this.q = ''; this.status = ''; this.priority = ''; this.type = '';
+			this.kirim();
 		},
 		menyaring() {
 			return !!((this.q && this.q.trim()) || this.status || this.priority || this.type);

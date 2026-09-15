@@ -8,10 +8,9 @@ import (
 // settingsSearchScope menyusun cakupan Alpine untuk kotak pencarian pada
 // halaman Settings.
 //
-// Komponen ui.SearchBox memakai q dan url() dari cakupan di sekitarnya, jadi
-// cakupan itu harus disediakan pemanggilnya. Nilai awalnya diambil dari kata
-// kunci yang sedang berlaku di server supaya isian kotak tetap sesuai setelah
-// halaman dimuat ulang atau setelah tombol kembali peramban ditekan.
+// Sama seperti My Tasks, pengiriman memakai htmx.ajax dari penangan peristiwa
+// Alpine agar tidak bergantung pada atribut hx-post yang baru muncul setelah
+// htmx selesai memeriksa halaman.
 func settingsSearchScope(tab string, query string) string {
 	b, err := json.Marshal(map[string]string{"q": query})
 	if err != nil {
@@ -24,6 +23,11 @@ func settingsSearchScope(tab string, query string) string {
 			p.set('page', '1');
 			if (this.q && this.q.trim()) p.set('q', this.q.trim());
 			return '/settings?' + p.toString();
+		},
+		kirim() {
+			const u = this.url();
+			htmx.ajax('POST', u, { target: '#content', swap: 'innerHTML' });
+			try { history.replaceState({}, '', u); } catch (e) {}
 		}
 	})`, string(b), tab)
 }

@@ -2,26 +2,21 @@ package ui
 
 // SearchBox adalah kotak pencarian yang mengirim ulang isi halaman lewat htmx.
 //
-// Komponen ini sengaja tidak membuat cakupan Alpine sendiri. Ia memakai dua hal
-// dari cakupan di sekitarnya:
+// Pengiriman dilakukan dengan memanggil htmx.ajax dari penangan peristiwa
+// Alpine, bukan lewat atribut hx-post. Alasannya soal urutan: htmx memeriksa
+// elemen sekali saat halaman dimuat, sedangkan atribut hasil pengikatan Alpine
+// (:hx-post) baru muncul setelah Alpine berjalan. Elemen yang punya hx-trigger
+// tanpa atribut kata kerja tidak akan pernah didaftarkan htmx, sehingga
+// mengetik maupun mengubah pilihan tidak menghasilkan permintaan sama sekali.
 //
-//	q       kata kunci yang sedang diketik
-//	url()   fungsi yang menyusun alamat tujuan
+// Komponen ini memakai dua hal dari cakupan Alpine di sekitarnya:
 //
-// Sebelumnya komponen ini membawa cakupannya sendiri, dan pada halaman yang juga
-// punya penyaring lain cakupan itu menutupi cakupan halaman. Akibatnya url()
-// yang terpanggil adalah milik komponen, sehingga penyaring yang sedang aktif
-// ikut hilang begitu pengguna mengetik.
-//
-// Alamat disusun di peramban agar kata kunci masuk ke query string, bukan ke
-// badan permintaan. Dengan begitu tautan yang didorong ke riwayat peramban tetap
-// memuat kata kunci, dan tombol halaman berikutnya membacanya dari alamat yang
-// sama.
+//	q        kata kunci yang sedang diketik
+//	kirim()  fungsi yang menyusun alamat lalu memanggil htmx.ajax
 //
 //	id          pengenal unik elemen, wajib berbeda antar-halaman
 //	placeholder tulisan bayangan di dalam kotak
-//	target      id elemen yang isinya ditukar, tanpa tanda pagar
-templ SearchBox(id string, placeholder string, target string) {
+templ SearchBox(id string, placeholder string) {
 	<div class="relative w-full sm:w-72">
 		<svg
 			data-lucide="search"
@@ -34,19 +29,16 @@ templ SearchBox(id string, placeholder string, target string) {
 			autocomplete="off"
 			placeholder={ placeholder }
 			x-model="q"
-			:hx-post="url()"
-			hx-trigger="keyup changed delay:400ms, search"
-			hx-target={ "#" + target }
-			hx-swap="innerHTML"
-			hx-push-url="true"
-			hx-indicator=".htmx-loader,.loaded-content"
+			@input.debounce.400ms="kirim()"
+			@search="kirim()"
+			@keydown.enter.prevent="kirim()"
 			class="flex h-9 w-full rounded-md border border-input bg-background pl-8 pr-8 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
 		/>
 		<button
 			type="button"
 			x-show="q.length > 0"
 			x-cloak
-			@click={ "q=''; $nextTick(() => htmx.ajax('POST', url(), {target:'#" + target + "', swap:'innerHTML'}))" }
+			@click="q=''; $nextTick(() => kirim())"
 			class="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
 			aria-label="Bersihkan pencarian"
 		>
@@ -56,21 +48,16 @@ templ SearchBox(id string, placeholder string, target string) {
 }
 
 // FilterSelect adalah daftar pilihan penyaring yang mengirim ulang isi halaman
-// begitu pilihannya berubah. Seperti SearchBox, ia memakai url() dari cakupan
-// Alpine di sekitarnya sehingga seluruh penyaring pada satu halaman ikut
-// terkirim bersama.
-templ FilterSelect(id string, label string, model string, options []Opsi, target string) {
+// begitu pilihannya berubah. Seperti SearchBox, ia memanggil kirim() dari
+// cakupan Alpine di sekitarnya sehingga seluruh penyaring pada satu halaman
+// ikut terkirim bersama.
+templ FilterSelect(id string, label string, model string, options []Opsi) {
 	<div class="flex items-center gap-1.5">
 		<label for={ id } class="text-xs text-muted-foreground whitespace-nowrap">{ label }</label>
 		<select
 			id={ id }
 			x-model={ model }
-			:hx-post="url()"
-			hx-trigger="change"
-			hx-target={ "#" + target }
-			hx-swap="innerHTML"
-			hx-push-url="true"
-			hx-indicator=".htmx-loader,.loaded-content"
+			@change="kirim()"
 			class="flex h-9 rounded-md border border-input bg-background px-2 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
 		>
 			for _, o := range options {

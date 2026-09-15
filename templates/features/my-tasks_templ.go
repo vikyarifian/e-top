@@ -77,7 +77,7 @@ func MyTasks(tasks []models.Task, user dto.UserAuth, page models.PageInfo) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ui.SearchBox("search-my-tasks", "Cari judul atau keterangan", "my-tasks-list").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ui.SearchBox("search-my-tasks", "Cari judul atau keterangan").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,19 +85,19 @@ func MyTasks(tasks []models.Task, user dto.UserAuth, page models.PageInfo) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ui.FilterSelect("filter-status", "Status", "status", statusOptions(), "my-tasks-list").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ui.FilterSelect("filter-status", "Status", "status", statusOptions()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ui.FilterSelect("filter-priority", "Priority", "priority", priorityOptions(), "my-tasks-list").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ui.FilterSelect("filter-priority", "Priority", "priority", priorityOptions()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ui.FilterSelect("filter-type", "Type", "type", typeOptions(), "my-tasks-list").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ui.FilterSelect("filter-type", "Type", "type", typeOptions()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<button type=\"button\" x-show=\"menyaring()\" x-cloak @click=\"q=''; status=''; priority=''; type=''; htmx.ajax('POST', url(), {target:'#my-tasks-list', swap:'innerHTML'})\" class=\"inline-flex items-center gap-1 h-9 px-2.5 rounded-md border border-input text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition\"><svg data-lucide=\"filter-x\" class=\"h-3.5 w-3.5\"></svg> Bersihkan</button></div></div><div id=\"my-tasks-list\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<button type=\"button\" x-show=\"menyaring()\" x-cloak @click=\"bersihkan()\" class=\"inline-flex items-center gap-1 h-9 px-2.5 rounded-md border border-input text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition\"><svg data-lucide=\"filter-x\" class=\"h-3.5 w-3.5\"></svg> Bersihkan</button></div></div><div id=\"my-tasks-list\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

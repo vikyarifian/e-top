@@ -692,7 +692,7 @@ func DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models.
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ui.SearchBox("search-depts", "Cari nama atau keterangan", "content").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.SearchBox("search-depts", "Cari nama atau keterangan").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1236,7 +1236,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ui.SearchBox("search-users", "Cari nama, username, atau email", "content").Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.SearchBox("search-users", "Cari nama, username, atau email").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
