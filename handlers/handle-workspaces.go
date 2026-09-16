@@ -100,7 +100,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 			for _, member := range ws.Members {
 				if member.UserID == user.ID {
 					authorized = true
-					userRole = member.Role
+					userRole = utils.Peran(member.Role)
 					break
 				}
 			}
@@ -112,7 +112,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 					if member.UserID == user.ID {
 						authorized = true
 						if userRole == "" {
-							userRole = member.Role
+							userRole = utils.Peran(member.Role)
 						}
 						break
 					}
@@ -122,7 +122,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
 			var contributors []models.User
-			db.PgSql.Where("id IN (SELECT user_id FROM project_members WHERE role='CONTRIBUTOR' AND project_id IN (SELECT id FROM projects WHERE workspace_id=?))", ws.ID).Find(&contributors)
+			db.PgSql.Where("id IN (SELECT user_id FROM project_members WHERE upper(trim(role))='CONTRIBUTOR' AND project_id IN (SELECT id FROM projects WHERE workspace_id=?))", ws.ID).Find(&contributors)
 			return layouts.Layout("Workspace", user, features.Workspace(userRole, ws, contributors)).Render(r.Context(), w)
 		}
 
@@ -152,7 +152,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 			for _, member := range ws.Members {
 				if member.UserID == user.ID {
 					authorized = true
-					userRole = member.Role
+					userRole = utils.Peran(member.Role)
 					break
 				}
 			}
@@ -164,7 +164,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 					if member.UserID == user.ID {
 						authorized = true
 						if userRole == "" {
-							userRole = member.Role
+							userRole = utils.Peran(member.Role)
 						}
 						break
 					}
@@ -175,7 +175,7 @@ func HandleWorkspaces(w http.ResponseWriter, r *http.Request) error {
 			}
 
 			var contributors []models.User
-			db.PgSql.Where("id IN (SELECT user_id FROM project_members WHERE role='CONTRIBUTOR' AND project_id IN (SELECT id FROM projects WHERE workspace_id=?))", ws.ID).Find(&contributors)
+			db.PgSql.Where("id IN (SELECT user_id FROM project_members WHERE upper(trim(role))='CONTRIBUTOR' AND project_id IN (SELECT id FROM projects WHERE workspace_id=?))", ws.ID).Find(&contributors)
 
 			return features.Workspace(userRole, ws, contributors).Render(r.Context(), w)
 		}
@@ -488,7 +488,7 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 					}
 
 					var contributors []models.User
-					db.PgSql.Where("id IN (SELECT user_id FROM project_members WHERE role='CONTRIBUTOR' AND project_id IN (SELECT id FROM projects WHERE workspace_id=?))", ws.ID).Find(&contributors)
+					db.PgSql.Where("id IN (SELECT user_id FROM project_members WHERE upper(trim(role))='CONTRIBUTOR' AND project_id IN (SELECT id FROM projects WHERE workspace_id=?))", ws.ID).Find(&contributors)
 
 					return layouts.Layout("Workspace", user, features.Workspace(userRole, ws, contributors)).Render(r.Context(), w)
 				}
@@ -548,7 +548,7 @@ func HandleJoinWorkspace(w http.ResponseWriter, r *http.Request) error {
 					}
 
 					var contributors []models.User
-					db.PgSql.Where("id IN (SELECT user_id FROM project_members WHERE role='CONTRIBUTOR' AND project_id IN (SELECT id FROM projects WHERE workspace_id=?))", ws.ID).Find(&contributors)
+					db.PgSql.Where("id IN (SELECT user_id FROM project_members WHERE upper(trim(role))='CONTRIBUTOR' AND project_id IN (SELECT id FROM projects WHERE workspace_id=?))", ws.ID).Find(&contributors)
 
 					return features.Workspace(userRole, ws, contributors).Render(r.Context(), w)
 				}

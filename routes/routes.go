@@ -57,7 +57,9 @@ func SetRoutes() {
 
 	mux.HandleFunc("/dashboard", auth.RequireAuth(handlers.Make(handlers.HandleDashboard)))
 
-	mux.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaceSwitcher)))
+	// Pengalih workspace dimatikan atas permintaan pemilik proyek. Penangannya
+	// sengaja dibiarkan utuh supaya mudah dihidupkan kembali bila diperlukan.
+	// mux.HandleFunc("/workspace-switcher", auth.RequireAuth(handlers.Make(handlers.HandleWorkspaceSwitcher)))
 	mux.HandleFunc("/create-workspace-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateWorkspaceForm)))
 	mux.HandleFunc("/edit-workspace-form", auth.RequireAuth(handlers.Make(handlers.HandleEditWorkspaceForm)))
 	mux.HandleFunc("/invite-workspace-form", auth.RequireAuth(handlers.Make(handlers.HandleInviteWorkspaceForm)))

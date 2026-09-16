@@ -6,14 +6,21 @@ import (
 
 	"etop/dto"
 	"etop/models"
+	"etop/utils"
 )
+
+// peran menyeragamkan penulisan peran keanggotaan sebelum dibandingkan; lihat
+// keterangan pada utils.Peran.
+func peran(p string) string {
+	return utils.Peran(p)
+}
 
 func canEditTask(task models.Task, user dto.UserAuth) bool {
 	if task.CreatedBy == user.ID || user.Level == "ADMIN" {
 		return true
 	}
 	for _, member := range task.Project.Members {
-		if member.UserID == user.ID && (member.Role == "ADMIN" || member.Role == "OWNER") {
+		if member.UserID == user.ID && (peran(member.Role) == "ADMIN" || peran(member.Role) == "OWNER") {
 			return true
 		}
 	}

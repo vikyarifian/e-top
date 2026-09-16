@@ -356,7 +356,6 @@ templ CreateWorkspaceForm() {
                             if (evt.detail.successful && evt.detail.elt.id === 'create-workspace-form') {
                                 $store.modal.close('create-workspace-modal');
                                 this.resetForm();
-                                htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})
                                 if (window.location.pathname === '/workspaces') {
                                     htmx.ajax('POST', '/workspaces', { 
                                         target: '#content', 
@@ -520,7 +519,6 @@ templ EditWorkspaceForm(workspace models.Workspace) {
                         document.body.addEventListener('htmx:afterRequest', (evt) => {
                             if (evt.detail.successful && evt.detail.elt.id === 'edit-workspace-form') {
                                 $store.modal.close('edit-workspace-modal');
-                                htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})
                                 const params = new URLSearchParams(window.location.search);
                                 if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace.id.trim()) {
                                     htmx.ajax('POST', '/workspaces?id='+this.workspace.id, { 
@@ -632,24 +630,24 @@ templ EditWorkspaceForm(workspace models.Workspace) {
                             <select id={fmt.Sprintf("role-%v", i)} 
                                 @change={fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID)}
                                 class="px-1 py-0.5 text-xs rounded-md border dark:bg-accent"
-                                if strings.Trim(member.Role, " ") == "OWNER" {
+                                if peran(member.Role) == "OWNER" {
                                     disabled
                                 }
                             >
-                                if strings.Trim(member.Role, " ") == "OWNER" {
+                                if peran(member.Role) == "OWNER" {
                                     <option value="OWNER" class=""
-                                        if strings.Trim(member.Role, " ") == "OWNER" {
+                                        if peran(member.Role) == "OWNER" {
                                             selected
                                         }
                                     >Owner</option>
                                 }
                                 <option value="ADMIN" 
-                                    if strings.Trim(member.Role, " ") == "ADMIN" {
+                                    if peran(member.Role) == "ADMIN" {
                                          selected
                                      }
                                 >Admin</option>
                                 <option value="MEMBER" 
-                                if strings.Trim(member.Role, " ") == "MEMBER" {
+                                if peran(member.Role) == "MEMBER" {
                                          selected
                                      }
                                 >Member</option>

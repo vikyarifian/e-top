@@ -2,7 +2,6 @@ package features
 
 import (
     "fmt"
-    "strings"
 
     "etop/dto"
     "etop/utils"
@@ -1201,15 +1200,15 @@ templ EditDeptForm(dept models.Department) {
                             <select id={fmt.Sprintf("role-%v", i)} 
                                 @change={fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID)}
                                 class="px-1 py-0.5 text-xs rounded-md border dark:bg-accent"
-                                if strings.Trim(member.Role, " ") == "MANAGER" {
+                                if peran(member.Role) == "MANAGER" {
                                     disabled
                                 }
                             >
-                                if strings.Trim(member.Role, " ") == "MANAGER" {
+                                if peran(member.Role) == "MANAGER" {
                                     <option value="MANAGER" selected>Manager</option>
                                 }
                                 <option value="MEMBER"
-                                    if strings.Trim(member.Role, " ") == "MEMBER" {
+                                    if peran(member.Role) == "MEMBER" {
                                         selected
                                     }
                                 >Member</option>

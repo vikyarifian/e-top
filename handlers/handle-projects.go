@@ -57,7 +57,7 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 			for _, member := range project.Members {
 				if member.UserID == user.ID {
 					authorized = true
-					userRole = member.Role
+					userRole = utils.Peran(member.Role)
 					break
 				}
 			}
@@ -107,7 +107,7 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 			for _, member := range project.Members {
 				if member.UserID == user.ID {
 					authorized = true
-					userRole = member.Role
+					userRole = utils.Peran(member.Role)
 					break
 				}
 			}
@@ -310,7 +310,7 @@ func HandleProject(w http.ResponseWriter, r *http.Request) error {
 			return ui.Toast("project-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
 		}
 
-		if member.Role != "OWNER" && member.Role != "ADMIN" {
+		if utils.Peran(member.Role) != "OWNER" && utils.Peran(member.Role) != "ADMIN" {
 			w.WriteHeader(http.StatusBadRequest)
 			return ui.Toast("project-error", "warning", "", "You're not authorized!", "", nil).Render(r.Context(), w)
 		}

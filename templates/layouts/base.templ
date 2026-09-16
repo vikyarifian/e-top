@@ -51,10 +51,6 @@ templ Layout(title string, user dto.UserAuth, content ...templ.Component) {
 					isMobile = window.innerWidth < 768;
 					if (!isMobile) sidebarOpen = false;
 					
-					if (currentSize != isMobile) {
-						htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHTML', indicators: []})
-					}
-					
 				});
 			"
 		>

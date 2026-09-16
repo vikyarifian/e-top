@@ -414,7 +414,7 @@ func HandleInviteDepartment(w http.ResponseWriter, r *http.Request) error {
 		authorized := false
 		var myMember models.DepartmentMember
 		if err := db.PgSql.Where("department_id=? AND user_id=?", deptID, user.ID).First(&myMember).Error; err == nil {
-			if myMember.Role == "MANAGER" || user.Level == "ADMIN" {
+			if utils.Peran(myMember.Role) == "MANAGER" || user.Level == "ADMIN" {
 				authorized = true
 			}
 		}

@@ -890,7 +890,7 @@ func CreateWorkspaceForm() templ.Component {
 			templ_7745c5c3_Var44 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div x-data=\"{\r\n                    tags: [],\r\n                    name: '',\r\n                    description: '',\r\n                    color: '',\r\n                    selectedColor: '',\r\n                    members: [],\r\n                    nameError: '',\r\n                    descriptionError : '',\r\n                    colorError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.name = this.name.charAt(0).toUpperCase() + this.name.slice(1);\r\n                    },\r\n                    validateColor() {\r\n                        this.colorError = (this.color.trim() === '')\r\n                            ? 'Color is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        //this.validateColor();\r\n                        \r\n                        if (this.nameError || this.validateColor()) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    resetForm() {\r\n                        this.tags = [];\r\n                        this.name = '';\r\n                        this.description = '';\r\n                        this.color = '';\r\n                        this.selectedColor = '';\r\n                        this.members = [];\r\n                        this.nameError = '';\r\n                        this.descriptionError = '';\r\n                        this.colorError = '';\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'create-workspace-form') {\r\n                                $store.modal.close('create-workspace-modal');\r\n                                this.resetForm();\r\n                                htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})\r\n                                if (window.location.pathname === '/workspaces') {\r\n                                    htmx.ajax('POST', '/workspaces', { \r\n                                        target: '#content', \r\n                                        swap: 'innerHTML' \r\n                                    })\r\n                                }\r\n                            }\r\n                        });\r\n\r\n                        document.body.addEventListener('modal:closed', (evt) => {\r\n                            if (evt.detail.id === 'create-workspace-modal') {\r\n                                this.resetForm();\r\n                            }\r\n                        });\r\n                    }\r\n                }\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 58, "<div x-data=\"{\r\n                    tags: [],\r\n                    name: '',\r\n                    description: '',\r\n                    color: '',\r\n                    selectedColor: '',\r\n                    members: [],\r\n                    nameError: '',\r\n                    descriptionError : '',\r\n                    colorError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.name = this.name.charAt(0).toUpperCase() + this.name.slice(1);\r\n                    },\r\n                    validateColor() {\r\n                        this.colorError = (this.color.trim() === '')\r\n                            ? 'Color is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        //this.validateColor();\r\n                        \r\n                        if (this.nameError || this.validateColor()) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    resetForm() {\r\n                        this.tags = [];\r\n                        this.name = '';\r\n                        this.description = '';\r\n                        this.color = '';\r\n                        this.selectedColor = '';\r\n                        this.members = [];\r\n                        this.nameError = '';\r\n                        this.descriptionError = '';\r\n                        this.colorError = '';\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'create-workspace-form') {\r\n                                $store.modal.close('create-workspace-modal');\r\n                                this.resetForm();\r\n                                if (window.location.pathname === '/workspaces') {\r\n                                    htmx.ajax('POST', '/workspaces', { \r\n                                        target: '#content', \r\n                                        swap: 'innerHTML' \r\n                                    })\r\n                                }\r\n                            }\r\n                        });\r\n\r\n                        document.body.addEventListener('modal:closed', (evt) => {\r\n                            if (evt.detail.id === 'create-workspace-modal') {\r\n                                this.resetForm();\r\n                            }\r\n                        });\r\n                    }\r\n                }\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1174,7 +1174,7 @@ func EditWorkspace(workspaceID string, class string, attrs templ.Attributes) tem
 			var templ_7745c5c3_Var52 string
 			templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace_id='%s'", workspaceID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 462, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 461, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var52)
 			if templ_7745c5c3_Err != nil {
@@ -1215,14 +1215,14 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 			templ_7745c5c3_Var53 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<div x-data=\"{\r\n                    workspace: {},\r\n                    tags: [],\r\n                    selectedColor: '',\r\n                    nameError: '',\r\n                    descriptionError : '',\r\n                    colorError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.workspace.name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.workspace.name = this.workspace.name.charAt(0).toUpperCase() + this.workspace.name.slice(1);\r\n                    },\r\n                    validateColor() {\r\n                        this.colorError = (this.workspace.color.trim() === '')\r\n                            ? 'Color is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        //this.validateColor();\r\n                        \r\n                        if (this.nameError || this.validateColor()) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    resetForm() {\r\n                        this.workspace = {};\r\n                        this.nameError = '';\r\n                        this.descriptionError = '';\r\n                        this.colorError = '';\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'edit-workspace-form') {\r\n                                $store.modal.close('edit-workspace-modal');\r\n                                htmx.ajax('GET', '/workspace-switcher', {target: '#workspace-switcher', swap: 'innerHtml'})\r\n                                const params = new URLSearchParams(window.location.search);\r\n                                if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace.id.trim()) {\r\n                                    htmx.ajax('POST', '/workspaces?id='+this.workspace.id, { \r\n                                        target: '#content', \r\n                                        swap: 'innerHTML' \r\n                                    })\r\n                                }\r\n                            }\r\n                        });\r\n                    }\r\n                }\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 76, "<div x-data=\"{\r\n                    workspace: {},\r\n                    tags: [],\r\n                    selectedColor: '',\r\n                    nameError: '',\r\n                    descriptionError : '',\r\n                    colorError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.workspace.name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.workspace.name = this.workspace.name.charAt(0).toUpperCase() + this.workspace.name.slice(1);\r\n                    },\r\n                    validateColor() {\r\n                        this.colorError = (this.workspace.color.trim() === '')\r\n                            ? 'Color is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        //this.validateColor();\r\n                        \r\n                        if (this.nameError || this.validateColor()) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    resetForm() {\r\n                        this.workspace = {};\r\n                        this.nameError = '';\r\n                        this.descriptionError = '';\r\n                        this.colorError = '';\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'edit-workspace-form') {\r\n                                $store.modal.close('edit-workspace-modal');\r\n                                const params = new URLSearchParams(window.location.search);\r\n                                if ('/workspaces?id='+params.get('id') === '/workspaces?id='+this.workspace.id.trim()) {\r\n                                    htmx.ajax('POST', '/workspaces?id='+this.workspace.id, { \r\n                                        target: '#content', \r\n                                        swap: 'innerHTML' \r\n                                    })\r\n                                }\r\n                            }\r\n                        });\r\n                    }\r\n                }\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var54 string
 		templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace=%s;selectedColor='%s'", string(utils.MustJSON(workspace)), workspace.Color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 535, Col: 114}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 533, Col: 114}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var54)
 		if templ_7745c5c3_Err != nil {
@@ -1413,7 +1413,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 				var templ_7745c5c3_Var60 string
 				templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("mems=%s;init();", string(utils.MustJSON(workspace.Members))))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 622, Col: 101}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 620, Col: 101}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var60)
 				if templ_7745c5c3_Err != nil {
@@ -1435,7 +1435,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					var templ_7745c5c3_Var61 string
 					templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(member.User.FullName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 629, Col: 53}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 627, Col: 53}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 					if templ_7745c5c3_Err != nil {
@@ -1448,7 +1448,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					var templ_7745c5c3_Var62 string
 					templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("role-%v", i))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 632, Col: 65}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 630, Col: 65}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var62)
 					if templ_7745c5c3_Err != nil {
@@ -1461,7 +1461,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					var templ_7745c5c3_Var63 string
 					templ_7745c5c3_Var63, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 633, Col: 109}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 631, Col: 109}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var63)
 					if templ_7745c5c3_Err != nil {
@@ -1471,7 +1471,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if strings.Trim(member.Role, " ") == "OWNER" {
+					if peran(member.Role) == "OWNER" {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 94, " disabled")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -1481,12 +1481,12 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if strings.Trim(member.Role, " ") == "OWNER" {
+					if peran(member.Role) == "OWNER" {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 96, "<option value=\"OWNER\" class=\"\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						if strings.Trim(member.Role, " ") == "OWNER" {
+						if peran(member.Role) == "OWNER" {
 							templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 97, " selected")
 							if templ_7745c5c3_Err != nil {
 								return templ_7745c5c3_Err
@@ -1501,7 +1501,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if strings.Trim(member.Role, " ") == "ADMIN" {
+					if peran(member.Role) == "ADMIN" {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, " selected")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -1511,7 +1511,7 @@ func EditWorkspaceForm(workspace models.Workspace) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if strings.Trim(member.Role, " ") == "MEMBER" {
+					if peran(member.Role) == "MEMBER" {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 102, " selected")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -1613,7 +1613,7 @@ func InviteWorkspace(workspaceID string, class string, attrs templ.Attributes) t
 			var templ_7745c5c3_Var66 string
 			templ_7745c5c3_Var66, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace_id='%s'", workspaceID))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 679, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 677, Col: 65}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var66)
 			if templ_7745c5c3_Err != nil {
@@ -1661,7 +1661,7 @@ func InviteWorkspaceForm(workspace models.Workspace, users []models.UserRole, in
 		var templ_7745c5c3_Var68 string
 		templ_7745c5c3_Var68, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace=%s;", string(utils.MustJSON(workspace))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 713, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 711, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var68)
 		if templ_7745c5c3_Err != nil {
@@ -1696,7 +1696,7 @@ func InviteWorkspaceForm(workspace models.Workspace, users []models.UserRole, in
 		var templ_7745c5c3_Var71 string
 		templ_7745c5c3_Var71, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(workspace.Name[0:1]))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 718, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 716, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var71))
 		if templ_7745c5c3_Err != nil {
@@ -1709,7 +1709,7 @@ func InviteWorkspaceForm(workspace models.Workspace, users []models.UserRole, in
 		var templ_7745c5c3_Var72 string
 		templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 721, Col: 76}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 719, Col: 76}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var72))
 		if templ_7745c5c3_Err != nil {
@@ -1987,7 +1987,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var82 string
 		templ_7745c5c3_Var82, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ToUpper(workspace.Name[0:1]))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 780, Col: 65}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 778, Col: 65}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var82))
 		if templ_7745c5c3_Err != nil {
@@ -2000,7 +2000,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var83 string
 		templ_7745c5c3_Var83, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 783, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 781, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var83))
 		if templ_7745c5c3_Err != nil {
@@ -2013,7 +2013,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var84 string
 		templ_7745c5c3_Var84, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 785, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 783, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var84))
 		if templ_7745c5c3_Err != nil {
@@ -2054,7 +2054,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var86 string
 		templ_7745c5c3_Var86, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 805, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 803, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var86))
 		if templ_7745c5c3_Err != nil {
@@ -2067,7 +2067,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var87 string
 		templ_7745c5c3_Var87, templ_7745c5c3_Err = templ.JoinStringErrs(workspace.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 807, Col: 42}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 805, Col: 42}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var87))
 		if templ_7745c5c3_Err != nil {
@@ -2080,7 +2080,7 @@ func JoinWorkspace(workspace models.Workspace) templ.Component {
 		var templ_7745c5c3_Var88 string
 		templ_7745c5c3_Var88, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("workspace_id = '%s';", workspace.ID))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 810, Col: 77}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/workspaces.templ`, Line: 808, Col: 77}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var88)
 		if templ_7745c5c3_Err != nil {

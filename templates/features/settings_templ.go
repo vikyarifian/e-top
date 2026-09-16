@@ -10,7 +10,6 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import (
 	"fmt"
-	"strings"
 
 	"etop/dto"
 	"etop/models"
@@ -48,7 +47,7 @@ func Settings(tab string, user dto.UserAuth) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("'general' === '%s' || '%s' === '' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab, tab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 28, Col: 165}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 27, Col: 165}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var2)
 		if templ_7745c5c3_Err != nil {
@@ -61,7 +60,7 @@ func Settings(tab string, user dto.UserAuth) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("'security' === '%s' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 36, Col: 146}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 35, Col: 146}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 		if templ_7745c5c3_Err != nil {
@@ -74,7 +73,7 @@ func Settings(tab string, user dto.UserAuth) templ.Component {
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("'notifications' === '%s' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 44, Col: 151}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 43, Col: 151}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var4)
 		if templ_7745c5c3_Err != nil {
@@ -92,7 +91,7 @@ func Settings(tab string, user dto.UserAuth) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("'users' === '%s'? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 53, Col: 146}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 52, Col: 146}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
@@ -105,7 +104,7 @@ func Settings(tab string, user dto.UserAuth) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("'departments' === '%s' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 61, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 60, Col: 153}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var6)
 			if templ_7745c5c3_Err != nil {
@@ -118,7 +117,7 @@ func Settings(tab string, user dto.UserAuth) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("'task-config' === '%s' ? 'font-medium bg-card border-b-0' : 'bg-background text-muted-foreground'", tab))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 69, Col: 153}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 68, Col: 153}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
@@ -185,7 +184,7 @@ func GeneralSettings(user dto.UserAuth) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("user= %s", string(utils.MustJSON(user))))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 114, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 113, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 			if templ_7745c5c3_Err != nil {
@@ -381,7 +380,7 @@ func SecuritySettings(user dto.UserAuth) templ.Component {
 			var templ_7745c5c3_Var15 string
 			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("user= %s", string(utils.MustJSON(user))))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 208, Col: 73}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 207, Col: 73}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var15)
 			if templ_7745c5c3_Err != nil {
@@ -589,7 +588,7 @@ func NotificationSettings(user dto.UserAuth, userSettings []models.UserSetting) 
 			var templ_7745c5c3_Var20 string
 			templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("user_settings= %s", string(utils.MustJSON(userSettings))))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 276, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 275, Col: 90}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 			if templ_7745c5c3_Err != nil {
@@ -682,7 +681,7 @@ func DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models.
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.ResolveAttributeValue(settingsSearchScope("departments", pageInfo.Query))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 323, Col: 120}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 322, Col: 120}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var24)
 			if templ_7745c5c3_Err != nil {
@@ -1011,7 +1010,7 @@ func DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models.
 									var templ_7745c5c3_Var40 string
 									templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(d.Name)
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 384, Col: 55}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 383, Col: 55}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 									if templ_7745c5c3_Err != nil {
@@ -1042,7 +1041,7 @@ func DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models.
 									var templ_7745c5c3_Var42 string
 									templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(d.Description)
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 387, Col: 62}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 386, Col: 62}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 									if templ_7745c5c3_Err != nil {
@@ -1081,7 +1080,7 @@ func DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models.
 									var templ_7745c5c3_Var44 string
 									templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(d.DeptHead.FullName)
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 392, Col: 72}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 391, Col: 72}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 									if templ_7745c5c3_Err != nil {
@@ -1226,7 +1225,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 			var templ_7745c5c3_Var48 string
 			templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.ResolveAttributeValue(settingsSearchScope("users", pageInfo.Query))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 426, Col: 114}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 425, Col: 114}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var48)
 			if templ_7745c5c3_Err != nil {
@@ -1529,7 +1528,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 									var templ_7745c5c3_Var62 string
 									templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.JoinStringErrs(u.FullName)
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 474, Col: 63}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 473, Col: 63}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
 									if templ_7745c5c3_Err != nil {
@@ -1564,7 +1563,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 									var templ_7745c5c3_Var64 string
 									templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(u.Username)
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 478, Col: 59}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 477, Col: 59}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
 									if templ_7745c5c3_Err != nil {
@@ -1595,7 +1594,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 									var templ_7745c5c3_Var66 string
 									templ_7745c5c3_Var66, templ_7745c5c3_Err = templ.JoinStringErrs(u.Email)
 									if templ_7745c5c3_Err != nil {
-										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 481, Col: 56}
+										return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 480, Col: 56}
 									}
 									_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var66))
 									if templ_7745c5c3_Err != nil {
@@ -1631,7 +1630,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 										var templ_7745c5c3_Var68 string
 										templ_7745c5c3_Var68, templ_7745c5c3_Err = templ.JoinStringErrs(u.Level)
 										if templ_7745c5c3_Err != nil {
-											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 486, Col: 64}
+											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 485, Col: 64}
 										}
 										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var68))
 										if templ_7745c5c3_Err != nil {
@@ -1649,7 +1648,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 										var templ_7745c5c3_Var69 string
 										templ_7745c5c3_Var69, templ_7745c5c3_Err = templ.JoinStringErrs(u.Level)
 										if templ_7745c5c3_Err != nil {
-											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 490, Col: 64}
+											return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 489, Col: 64}
 										}
 										_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var69))
 										if templ_7745c5c3_Err != nil {
@@ -1824,7 +1823,7 @@ func EditUserForm(user models.User) templ.Component {
 		var templ_7745c5c3_Var74 string
 		templ_7745c5c3_Var74, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("user=%s;selectedColor='%s'", string(utils.MustJSON(user)), user.Color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 575, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 574, Col: 99}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var74)
 		if templ_7745c5c3_Err != nil {
@@ -2922,7 +2921,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 		var templ_7745c5c3_Var103 string
 		templ_7745c5c3_Var103, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("dept=%s;selectedColor='%s'", string(utils.MustJSON(dept)), dept.Color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1101, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1100, Col: 99}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var103)
 		if templ_7745c5c3_Err != nil {
@@ -3154,7 +3153,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 				var templ_7745c5c3_Var110 string
 				templ_7745c5c3_Var110, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("mems=%s;init();", string(utils.MustJSON(dept.Members))))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1193, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1192, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var110)
 				if templ_7745c5c3_Err != nil {
@@ -3176,7 +3175,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 					var templ_7745c5c3_Var111 string
 					templ_7745c5c3_Var111, templ_7745c5c3_Err = templ.JoinStringErrs(member.User.FullName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1199, Col: 53}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1198, Col: 53}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var111))
 					if templ_7745c5c3_Err != nil {
@@ -3189,7 +3188,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 					var templ_7745c5c3_Var112 string
 					templ_7745c5c3_Var112, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("role-%v", i))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1201, Col: 65}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1200, Col: 65}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var112)
 					if templ_7745c5c3_Err != nil {
@@ -3202,7 +3201,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 					var templ_7745c5c3_Var113 string
 					templ_7745c5c3_Var113, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1202, Col: 109}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1201, Col: 109}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var113)
 					if templ_7745c5c3_Err != nil {
@@ -3212,7 +3211,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if strings.Trim(member.Role, " ") == "MANAGER" {
+					if peran(member.Role) == "MANAGER" {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 172, " disabled")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -3222,7 +3221,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if strings.Trim(member.Role, " ") == "MANAGER" {
+					if peran(member.Role) == "MANAGER" {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 174, "<option value=\"MANAGER\" selected>Manager</option> ")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -3232,7 +3231,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if strings.Trim(member.Role, " ") == "MEMBER" {
+					if peran(member.Role) == "MEMBER" {
 						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 176, " selected")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
@@ -3342,7 +3341,7 @@ func TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, imp
 				string(utils.MustJSON(impacts)),
 				string(utils.MustJSON(colors))))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1263, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1262, Col: 47}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var116)
 			if templ_7745c5c3_Err != nil {
