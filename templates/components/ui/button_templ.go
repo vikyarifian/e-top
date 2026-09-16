@@ -41,7 +41,11 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 				"focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none "+
 				"disabled:bg-muted disabled:text-muted-foreground border border-border shadow-sm [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 %s",
 			class),
-			templ.KV("bg-primary text-primary-foreground hover:bg-primary/90", variant == "primary"),
+			// Varian kosong disatukan ke sini, bukan ditulis ulang di baris
+			// tersendiri. templ mengurut kelas memakai peta yang berkunci teks
+			// kelasnya, sehingga dua baris dengan teks kelas persis sama saling
+			// menimpa dan yang terakhir menentukan.
+			templ.KV("bg-primary text-primary-foreground hover:bg-primary/90", variant == "primary" || variant == ""),
 			templ.KV("bg-destructive text-destructive-foreground hover:bg-destructive/90", variant == "destructive"),
 			templ.KV("bg-secondary text-secondary-foreground hover:bg-secondary/80", variant == "secondary"),
 			templ.KV("border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground", variant == "outline"),
@@ -49,7 +53,6 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 			templ.KV("text-primary underline-offset-4 hover:underline", variant == "link"),
 			templ.KV("bg-muted text-muted-foreground hover:bg-muted/80", variant == "muted"),
 			templ.KV("bg-blue-100 text-blue-600 border-transparent hover:bg-blue-200 shadow-none", variant == "teritary"),
-			templ.KV("bg-primary text-primary-foreground hover:bg-primary/90", variant == ""),
 			templ.KV("h-10 px-4 py-2", size == ""),
 			templ.KV("h-8 rounded-md px-3", size == "sm"),
 			templ.KV("h-7 rounded-md px-2 text-xs", size == "xs"),
@@ -106,7 +109,7 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(icon)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 36, Col: 32}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 39, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
@@ -121,7 +124,7 @@ func Button(id string, variant, size, icon, text string, class string, attrs tem
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(text)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 39, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 42, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -194,7 +197,7 @@ func Statusbar(status models.TaskStatus, steps []models.TaskStatus, class string
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("steps = %s;", string(utils.MustJSON(steps))))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 57, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 60, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 		if templ_7745c5c3_Err != nil {
@@ -207,7 +210,7 @@ func Statusbar(status models.TaskStatus, steps []models.TaskStatus, class string
 		var templ_7745c5c3_Var11 string
 		templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("step.no == %v ? 'o_arrow_button o_arrow_button_current text-green-600 font-bold' : 'o_arrow_button '", status.No))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 65, Col: 150}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 68, Col: 150}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var11)
 		if templ_7745c5c3_Err != nil {
@@ -220,7 +223,7 @@ func Statusbar(status models.TaskStatus, steps []models.TaskStatus, class string
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("step.no == %v ? 'true' : 'false'", status.No))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 67, Col: 89}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 70, Col: 89}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var12)
 		if templ_7745c5c3_Err != nil {
@@ -233,7 +236,7 @@ func Statusbar(status models.TaskStatus, steps []models.TaskStatus, class string
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("(step.value <= %v && step.form==1) || step.no == %v", status.Value, status.No))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 70, Col: 115}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/components/ui/button.templ`, Line: 73, Col: 115}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var13)
 		if templ_7745c5c3_Err != nil {

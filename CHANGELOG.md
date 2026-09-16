@@ -3,6 +3,63 @@
 Seluruh perubahan penting pada aplikasi etop dicatat di berkas ini.
 Format mengikuti [Keep a Changelog](https://keepachangelog.com/id/1.1.0/).
 
+## [Belum dirilis] — 2026-09-16
+
+Riwayat tiap tugas pada basis data simulasi dilengkapi sehingga panel Activity
+dan Comments tidak lagi kosong, dan tombol bervarian `primary` yang selama ini
+tampil tanpa warna diperbaiki.
+
+### Ditambahkan
+
+- **Riwayat dan komentar tugas pada basis data simulasi.** Perintah baru
+  `go run ./cmd/simdb jejak` menyusun ulang riwayat tiap tugas langsung dari
+  berkas iTop: tugas dibuka oleh pelapornya pada `start_date`, diserahkan
+  kepada agen pada `assignment_date`, dinyatakan selesai lalu ditandai rampung
+  pada `resolution_date`, dan ditutup pada tanggal yang sama. Tanggal penutup
+  sengaja diambil dari `resolution_date`, bukan `close_date`, mengikuti aturan
+  yang sudah dipakai kolom `completed_at`; `close_date` pada iTop kerap
+  tercatat massal sehingga berselang jauh dari penyelesaian sebenarnya.
+  Komentarnya diambil dari kolom `solution`, yaitu keterangan penyelesaian yang
+  ditulis agen ketika menutup tiket. Hasilnya 174.828 baris riwayat dan 34.940
+  komentar untuk 35.004 tugas, seluruhnya terhubung, tanpa satu pun baris yatim.
+- **Pelapor tiket sebagai pengguna.** Pelapor dicocokkan dengan pengguna yang
+  sudah ada lewat surel, lalu lewat nama lengkapnya, lalu lewat nama
+  belakangnya karena agen yang dibuat `cmd/simdb` hanya memakai nama belakang.
+  Yang belum ada dibuatkan pengguna baru; tanpa itu barisnya tertolak oleh
+  kunci asing `logs.user_id`. Pada basis data simulasi 121 pengguna baru
+  dibuat, dan 587 tiket tanpa pelapor yang dikenali dicatat atas nama agennya.
+- **Indeks tabel `logs` dan `comments`** (`db/migrations/004_log_indexes.sql`):
+  gabungan `(resource_type, resource_id)` untuk panel Activity, gabungan
+  `(user_id, created_at DESC)` untuk daftar pemberitahuan, dan gabungan
+  `(task_id, created_at)` untuk komentar. Tabel `logs` sebelumnya sama sekali
+  tanpa indeks; setelah riwayatnya lengkap, setiap kali panel Activity dibuka
+  seluruh tabel dipindai. Waktu kuerinya turun dari 97,2 milidetik menjadi
+  0,126 milidetik.
+
+### Diperbaiki
+
+- **Tombol bervarian `primary` tampil tanpa warna latar.** Tombol "Add Task"
+  pada halaman My Tasks adalah satu-satunya pemakainya, dan selama ini tampil
+  polos sehingga sukar dikenali sebagai tombol. templ menyusun daftar kelas
+  memakai peta yang berkunci teks kelasnya sendiri, sehingga dua baris
+  `templ.KV` dengan teks kelas persis sama saling menimpa dan yang terakhir
+  menentukan. Baris varian `primary` dan varian kosong kebetulan memakai teks
+  kelas yang sama, sehingga ketika varian `primary` diminta, barisnya justru
+  dimatikan oleh baris varian kosong di bawahnya. Kedua syarat kini disatukan
+  dalam satu baris.
+- **Kekeliruan serupa pada tiga komponen lain** turut diperbaiki meski belum
+  terpakai: `ui.Badge` varian `default` dan `secondary`, `ui.Avatar` ukuran
+  `md`, serta `ui.Toast` jenis `default`.
+
+### Pengujian
+
+- 75 kasus uji black box dijalankan ulang. 74 sesuai; satu kasus yang memeriksa
+  keberadaan kategori "Buruk" tetap tidak terpenuhi karena basis data pengujian
+  tidak memuat karyawan pada kategori itu.
+- Panel Activity dan Comments diperiksa lewat `/task-activities` dan
+  `/task-comments` pada satu tugas contoh: kelimanya tampil berurutan, dengan
+  pelapor sebagai pembuka dan penutup, agen sebagai pengerja.
+
 ## [Belum dirilis] — 2026-09-15
 
 Tiga rumus indikator disesuaikan, kaidah pembatas pada basis aturan dihapus,

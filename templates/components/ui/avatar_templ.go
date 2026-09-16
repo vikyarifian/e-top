@@ -45,9 +45,9 @@ func Avatar(text string, color string, size string, class string, attrs templ.At
 			templ.KV("h-4 w-4", size == "xxs"),
 			templ.KV("h-6 w-6", size == "xs"),
 			templ.KV("h-8 w-8", size == "sm"),
-			templ.KV("h-10 w-10", size == "md"),
-			templ.KV("h-12 w-12", size == "lg"),
-			templ.KV("h-10 w-10", size == "")}
+			// Ukuran kosong disatukan ke sini; lihat keterangan pada button.templ.
+			templ.KV("h-10 w-10", size == "md" || size == ""),
+			templ.KV("h-12 w-12", size == "lg")}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
