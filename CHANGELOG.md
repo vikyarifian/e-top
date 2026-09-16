@@ -11,6 +11,14 @@ tugas. Waktu muat halaman My Tasks turun sekitar sepuluh kali lipat.
 
 ### Ditambahkan
 
+- **Daftar tugas anggota pada halaman Department.** Halaman itu sebelumnya
+  hanya menampilkan daftar anggota, sehingga kepala departemen dapat melihat
+  nilai kinerja bawahannya lewat halaman penilaian tetapi tidak dapat melihat
+  pekerjaan apa yang sedang mereka kerjakan. Daftar ini dilengkapi pencarian
+  judul dan keterangan serta penyaring anggota, status, dan prioritas.
+  Cakupannya ditentukan dari keanggotaan departemen, bukan dari peran
+  pengguna, sehingga tidak pernah memperlihatkan tugas di luar departemen
+  yang sedang dibuka.
 - **Pencarian pada Settings.** Tab Users mencari nama lengkap, username, dan
   email; tab Departments mencari nama dan keterangan. Pencarian berjalan
   seiring pengetikan dengan jeda 400 milidetik.

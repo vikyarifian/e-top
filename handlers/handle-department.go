@@ -64,7 +64,7 @@ func HandleDepartments(w http.ResponseWriter, r *http.Request) error {
 			if !authorized {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
-			return layouts.Layout("Department", user, features.Department(dept, user)).Render(r.Context(), w)
+			return layouts.Layout("Department", user, features.Department(dept, user, deptTasks(r, dept))).Render(r.Context(), w)
 		}
 
 		var depts []models.Department
@@ -96,7 +96,7 @@ func HandleDepartments(w http.ResponseWriter, r *http.Request) error {
 				return layouts.Layout("403 Forbidden", user, pages.Forbidden()).Render(r.Context(), w)
 			}
 
-			return features.Department(dept, user).Render(r.Context(), w)
+			return features.Department(dept, user, deptTasks(r, dept)).Render(r.Context(), w)
 		}
 
 		var depts []models.Department
@@ -144,10 +144,16 @@ func handleDepartmentView(w http.ResponseWriter, r *http.Request, user dto.UserA
 			Preload("DeptHead").
 			First(&myDept).Error
 		if err == nil {
-			if fragment {
-				return features.Department(myDept, user).Render(r.Context(), w)
+			tugas := deptTasks(r, myDept)
+			// Permintaan dari kotak pencarian dan penyaring hanya menukar daftar
+			// tugasnya, bukan seluruh halaman departemen.
+			if r.URL.Query().Get("part") == "tasks" {
+				return features.DepartmentTaskList(tugas).Render(r.Context(), w)
 			}
-			return layouts.Layout(myDept.Name, user, features.Department(myDept, user)).Render(r.Context(), w)
+			if fragment {
+				return features.Department(myDept, user, tugas).Render(r.Context(), w)
+			}
+			return layouts.Layout(myDept.Name, user, features.Department(myDept, user, tugas)).Render(r.Context(), w)
 		}
 		var depts []models.Department
 		db.PgSql.
@@ -183,10 +189,14 @@ func handleDepartmentView(w http.ResponseWriter, r *http.Request, user dto.UserA
 	}
 
 	if isMember {
-		if fragment {
-			return features.Department(dept, user).Render(r.Context(), w)
+		tugas := deptTasks(r, dept)
+		if r.URL.Query().Get("part") == "tasks" {
+			return features.DepartmentTaskList(tugas).Render(r.Context(), w)
 		}
-		return layouts.Layout(dept.Name, user, features.Department(dept, user)).Render(r.Context(), w)
+		if fragment {
+			return features.Department(dept, user, tugas).Render(r.Context(), w)
+		}
+		return layouts.Layout(dept.Name, user, features.Department(dept, user, tugas)).Render(r.Context(), w)
 	}
 
 	if fragment {
