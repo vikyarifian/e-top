@@ -36,8 +36,10 @@ func Badge(variant, text string, class string, attrs templ.Attributes) templ.Com
 		ctx = templ.ClearChildren(ctx)
 		var templ_7745c5c3_Var2 = []any{"inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ",
 			class,
-			templ.KV("border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80", variant == "default"),
-			templ.KV("border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80", variant == "secondary"),
+			// Varian yang teks kelasnya kembar disatukan dalam satu baris; lihat
+			// keterangan pada button.templ.
+			templ.KV("border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80", variant == "default" || variant == ""),
+			templ.KV("border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80", variant == "secondary" || variant == "low"),
 			templ.KV("border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80", variant == "destructive"),
 			templ.KV("text-foreground", variant == "outline"),
 			templ.KV("border-transparent bg-red-400 text-primary hover:bg-red-400/80", variant == "todo"),
@@ -47,8 +49,6 @@ func Badge(variant, text string, class string, attrs templ.Attributes) templ.Com
 			templ.KV("border-transparent bg-neutral-200 text-primary hover:bg-neutral-400/80", variant == "close"),
 			templ.KV("border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80", variant == "high"),
 			templ.KV("border-transparent bg-primary text-primary-foreground hover:bg-primary/80", variant == "medium"),
-			templ.KV("border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80", variant == "low"),
-			templ.KV("border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80", variant == ""),
 		}
 		templ_7745c5c3_Err = templ.RenderCSSItems(ctx, templ_7745c5c3_Buffer, templ_7745c5c3_Var2...)
 		if templ_7745c5c3_Err != nil {

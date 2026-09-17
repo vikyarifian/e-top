@@ -358,3 +358,14 @@ func ColorForLetter(letter string) string {
 
 	return fmt.Sprintf("#%s", colorHex)
 }
+
+// Peran menyeragamkan penulisan peran keanggotaan sebelum dibandingkan.
+//
+// Aplikasi selalu menulis peran dengan huruf besar, tetapi data hasil impor
+// menyimpannya dengan huruf kecil: pada basis data penelitian seluruh 70 baris
+// project_members dan 294 baris workspace_members berperan "member", bukan
+// "MEMBER". Perbandingan yang peka huruf membuat tombol seperti Add Task pada
+// halaman project tidak pernah tampil bagi anggota biasa.
+func Peran(peran string) string {
+	return strings.ToUpper(strings.TrimSpace(peran))
+}

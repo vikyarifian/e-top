@@ -3,6 +3,94 @@
 Seluruh perubahan penting pada aplikasi etop dicatat di berkas ini.
 Format mengikuti [Keep a Changelog](https://keepachangelog.com/id/1.1.0/).
 
+## [Belum dirilis] — 2026-09-16
+
+Riwayat tiap tugas pada basis data simulasi dilengkapi sehingga panel Activity
+dan Comments tidak lagi kosong. Selain itu tiga kendali yang selama ini tidak
+tampil diperbaiki, seluruhnya berpangkal pada perbandingan yang terlalu ketat:
+tombol Add Task pada halaman My Tasks dan pada halaman project, serta daftar
+peran pada Settings dan Workspace. Pengalih workspace disembunyikan.
+
+### Ditambahkan
+
+- **Riwayat dan komentar tugas pada basis data simulasi.** Perintah baru
+  `go run ./cmd/simdb jejak` menyusun ulang riwayat tiap tugas langsung dari
+  berkas iTop: tugas dibuka oleh pelapornya pada `start_date`, diserahkan
+  kepada agen pada `assignment_date`, dinyatakan selesai lalu ditandai rampung
+  pada `resolution_date`, dan ditutup pada tanggal yang sama. Tanggal penutup
+  sengaja diambil dari `resolution_date`, bukan `close_date`, mengikuti aturan
+  yang sudah dipakai kolom `completed_at`; `close_date` pada iTop kerap
+  tercatat massal sehingga berselang jauh dari penyelesaian sebenarnya.
+  Komentarnya diambil dari kolom `solution`, yaitu keterangan penyelesaian yang
+  ditulis agen ketika menutup tiket. Hasilnya 174.828 baris riwayat dan 34.940
+  komentar untuk 35.004 tugas, seluruhnya terhubung, tanpa satu pun baris yatim.
+- **Pelapor tiket sebagai pengguna.** Pelapor dicocokkan dengan pengguna yang
+  sudah ada lewat surel, lalu lewat nama lengkapnya, lalu lewat nama
+  belakangnya karena agen yang dibuat `cmd/simdb` hanya memakai nama belakang.
+  Yang belum ada dibuatkan pengguna baru; tanpa itu barisnya tertolak oleh
+  kunci asing `logs.user_id`. Pada basis data simulasi 121 pengguna baru
+  dibuat, dan 587 tiket tanpa pelapor yang dikenali dicatat atas nama agennya.
+- **Indeks tabel `logs` dan `comments`** (`db/migrations/004_log_indexes.sql`):
+  gabungan `(resource_type, resource_id)` untuk panel Activity, gabungan
+  `(user_id, created_at DESC)` untuk daftar pemberitahuan, dan gabungan
+  `(task_id, created_at)` untuk komentar. Tabel `logs` sebelumnya sama sekali
+  tanpa indeks; setelah riwayatnya lengkap, setiap kali panel Activity dibuka
+  seluruh tabel dipindai. Waktu kuerinya turun dari 97,2 milidetik menjadi
+  0,126 milidetik.
+
+### Diubah
+
+- **Pengalih workspace disembunyikan dan dimatikan** atas permintaan pemilik
+  proyek. Kotaknya dilepas dari bilah atas dan dari bilah sisi versi telepon,
+  pemanggilan `htmx.ajax` yang mengisinya dilepas dari tata letak dasar dan dari
+  formulir workspace, dan rutenya dinonaktifkan. Penangan beserta komponennya
+  sengaja dibiarkan utuh supaya mudah dihidupkan kembali. Perpindahan antar
+  workspace dilakukan lewat menu Workspaces.
+
+### Diperbaiki
+
+- **Peran keanggotaan dibandingkan peka huruf.** Aplikasi selalu menulis peran
+  dengan huruf besar, tetapi data hasil impor menyimpannya dengan huruf kecil:
+  seluruh 70 baris `project_members` dan 294 baris `workspace_members`
+  berperan `member`, bukan `MEMBER`. Akibatnya tombol Add Task pada halaman
+  project tidak pernah tampil bagi anggota biasa, dan beberapa kendali lain
+  pada halaman workspace serta daftar peran pada Settings ikut salah. Seluruh
+  perbandingan peran kini melewati `utils.Peran` yang menyeragamkan
+  penulisannya lebih dulu. Datanya sengaja tidak diubah: yang perlu bertoleransi
+  adalah aplikasinya, bukan hasil impornya.
+- **Riwayat tugas mencatat penyelesaian dua kali.** Basis data penelitian
+  mencatatnya sebagai `updated_task` dan `completed_task` dengan keterangan yang
+  sama persis, sehingga panel Activity menampilkan baris kembar. Kini hanya
+  `completed_task` yang ditulis, dan jumlah barisnya turun dari 174.828 menjadi
+  139.888.
+- **Urutan riwayat tugas terbaca terbalik.** Baris "selesai" dan "ditutup"
+  berbagi cap waktu yang sama karena iTop hanya mencatat satu `resolution_date`.
+  Tanpa pemecah seri, keduanya tampil dengan urutan sembarang. Panel Activity
+  kini mengurutkan dengan `created_at DESC, id DESC NULLS LAST`; nomor baris
+  ditulis menurut urutan kejadian, sedangkan baris buatan aplikasi yang belum
+  bernomor ditempatkan paling belakang di dalam cap waktu yang sama.
+- **Tombol bervarian `primary` tampil tanpa warna latar.** Tombol "Add Task"
+  pada halaman My Tasks adalah satu-satunya pemakainya, dan selama ini tampil
+  polos sehingga sukar dikenali sebagai tombol. templ menyusun daftar kelas
+  memakai peta yang berkunci teks kelasnya sendiri, sehingga dua baris
+  `templ.KV` dengan teks kelas persis sama saling menimpa dan yang terakhir
+  menentukan. Baris varian `primary` dan varian kosong kebetulan memakai teks
+  kelas yang sama, sehingga ketika varian `primary` diminta, barisnya justru
+  dimatikan oleh baris varian kosong di bawahnya. Kedua syarat kini disatukan
+  dalam satu baris.
+- **Kekeliruan serupa pada tiga komponen lain** turut diperbaiki meski belum
+  terpakai: `ui.Badge` varian `default` dan `secondary`, `ui.Avatar` ukuran
+  `md`, serta `ui.Toast` jenis `default`.
+
+### Pengujian
+
+- 75 kasus uji black box dijalankan ulang. 74 sesuai; satu kasus yang memeriksa
+  keberadaan kategori "Buruk" tetap tidak terpenuhi karena basis data pengujian
+  tidak memuat karyawan pada kategori itu.
+- Panel Activity dan Comments diperiksa lewat `/task-activities` dan
+  `/task-comments` pada satu tugas contoh: kelimanya tampil berurutan, dengan
+  pelapor sebagai pembuka dan penutup, agen sebagai pengerja.
+
 ## [Belum dirilis] — 2026-09-15
 
 Tiga rumus indikator disesuaikan, kaidah pembatas pada basis aturan dihapus,
@@ -11,6 +99,14 @@ tugas. Waktu muat halaman My Tasks turun sekitar sepuluh kali lipat.
 
 ### Ditambahkan
 
+- **Daftar tugas anggota pada halaman Department.** Halaman itu sebelumnya
+  hanya menampilkan daftar anggota, sehingga kepala departemen dapat melihat
+  nilai kinerja bawahannya lewat halaman penilaian tetapi tidak dapat melihat
+  pekerjaan apa yang sedang mereka kerjakan. Daftar ini dilengkapi pencarian
+  judul dan keterangan serta penyaring anggota, status, dan prioritas.
+  Cakupannya ditentukan dari keanggotaan departemen, bukan dari peran
+  pengguna, sehingga tidak pernah memperlihatkan tugas di luar departemen
+  yang sedang dibuka.
 - **Pencarian pada Settings.** Tab Users mencari nama lengkap, username, dan
   email; tab Departments mencari nama dan keterangan. Pencarian berjalan
   seiring pengetikan dengan jeda 400 milidetik.

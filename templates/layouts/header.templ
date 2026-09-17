@@ -8,19 +8,7 @@ import  (
 templ Header(user models.User, notif []models.Notif) {
     <!-- Header -->
     <header class="h-16 bg-card border-b border-border px-4 flex items-center justify-between">
-        <div class="flex items-center gap-4"
-            x-init="
-                    document.body.addEventListener('htmx:afterSwap', (e) => {
-                        if (e.detail.target.id === 'workspace-switcher') {
-                            let src = document.getElementById('workspace-switcher');
-                            let dest = document.getElementById('workspace-switcher-mobile');
-                            if (src && dest) {
-                                dest.innerHTML = src.innerHTML;
-                            }
-                        }
-                    })
-                "
-        >
+        <div class="flex items-center gap-4">
             <!-- Mobile Menu Button -->
             <button 
                 @click="sidebarOpen = !sidebarOpen"
@@ -41,16 +29,8 @@ templ Header(user models.User, notif []models.Notif) {
                 </svg>
             </button>
 
-            // <h1 class="text-xl font-semibold">Dashboard</h1>
-            <div id="workspace-switcher"
-                class="min-w-[250px] pt-2"
-                hx-get="/workspace-switcher"
-                hx-target="#workspace-switcher"
-                hx-trigger="load"
-                hx-swap="innerHtml"
-                x-show="!isMobile"
-            />
-            
+            // Pengalih workspace disembunyikan atas permintaan pemilik proyek;
+            // perpindahan antar workspace dilakukan lewat menu Workspaces.
         </div>
 
         <div class="flex items-center gap-4">
