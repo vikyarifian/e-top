@@ -11,7 +11,10 @@ func GetMenu(userID string) []models.Menu {
 	menus = append(menus, models.Menu{Label: "Workspaces", Href: "/workspaces", Icon: "briefcase-business"})
 	menus = append(menus, models.Menu{Label: "My Tasks", Href: "/my-tasks", Icon: "layout-list"})
 	menus = append(menus, models.Menu{Label: "Achieved", Href: "/achieve", Icon: "badge-check"}) //Count: int(CountAchievedTasks(userID)),
-	menus = append(menus, models.Menu{Label: "Simulasi", Href: "/simulation", Icon: "sliders-horizontal"})
+	// Menu Simulasi disembunyikan atas permintaan pemilik proyek. Rutenya
+	// sengaja dibiarkan hidup, sehingga halamannya tetap dapat dibuka langsung
+	// lewat /simulation ketika diperlukan untuk peragaan.
+	// menus = append(menus, models.Menu{Label: "Simulasi", Href: "/simulation", Icon: "sliders-horizontal"})
 	menus = append(menus, models.Menu{Label: "Settings", Href: "/settings", Icon: "settings"})
 
 	return menus

@@ -3,6 +3,41 @@
 Seluruh perubahan penting pada aplikasi etop dicatat di berkas ini.
 Format mengikuti [Keep a Changelog](https://keepachangelog.com/id/1.1.0/).
 
+## [Belum dirilis] — 2026-09-22
+
+Menu Simulasi disembunyikan, dan sisa keterangan kaidah pembatas yang sudah
+tidak berlaku dibersihkan dari halaman Simulasi.
+
+### Diubah
+
+- **Menu Simulasi disembunyikan** dari bilah sisi atas permintaan pemilik
+  proyek. Rutenya sengaja dibiarkan hidup, sehingga halamannya tetap dapat
+  dibuka langsung lewat `/simulation` ketika diperlukan untuk peragaan.
+- **Kasus uji black box nomor 15 disesuaikan.** Sebelumnya memeriksa bahwa menu
+  Simulasi ada pada bilah sisi; sekarang memeriksa bahwa menu itu justru tidak
+  ada, sementara halamannya tetap terbuka. Pembantu uji baru `ta` ditambahkan
+  untuk penanda yang memang harus absen, karena pembantu `t` yang sudah ada
+  hanya dapat memeriksa penanda yang harus hadir.
+
+### Diperbaiki
+
+- **Keterangan kaidah pembatas pada halaman Simulasi.** Panel "Basis Aturan"
+  yang seluruhnya dikomentari masih menyatakan bahwa OTR pada himpunan terendah
+  membatasi konsekuen paling tinggi Cukup. Kaidah itu sudah dihapus dari mesin
+  inferensi, sehingga keterangannya diganti dengan kaidah agregasi yang berlaku
+  sekarang. Panelnya sendiri dibiarkan utuh agar masih dapat dinyalakan kembali.
+
+### Pengujian
+
+- Basis aturan kedua halaman diperiksa ulang untuk memastikan kaidah pembatas
+  benar-benar tidak ada. Pada halaman Penilaian terdapat empat aturan berpremis
+  OTR Rendah yang berkonsekuen Baik, yaitu R19, R20, R22, dan R46; keempatnya
+  mustahil ada bila pembatas masih terpasang, sebab dahulu semuanya dipaksa
+  turun ke Cukup. Kelima prasetel halaman Simulasi menunjukkan pola yang sama.
+- 75 kasus uji black box dijalankan terhadap build hasil perubahan. 74 sesuai;
+  satu kasus yang memeriksa keberadaan kategori "Buruk" tidak terpenuhi karena
+  basis data pengujian tidak memuat karyawan pada kategori itu.
+
 ## [Belum dirilis] — 2026-09-16
 
 Riwayat tiap tugas pada basis data simulasi dilengkapi sehingga panel Activity
