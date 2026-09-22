@@ -14,7 +14,10 @@ type DashboardData struct {
 	ProjectCount   int64
 	TaskCount      int64
 	DoneCount      int64
-	MemberCount    int64
+	// JudgedCount ialah cacah tugas yang nasibnya sudah pasti, yaitu penyebut
+	// OTR. Lihat keterangannya pada GetDashboardData.
+	JudgedCount int64
+	MemberCount int64
 
 	TCR float64
 	OTR float64
@@ -266,12 +269,17 @@ func GetDashboardData(userID string) DashboardData {
 		Where("project_members.user_id = ?", userID).
 		Count(&d.ProjectCount)
 
+	// Cakupan indikator ialah tugas yang dipikul karyawan, yaitu user_id saja.
+	// Sebelumnya created_by ikut disertakan, sehingga tiket yang dilaporkan
+	// karyawan tetapi dikerjakan orang lain ikut terhitung sebagai tugasnya.
+	// Halaman Penilaian tidak pernah menyertakannya, dan keduanya mengukur hal
+	// yang sama, jadi angkanya tidak boleh berbeda.
 	db.PgSql.Model(&models.Task{}).
-		Where("(user_id = ? OR created_by = ?) AND completed_at IS NOT NULL", userID, userID).
+		Where("user_id = ? AND completed_at IS NOT NULL", userID).
 		Count(&d.DoneCount)
 
 	db.PgSql.Model(&models.Task{}).
-		Where("user_id = ? OR created_by = ?", userID, userID).
+		Where("user_id = ?", userID).
 		Count(&d.TaskCount)
 
 	db.PgSql.Raw(`
@@ -287,15 +295,25 @@ func GetDashboardData(userID string) DashboardData {
 
 	var onTimeCount int64
 	db.PgSql.Model(&models.Task{}).
-		Where("(user_id = ? OR created_by = ?) AND completed_at IS NOT NULL AND completed_at <= due_date", userID, userID).
+		Where("user_id = ? AND completed_at IS NOT NULL AND completed_at <= due_date", userID).
 		Count(&onTimeCount)
-	if d.DoneCount > 0 {
-		d.OTR = float64(onTimeCount) / float64(d.DoneCount) * 100
+
+	// Penyebut OTR mencakup tugas yang sudah selesai dan tugas yang belum
+	// selesai padahal tenggatnya sudah lewat, sama seperti halaman Penilaian.
+	// Sebelumnya hanya tugas selesai yang dihitung, sehingga tugas terlambat
+	// yang dibiarkan menggantung justru lenyap dari penyebut dan ketepatan
+	// waktu terbaca lebih tinggi daripada yang sebenarnya.
+	db.PgSql.Model(&models.Task{}).
+		Where("user_id = ? AND (completed_at IS NOT NULL OR (due_date IS NOT NULL AND due_date < ?))",
+			userID, time.Now()).
+		Count(&d.JudgedCount)
+	if d.JudgedCount > 0 {
+		d.OTR = float64(onTimeCount) / float64(d.JudgedCount) * 100
 	}
 
 	// Pembilang dan penyebut harus memakai skala bobot yang sama, yaitu hasil
 	// kali bobot prioritas dan bobot dampak.
-	doneWeight := sumTaskValue("(t.user_id = ? OR t.created_by = ?) AND t.completed_at IS NOT NULL", userID, userID)
+	doneWeight := sumTaskValue("t.user_id = ? AND t.completed_at IS NOT NULL", userID)
 	if d.TaskCount > 0 {
 		d.TVS = doneWeight / float64(d.TaskCount) * 100
 	}
@@ -307,11 +325,11 @@ func GetDashboardData(userID string) DashboardData {
 	db.PgSql.Raw(`
 		SELECT COALESCE(AVG(LEAST(1.0, t.estimated_hours / NULLIF(t.actual_hours, 0))) * 100, 0) as value
 		FROM tasks t
-		WHERE (t.user_id = ? OR t.created_by = ?)
+		WHERE t.user_id = ?
 			AND t.completed_at IS NOT NULL
 			AND t.estimated_hours > 0
 			AND t.actual_hours > 0
-	`, userID, userID).Scan(&werResult)
+	`, userID).Scan(&werResult)
 	// LEAST sudah membatasi tiap tugas pada 1, jadi rata-ratanya mustahil
 	// melewati 100.
 	d.WER = werResult.Value
@@ -320,18 +338,18 @@ func GetDashboardData(userID string) DashboardData {
 		SELECT ts.label, ts.color, COUNT(t.no) as count
 		FROM tasks t
 		JOIN task_statuses ts ON ts.no = t.status_id
-		WHERE t.user_id = ? OR t.created_by = ?
+		WHERE t.user_id = ?
 		GROUP BY ts.label, ts.color
 		ORDER BY count DESC
-	`, userID, userID).Scan(&d.StatusDistribution)
+	`, userID).Scan(&d.StatusDistribution)
 
 	db.PgSql.Raw(`
 		SELECT t.type, COUNT(t.no) as count
 		FROM tasks t
-		WHERE t.user_id = ? OR t.created_by = ?
+		WHERE t.user_id = ?
 		GROUP BY t.type
 		ORDER BY count DESC
-	`, userID, userID).Scan(&d.TypeDistribution)
+	`, userID).Scan(&d.TypeDistribution)
 
 	type RawMonthly struct {
 		Year  int
@@ -343,12 +361,12 @@ func GetDashboardData(userID string) DashboardData {
 			   EXTRACT(MONTH FROM completed_at)::int as month,
 			   COUNT(no) as count
 		FROM tasks
-		WHERE (user_id = ? OR created_by = ?)
+		WHERE user_id = ?
 			AND completed_at IS NOT NULL
 			AND completed_at >= ?
 		GROUP BY year, month
 		ORDER BY year, month
-	`, userID, userID, time.Now().AddDate(0, -6, 0)).Scan(&d.MonthlyCompletion)
+	`, userID, time.Now().AddDate(0, -6, 0)).Scan(&d.MonthlyCompletion)
 
 	return d
 }

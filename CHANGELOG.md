@@ -5,8 +5,11 @@ Format mengikuti [Keep a Changelog](https://keepachangelog.com/id/1.1.0/).
 
 ## [Belum dirilis] — 2026-09-22
 
-Menu Simulasi disembunyikan, dan sisa keterangan kaidah pembatas yang sudah
-tidak berlaku dibersihkan dari halaman Simulasi.
+Empat indikator pada Dashboard selama ini dihitung dengan cara yang berbeda
+dari halaman Penilaian, sehingga angkanya bisa tidak cocok untuk orang yang
+sama; keduanya kini memakai definisi yang sama. Selain itu menu Simulasi
+disembunyikan, dan sisa keterangan kaidah pembatas yang sudah tidak berlaku
+dibersihkan dari halaman Simulasi.
 
 ### Diubah
 
@@ -21,6 +24,29 @@ tidak berlaku dibersihkan dari halaman Simulasi.
 
 ### Diperbaiki
 
+- **KPI pada Dashboard memakai definisi yang berbeda dari halaman Penilaian.**
+  Keduanya menampilkan empat indikator dengan nama yang sama untuk orang yang
+  sama, tetapi menghitungnya dengan cara berbeda, sehingga angkanya bisa tidak
+  cocok. Dua sebabnya:
+
+  *Cakupan tugas.* Dashboard menyaring dengan `user_id = ? OR created_by = ?`,
+  sedangkan halaman Penilaian hanya `user_id = ?`. Akibatnya tiket yang
+  dilaporkan seorang karyawan tetapi dikerjakan orang lain ikut terhitung
+  sebagai tugasnya sendiri.
+
+  *Penyebut OTR.* Dashboard hanya menghitung tugas yang sudah selesai,
+  sedangkan halaman Penilaian juga memasukkan tugas yang belum selesai padahal
+  tenggatnya sudah lewat. Tugas terlambat yang dibiarkan menggantung karena itu
+  lenyap dari penyebut, dan ketepatan waktu terbaca lebih tinggi daripada yang
+  sebenarnya. Pada basis data penelitian, Sutedy yang baru menuntaskan 52,38
+  persen tugasnya terbaca **20,00 persen pada halaman Penilaian tetapi 38,18
+  persen pada Dashboard**, selisih 18,18 angka.
+
+  Dashboard kini memakai definisi halaman Penilaian untuk keempat indikator,
+  termasuk kartu jumlah tugas, sebaran status, sebaran jenis, dan grafik
+  penyelesaian bulanan, supaya seluruh angka pada satu layar berasal dari
+  cakupan yang sama.
+
 - **Keterangan kaidah pembatas pada halaman Simulasi.** Panel "Basis Aturan"
   yang seluruhnya dikomentari masih menyatakan bahwa OTR pada himpunan terendah
   membatasi konsekuen paling tinggi Cukup. Kaidah itu sudah dihapus dari mesin
@@ -34,6 +60,10 @@ tidak berlaku dibersihkan dari halaman Simulasi.
   OTR Rendah yang berkonsekuen Baik, yaitu R19, R20, R22, dan R46; keempatnya
   mustahil ada bila pembatas masih terpasang, sebab dahulu semuanya dipaksa
   turun ke Cukup. Kelima prasetel halaman Simulasi menunjukkan pola yang sama.
+- Keluaran `GetDashboardData` dan `GetAchievedEvaluation` dibandingkan lewat
+  jalur kode sungguhan untuk 18 karyawan pada kedua basis data. Sebelum
+  perbaikan angkanya berbeda; sesudahnya seluruh 18 cocok sampai dua angka
+  di belakang koma, pada keempat indikator maupun cacah tugasnya.
 - 75 kasus uji black box dijalankan terhadap build hasil perubahan. 74 sesuai;
   satu kasus yang memeriksa keberadaan kategori "Buruk" tidak terpenuhi karena
   basis data pengujian tidak memuat karyawan pada kategori itu.
