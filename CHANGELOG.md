@@ -3,6 +3,47 @@
 Seluruh perubahan penting pada aplikasi etop dicatat di berkas ini.
 Format mengikuti [Keep a Changelog](https://keepachangelog.com/id/1.1.0/).
 
+## [Belum dirilis] — 2026-09-25
+
+Administrator kini dapat menyetel ulang sandi pengguna lain dari Settings.
+
+### Ditambahkan
+
+- **Setel ulang sandi pengguna dari Settings > Users.** Kolom Actions mendapat
+  tombol bergambar kunci di sebelah tombol sunting, beserta modal berisi sandi
+  baru dan pengulangannya. Tombolnya hanya tampil bagi administrator.
+
+  Berbeda dari `/update-password` yang sudah ada, sandi lama tidak ditanyakan:
+  yang itu dipakai seseorang untuk sandinya sendiri, sedangkan di sini
+  administrator memang tidak mengetahui sandi lama orang yang diurusnya.
+  Keduanya karena itu dipisah, bukan digabung.
+
+  Wewenangnya diperiksa di peladen pada kedua rute baru, `/reset-password-form`
+  dan `/reset-password`, bukan sekadar disembunyikan tombolnya. Menyembunyikan
+  tombol hanya menyembunyikan, tidak menghalangi siapa pun mengirim
+  permintaannya langsung.
+
+  Perubahannya dicatat atas nama administrator yang melakukan, bukan atas nama
+  pemilik akun, sehingga jejaknya menunjukkan siapa yang benar-benar bertindak.
+  Pemilik akun tidak diberi tahu lewat surel, dan hal itu dinyatakan apa adanya
+  pada formulirnya.
+
+### Pengujian
+
+- Tampilan: administrator melihat 20 tombol untuk 20 pengguna, anggota biasa
+  tidak melihat satu pun.
+- Wewenang: anggota biasa menerima 401 pada kedua rute, baik ketika membuka
+  formulir maupun ketika mengirim perubahannya.
+- Penyahihan: sandi kurang dari enam huruf, pengulangan yang tidak sama, dan
+  pengenal pengguna yang tidak ada, ketiganya ditolak dengan 400 beserta
+  keterangannya masing-masing.
+- Perubahan benar-benar berlaku: setelah disetel ulang, masuk dengan sandi lama
+  ditolak dan masuk dengan sandi baru berhasil. Sandi pengguna uji dikembalikan
+  ke semula setelahnya, dan jejak pengujiannya dihapus dari tabel logs.
+- 75 kasus uji black box dijalankan, 74 sesuai; satu kasus yang memeriksa
+  keberadaan kategori "Buruk" tetap tidak terpenuhi karena basis data pengujian
+  tidak memuat karyawan pada kategori itu.
+
 ## [Belum dirilis] — 2026-09-24
 
 Seluruh label antarmuka kini berbahasa Inggris, skor dan indikator ditampilkan

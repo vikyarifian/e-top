@@ -491,10 +491,20 @@ templ UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageI
                                                 }
                                             }
                                             @ui.TableCell("py-1.5 px-1", nil) {
-                                                @ui.Button("edit-user-"+u.ID, "ghost", "xs", "pencil", "", "", templ.Attributes{
-                                                    "type": "button",
-                                                    "@click.stop": "window.user_id='"+u.ID+"'; $store.modal.open('edit-user-modal')",
-                                                })
+                                                <div class="flex items-center gap-0.5">
+                                                    @ui.Button("edit-user-"+u.ID, "ghost", "xs", "pencil", "", "", templ.Attributes{
+                                                        "type": "button",
+                                                        "@click.stop": "window.user_id='"+u.ID+"'; $store.modal.open('edit-user-modal')",
+                                                    })
+                                                    if user.Level == "ADMIN" {
+                                                        @ui.Tooltip("Reset password", "w-[130px]", nil) {
+                                                            @ui.Button("reset-password-"+u.ID, "ghost", "xs", "key-round", "", "", templ.Attributes{
+                                                                "type": "button",
+                                                                "@click.stop": "window.user_id='"+u.ID+"'; $store.modal.open('reset-password-modal')",
+                                                            })
+                                                        }
+                                                    }
+                                                </div>
                                             }
                                         }
                                     }
@@ -508,6 +518,9 @@ templ UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageI
         </div>
         @CreateUser("w-96")
         @EditUser("w-96")
+        if user.Level == "ADMIN" {
+            @ResetPassword("w-96")
+        }
     }
 }
 
@@ -654,6 +667,121 @@ templ EditUserForm(user models.User) {
             @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
             <div class="flex justify-end items-end">
                 @ui.Button("edit-user-button", "", "", "", "Save", "", templ.Attributes{"type": "submit"}) 
+            </div>
+        }
+    </div>
+}
+
+// ResetPassword adalah kerangka modal setel ulang sandi. Isinya baru diambil
+// ketika modalnya dibuka, mengikuti pola EditUser, sehingga daftar pengguna
+// tidak ikut membawa formulir sebanyak barisnya.
+templ ResetPassword(class string) {
+    @components.ResponsiveModal("reset-password-modal", "Reset Password", class) {
+        <div id="reset-password-form"
+            x-data="{
+                init() {
+                    document.body.addEventListener('modal:opened', (evt) => {
+                        if (evt.detail.id === 'reset-password-modal') {
+                            htmx.ajax('GET', '/reset-password-form?user_id='+window.user_id, {target: '#reset-password-form', swap: 'innerHtml'})
+                        }
+                    });
+                    document.body.addEventListener('modal:closed', (evt) => {
+                        if (evt.detail.id === 'reset-password-modal') {
+                            document.getElementById('reset-password-form').innerHTML = '';
+                        }
+                    });
+                }
+            }"
+        >
+        </div>
+    }
+}
+
+// ResetPasswordForm memakai sandi baru dan pengulangannya saja. Sandi lama
+// tidak ditanyakan, sebab administrator memang tidak mengetahuinya.
+templ ResetPasswordForm(target models.User) {
+    <div
+        x-data="{
+                    newPassword: '',
+                    confirmPassword: '',
+                    passwordError: '',
+                    confirmError: '',
+                    validatePassword() {
+                        this.passwordError = (this.newPassword.trim().length < 6)
+                            ? 'Password must be at least 6 characters'
+                            : '';
+                    },
+                    validateConfirm() {
+                        this.confirmError = (this.confirmPassword !== this.newPassword)
+                            ? 'Confirmation does not match'
+                            : '';
+                    },
+                    validateForm(e) {
+                        e.preventDefault();
+                        this.validatePassword();
+                        this.validateConfirm();
+                        if (this.passwordError || this.confirmError) {
+                            return;
+                        }
+                        this.$refs.form.requestSubmit();
+                    },
+                    init() {
+                        document.body.addEventListener('htmx:afterRequest', (evt) => {
+                            if (evt.detail.successful && evt.detail.elt.id === 'reset-password-form') {
+                                $store.modal.close('reset-password-modal');
+                            }
+                        });
+                    }
+                }"
+    >
+        <div class="flex items-center gap-2 mb-4 p-2 rounded-md bg-muted/50">
+            @ui.Avatar(target.FullName, target.Color, "xs", "h-6 w-6", nil)
+            <div>
+                <div class="text-sm font-medium">{ target.FullName }</div>
+                <div class="text-xs text-muted-foreground">{ target.Username }</div>
+            </div>
+        </div>
+        @ui.Form("/reset-password", "put", "", templ.Attributes{
+                "id":"reset-password-form-inner",
+                "hx-target": "#toaster",
+                "hx-swap": "innerHtml",
+                "hx-disabled-elt":"#reset-password-button,#new_password,#confirm_password",
+                "x-ref": "form",
+                "@submit.prevent":"validateForm($event)",
+        }) {
+            <input type="hidden" name="user_id" value={ target.ID }/>
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("new_password", "New password", "", nil)
+                @ui.FormControl("new_password", "new_password", "password", "New password", "", "", templ.Attributes{
+                    "autocomplete":"new-password",
+                    "x-model": "newPassword",
+                    "@blur": "validatePassword",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "passwordError != ''",
+                        "x-text": "passwordError",
+                    },
+                )
+            }
+            @ui.FormItem("", nil) {
+                @ui.FormLabel("confirm_password", "Confirm password", "", nil)
+                @ui.FormControl("confirm_password", "confirm_password", "password", "Repeat the new password", "", "", templ.Attributes{
+                    "autocomplete":"new-password",
+                    "x-model": "confirmPassword",
+                    "@blur": "validateConfirm",
+                })
+                @ui.FormMessage("", "", templ.Attributes{
+                        "x-show": "confirmError != ''",
+                        "x-text": "confirmError",
+                    },
+                )
+            }
+            <p class="text-xs text-muted-foreground">
+                The account holder is not notified. Tell them the new password yourself.
+            </p>
+            @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
+            <div class="flex justify-end items-end">
+                @ui.Button("reset-password-button", "", "", "", "Reset Password", "", templ.Attributes{"type": "submit"})
             </div>
         }
     </div>
