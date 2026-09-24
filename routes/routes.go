@@ -105,6 +105,8 @@ func SetRoutes() {
 	mux.HandleFunc("/join-department", auth.RequireAuth(handlers.Make(handlers.HandleJoinDepartment)))
 	mux.HandleFunc("/create-user-form", auth.RequireAuth(handlers.Make(handlers.HandleCreateUserForm)))
 	mux.HandleFunc("/edit-user-form", auth.RequireAuth(handlers.Make(handlers.HandleEditUserForm)))
+	mux.HandleFunc("/reset-password-form", auth.RequireAuth(handlers.Make(handlers.HandleResetPasswordForm)))
+	mux.HandleFunc("/reset-password", auth.RequireAuth(handlers.Make(handlers.HandleResetPassword)))
 	mux.HandleFunc("/user", auth.RequireAuth(handlers.Make(handlers.HandleManageUser)))
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

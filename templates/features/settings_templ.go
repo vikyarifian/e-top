@@ -1681,10 +1681,45 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 										}()
 									}
 									ctx = templ.InitializeContext(ctx)
+									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, "<div class=\"flex items-center gap-0.5\">")
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
 									templ_7745c5c3_Err = ui.Button("edit-user-"+u.ID, "ghost", "xs", "pencil", "", "", templ.Attributes{
 										"type":        "button",
 										"@click.stop": "window.user_id='" + u.ID + "'; $store.modal.open('edit-user-modal')",
 									}).Render(ctx, templ_7745c5c3_Buffer)
+									if templ_7745c5c3_Err != nil {
+										return templ_7745c5c3_Err
+									}
+									if user.Level == "ADMIN" {
+										templ_7745c5c3_Var71 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+											templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+											templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+											if !templ_7745c5c3_IsBuffer {
+												defer func() {
+													templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+													if templ_7745c5c3_Err == nil {
+														templ_7745c5c3_Err = templ_7745c5c3_BufErr
+													}
+												}()
+											}
+											ctx = templ.InitializeContext(ctx)
+											templ_7745c5c3_Err = ui.Button("reset-password-"+u.ID, "ghost", "xs", "key-round", "", "", templ.Attributes{
+												"type":        "button",
+												"@click.stop": "window.user_id='" + u.ID + "'; $store.modal.open('reset-password-modal')",
+											}).Render(ctx, templ_7745c5c3_Buffer)
+											if templ_7745c5c3_Err != nil {
+												return templ_7745c5c3_Err
+											}
+											return nil
+										})
+										templ_7745c5c3_Err = ui.Tooltip("Reset password", "w-[130px]", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var71), templ_7745c5c3_Buffer)
+										if templ_7745c5c3_Err != nil {
+											return templ_7745c5c3_Err
+										}
+									}
+									templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "</div>")
 									if templ_7745c5c3_Err != nil {
 										return templ_7745c5c3_Err
 									}
@@ -1713,7 +1748,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 84, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1722,7 +1757,7 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 85, "</div></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "</div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1730,13 +1765,23 @@ func UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageIn
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 86, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = EditUser("w-96").Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 89, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			if user.Level == "ADMIN" {
+				templ_7745c5c3_Err = ResetPassword("w-96").Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
 			}
 			return nil
 		})
@@ -1764,12 +1809,12 @@ func EditUser(class string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var71 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var71 == nil {
-			templ_7745c5c3_Var71 = templ.NopComponent
+		templ_7745c5c3_Var72 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var72 == nil {
+			templ_7745c5c3_Var72 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var72 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var73 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -1781,13 +1826,13 @@ func EditUser(class string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 87, "<div id=\"edit-user-form\" x-data=\"{\r\n                init() {\r\n                    document.body.addEventListener('modal:opened', (evt) => {\r\n                        if (evt.detail.id === 'edit-user-modal') {\r\n                            htmx.ajax('GET', '/edit-user-form?user_id='+window.user_id, {target: '#edit-user-form', swap: 'innerHtml'})\r\n                        }\r\n                    });\r\n                    document.body.addEventListener('modal:closed', (evt) => {\r\n                        if (evt.detail.id === 'edit-user-modal') {\r\n                            document.getElementById('edit-user-form').innerHTML = '';\r\n                        }\r\n                    });\r\n                }\r\n            }\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, "<div id=\"edit-user-form\" x-data=\"{\r\n                init() {\r\n                    document.body.addEventListener('modal:opened', (evt) => {\r\n                        if (evt.detail.id === 'edit-user-modal') {\r\n                            htmx.ajax('GET', '/edit-user-form?user_id='+window.user_id, {target: '#edit-user-form', swap: 'innerHtml'})\r\n                        }\r\n                    });\r\n                    document.body.addEventListener('modal:closed', (evt) => {\r\n                        if (evt.detail.id === 'edit-user-modal') {\r\n                            document.getElementById('edit-user-form').innerHTML = '';\r\n                        }\r\n                    });\r\n                }\r\n            }\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = components.ResponsiveModal("edit-user-modal", "Edit User", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var72), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.ResponsiveModal("edit-user-modal", "Edit User", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var73), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1811,29 +1856,29 @@ func EditUserForm(user models.User) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var73 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var73 == nil {
-			templ_7745c5c3_Var73 = templ.NopComponent
+		templ_7745c5c3_Var74 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var74 == nil {
+			templ_7745c5c3_Var74 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 88, "<div x-data=\"{\r\n                    user: {},\r\n                    selectedColor: '',\r\n                    nameError: '',\r\n                    usernameError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.user.full_name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.user.full_name = this.user.full_name.charAt(0).toUpperCase() + this.user.full_name.slice(1);\r\n                    },\r\n                    validateUsername() {\r\n                        this.usernameError = (this.user.username.trim() === '')\r\n                            ? 'Username is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        this.validateUsername();\r\n                        if (this.nameError || this.usernameError) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'edit-user-form') {\r\n                                $store.modal.close('edit-user-modal');\r\n                                htmx.ajax('POST', '/settings?tab=users', {\r\n                                    target: '#content',\r\n                                    swap: 'innerHTML'\r\n                                })\r\n                            }\r\n                        });\r\n                    }\r\n                }\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, "<div x-data=\"{\r\n                    user: {},\r\n                    selectedColor: '',\r\n                    nameError: '',\r\n                    usernameError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.user.full_name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.user.full_name = this.user.full_name.charAt(0).toUpperCase() + this.user.full_name.slice(1);\r\n                    },\r\n                    validateUsername() {\r\n                        this.usernameError = (this.user.username.trim() === '')\r\n                            ? 'Username is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        this.validateUsername();\r\n                        if (this.nameError || this.usernameError) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'edit-user-form') {\r\n                                $store.modal.close('edit-user-modal');\r\n                                htmx.ajax('POST', '/settings?tab=users', {\r\n                                    target: '#content',\r\n                                    swap: 'innerHTML'\r\n                                })\r\n                            }\r\n                        });\r\n                    }\r\n                }\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var74 string
-		templ_7745c5c3_Var74, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("user=%s;selectedColor='%s'", string(utils.MustJSON(user)), user.Color))
+		var templ_7745c5c3_Var75 string
+		templ_7745c5c3_Var75, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("user=%s;selectedColor='%s'", string(utils.MustJSON(user)), user.Color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 574, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 587, Col: 99}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var74)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 89, "\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var75)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var75 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, "\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var76 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -1845,57 +1890,7 @@ func EditUserForm(user models.User) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 90, "<input id=\"user_id\" type=\"hidden\" name=\"user_id\" x-model=\"user.id\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Var76 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-				if !templ_7745c5c3_IsBuffer {
-					defer func() {
-						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err == nil {
-							templ_7745c5c3_Err = templ_7745c5c3_BufErr
-						}
-					}()
-				}
-				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("full_name", "Name", "", nil).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 91, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormControl("full_name", "full_name", "text", "Full Name", user.FullName, "", templ.Attributes{
-					"autocomplete": "name",
-					"x-model":      "user.full_name",
-					"@blur":        "validateName",
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 92, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "nameError != ''",
-					"x-text": "nameError",
-				},
-				).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				return nil
-			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var76), templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 93, "<input id=\"user_id\" type=\"hidden\" name=\"user_id\" x-model=\"user.id\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1911,7 +1906,7 @@ func EditUserForm(user models.User) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("username", "Username", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("full_name", "Name", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1919,10 +1914,10 @@ func EditUserForm(user models.User) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = ui.FormControl("username", "username", "text", "Username", user.Username, "", templ.Attributes{
-					"autocomplete": "username",
-					"x-model":      "user.username",
-					"@blur":        "validateUsername",
+				templ_7745c5c3_Err = ui.FormControl("full_name", "full_name", "text", "Full Name", user.FullName, "", templ.Attributes{
+					"autocomplete": "name",
+					"x-model":      "user.full_name",
+					"@blur":        "validateName",
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
@@ -1932,8 +1927,8 @@ func EditUserForm(user models.User) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "usernameError != ''",
-					"x-text": "usernameError",
+					"x-show": "nameError != ''",
+					"x-text": "nameError",
 				},
 				).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
@@ -1961,7 +1956,7 @@ func EditUserForm(user models.User) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("email", "Email", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("username", "Username", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1969,11 +1964,23 @@ func EditUserForm(user models.User) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = ui.FormControl("email", "email", "text", "Email", user.Email, "", templ.Attributes{
-					"autocomplete": "email",
-					"x-model":      "user.email",
-					"disabled":     "true",
+				templ_7745c5c3_Err = ui.FormControl("username", "username", "text", "Username", user.Username, "", templ.Attributes{
+					"autocomplete": "username",
+					"x-model":      "user.username",
+					"@blur":        "validateUsername",
 				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
+					"x-show": "usernameError != ''",
+					"x-text": "usernameError",
+				},
+				).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1983,7 +1990,7 @@ func EditUserForm(user models.User) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 98, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1999,31 +2006,19 @@ func EditUserForm(user models.User) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("level", "Level", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("email", "Email", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 99, " <select id=\"level\" name=\"level\" x-model=\"user.level\" class=\"flex h-11 w-full block appearance-none rounded-md border border-input px-3 py-2 text-sm shadow-sm dark:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\"><option value=\"USER\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				if user.Level == "USER" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 100, " selected")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 101, ">User</option> <option value=\"ADMIN\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				if user.Level == "ADMIN" {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 102, " selected")
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 103, ">Admin</option></select>")
+				templ_7745c5c3_Err = ui.FormControl("email", "email", "text", "Email", user.Email, "", templ.Attributes{
+					"autocomplete": "email",
+					"x-model":      "user.email",
+					"disabled":     "true",
+				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2033,7 +2028,7 @@ func EditUserForm(user models.User) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 104, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 101, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2049,11 +2044,31 @@ func EditUserForm(user models.User) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("", "Color", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("level", "Level", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 105, " <div id=\"colorOption\" class=\"flex items-center space-x-3 mt-2\"><template x-for=\"color in colorOptions\" :key=\"color.name\"><button type=\"button\" class=\"h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900\" :class=\"[\r\n                                color.class, \r\n                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'\r\n                            ]\" @click=\"selectedColor = color.class;\" :title=\"color.class\"></button></template><input type=\"hidden\" id=\"color\" name=\"color\" x-model=\"user.color\" :value=\"selectedColor\"></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 102, " <select id=\"level\" name=\"level\" x-model=\"user.level\" class=\"flex h-11 w-full block appearance-none rounded-md border border-input px-3 py-2 text-sm shadow-sm dark:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\"><option value=\"USER\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if user.Level == "USER" {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 103, " selected")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 104, ">User</option> <option value=\"ADMIN\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				if user.Level == "ADMIN" {
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 105, " selected")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 106, ">Admin</option></select>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2063,7 +2078,37 @@ func EditUserForm(user models.User) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 106, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 107, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var81 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = ui.FormLabel("", "Color", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 108, " <div id=\"colorOption\" class=\"flex items-center space-x-3 mt-2\"><template x-for=\"color in colorOptions\" :key=\"color.name\"><button type=\"button\" class=\"h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900\" :class=\"[\r\n                                color.class, \r\n                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'\r\n                            ]\" @click=\"selectedColor = color.class;\" :title=\"color.class\"></button></template><input type=\"hidden\" id=\"color\" name=\"color\" x-model=\"user.color\" :value=\"selectedColor\"></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var81), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 109, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2071,7 +2116,7 @@ func EditUserForm(user models.User) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 107, " <div class=\"flex justify-end items-end\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 110, " <div class=\"flex justify-end items-end\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2079,7 +2124,7 @@ func EditUserForm(user models.User) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 108, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 111, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2092,11 +2137,11 @@ func EditUserForm(user models.User) templ.Component {
 			"hx-disabled-elt": "#edit-user-button,#full_name,#username",
 			"x-ref":           "form",
 			"@submit.prevent": "validateForm($event)",
-		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var75), templ_7745c5c3_Buffer)
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var76), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 109, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2104,7 +2149,10 @@ func EditUserForm(user models.User) templ.Component {
 	})
 }
 
-func CreateUser(class string) templ.Component {
+// ResetPassword adalah kerangka modal setel ulang sandi. Isinya baru diambil
+// ketika modalnya dibuka, mengikuti pola EditUser, sehingga daftar pengguna
+// tidak ikut membawa formulir sebanyak barisnya.
+func ResetPassword(class string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2120,12 +2168,12 @@ func CreateUser(class string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var81 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var81 == nil {
-			templ_7745c5c3_Var81 = templ.NopComponent
+		templ_7745c5c3_Var82 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var82 == nil {
+			templ_7745c5c3_Var82 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var82 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var83 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -2137,13 +2185,13 @@ func CreateUser(class string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 110, "<div id=\"create-user-form\" x-data=\"{\r\n                        init() {\r\n                            document.body.addEventListener('modal:opened', (evt) => {\r\n                                if (evt.detail.id === 'create-user-modal') {\r\n                                    htmx.ajax('GET', '/create-user-form', {target: '#create-user-form', swap: 'innerHtml'})\r\n                                }\r\n                            });\r\n                            document.body.addEventListener('modal:closed', (evt) => {\r\n                                if (evt.detail.id === 'create-user-modal') {\r\n                                    document.getElementById('create-user-form').innerHTML = '';\r\n                                }\r\n                            });\r\n                        }\r\n                    }\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 113, "<div id=\"reset-password-form\" x-data=\"{\r\n                init() {\r\n                    document.body.addEventListener('modal:opened', (evt) => {\r\n                        if (evt.detail.id === 'reset-password-modal') {\r\n                            htmx.ajax('GET', '/reset-password-form?user_id='+window.user_id, {target: '#reset-password-form', swap: 'innerHtml'})\r\n                        }\r\n                    });\r\n                    document.body.addEventListener('modal:closed', (evt) => {\r\n                        if (evt.detail.id === 'reset-password-modal') {\r\n                            document.getElementById('reset-password-form').innerHTML = '';\r\n                        }\r\n                    });\r\n                }\r\n            }\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = components.ResponsiveModal("create-user-modal", "Create User", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var82), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.ResponsiveModal("reset-password-modal", "Reset Password", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var83), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2151,7 +2199,9 @@ func CreateUser(class string) templ.Component {
 	})
 }
 
-func CreateUserForm() templ.Component {
+// ResetPasswordForm memakai sandi baru dan pengulangannya saja. Sandi lama
+// tidak ditanyakan, sebab administrator memang tidak mengetahuinya.
+func ResetPasswordForm(target models.User) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2167,16 +2217,50 @@ func CreateUserForm() templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var83 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var83 == nil {
-			templ_7745c5c3_Var83 = templ.NopComponent
+		templ_7745c5c3_Var84 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var84 == nil {
+			templ_7745c5c3_Var84 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 111, "<div x-data=\"{\r\n                    full_name: '',\r\n                    username: '',\r\n                    email: '',\r\n                    password: '',\r\n                    level: 'USER',\r\n                    color: '',\r\n                    selectedColor: '',\r\n                    nameError: '',\r\n                    usernameError: '',\r\n                    emailError: '',\r\n                    passwordError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.full_name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.full_name = this.full_name.charAt(0).toUpperCase() + this.full_name.slice(1);\r\n                    },\r\n                    validateUsername() {\r\n                        this.usernameError = (this.username.trim() === '')\r\n                            ? 'Username is required'\r\n                            : '';\r\n                    },\r\n                    validateEmail() {\r\n                        this.emailError = (this.email.trim() === '')\r\n                            ? 'Email is required'\r\n                            : '';\r\n                    },\r\n                    validatePassword() {\r\n                        this.passwordError = (this.password.trim() === '')\r\n                            ? 'Password is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        this.validateUsername();\r\n                        this.validateEmail();\r\n                        this.validatePassword();\r\n                        if (this.nameError || this.usernameError || this.emailError || this.passwordError) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    resetForm() {\r\n                        this.full_name = '';\r\n                        this.username = '';\r\n                        this.email = '';\r\n                        this.password = '';\r\n                        this.level = 'USER';\r\n                        this.color = '';\r\n                        this.selectedColor = '';\r\n                        this.nameError = '';\r\n                        this.usernameError = '';\r\n                        this.emailError = '';\r\n                        this.passwordError = '';\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'create-user-form') {\r\n                                $store.modal.close('create-user-modal');\r\n                                this.resetForm();\r\n                                htmx.ajax('POST', '/settings?tab=users', {\r\n                                    target: '#content',\r\n                                    swap: 'innerHTML'\r\n                                })\r\n                            }\r\n                        });\r\n                        document.body.addEventListener('modal:closed', (evt) => {\r\n                            if (evt.detail.id === 'create-user-modal') {\r\n                                this.resetForm();\r\n                            }\r\n                        });\r\n                    }\r\n                }\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 114, "<div x-data=\"{\r\n                    newPassword: '',\r\n                    confirmPassword: '',\r\n                    passwordError: '',\r\n                    confirmError: '',\r\n                    validatePassword() {\r\n                        this.passwordError = (this.newPassword.trim().length < 6)\r\n                            ? 'Password must be at least 6 characters'\r\n                            : '';\r\n                    },\r\n                    validateConfirm() {\r\n                        this.confirmError = (this.confirmPassword !== this.newPassword)\r\n                            ? 'Confirmation does not match'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validatePassword();\r\n                        this.validateConfirm();\r\n                        if (this.passwordError || this.confirmError) {\r\n                            return;\r\n                        }\r\n                        this.$refs.form.requestSubmit();\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'reset-password-form') {\r\n                                $store.modal.close('reset-password-modal');\r\n                            }\r\n                        });\r\n                    }\r\n                }\"><div class=\"flex items-center gap-2 mb-4 p-2 rounded-md bg-muted/50\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var84 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Err = ui.Avatar(target.FullName, target.Color, "xs", "h-6 w-6", nil).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 115, "<div><div class=\"text-sm font-medium\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var85 string
+		templ_7745c5c3_Var85, templ_7745c5c3_Err = templ.JoinStringErrs(target.FullName)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 740, Col: 66}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var85))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 116, "</div><div class=\"text-xs text-muted-foreground\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var86 string
+		templ_7745c5c3_Var86, templ_7745c5c3_Err = templ.JoinStringErrs(target.Username)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 741, Col: 76}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var86))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 117, "</div></div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var87 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -2188,203 +2272,20 @@ func CreateUserForm() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Var85 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-				if !templ_7745c5c3_IsBuffer {
-					defer func() {
-						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err == nil {
-							templ_7745c5c3_Err = templ_7745c5c3_BufErr
-						}
-					}()
-				}
-				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("full_name", "Name", "", nil).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 112, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormControl("full_name", "full_name", "text", "Full Name", "", "", templ.Attributes{
-					"autocomplete": "name",
-					"x-model":      "full_name",
-					"@blur":        "validateName",
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 113, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "nameError != ''",
-					"x-text": "nameError",
-				},
-				).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				return nil
-			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var85), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 118, "<input type=\"hidden\" name=\"user_id\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 114, " ")
+			var templ_7745c5c3_Var88 string
+			templ_7745c5c3_Var88, templ_7745c5c3_Err = templ.ResolveAttributeValue(target.ID)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 752, Col: 65}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var88)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var86 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-				if !templ_7745c5c3_IsBuffer {
-					defer func() {
-						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err == nil {
-							templ_7745c5c3_Err = templ_7745c5c3_BufErr
-						}
-					}()
-				}
-				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("username", "Username", "", nil).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 115, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormControl("username", "username", "text", "Username", "", "", templ.Attributes{
-					"autocomplete": "username",
-					"x-model":      "username",
-					"@blur":        "validateUsername",
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 116, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "usernameError != ''",
-					"x-text": "usernameError",
-				},
-				).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				return nil
-			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var86), templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 117, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Var87 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-				if !templ_7745c5c3_IsBuffer {
-					defer func() {
-						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err == nil {
-							templ_7745c5c3_Err = templ_7745c5c3_BufErr
-						}
-					}()
-				}
-				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("email", "Email", "", nil).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 118, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormControl("email", "email", "text", "Email", "", "", templ.Attributes{
-					"autocomplete": "email",
-					"x-model":      "email",
-					"@blur":        "validateEmail",
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 119, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "emailError != ''",
-					"x-text": "emailError",
-				},
-				).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				return nil
-			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var87), templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 120, " ")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Var88 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-				if !templ_7745c5c3_IsBuffer {
-					defer func() {
-						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-						if templ_7745c5c3_Err == nil {
-							templ_7745c5c3_Err = templ_7745c5c3_BufErr
-						}
-					}()
-				}
-				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("password", "Password", "", nil).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 121, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormControl("password", "password", "password", "Password", "", "", templ.Attributes{
-					"autocomplete": "new-password",
-					"x-model":      "password",
-					"@blur":        "validatePassword",
-				}).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 122, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "passwordError != ''",
-					"x-text": "passwordError",
-				},
-				).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				return nil
-			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var88), templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 123, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 119, "\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2400,11 +2301,31 @@ func CreateUserForm() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("level", "Level", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("new_password", "New password", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 124, " <select id=\"level\" name=\"level\" x-model=\"level\" class=\"flex h-11 w-full block appearance-none rounded-md border border-input px-3 py-2 text-sm shadow-sm dark:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\"><option value=\"USER\">User</option> <option value=\"ADMIN\">Admin</option></select>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 120, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormControl("new_password", "new_password", "password", "New password", "", "", templ.Attributes{
+					"autocomplete": "new-password",
+					"x-model":      "newPassword",
+					"@blur":        "validatePassword",
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 121, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
+					"x-show": "passwordError != ''",
+					"x-text": "passwordError",
+				},
+				).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2414,7 +2335,7 @@ func CreateUserForm() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 125, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 122, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2430,11 +2351,31 @@ func CreateUserForm() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("", "Color", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("confirm_password", "Confirm password", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 126, " <div id=\"colorOption\" class=\"flex items-center space-x-3 mt-2\"><template x-for=\"color in colorOptions\" :key=\"color.name\"><button type=\"button\" class=\"h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900\" :class=\"[\r\n                                color.class, \r\n                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'\r\n                            ]\" @click=\"selectedColor = color.class;\" :title=\"color.class\"></button></template><input type=\"hidden\" id=\"color\" name=\"color\" x-model=\"color\" :value=\"selectedColor\"></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 123, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormControl("confirm_password", "confirm_password", "password", "Repeat the new password", "", "", templ.Attributes{
+					"autocomplete": "new-password",
+					"x-model":      "confirmPassword",
+					"@blur":        "validateConfirm",
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 124, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
+					"x-show": "confirmError != ''",
+					"x-text": "confirmError",
+				},
+				).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2444,7 +2385,7 @@ func CreateUserForm() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 127, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 125, " <p class=\"text-xs text-muted-foreground\">The account holder is not notified. Tell them the new password yourself.</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2452,32 +2393,32 @@ func CreateUserForm() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 128, " <div class=\"flex justify-end items-end\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 126, " <div class=\"flex justify-end items-end\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = ui.Button("create-user-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.Button("reset-password-button", "", "", "", "Reset Password", "", templ.Attributes{"type": "submit"}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 129, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 127, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = ui.Form("/user", "post", "", templ.Attributes{
-			"id":              "create-user-form",
+		templ_7745c5c3_Err = ui.Form("/reset-password", "put", "", templ.Attributes{
+			"id":              "reset-password-form-inner",
 			"hx-target":       "#toaster",
 			"hx-swap":         "innerHtml",
-			"hx-disabled-elt": "#create-user-button,#full_name,#username,#email,#password",
+			"hx-disabled-elt": "#reset-password-button,#new_password,#confirm_password",
 			"x-ref":           "form",
 			"@submit.prevent": "validateForm($event)",
-		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var84), templ_7745c5c3_Buffer)
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var87), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 130, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 128, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2485,7 +2426,7 @@ func CreateUserForm() templ.Component {
 	})
 }
 
-func CreateDept(class string, attrs templ.Attributes) templ.Component {
+func CreateUser(class string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2518,13 +2459,13 @@ func CreateDept(class string, attrs templ.Attributes) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 131, "<div id=\"create-department-form\" x-data=\"{\r\n                        init() {\r\n                            document.body.addEventListener('modal:opened', (evt) => {\r\n                                if (evt.detail.id === 'create-department-modal') {\r\n                                    htmx.ajax('GET', '/create-department-form', {target: '#create-department-form', swap: 'innerHtml'})\r\n                                }\r\n                            });\r\n                            document.body.addEventListener('modal:closed', (evt) => {\r\n                                if (evt.detail.id === 'create-department-modal') {\r\n                                    document.getElementById('create-department-form').innerHTML = '';\r\n                                }\r\n                            });\r\n                        }\r\n                    }\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 129, "<div id=\"create-user-form\" x-data=\"{\r\n                        init() {\r\n                            document.body.addEventListener('modal:opened', (evt) => {\r\n                                if (evt.detail.id === 'create-user-modal') {\r\n                                    htmx.ajax('GET', '/create-user-form', {target: '#create-user-form', swap: 'innerHtml'})\r\n                                }\r\n                            });\r\n                            document.body.addEventListener('modal:closed', (evt) => {\r\n                                if (evt.detail.id === 'create-user-modal') {\r\n                                    document.getElementById('create-user-form').innerHTML = '';\r\n                                }\r\n                            });\r\n                        }\r\n                    }\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = components.ResponsiveModal("create-department-modal", "Create Department", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var92), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.ResponsiveModal("create-user-modal", "Create User", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var92), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2532,7 +2473,7 @@ func CreateDept(class string, attrs templ.Attributes) templ.Component {
 	})
 }
 
-func CreateDeptForm() templ.Component {
+func CreateUserForm() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2553,7 +2494,7 @@ func CreateDeptForm() templ.Component {
 			templ_7745c5c3_Var93 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 132, "<div x-data=\"{\r\n                    name: '',\r\n                    description: '',\r\n                    color: '',\r\n                    selectedColor: '',\r\n                    dept_head_id: '',\r\n                    members: [],\r\n                    nameError: '',\r\n                    descriptionError : '',\r\n                    colorError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.name = this.name.charAt(0).toUpperCase() + this.name.slice(1);\r\n                    },\r\n                    validateColor() {\r\n                        this.colorError = (this.color.trim() === '')\r\n                            ? 'Color is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        //this.validateColor();\r\n                        \r\n                        if (this.nameError || this.validateColor()) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    resetForm() {\r\n                        this.tags = [];\r\n                        this.name = '';\r\n                        this.description = '';\r\n                        this.color = '';\r\n                        this.dept_head_id= '';\r\n                        this.selectedColor = '';\r\n                        this.members = [];\r\n                        this.nameError = '';\r\n                        this.descriptionError = '';\r\n                        this.colorError = '';\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'create-department-form') {\r\n                                $store.modal.close('create-department-modal');\r\n                                this.resetForm();\r\n                                htmx.ajax('GET', '/department-switcher', {target: '#department-switcher', swap: 'innerHtml'})\r\n                                if (window.location.pathname === '/departments') {\r\n                                    htmx.ajax('POST', '/departments', { \r\n                                        target: '#content', \r\n                                        swap: 'innerHTML' \r\n                                    })\r\n                                }\r\n                            }\r\n                        });\r\n\r\n                        document.body.addEventListener('modal:closed', (evt) => {\r\n                            if (evt.detail.id === 'create-department-modal') {\r\n                                this.resetForm();\r\n                            }\r\n                        });\r\n                    }\r\n                }\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 130, "<div x-data=\"{\r\n                    full_name: '',\r\n                    username: '',\r\n                    email: '',\r\n                    password: '',\r\n                    level: 'USER',\r\n                    color: '',\r\n                    selectedColor: '',\r\n                    nameError: '',\r\n                    usernameError: '',\r\n                    emailError: '',\r\n                    passwordError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.full_name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.full_name = this.full_name.charAt(0).toUpperCase() + this.full_name.slice(1);\r\n                    },\r\n                    validateUsername() {\r\n                        this.usernameError = (this.username.trim() === '')\r\n                            ? 'Username is required'\r\n                            : '';\r\n                    },\r\n                    validateEmail() {\r\n                        this.emailError = (this.email.trim() === '')\r\n                            ? 'Email is required'\r\n                            : '';\r\n                    },\r\n                    validatePassword() {\r\n                        this.passwordError = (this.password.trim() === '')\r\n                            ? 'Password is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        this.validateUsername();\r\n                        this.validateEmail();\r\n                        this.validatePassword();\r\n                        if (this.nameError || this.usernameError || this.emailError || this.passwordError) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    resetForm() {\r\n                        this.full_name = '';\r\n                        this.username = '';\r\n                        this.email = '';\r\n                        this.password = '';\r\n                        this.level = 'USER';\r\n                        this.color = '';\r\n                        this.selectedColor = '';\r\n                        this.nameError = '';\r\n                        this.usernameError = '';\r\n                        this.emailError = '';\r\n                        this.passwordError = '';\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'create-user-form') {\r\n                                $store.modal.close('create-user-modal');\r\n                                this.resetForm();\r\n                                htmx.ajax('POST', '/settings?tab=users', {\r\n                                    target: '#content',\r\n                                    swap: 'innerHTML'\r\n                                })\r\n                            }\r\n                        });\r\n                        document.body.addEventListener('modal:closed', (evt) => {\r\n                            if (evt.detail.id === 'create-user-modal') {\r\n                                this.resetForm();\r\n                            }\r\n                        });\r\n                    }\r\n                }\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2581,23 +2522,23 @@ func CreateDeptForm() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("name", "Name", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("full_name", "Name", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 133, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 131, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = ui.FormControl("name", "name", "text", "Department Name", "", "", templ.Attributes{
+				templ_7745c5c3_Err = ui.FormControl("full_name", "full_name", "text", "Full Name", "", "", templ.Attributes{
 					"autocomplete": "name",
-					"x-model":      "name",
+					"x-model":      "full_name",
 					"@blur":        "validateName",
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 134, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 132, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2615,7 +2556,7 @@ func CreateDeptForm() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 135, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 133, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2631,29 +2572,29 @@ func CreateDeptForm() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("description", "Description", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("username", "Username", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 136, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 134, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = ui.FormControl("description", "description", "textarea", "Department Description", "", "", templ.Attributes{
-					"autocomplete": "description",
-					"x-model":      "description",
-					"@blur":        "description=description.charAt(0).toUpperCase() + description.slice(1)",
+				templ_7745c5c3_Err = ui.FormControl("username", "username", "text", "Username", "", "", templ.Attributes{
+					"autocomplete": "username",
+					"x-model":      "username",
+					"@blur":        "validateUsername",
 				}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 137, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 135, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "descriptionError != ''",
-					"x-text": "descriptionError",
+					"x-show": "usernameError != ''",
+					"x-text": "usernameError",
 				},
 				).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
@@ -2665,7 +2606,7 @@ func CreateDeptForm() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 138, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 136, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2681,23 +2622,31 @@ func CreateDeptForm() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("", "Color", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("email", "Email", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 139, " <div id=\"colorOption\" class=\"flex items-center space-x-3 mt-2\"><template x-for=\"color in colorOptions\" :key=\"color.name\"><button type=\"button\" class=\"h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900\" :class=\"[\r\n                                color.class, \r\n                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'\r\n                            ]\" @click=\"selectedColor = color.class;\" :title=\"color.class\"></button></template><!-- Hidden input buat form --><input type=\"hidden\" id=\"color\" name=\"color\" x-model=\"color\" :value=\"selectedColor\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 137, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormControl("email", "email", "text", "Email", "", "", templ.Attributes{
+					"autocomplete": "email",
+					"x-model":      "email",
+					"@blur":        "validateEmail",
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 138, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
-					"x-show": "selectedColor === ''",
-					"x-text": "colorError",
+					"x-show": "emailError != ''",
+					"x-text": "emailError",
 				},
 				).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 140, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2707,7 +2656,7 @@ func CreateDeptForm() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 141, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 139, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2723,40 +2672,41 @@ func CreateDeptForm() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = ui.FormLabel("dept_head_id", "Manager", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = ui.FormLabel("password", "Password", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 142, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 140, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = components.ManagerInput("dept_head_id",
-					"dept_head_id",
-					"Type a user...",
-					[]models.User{},
-					services.GetNonManager(),
-					"",
-					nil,
+				templ_7745c5c3_Err = ui.FormControl("password", "password", "password", "Password", "", "", templ.Attributes{
+					"autocomplete": "new-password",
+					"x-model":      "password",
+					"@blur":        "validatePassword",
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 141, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
+					"x-show": "passwordError != ''",
+					"x-text": "passwordError",
+				},
 				).Render(ctx, templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 143, " ")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var98), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var98), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 144, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 142, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2772,11 +2722,383 @@ func CreateDeptForm() templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = ui.FormLabel("level", "Level", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 143, " <select id=\"level\" name=\"level\" x-model=\"level\" class=\"flex h-11 w-full block appearance-none rounded-md border border-input px-3 py-2 text-sm shadow-sm dark:bg-accent focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring\"><option value=\"USER\">User</option> <option value=\"ADMIN\">Admin</option></select>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var99), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 144, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var100 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = ui.FormLabel("", "Color", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 145, " <div id=\"colorOption\" class=\"flex items-center space-x-3 mt-2\"><template x-for=\"color in colorOptions\" :key=\"color.name\"><button type=\"button\" class=\"h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900\" :class=\"[\r\n                                color.class, \r\n                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'\r\n                            ]\" @click=\"selectedColor = color.class;\" :title=\"color.class\"></button></template><input type=\"hidden\" id=\"color\" name=\"color\" x-model=\"color\" :value=\"selectedColor\"></div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var100), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 146, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal").Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 147, " <div class=\"flex justify-end items-end\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = ui.Button("create-user-button", "", "", "", "Create", "", templ.Attributes{"type": "submit"}).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 148, "</div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = ui.Form("/user", "post", "", templ.Attributes{
+			"id":              "create-user-form",
+			"hx-target":       "#toaster",
+			"hx-swap":         "innerHtml",
+			"hx-disabled-elt": "#create-user-button,#full_name,#username,#email,#password",
+			"x-ref":           "form",
+			"@submit.prevent": "validateForm($event)",
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var94), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 149, "</div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func CreateDept(class string, attrs templ.Attributes) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var101 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var101 == nil {
+			templ_7745c5c3_Var101 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Var102 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 150, "<div id=\"create-department-form\" x-data=\"{\r\n                        init() {\r\n                            document.body.addEventListener('modal:opened', (evt) => {\r\n                                if (evt.detail.id === 'create-department-modal') {\r\n                                    htmx.ajax('GET', '/create-department-form', {target: '#create-department-form', swap: 'innerHtml'})\r\n                                }\r\n                            });\r\n                            document.body.addEventListener('modal:closed', (evt) => {\r\n                                if (evt.detail.id === 'create-department-modal') {\r\n                                    document.getElementById('create-department-form').innerHTML = '';\r\n                                }\r\n                            });\r\n                        }\r\n                    }\"></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = components.ResponsiveModal("create-department-modal", "Create Department", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var102), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return nil
+	})
+}
+
+func CreateDeptForm() templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var103 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var103 == nil {
+			templ_7745c5c3_Var103 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 151, "<div x-data=\"{\r\n                    name: '',\r\n                    description: '',\r\n                    color: '',\r\n                    selectedColor: '',\r\n                    dept_head_id: '',\r\n                    members: [],\r\n                    nameError: '',\r\n                    descriptionError : '',\r\n                    colorError: '',\r\n                    validateName() {\r\n                        this.nameError = (this.name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.name = this.name.charAt(0).toUpperCase() + this.name.slice(1);\r\n                    },\r\n                    validateColor() {\r\n                        this.colorError = (this.color.trim() === '')\r\n                            ? 'Color is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        //this.validateColor();\r\n                        \r\n                        if (this.nameError || this.validateColor()) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    resetForm() {\r\n                        this.tags = [];\r\n                        this.name = '';\r\n                        this.description = '';\r\n                        this.color = '';\r\n                        this.dept_head_id= '';\r\n                        this.selectedColor = '';\r\n                        this.members = [];\r\n                        this.nameError = '';\r\n                        this.descriptionError = '';\r\n                        this.colorError = '';\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'create-department-form') {\r\n                                $store.modal.close('create-department-modal');\r\n                                this.resetForm();\r\n                                htmx.ajax('GET', '/department-switcher', {target: '#department-switcher', swap: 'innerHtml'})\r\n                                if (window.location.pathname === '/departments') {\r\n                                    htmx.ajax('POST', '/departments', { \r\n                                        target: '#content', \r\n                                        swap: 'innerHTML' \r\n                                    })\r\n                                }\r\n                            }\r\n                        });\r\n\r\n                        document.body.addEventListener('modal:closed', (evt) => {\r\n                            if (evt.detail.id === 'create-department-modal') {\r\n                                this.resetForm();\r\n                            }\r\n                        });\r\n                    }\r\n                }\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var104 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Var105 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = ui.FormLabel("name", "Name", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 152, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormControl("name", "name", "text", "Department Name", "", "", templ.Attributes{
+					"autocomplete": "name",
+					"x-model":      "name",
+					"@blur":        "validateName",
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 153, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
+					"x-show": "nameError != ''",
+					"x-text": "nameError",
+				},
+				).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var105), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 154, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var106 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = ui.FormLabel("description", "Description", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 155, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormControl("description", "description", "textarea", "Department Description", "", "", templ.Attributes{
+					"autocomplete": "description",
+					"x-model":      "description",
+					"@blur":        "description=description.charAt(0).toUpperCase() + description.slice(1)",
+				}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 156, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
+					"x-show": "descriptionError != ''",
+					"x-text": "descriptionError",
+				},
+				).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var106), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 157, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var107 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = ui.FormLabel("", "Color", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 158, " <div id=\"colorOption\" class=\"flex items-center space-x-3 mt-2\"><template x-for=\"color in colorOptions\" :key=\"color.name\"><button type=\"button\" class=\"h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900\" :class=\"[\r\n                                color.class, \r\n                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'\r\n                            ]\" @click=\"selectedColor = color.class;\" :title=\"color.class\"></button></template><!-- Hidden input buat form --><input type=\"hidden\" id=\"color\" name=\"color\" x-model=\"color\" :value=\"selectedColor\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{
+					"x-show": "selectedColor === ''",
+					"x-text": "colorError",
+				},
+				).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 159, "</div>")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var107), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 160, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var108 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
+				templ_7745c5c3_Err = ui.FormLabel("dept_head_id", "Manager", "", nil).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 161, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = components.ManagerInput("dept_head_id",
+					"dept_head_id",
+					"Type a user...",
+					[]models.User{},
+					services.GetNonManager(),
+					"",
+					nil,
+				).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 162, " ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = ui.FormMessage("", "", templ.Attributes{}).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				return nil
+			})
+			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var108), templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 163, " ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Var109 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+				if !templ_7745c5c3_IsBuffer {
+					defer func() {
+						templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+						if templ_7745c5c3_Err == nil {
+							templ_7745c5c3_Err = templ_7745c5c3_BufErr
+						}
+					}()
+				}
+				ctx = templ.InitializeContext(ctx)
 				templ_7745c5c3_Err = ui.FormLabel("members", "Members", "", nil).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 145, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 164, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2791,7 +3113,7 @@ func CreateDeptForm() templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 146, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 165, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2801,11 +3123,11 @@ func CreateDeptForm() templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var99), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var109), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 147, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 166, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2813,7 +3135,7 @@ func CreateDeptForm() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 148, " <div class=\"flex justify-end items-end\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 167, " <div class=\"flex justify-end items-end\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2821,7 +3143,7 @@ func CreateDeptForm() templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 149, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 168, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -2834,11 +3156,11 @@ func CreateDeptForm() templ.Component {
 			"hx-disabled-elt": "#create-button,#name,#description,#colorOption",
 			"x-ref":           "form",
 			"@submit.prevent": "validateForm($event)",
-		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var94), templ_7745c5c3_Buffer)
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var104), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 150, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 169, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2862,12 +3184,12 @@ func EditDept(class string) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var100 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var100 == nil {
-			templ_7745c5c3_Var100 = templ.NopComponent
+		templ_7745c5c3_Var110 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var110 == nil {
+			templ_7745c5c3_Var110 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var101 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var111 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -2879,13 +3201,13 @@ func EditDept(class string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 151, "<div id=\"edit-department-form\" x-data=\"{\r\n                init() {\r\n                    document.body.addEventListener('modal:opened', (evt) => {\r\n                        if (evt.detail.id === 'edit-department-modal') {\r\n                            htmx.ajax('GET', '/edit-department-form?dept_id='+window.dept_id, {target: '#edit-department-form', swap: 'innerHtml'})\r\n                        }\r\n                    });\r\n                    document.body.addEventListener('modal:closed', (evt) => {\r\n                        if (evt.detail.id === 'edit-department-modal') {\r\n                            document.getElementById('edit-department-form').innerHTML = '';\r\n                        }\r\n                    });\r\n                }\r\n            }\"></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 170, "<div id=\"edit-department-form\" x-data=\"{\r\n                init() {\r\n                    document.body.addEventListener('modal:opened', (evt) => {\r\n                        if (evt.detail.id === 'edit-department-modal') {\r\n                            htmx.ajax('GET', '/edit-department-form?dept_id='+window.dept_id, {target: '#edit-department-form', swap: 'innerHtml'})\r\n                        }\r\n                    });\r\n                    document.body.addEventListener('modal:closed', (evt) => {\r\n                        if (evt.detail.id === 'edit-department-modal') {\r\n                            document.getElementById('edit-department-form').innerHTML = '';\r\n                        }\r\n                    });\r\n                }\r\n            }\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = components.ResponsiveModal("edit-department-modal", "Edit Department", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var101), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = components.ResponsiveModal("edit-department-modal", "Edit Department", class).Render(templ.WithChildren(ctx, templ_7745c5c3_Var111), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2909,29 +3231,29 @@ func EditDeptForm(dept models.Department) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var102 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var102 == nil {
-			templ_7745c5c3_Var102 = templ.NopComponent
+		templ_7745c5c3_Var112 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var112 == nil {
+			templ_7745c5c3_Var112 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 152, "<div x-data=\"{\r\n                    dept: {},\r\n                    selectedColor: '',\r\n                    nameError: '',\r\n                    descriptionError : '',\r\n                    colorError: '',\r\n                    members: [],\r\n                    validateName() {\r\n                        this.nameError = (this.dept.name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.dept.name = this.dept.name.charAt(0).toUpperCase() + this.dept.name.slice(1);\r\n                    },\r\n                    validateColor() {\r\n                        this.colorError = (this.dept.color.trim() === '')\r\n                            ? 'Color is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        if (this.nameError || this.validateColor()) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'edit-department-form') {\r\n                                $store.modal.close('edit-department-modal');\r\n                                htmx.ajax('POST', '/settings?tab=departments', {\r\n                                    target: '#content',\r\n                                    swap: 'innerHTML'\r\n                                })\r\n                            }\r\n                        });\r\n                    }\r\n                }\" x-init=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 171, "<div x-data=\"{\r\n                    dept: {},\r\n                    selectedColor: '',\r\n                    nameError: '',\r\n                    descriptionError : '',\r\n                    colorError: '',\r\n                    members: [],\r\n                    validateName() {\r\n                        this.nameError = (this.dept.name.trim() === '')\r\n                            ? 'Name is required'\r\n                            : '';\r\n                        this.dept.name = this.dept.name.charAt(0).toUpperCase() + this.dept.name.slice(1);\r\n                    },\r\n                    validateColor() {\r\n                        this.colorError = (this.dept.color.trim() === '')\r\n                            ? 'Color is required'\r\n                            : '';\r\n                    },\r\n                    validateForm(e) {\r\n                        e.preventDefault();\r\n                        this.validateName();\r\n                        if (this.nameError || this.validateColor()) {\r\n                            return; \r\n                        }\r\n                    },\r\n                    init() {\r\n                        document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                            if (evt.detail.successful && evt.detail.elt.id === 'edit-department-form') {\r\n                                $store.modal.close('edit-department-modal');\r\n                                htmx.ajax('POST', '/settings?tab=departments', {\r\n                                    target: '#content',\r\n                                    swap: 'innerHTML'\r\n                                })\r\n                            }\r\n                        });\r\n                    }\r\n                }\" x-init=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var103 string
-		templ_7745c5c3_Var103, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("dept=%s;selectedColor='%s'", string(utils.MustJSON(dept)), dept.Color))
+		var templ_7745c5c3_Var113 string
+		templ_7745c5c3_Var113, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("dept=%s;selectedColor='%s'", string(utils.MustJSON(dept)), dept.Color))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1100, Col: 99}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1228, Col: 99}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var103)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 153, "\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var113)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Var104 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 172, "\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var114 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -2943,11 +3265,11 @@ func EditDeptForm(dept models.Department) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 154, "<input id=\"dept_id\" type=\"hidden\" name=\"dept_id\" x-model=\"dept.id\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 173, "<input id=\"dept_id\" type=\"hidden\" name=\"dept_id\" x-model=\"dept.id\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var105 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var115 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -2963,7 +3285,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 155, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 174, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2975,7 +3297,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 156, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 175, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -2989,15 +3311,15 @@ func EditDeptForm(dept models.Department) templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var105), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var115), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 157, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 176, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var106 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var116 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -3013,7 +3335,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 158, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 177, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -3025,7 +3347,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 159, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 178, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -3039,15 +3361,15 @@ func EditDeptForm(dept models.Department) templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var106), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var116), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 160, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 179, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var107 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var117 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -3063,7 +3385,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 161, " <div id=\"colorOption\" class=\"flex items-center space-x-3 mt-2\"><template x-for=\"color in colorOptions\" :key=\"color.name\"><button type=\"button\" class=\"h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900\" :class=\"[\r\n                                color.class, \r\n                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'\r\n                            ]\" @click=\"selectedColor = color.class;\" :title=\"color.class\"></button></template><input type=\"hidden\" id=\"color\" name=\"color\" x-model=\"dept.color\" :value=\"selectedColor\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 180, " <div id=\"colorOption\" class=\"flex items-center space-x-3 mt-2\"><template x-for=\"color in colorOptions\" :key=\"color.name\"><button type=\"button\" class=\"h-6 w-6 rounded-full transition ring-2 ring-offset-2 ring-offset-white dark:ring-offset-neutral-900\" :class=\"[\r\n                                color.class, \r\n                                selectedColor === color.class ? 'ring-primary dark:ring-white scale-110' : 'ring-transparent'\r\n                            ]\" @click=\"selectedColor = color.class;\" :title=\"color.class\"></button></template><input type=\"hidden\" id=\"color\" name=\"color\" x-model=\"dept.color\" :value=\"selectedColor\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -3075,21 +3397,21 @@ func EditDeptForm(dept models.Department) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 162, "</div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 181, "</div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var107), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var117), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 163, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 182, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var108 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var118 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -3105,7 +3427,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 164, " ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 183, " ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -3122,15 +3444,15 @@ func EditDeptForm(dept models.Department) templ.Component {
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var108), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("mb-4", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var118), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 165, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 184, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var109 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var119 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -3146,25 +3468,25 @@ func EditDeptForm(dept models.Department) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 166, " <div x-data=\"{\r\n                        mems: [],\r\n                        init() {\r\n                            this.mems.forEach(m => {\r\n                                this.members.push({\r\n                                    user_id: m.user_id,\r\n                                    role: m.role,\r\n                                });\r\n                            });\r\n                        },\r\n                        updateRole(userId, role) {\r\n                            let m = [...this.members].find(x => x.user_id === userId);\r\n                            if (m) m.role = role;\r\n                        }\r\n                    }\" class=\"pl-2 space-y-2 flex flex-col\" x-init=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 185, " <div x-data=\"{\r\n                        mems: [],\r\n                        init() {\r\n                            this.mems.forEach(m => {\r\n                                this.members.push({\r\n                                    user_id: m.user_id,\r\n                                    role: m.role,\r\n                                });\r\n                            });\r\n                        },\r\n                        updateRole(userId, role) {\r\n                            let m = [...this.members].find(x => x.user_id === userId);\r\n                            if (m) m.role = role;\r\n                        }\r\n                    }\" class=\"pl-2 space-y-2 flex flex-col\" x-init=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				var templ_7745c5c3_Var110 string
-				templ_7745c5c3_Var110, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("mems=%s;init();", string(utils.MustJSON(dept.Members))))
+				var templ_7745c5c3_Var120 string
+				templ_7745c5c3_Var120, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("mems=%s;init();", string(utils.MustJSON(dept.Members))))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1192, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1320, Col: 96}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var110)
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var120)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 167, "\">")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 186, "\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for i, member := range dept.Members {
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 168, "<div class=\"inline-flex items-center gap-2\"><span class=\"w-full flex items-center gap-2\">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 187, "<div class=\"inline-flex items-center gap-2\"><span class=\"w-full flex items-center gap-2\">")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -3172,87 +3494,87 @@ func EditDeptForm(dept models.Department) templ.Component {
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var111 string
-					templ_7745c5c3_Var111, templ_7745c5c3_Err = templ.JoinStringErrs(member.User.FullName)
+					var templ_7745c5c3_Var121 string
+					templ_7745c5c3_Var121, templ_7745c5c3_Err = templ.JoinStringErrs(member.User.FullName)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1198, Col: 53}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1326, Col: 53}
 					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var111))
-					if templ_7745c5c3_Err != nil {
-						return templ_7745c5c3_Err
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 169, "</span> <select id=\"")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var121))
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var112 string
-					templ_7745c5c3_Var112, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("role-%v", i))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1200, Col: 65}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var112)
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 188, "</span> <select id=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 170, "\" @change=\"")
+					var templ_7745c5c3_Var122 string
+					templ_7745c5c3_Var122, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("role-%v", i))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1328, Col: 65}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var122)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					var templ_7745c5c3_Var113 string
-					templ_7745c5c3_Var113, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID))
-					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1201, Col: 109}
-					}
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var113)
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 189, "\" @change=\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 171, "\" class=\"px-1 py-0.5 text-xs rounded-md border dark:bg-accent\"")
+					var templ_7745c5c3_Var123 string
+					templ_7745c5c3_Var123, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("updateRole('%s', $event.target.value)", member.User.ID))
+					if templ_7745c5c3_Err != nil {
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1329, Col: 109}
+					}
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var123)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					if peran(member.Role) == "MANAGER" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 172, " disabled")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 173, ">")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 190, "\" class=\"px-1 py-0.5 text-xs rounded-md border dark:bg-accent\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if peran(member.Role) == "MANAGER" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 174, "<option value=\"MANAGER\" selected>Manager</option> ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 191, " disabled")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 175, "<option value=\"MEMBER\"")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 192, ">")
+					if templ_7745c5c3_Err != nil {
+						return templ_7745c5c3_Err
+					}
+					if peran(member.Role) == "MANAGER" {
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 193, "<option value=\"MANAGER\" selected>Manager</option> ")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+					}
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 194, "<option value=\"MEMBER\"")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					if peran(member.Role) == "MEMBER" {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 176, " selected")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 195, " selected")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 					}
-					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 177, ">Member</option></select></div>")
+					templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 196, ">Member</option></select></div>")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 178, "<input type=\"hidden\" name=\"members\" :value=\"JSON.stringify(members)\"></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 197, "<input type=\"hidden\" name=\"members\" :value=\"JSON.stringify(members)\"></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				return nil
 			})
-			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var109), templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ui.FormItem("", nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var119), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 179, " ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 198, " ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -3260,7 +3582,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 180, " <div class=\"flex justify-end items-end\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 199, " <div class=\"flex justify-end items-end\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -3268,7 +3590,7 @@ func EditDeptForm(dept models.Department) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 181, "</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 200, "</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -3281,11 +3603,11 @@ func EditDeptForm(dept models.Department) templ.Component {
 			"hx-disabled-elt": "#edit-button,#name,#description,#colorOption",
 			"x-ref":           "form",
 			"@submit.prevent": "validateForm($event)",
-		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var104), templ_7745c5c3_Buffer)
+		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var114), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 182, "</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 201, "</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -3314,12 +3636,12 @@ func TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, imp
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var114 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var114 == nil {
-			templ_7745c5c3_Var114 = templ.NopComponent
+		templ_7745c5c3_Var124 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var124 == nil {
+			templ_7745c5c3_Var124 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Var115 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Var125 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 			if !templ_7745c5c3_IsBuffer {
@@ -3331,27 +3653,27 @@ func TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, imp
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 183, "<div class=\"space-y-6\" data-title=\"Task Config Settings\" x-data=\"{\r\n                priorities: [],\r\n                impacts: [],\r\n                colors: [],\r\n                hariMenit(m) {\r\n                    const menit = Number(m) || 0;\r\n                    if (!menit) return 'no limit';\r\n                    const hari = Math.floor(menit / 1440);\r\n                    const sisa = menit % 1440;\r\n                    let teks = '';\r\n                    if (hari) teks += hari + ' day' + (hari > 1 ? 's' : '');\r\n                    if (sisa) teks += (teks ? ' ' : '') + sisa + ' min';\r\n                    return teks;\r\n                },\r\n                nilaiTugas(wp, wi) {\r\n                    return (Number(wp) * Number(wi)).toFixed(4);\r\n                },\r\n            }\" x-init=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 202, "<div class=\"space-y-6\" data-title=\"Task Config Settings\" x-data=\"{\r\n                priorities: [],\r\n                impacts: [],\r\n                colors: [],\r\n                hariMenit(m) {\r\n                    const menit = Number(m) || 0;\r\n                    if (!menit) return 'no limit';\r\n                    const hari = Math.floor(menit / 1440);\r\n                    const sisa = menit % 1440;\r\n                    let teks = '';\r\n                    if (hari) teks += hari + ' day' + (hari > 1 ? 's' : '');\r\n                    if (sisa) teks += (teks ? ' ' : '') + sisa + ' min';\r\n                    return teks;\r\n                },\r\n                nilaiTugas(wp, wi) {\r\n                    return (Number(wp) * Number(wi)).toFixed(4);\r\n                },\r\n            }\" x-init=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var116 string
-			templ_7745c5c3_Var116, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("priorities= %s; impacts= %s; colors= %s;",
+			var templ_7745c5c3_Var126 string
+			templ_7745c5c3_Var126, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("priorities= %s; impacts= %s; colors= %s;",
 				string(utils.MustJSON(priorities)),
 				string(utils.MustJSON(impacts)),
 				string(utils.MustJSON(colors))))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1262, Col: 47}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/settings.templ`, Line: 1390, Col: 47}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var116)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var126)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 184, "\"><div class=\"text-card-foreground shadow-sm p-4\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 203, "\"><div class=\"text-card-foreground shadow-sm p-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Var117 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_Var127 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 				templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 				templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
 				if !templ_7745c5c3_IsBuffer {
@@ -3363,7 +3685,7 @@ func TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, imp
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 185, "<div class=\"mb-6\"><h3 class=\"text-lg font-medium\">Task Priorities</h3><p class=\"text-sm text-muted-foreground mb-3\">Weight is the priority share of a task value. Max due is the longest a task with this priority may be scheduled, counted in minutes from its start date. Set it to 0 to remove the limit. Color holds whatever the row already uses, either a plain name or a full Tailwind class, so edit it only if you know which form this table expects.</p><div class=\"relative w-full overflow-auto scrollbar-thin\"><table class=\"w-full caption-bottom text-sm\"><thead><tr class=\"bg-gray-200 hover:bg-gray-200 dark:bg-accent\"><th class=\"px-3 py-2 text-left font-medium\">Code</th><th class=\"px-3 py-2 text-left font-medium\">Label</th><th class=\"px-3 py-2 text-right font-medium\">Weight</th><th class=\"px-3 py-2 text-right font-medium\">Max due (min)</th><th class=\"px-3 py-2 text-left font-medium\"></th></tr></thead> <tbody><template x-for=\"(p, i) in priorities\" :key=\"i\"><tr class=\"border-b border-border\"><td class=\"px-3 py-1.5\" x-text=\"p.priority\" class=\"h-9 w-28 bg-transparent px-2 text-sm uppercase\"></td><td class=\"px-3 py-1.5\" x-text=\"p.label\" class=\"h-9 w-32 bg-transparent px-2 text-sm\"></td><td class=\"px-3 py-1.5 text-right\"><input type=\"number\" step=\"0.001\" min=\"0\" x-model.number=\"p.weight\" class=\"h-9 w-24 rounded-md border border-input bg-transparent px-2 text-sm text-right\"></td><td class=\"px-3 py-1.5 text-right\"><input type=\"number\" step=\"1\" min=\"0\" x-model.number=\"p.max_due_minutes\" class=\"h-9 w-28 rounded-md border border-input bg-transparent px-2 text-sm text-right\"></td><td class=\"px-3 py-1.5 text-xs text-muted-foreground\" x-text=\"hariMenit(p.max_due_minutes)\"></td></tr></template></tbody></table></div></div><div class=\"mb-6\"><h3 class=\"text-lg font-medium\">Task Impacts</h3><p class=\"text-sm text-muted-foreground mb-3\">Impact is how widely a task is felt if it is left undone. Its weight is the second factor of a task value.</p><div class=\"relative w-full overflow-auto scrollbar-thin\"><table class=\"w-full caption-bottom text-sm\"><thead><tr class=\"bg-gray-200 hover:bg-gray-200 dark:bg-accent\"><th class=\"px-3 py-2 text-left font-medium\">Code</th><th class=\"px-3 py-2 text-left font-medium\">Label</th><th class=\"px-3 py-2 text-right font-medium\">Weight</th></tr></thead> <tbody><template x-for=\"(im, i) in impacts\" :key=\"i\"><tr class=\"border-b border-border\"><td class=\"px-3 py-1.5\" x-text=\"im.impact\" class=\"h-9 w-28 bg-transparent px-2 text-sm uppercase\"></td><td class=\"px-3 py-1.5\" x-text=\"im.label\" class=\"h-9 w-32 bg-transparent px-2 text-sm\"></td><td class=\"px-3 py-1.5 text-right\"><input type=\"number\" step=\"0.001\" min=\"0\" x-model.number=\"im.weight\" class=\"h-9 w-24 rounded-md border border-input bg-transparent px-2 text-sm text-right\"></td></tr></template></tbody></table></div></div><div class=\"mb-6\"><h3 class=\"text-lg font-medium\">Task Value Preview</h3><p class=\"text-sm text-muted-foreground mb-3\">A task value is the priority weight times the impact weight. Task Value Score is the sum of the values of the tasks that are done, divided by the sum of the values of all tasks in the period.</p><div class=\"relative w-full overflow-auto scrollbar-thin\"><table class=\"w-full caption-bottom text-sm\"><thead><tr class=\"bg-gray-200 hover:bg-gray-200 dark:bg-accent\"><th class=\"px-3 py-2 text-left font-medium\">Priority \\ Impact</th><template x-for=\"(im, i) in impacts\" :key=\"i\"><th class=\"px-3 py-2 text-right font-medium\" x-text=\"im.label\"></th></template></tr></thead> <tbody><template x-for=\"(p, i) in priorities\" :key=\"i\"><tr class=\"border-b border-border\"><td class=\"px-3 py-1.5 font-medium\" x-text=\"p.label\"></td><template x-for=\"(im, j) in impacts\" :key=\"j\"><td class=\"px-3 py-1.5 text-right tabular-nums\" x-text=\"nilaiTugas(p.weight, im.weight)\"></td></template></tr></template></tbody></table></div></div><datalist id=\"color-suggestions\"><template x-for=\"(c, ci) in colors\" :key=\"ci\"><option :value=\"c.name\"></option></template></datalist> <input type=\"hidden\" name=\"priorities\" :value=\"JSON.stringify(priorities)\"> <input type=\"hidden\" name=\"impacts\" :value=\"JSON.stringify(impacts)\"><div><button id=\"btn-save-task-config\" class=\"inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary\">Save Configuration</button></div>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 204, "<div class=\"mb-6\"><h3 class=\"text-lg font-medium\">Task Priorities</h3><p class=\"text-sm text-muted-foreground mb-3\">Weight is the priority share of a task value. Max due is the longest a task with this priority may be scheduled, counted in minutes from its start date. Set it to 0 to remove the limit. Color holds whatever the row already uses, either a plain name or a full Tailwind class, so edit it only if you know which form this table expects.</p><div class=\"relative w-full overflow-auto scrollbar-thin\"><table class=\"w-full caption-bottom text-sm\"><thead><tr class=\"bg-gray-200 hover:bg-gray-200 dark:bg-accent\"><th class=\"px-3 py-2 text-left font-medium\">Code</th><th class=\"px-3 py-2 text-left font-medium\">Label</th><th class=\"px-3 py-2 text-right font-medium\">Weight</th><th class=\"px-3 py-2 text-right font-medium\">Max due (min)</th><th class=\"px-3 py-2 text-left font-medium\"></th></tr></thead> <tbody><template x-for=\"(p, i) in priorities\" :key=\"i\"><tr class=\"border-b border-border\"><td class=\"px-3 py-1.5\" x-text=\"p.priority\" class=\"h-9 w-28 bg-transparent px-2 text-sm uppercase\"></td><td class=\"px-3 py-1.5\" x-text=\"p.label\" class=\"h-9 w-32 bg-transparent px-2 text-sm\"></td><td class=\"px-3 py-1.5 text-right\"><input type=\"number\" step=\"0.001\" min=\"0\" x-model.number=\"p.weight\" class=\"h-9 w-24 rounded-md border border-input bg-transparent px-2 text-sm text-right\"></td><td class=\"px-3 py-1.5 text-right\"><input type=\"number\" step=\"1\" min=\"0\" x-model.number=\"p.max_due_minutes\" class=\"h-9 w-28 rounded-md border border-input bg-transparent px-2 text-sm text-right\"></td><td class=\"px-3 py-1.5 text-xs text-muted-foreground\" x-text=\"hariMenit(p.max_due_minutes)\"></td></tr></template></tbody></table></div></div><div class=\"mb-6\"><h3 class=\"text-lg font-medium\">Task Impacts</h3><p class=\"text-sm text-muted-foreground mb-3\">Impact is how widely a task is felt if it is left undone. Its weight is the second factor of a task value.</p><div class=\"relative w-full overflow-auto scrollbar-thin\"><table class=\"w-full caption-bottom text-sm\"><thead><tr class=\"bg-gray-200 hover:bg-gray-200 dark:bg-accent\"><th class=\"px-3 py-2 text-left font-medium\">Code</th><th class=\"px-3 py-2 text-left font-medium\">Label</th><th class=\"px-3 py-2 text-right font-medium\">Weight</th></tr></thead> <tbody><template x-for=\"(im, i) in impacts\" :key=\"i\"><tr class=\"border-b border-border\"><td class=\"px-3 py-1.5\" x-text=\"im.impact\" class=\"h-9 w-28 bg-transparent px-2 text-sm uppercase\"></td><td class=\"px-3 py-1.5\" x-text=\"im.label\" class=\"h-9 w-32 bg-transparent px-2 text-sm\"></td><td class=\"px-3 py-1.5 text-right\"><input type=\"number\" step=\"0.001\" min=\"0\" x-model.number=\"im.weight\" class=\"h-9 w-24 rounded-md border border-input bg-transparent px-2 text-sm text-right\"></td></tr></template></tbody></table></div></div><div class=\"mb-6\"><h3 class=\"text-lg font-medium\">Task Value Preview</h3><p class=\"text-sm text-muted-foreground mb-3\">A task value is the priority weight times the impact weight. Task Value Score is the sum of the values of the tasks that are done, divided by the sum of the values of all tasks in the period.</p><div class=\"relative w-full overflow-auto scrollbar-thin\"><table class=\"w-full caption-bottom text-sm\"><thead><tr class=\"bg-gray-200 hover:bg-gray-200 dark:bg-accent\"><th class=\"px-3 py-2 text-left font-medium\">Priority \\ Impact</th><template x-for=\"(im, i) in impacts\" :key=\"i\"><th class=\"px-3 py-2 text-right font-medium\" x-text=\"im.label\"></th></template></tr></thead> <tbody><template x-for=\"(p, i) in priorities\" :key=\"i\"><tr class=\"border-b border-border\"><td class=\"px-3 py-1.5 font-medium\" x-text=\"p.label\"></td><template x-for=\"(im, j) in impacts\" :key=\"j\"><td class=\"px-3 py-1.5 text-right tabular-nums\" x-text=\"nilaiTugas(p.weight, im.weight)\"></td></template></tr></template></tbody></table></div></div><datalist id=\"color-suggestions\"><template x-for=\"(c, ci) in colors\" :key=\"ci\"><option :value=\"c.name\"></option></template></datalist> <input type=\"hidden\" name=\"priorities\" :value=\"JSON.stringify(priorities)\"> <input type=\"hidden\" name=\"impacts\" :value=\"JSON.stringify(impacts)\"><div><button id=\"btn-save-task-config\" class=\"inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary\">Save Configuration</button></div>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -3376,17 +3698,17 @@ func TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, imp
 				"hx-disabled-elt": "#btn-save-task-config",
 				"x-ref":           "form",
 				"hx-indicator":    ".htmx-loader,.loaded-content",
-			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var117), templ_7745c5c3_Buffer)
+			}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var127), templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 186, "</div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 205, "</div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = Settings("task-config", user).Render(templ.WithChildren(ctx, templ_7745c5c3_Var115), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Settings("task-config", user).Render(templ.WithChildren(ctx, templ_7745c5c3_Var125), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
