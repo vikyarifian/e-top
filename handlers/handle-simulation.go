@@ -215,6 +215,6 @@ func HandleSimulation(w http.ResponseWriter, r *http.Request) error {
 	if r.Method == http.MethodPost {
 		return features.SimulationBody(page, user).Render(r.Context(), w)
 	}
-	return layouts.Layout("Simulasi Fuzzy", user,
+	return layouts.Layout("Fuzzy Simulation", user,
 		features.Simulation(page, user)).Render(r.Context(), w)
 }

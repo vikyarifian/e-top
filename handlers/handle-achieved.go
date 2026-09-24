@@ -19,16 +19,7 @@ import (
 const notCancelledFilter = "status_id NOT IN (SELECT no FROM task_statuses WHERE status = 'CANCELLED')"
 
 // pilihTargetPenilaian menentukan karyawan yang datanya ditampilkan.
-//
-// Bila pengguna memilih seseorang lewat penyaring, pilihan itu dipakai selama
-// namanya memang ada pada daftar yang boleh ia lihat. Bila belum memilih,
-// yang dipakai adalah nama teratas pada daftar, yang sudah terurut menurut
-// abjad pada achievedViewUsers. Sebelumnya yang dipakai selalu pengguna yang
-// sedang masuk, sehingga atasan yang menilai banyak orang selalu melihat
-// dirinya sendiri lebih dulu.
-//
-// Pengguna yang daftarnya kosong, yaitu karyawan biasa tanpa anggota, tetap
-// melihat datanya sendiri.
+
 func pilihTargetPenilaian(user dto.UserAuth, viewUsers []models.User, requested string) (string, string) {
 	if requested != "" {
 		for _, vu := range viewUsers {
@@ -43,8 +34,8 @@ func pilihTargetPenilaian(user dto.UserAuth, viewUsers []models.User, requested 
 	return user.ID, ""
 }
 
-// achievedViewUsers returns the users whose evaluation the viewer may see:
-// admins see every user that has tasks, department heads see their members.
+// filter karyawan yang bisa dilihgat hasil penilaian
+// admin bisa lihat semua
 func achievedViewUsers(user dto.UserAuth) []models.User {
 	var viewUsers []models.User
 	if user.Level == "ADMIN" {

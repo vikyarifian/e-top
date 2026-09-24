@@ -163,16 +163,17 @@ templ Department(dept models.Department, user dto.UserAuth, tugas dto.DeptTasks)
         <div x-data={ deptTasksScope(dept.ID, tugas) }>
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 <div>
-                    <h3 class="text-lg font-medium">Tugas Anggota</h3>
+                    <h3 class="text-lg font-medium">Member Tasks</h3>
                     <p class="text-sm text-muted-foreground">
-                        Seluruh tugas milik anggota departemen ini
+                        All tasks owned by members of this department
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center gap-3">
-                    @ui.SearchBox("search-dept-tasks", "Cari judul atau keterangan")
-                    @ui.FilterSelect("filter-dept-member", "Anggota", "member", memberOptions(tugas))
+                    @ui.SearchBox("search-dept-tasks", "Search title or description")
+                    @ui.FilterSelect("filter-dept-member", "Member", "member", memberOptions(tugas))
                     @ui.FilterSelect("filter-dept-status", "Status", "status", statusOptions())
                     @ui.FilterSelect("filter-dept-priority", "Priority", "priority", priorityOptions())
+                    @ui.FilterSelect("filter-dept-impact", "Impact", "impact", impactOptions())
                     <button type="button"
                         x-show="menyaring()"
                         x-cloak
@@ -180,7 +181,7 @@ templ Department(dept models.Department, user dto.UserAuth, tugas dto.DeptTasks)
                         class="inline-flex items-center gap-1 h-9 px-2.5 rounded-md border border-input text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition"
                     >
                         <svg data-lucide="filter-x" class="h-3.5 w-3.5"></svg>
-                        Bersihkan
+                        Clear
                     </button>
                 </div>
             </div>
@@ -199,17 +200,17 @@ templ Department(dept models.Department, user dto.UserAuth, tugas dto.DeptTasks)
 templ DepartmentTaskList(tugas dto.DeptTasks) {
     if tugas.Page.Menyaring() {
         <p class="text-xs text-muted-foreground mb-2">
-            { fmt.Sprintf("%d tugas cocok dengan penyaring yang sedang berlaku.", tugas.Page.Total) }
+            { fmt.Sprintf("%d tasks match the active filters.", tugas.Page.Total) }
         </p>
     }
     if len(tugas.Tasks) > 0 {
         <div class="space-y-0 border rounded-lg overflow-hidden">
             <div class="grid grid-cols-12 gap-2 px-4 py-2 bg-muted/50 text-xs font-medium text-muted-foreground">
-                <div class="col-span-4">Tugas</div>
-                <div class="col-span-3">Anggota</div>
+                <div class="col-span-4">Task</div>
+                <div class="col-span-3">Member</div>
                 <div class="col-span-2">Status</div>
-                <div class="col-span-1">Prioritas</div>
-                <div class="col-span-2">Tenggat</div>
+                <div class="col-span-1">Priority</div>
+                <div class="col-span-2">Due date</div>
             </div>
             for _, task := range tugas.Tasks {
                 <div class="grid grid-cols-12 gap-2 px-4 py-3 border-t border-border items-center hover:bg-muted/30 cursor-pointer transition"
@@ -260,12 +261,12 @@ templ DepartmentTaskList(tugas dto.DeptTasks) {
         @ui.PaginationTarget("/department", tugas.Page, deptTaskParams(tugas.DeptID, tugas), "dept-task-list")
     } else if tugas.Page.Menyaring() {
         <div class="text-center py-10 text-muted-foreground">
-            <p class="text-sm">Tidak ada tugas yang cocok</p>
-            <p class="text-xs mt-1">Ubah kata kunci atau penyaringnya, atau tekan Bersihkan.</p>
+            <p class="text-sm">No matching tasks</p>
+            <p class="text-xs mt-1">Change the keyword or filters, or press Clear.</p>
         </div>
     } else {
         <div class="text-center py-10 text-muted-foreground">
-            <p class="text-sm">Belum ada tugas pada departemen ini</p>
+            <p class="text-sm">No tasks in this department yet</p>
         </div>
     }
 }

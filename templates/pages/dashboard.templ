@@ -29,10 +29,10 @@ templ Dashboard(userAuth dto.UserAuth, data services.DashboardData) {
 
 templ kpiCards(data services.DashboardData) {
 	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-		@kpiCard("Task Completion Rate", fmt.Sprintf("%.1f%%", data.TCR), "TCR", data.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30")
-		@kpiCard("On-Time Rate", fmt.Sprintf("%.1f%%", data.OTR), "OTR", data.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30")
-		@kpiCard("Value Score", fmt.Sprintf("%.1f%%", data.TVS), "TVS", data.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
-		@kpiCard("Work Efficiency", fmt.Sprintf("%.1f%%", data.WER), "WER", data.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30")
+		@kpiCard("Task Completion Rate", fmt.Sprintf("%.2f%%", data.TCR), "TCR", data.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30")
+		@kpiCard("On-Time Rate", fmt.Sprintf("%.2f%%", data.OTR), "OTR", data.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30")
+		@kpiCard("Value Score", fmt.Sprintf("%.2f%%", data.TVS), "TVS", data.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
+		@kpiCard("Work Efficiency", fmt.Sprintf("%.2f%%", data.WER), "WER", data.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30")
 	</div>
 }
 
@@ -100,7 +100,7 @@ templ summaryCards(data services.DashboardData) {
 			</div>
 			<div class="mt-2">
 				<div class="text-2xl font-bold">{data.TaskCount}</div>
-				<p class="text-xs text-muted-foreground">{fmt.Sprintf("%d completed (%.0f%%)", data.DoneCount, data.TCR)}</p>
+				<p class="text-xs text-muted-foreground">{fmt.Sprintf("%d completed (%.2f%%)", data.DoneCount, data.TCR)}</p>
 			</div>
 		</div>
 		<div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">

@@ -17,10 +17,16 @@ func AddLog(userID string, action string, resourceType string, resourceID string
 	return nil
 }
 
+// Catatan masuk dan verifikasi surel tidak pernah perlu diberitahukan; pemilik
+// akunnya sendiri yang melakukannya.
+const bukanNotif = "('login_user','verified_user','registered_user','forgot_password_user','resend_email_user')"
+
 const userNotifFilter = `
+	action NOT IN ` + bukanNotif + ` AND (
 	user_id = ?
 	OR (resource_type = 'Task' AND resource_id IN (SELECT id FROM tasks WHERE (user_id = ? OR created_by = ?)))
 	OR (resource_type = 'Project' AND resource_id IN (SELECT project_id FROM project_members WHERE user_id = ?))
+	)
 `
 
 func GetUserNotifications(userID string, limit int) []models.Notif {

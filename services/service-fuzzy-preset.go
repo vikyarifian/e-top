@@ -34,7 +34,7 @@ func SimSetLabels(n int) []string {
 	}
 	out := make([]string, n)
 	for i := range out {
-		out[i] = "Himpunan " + strconv.Itoa(i+1)
+		out[i] = "Set " + strconv.Itoa(i+1)
 	}
 	return out
 }
@@ -75,8 +75,8 @@ func SimPresets() []SimPreset {
 	return []SimPreset{
 		{
 			Value: "sistem",
-			Label: "Rancangan sistem (3 himpunan, simpul 40-60-90)",
-			Desc:  "Konfigurasi yang benar-benar dipakai aplikasi pada halaman Penilaian Kinerja.",
+			Label: "System design (3 sets, knots 40-60-90)",
+			Desc:  "The configuration the application actually uses on the Performance Evaluation page.",
 			Sets: []SimSet{
 				{"Rendah", MFLinearTurun, []float64{40, 60}},
 				{"Sedang", MFSegitiga, []float64{40, 60, 90}},
@@ -85,8 +85,8 @@ func SimPresets() []SimPreset {
 		},
 		{
 			Value: "awal",
-			Label: "Rancangan awal (2 himpunan, transisi 40-60)",
-			Desc:  "Rancangan sebelum revisi. Menjenuh: setiap nilai di atas 60 diperlakukan sama.",
+			Label: "Initial design (2 sets, transition 40-60)",
+			Desc:  "The design before revision. It saturates: every value above 60 is treated alike.",
 			Sets: []SimSet{
 				{"Rendah", MFLinearTurun, []float64{40, 60}},
 				{"Tinggi", MFLinearNaik, []float64{40, 60}},
@@ -94,14 +94,14 @@ func SimPresets() []SimPreset {
 		},
 		{
 			Value: "segitiga",
-			Label: "Segitiga partisi seragam (0-50-100)",
-			Desc:  "Segitiga yang tersebar merata pada seluruh semesta.",
+			Label: "Uniform triangular partition (0-50-100)",
+			Desc:  "Triangles spread evenly across the whole universe of discourse.",
 			Sets:  SimUniformSets(3),
 		},
 		{
 			Value: "trapesium",
-			Label: "Trapesium (puncak melebar)",
-			Desc:  "Puncak berupa bidang datar, sehingga satu rentang nilai berkeanggotaan penuh.",
+			Label: "Trapezoidal (widened peak)",
+			Desc:  "The peak is a flat plateau, so a whole range of values has full membership.",
 			Sets: []SimSet{
 				{"Rendah", MFTrapesium, []float64{0, 0, 40, 60}},
 				{"Sedang", MFTrapesium, []float64{40, 55, 70, 90}},
@@ -110,8 +110,8 @@ func SimPresets() []SimPreset {
 		},
 		{
 			Value: "gaussian",
-			Label: "Gaussian (pusat 40-60-90)",
-			Desc:  "Kurva lonceng. Tidak pernah bernilai nol sehingga seluruh aturan selalu aktif.",
+			Label: "Gaussian (centres 40-60-90)",
+			Desc:  "A bell curve. It never reaches zero, so every rule is always active.",
 			Sets: []SimSet{
 				{"Rendah", MFGaussKiri, []float64{40, 8.49}},
 				{"Sedang", MFGaussian, []float64{60, 10.62}},

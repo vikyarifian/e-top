@@ -37,7 +37,7 @@ func Simulation(page services.SimulationPage, user dto.UserAuth) templ.Component
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto space-y-6\" data-title=\"Simulasi Fuzzy Tsukamoto\"><div><h2 class=\"text-3xl font-bold tracking-tight\">Simulasi Fuzzy Tsukamoto</h2><p class=\"text-muted-foreground p-1\">Menguji rancangan inferensi secara langsung: nilai indikator diambil dari basis data, lalu dapat diubah bersama fungsi keanggotaannya untuk melihat pengaruhnya terhadap hasil akhir</p></div><form id=\"sim-form\" hx-post=\"/simulation\" hx-target=\"#sim-body\" hx-swap=\"innerHTML\" hx-trigger=\"change, submit\" hx-indicator=\".htmx-loader\"><input type=\"hidden\" name=\"action\" value=\"\"><div id=\"sim-body\" class=\"space-y-6\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto space-y-6\" data-title=\"Fuzzy Tsukamoto Simulation\"><div><h2 class=\"text-3xl font-bold tracking-tight\">Fuzzy Tsukamoto Simulation</h2><p class=\"text-muted-foreground p-1\">Try the inference design directly: indicator values are read from the database, then can be changed along with the membership functions to see how the final score responds</p></div><form id=\"sim-form\" hx-post=\"/simulation\" hx-target=\"#sim-body\" hx-swap=\"innerHTML\" hx-trigger=\"change, submit\" hx-indicator=\".htmx-loader\"><input type=\"hidden\" name=\"action\" value=\"\"><div id=\"sim-body\" class=\"space-y-6\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -87,25 +87,25 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><!-- 1. Sumber data --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">1. Sumber Data</h3><span class=\"text-xs text-muted-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"><!-- 1. Sumber data --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">1. Data Source</h3><span class=\"text-xs text-muted-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d tugas, %d selesai", page.Data.TaskCount, page.Data.DoneCount))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d tasks, %d completed", page.Data.TaskCount, page.Data.DoneCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 49, Col: 95}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 49, Col: 97}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div><p class=\"text-xs text-muted-foreground mb-4\">Nilai awal indikator dihitung dari tugas yang tercatat pada basis data</p><div class=\"flex flex-wrap items-end gap-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</span></div><p class=\"text-xs text-muted-foreground mb-4\">Initial indicator values are computed from the tasks recorded in the database</p><div class=\"flex flex-wrap items-end gap-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if len(page.ViewUsers) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Karyawan</label> <select name=\"user_id\" onchange=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-w-[220px]\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Employee</label> <select name=\"user_id\" onchange=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring min-w-[220px]\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -156,7 +156,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Periode</label> <select name=\"year\" onchange=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring\"><option value=\"\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Period</label> <select name=\"year\" onchange=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-ring\"><option value=\"\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -166,7 +166,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, ">Seluruh periode</option> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, ">All periods</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -212,17 +212,17 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</select></div><button type=\"submit\" onclick=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-accent transition\">Muat ulang nilai dari basis data</button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</select></div><button type=\"submit\" onclick=\"this.form.querySelector('[name=action]').value='reload'\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background hover:bg-accent transition\">Reload values from the database</button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if !page.Data.Available {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<p class=\"text-sm text-amber-600 dark:text-amber-400 mt-3\">Tidak ada tugas pada periode ini. Seluruh indikator bernilai nol, silakan ubah nilainya secara manual di bawah.</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 22, "<p class=\"text-sm text-amber-600 dark:text-amber-400 mt-3\">No tasks in this period. Every indicator is zero; change the values manually below.</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><!-- 2. Input --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">2. Input (Variabel Masukan)</h3><div class=\"flex items-center gap-2\"><label class=\"text-xs font-medium text-muted-foreground\">Jumlah variabel</label> <select name=\"nvar\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 23, "</div><!-- 2. Input --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">2. Input Variables</h3><div class=\"flex items-center gap-2\"><label class=\"text-xs font-medium text-muted-foreground\">Variable count</label> <select name=\"nvar\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-2 py-1 text-sm rounded-md border border-border bg-background text-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -268,7 +268,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</select></div></div><div class=\"flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4\"><p class=\"text-xs text-muted-foreground\">Geser atau ketik untuk mengubah nilai. Angka dalam kurung adalah nilai asli dari basis data.</p><button type=\"submit\" onclick=\"this.form.querySelector('[name=action]').value=''\" class=\"inline-flex items-center gap-1.5 shrink-0 px-3 py-1.5 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition\"><svg data-lucide=\"refresh-cw\" class=\"h-3.5 w-3.5\"></svg> Hitung Ulang</button></div><div class=\"grid gap-4 md:grid-cols-2\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</select></div></div><div class=\"flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-4\"><p class=\"text-xs text-muted-foreground\">Drag or type to change a value. The number in brackets is the original value from the database.</p><button type=\"submit\" onclick=\"this.form.querySelector('[name=action]').value=''\" class=\"inline-flex items-center gap-1.5 shrink-0 px-3 py-1.5 text-sm rounded-md bg-primary text-primary-foreground hover:opacity-90 transition\"><svg data-lucide=\"refresh-cw\" class=\"h-3.5 w-3.5\"></svg> Recalculate</button></div><div class=\"grid gap-4 md:grid-cols-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -356,7 +356,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</div></div><!-- 3. Fungsi keanggotaan --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">3. Fungsi Keanggotaan (Membership Function)</h3><span class=\"text-xs text-muted-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "</div></div><!-- 3. Fungsi keanggotaan --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">3. Membership Function</h3><span class=\"text-xs text-muted-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -369,7 +369,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</span></div><p class=\"text-xs text-muted-foreground mb-4\">Susunan ini berlaku sama untuk seluruh variabel input, sebagaimana rancangan pada aplikasi</p><div class=\"flex flex-wrap items-end gap-4 mb-5\"><div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Prasetel</label> <select name=\"preset\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground min-w-[320px]\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 38, "</span></div><p class=\"text-xs text-muted-foreground mb-4\">The same arrangement applies to every input variable, as designed in the application</p><div class=\"flex flex-wrap items-end gap-4 mb-5\"><div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Preset</label> <select name=\"preset\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-3 py-1.5 text-sm rounded-md border border-border bg-background text-foreground min-w-[320px]\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -416,12 +416,12 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			}
 		}
 		if page.Preset == "custom" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<option value=\"custom\" selected>Konfigurasi tersuai</option>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 44, "<option value=\"custom\" selected>Custom configuration</option>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</select></div><div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Jumlah himpunan</label> <select name=\"nset\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-2 py-1.5 text-sm rounded-md border border-border bg-background text-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 45, "</select></div><div class=\"flex flex-col gap-1\"><label class=\"text-xs font-medium text-muted-foreground\">Set count</label> <select name=\"nset\" onchange=\"this.form.querySelector('[name=action]').value=''\" class=\"px-2 py-1.5 text-sm rounded-md border border-border bg-background text-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -472,9 +472,9 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
-		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d himpunan pangkat %d variabel = %d aturan", page.NSet, page.NVar, page.Result.RuleTotal))
+		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d sets to the power of %d variables = %d rules", page.NSet, page.NVar, page.Result.RuleTotal))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 180, Col: 121}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 180, Col: 125}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -511,7 +511,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</span></div><div class=\"flex flex-col gap-1\"><label class=\"text-xs text-muted-foreground\">Bentuk</label> <select name=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 55, "</span></div><div class=\"flex flex-col gap-1\"><label class=\"text-xs text-muted-foreground\">Shape</label> <select name=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1110,7 +1110,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 110, "<!-- 5. Perbandingan bentuk fungsi keanggotaan --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><h3 class=\"font-semibold leading-none tracking-tight mb-1\">5. Pengaruh Perubahan Bentuk Fungsi Keanggotaan</h3><p class=\"text-xs text-muted-foreground mb-4\">Nilai input yang sama dihitung ulang pada setiap bentuk. Konsekuen tetap monoton pada seluruh baris, sehingga selisih hasil murni berasal dari sisi anteseden.</p><div class=\"overflow-x-auto\"><table class=\"w-full text-sm\"><thead><tr class=\"border-b border-border text-xs text-muted-foreground\"><th class=\"text-left font-medium py-2 pr-4\">Konfigurasi</th><th class=\"text-right font-medium py-2 pr-4\">Himpunan</th><th class=\"text-right font-medium py-2 pr-4\">Aturan</th><th class=\"text-right font-medium py-2 pr-4\">Aktif</th><th class=\"text-right font-medium py-2 pr-4\">Z</th><th class=\"text-left font-medium py-2 pr-4\">Kategori</th><th class=\"text-right font-medium py-2\">Selisih</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 110, "<!-- 5. Perbandingan bentuk fungsi keanggotaan --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><h3 class=\"font-semibold leading-none tracking-tight mb-1\">5. Effect of Changing the Membership Function Shape</h3><p class=\"text-xs text-muted-foreground mb-4\">The same input values are recomputed for every shape. The consequents stay monotone across all rows, so any difference comes purely from the antecedent side.</p><div class=\"overflow-x-auto\"><table class=\"w-full text-sm\"><thead><tr class=\"border-b border-border text-xs text-muted-foreground\"><th class=\"text-left font-medium py-2 pr-4\">Configuration</th><th class=\"text-right font-medium py-2 pr-4\">Sets</th><th class=\"text-right font-medium py-2 pr-4\">Rules</th><th class=\"text-right font-medium py-2 pr-4\">Active</th><th class=\"text-right font-medium py-2 pr-4\">Z</th><th class=\"text-left font-medium py-2 pr-4\">Category</th><th class=\"text-right font-medium py-2\">Difference</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1264,7 +1264,7 @@ func SimulationBody(page services.SimulationPage, user dto.UserAuth) templ.Compo
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 123, "</tbody></table></div></div><!-- 6. Perbandingan jumlah variabel input --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><h3 class=\"font-semibold leading-none tracking-tight mb-1\">6. Pengaruh Penambahan Jumlah Variabel Input</h3><p class=\"text-xs text-muted-foreground mb-4\">Susunan himpunan yang sedang dipakai diterapkan pada jumlah variabel yang berbeda. Jumlah aturan tumbuh eksponensial mengikuti jumlah himpunan pangkat jumlah variabel.</p><div class=\"overflow-x-auto\"><table class=\"w-full text-sm\"><thead><tr class=\"border-b border-border text-xs text-muted-foreground\"><th class=\"text-left font-medium py-2 pr-4\">Variabel</th><th class=\"text-right font-medium py-2 pr-4\">Jumlah</th><th class=\"text-right font-medium py-2 pr-4\">Aturan</th><th class=\"text-right font-medium py-2 pr-4\">Aktif</th><th class=\"text-right font-medium py-2 pr-4\">ns/inferensi</th><th class=\"text-right font-medium py-2 pr-4\">Z</th><th class=\"text-left font-medium py-2 pr-4\">Kategori</th><th class=\"text-right font-medium py-2\">Selisih</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 123, "</tbody></table></div></div><!-- 6. Perbandingan jumlah variabel input --><div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><h3 class=\"font-semibold leading-none tracking-tight mb-1\">6. Effect of Adding Input Variables</h3><p class=\"text-xs text-muted-foreground mb-4\">The set arrangement currently in use is applied to different variable counts. The rule count grows exponentially, following sets to the power of variables.</p><div class=\"overflow-x-auto\"><table class=\"w-full text-sm\"><thead><tr class=\"border-b border-border text-xs text-muted-foreground\"><th class=\"text-left font-medium py-2 pr-4\">Variables</th><th class=\"text-right font-medium py-2 pr-4\">Count</th><th class=\"text-right font-medium py-2 pr-4\">Rules</th><th class=\"text-right font-medium py-2 pr-4\">Active</th><th class=\"text-right font-medium py-2 pr-4\">ns/inference</th><th class=\"text-right font-medium py-2 pr-4\">Z</th><th class=\"text-left font-medium py-2 pr-4\">Category</th><th class=\"text-right font-medium py-2\">Difference</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1447,12 +1447,12 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 			templ_7745c5c3_Var89 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 137, "<div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">4. Proses dan Hasil Inferensi</h3><span class=\"text-xs text-muted-foreground\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 137, "<div class=\"rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6\"><div class=\"flex items-center justify-between mb-1\"><h3 class=\"font-semibold leading-none tracking-tight\">4. Inference Process and Result</h3><span class=\"text-xs text-muted-foreground\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var90 string
-		templ_7745c5c3_Var90, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d dari %d aturan menyala, %d berpengaruh, %.0f ns per inferensi",
+		templ_7745c5c3_Var90, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d of %d rules fired, %d effective, %.0f ns per inference",
 			len(page.Result.Active), page.Result.RuleTotal,
 			simEffectiveCount(page.Result.Active), page.Result.NanosPerInfer))
 		if templ_7745c5c3_Err != nil {
@@ -1462,7 +1462,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 138, "</span></div><div class=\"rounded-md bg-muted/50 px-4 py-3 mb-6 flex flex-wrap items-center gap-4\"><div><div class=\"text-xs text-muted-foreground\">Nilai kinerja</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 138, "</span></div><div class=\"rounded-md bg-muted/50 px-4 py-3 mb-6 flex flex-wrap items-center gap-4\"><div><div class=\"text-xs text-muted-foreground\">Performance score</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1497,7 +1497,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 141, "</div></div><div><div class=\"text-xs text-muted-foreground\">Kategori</div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 141, "</div></div><div><div class=\"text-xs text-muted-foreground\">Category</div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1567,7 +1567,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 147, "\"></div></div></div></div><h4 class=\"text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2\">Tahap 1 — Fuzzifikasi</h4><div class=\"overflow-x-auto mb-6\"><table class=\"w-full text-sm\"><thead><tr class=\"border-b border-border text-xs text-muted-foreground\"><th class=\"text-left font-medium py-2 pr-4\">Variabel</th><th class=\"text-right font-medium py-2 pr-4\">Nilai crisp</th>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 147, "\"></div></div></div></div><h4 class=\"text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2\">Step 1 — Fuzzification</h4><div class=\"overflow-x-auto mb-6\"><table class=\"w-full text-sm\"><thead><tr class=\"border-b border-border text-xs text-muted-foreground\"><th class=\"text-left font-medium py-2 pr-4\">Variable</th><th class=\"text-right font-medium py-2 pr-4\">Crisp value</th>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1590,7 +1590,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 150, "<th class=\"text-right font-medium py-2\">Jumlah</th></tr></thead> <tbody>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 150, "<th class=\"text-right font-medium py-2\">Sum</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1698,12 +1698,12 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 160, "</tbody></table><p class=\"text-xs text-muted-foreground mt-2\">Jumlah derajat keanggotaan yang selalu bernilai satu menandakan himpunan membentuk partisi yang utuh.</p></div><h4 class=\"text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2\">Tahap 2 — Inferensi, fungsi implikasi MIN</h4>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 160, "</tbody></table><p class=\"text-xs text-muted-foreground mt-2\">A membership sum that is always one means the sets form a complete partition.</p></div><h4 class=\"text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2\">Step 2 — Inference, MIN implication</h4>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if len(page.Result.Active) > 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 161, "<div class=\"overflow-x-auto mb-6 max-h-96 overflow-y-auto\"><table class=\"w-full text-sm\"><thead class=\"sticky top-0 bg-card\"><tr class=\"border-b border-border text-xs text-muted-foreground\"><th class=\"text-left font-medium py-2 pr-4\">Aturan</th><th class=\"text-left font-medium py-2 pr-4\">Anteseden</th><th class=\"text-left font-medium py-2 pr-4\">Konsekuen</th><th class=\"text-right font-medium py-2 pr-4\">alpha</th><th class=\"text-right font-medium py-2 pr-4\">z</th><th class=\"text-right font-medium py-2 pr-4\">alpha x z</th><th class=\"text-right font-medium py-2\">Andil</th></tr></thead> <tbody>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 161, "<div class=\"overflow-x-auto mb-6 max-h-96 overflow-y-auto\"><table class=\"w-full text-sm\"><thead class=\"sticky top-0 bg-card\"><tr class=\"border-b border-border text-xs text-muted-foreground\"><th class=\"text-left font-medium py-2 pr-4\">Rule</th><th class=\"text-left font-medium py-2 pr-4\">Antecedent</th><th class=\"text-left font-medium py-2 pr-4\">Consequent</th><th class=\"text-right font-medium py-2 pr-4\">alpha</th><th class=\"text-right font-medium py-2 pr-4\">z</th><th class=\"text-right font-medium py-2 pr-4\">alpha x z</th><th class=\"text-right font-medium py-2\">Andil</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1844,12 +1844,12 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 173, "</tbody></table></div><h4 class=\"text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2\">Tahap 3 — Defuzzifikasi rata-rata terbobot</h4><div class=\"rounded-md bg-muted/50 px-4 py-3 text-sm\"><span class=\"font-mono\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 173, "</tbody></table></div><h4 class=\"text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2\">Step 3 — Weighted average defuzzification</h4><div class=\"rounded-md bg-muted/50 px-4 py-3 text-sm\"><span class=\"font-mono\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var120 string
-			templ_7745c5c3_Var120, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Z = jumlah(alpha x z) / jumlah(alpha) = %.4f / %.4f = %.4f",
+			templ_7745c5c3_Var120, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Z = sum(alpha x z) / sum(alpha) = %.4f / %.4f = %.2f",
 				page.Result.SumAlphaZ, page.Result.SumAlpha, page.Result.Score))
 			if templ_7745c5c3_Err != nil {
 				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/simulation.templ`, Line: 446, Col: 87}
@@ -1898,7 +1898,7 @@ func simResultPanel(page services.SimulationPage) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 178, "<p class=\"text-sm text-muted-foreground py-6 text-center\">Tidak ada aturan yang menyala. Nilai input berada di luar jangkauan seluruh himpunan.</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 178, "<p class=\"text-sm text-muted-foreground py-6 text-center\">No rule fired. The input values lie outside the range of every set.</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

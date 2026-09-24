@@ -169,8 +169,7 @@ func fuzzyCategory(z float64) string {
 	}
 }
 
-// FuzzyTsukamoto menghitung nilai kinerja 0-100 beserta kategorinya
-// dan mengembalikan daftar aturan aktif (alpha > 0) untuk kebutuhan audit.
+// FuzzyTsukamoto menghitung nilai kinerja 0-100 beserta kategorinya dan mengembalikan daftar aturan aktif (alpha > 0) untuk kebutuhan audit.
 func FuzzyTsukamoto(tcr, otr, tvs, wer float64) (float64, string, []FuzzyRule) {
 	var mu [4][3]float64
 	for i, v := range []float64{tcr, otr, tvs, wer} {

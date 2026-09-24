@@ -32,6 +32,7 @@ func deptTasks(r *http.Request, dept models.Department) dto.DeptTasks {
 	filters := map[string]string{
 		"status":   strings.TrimSpace(r.URL.Query().Get("status")),
 		"priority": strings.TrimSpace(r.URL.Query().Get("priority")),
+		"impact":   strings.TrimSpace(r.URL.Query().Get("impact")),
 		"member":   strings.TrimSpace(r.URL.Query().Get("member")),
 	}
 	for k, v := range filters {
@@ -92,6 +93,11 @@ func deptTasks(r *http.Request, dept models.Department) dto.DeptTasks {
 		if v := filters["priority"]; v != "" {
 			if n, err := strconv.Atoi(v); err == nil {
 				q = q.Where("priority_id = ?", n)
+			}
+		}
+		if v := filters["impact"]; v != "" {
+			if n, err := strconv.Atoi(v); err == nil {
+				q = q.Where("impact_id = ?", n)
 			}
 		}
 		return q

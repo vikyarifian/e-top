@@ -40,7 +40,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto space-y-6\"><div><h2 class=\"text-3xl font-bold tracking-tight\">Penilaian Kinerja</h2><p class=\"text-muted-foreground p-1\">Evaluasi kinerja berdasarkan tugas yang telah diselesaikan</p></div><!-- User Filter (admin / dept head) -->")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"mx-auto space-y-6\"><div><h2 class=\"text-3xl font-bold tracking-tight\">Performance Evaluation</h2><p class=\"text-muted-foreground p-1\">Performance evaluated from the tasks that have been completed</p></div><!-- User Filter (admin / dept head) -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -70,7 +70,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var3 string
 				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.ResolveAttributeValue(vu.ID)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 43, Col: 44}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 41, Col: 44}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var3)
 				if templ_7745c5c3_Err != nil {
@@ -93,7 +93,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var4 string
 				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(vu.FullName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 43, Col: 92}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 41, Col: 92}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -143,7 +143,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.ResolveAttributeValue(achieveURL("/achieve", 1, "created_at", "desc", "", selectedUser))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 55, Col: 94}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 53, Col: 94}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 			if templ_7745c5c3_Err != nil {
@@ -179,7 +179,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.ResolveAttributeValue(achieveURL("/achieve", 1, "created_at", "desc", strconv.Itoa(y), selectedUser))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 63, Col: 111}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 61, Col: 111}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var10)
 				if templ_7745c5c3_Err != nil {
@@ -192,7 +192,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var11 string
 				templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(y))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 67, Col: 37}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 65, Col: 37}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 				if templ_7745c5c3_Err != nil {
@@ -212,23 +212,23 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<!-- Evaluation Dashboard --><!-- KPI Cards with Circular Progress (like Dashboard) --><div class=\"grid gap-4 md:grid-cols-2 lg:grid-cols-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<!-- Evaluation Dashboard --><!-- KPI Cards --><div class=\"grid gap-4 md:grid-cols-2 lg:grid-cols-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCircleCard("Task Completion Rate", fmt.Sprintf("%.1f%%", eval.TCR), "TCR", eval.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCircleCard("Task Completion Rate", fmt.Sprintf("%.2f%%", eval.TCR), "TCR", eval.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCircleCard("On-Time Rate", fmt.Sprintf("%.1f%%", eval.OTR), "OTR", eval.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCircleCard("On-Time Rate", fmt.Sprintf("%.2f%%", eval.OTR), "OTR", eval.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCircleCard("Value Score", fmt.Sprintf("%.1f%%", eval.TVS), "TVS", eval.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCircleCard("Value Score", fmt.Sprintf("%.2f%%", eval.TVS), "TVS", eval.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCircleCard("Work Efficiency", fmt.Sprintf("%.1f%%", eval.WER), "WER", eval.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCircleCard("Work Efficiency", fmt.Sprintf("%.2f%%", eval.WER), "WER", eval.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -239,7 +239,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 		var templ_7745c5c3_Var12 string
 		templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(eval.TaskCount)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 91, Col: 67}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 89, Col: 67}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 		if templ_7745c5c3_Err != nil {
@@ -250,9 +250,9 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var13 string
-		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d completed (%.0f%%)", eval.DoneCount, eval.TCR))
+		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d completed (%.2f%%)", eval.DoneCount, eval.TCR))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 92, Col: 124}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 90, Col: 124}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -265,7 +265,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(eval.OnTimeCount)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 101, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 99, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -276,9 +276,9 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var15 string
-		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0f%% of completed tasks", eval.OTR))
+		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f%% of completed tasks", eval.OTR))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 102, Col: 112}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 100, Col: 112}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -291,7 +291,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(eval.ProjectCount)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 111, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 109, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -326,7 +326,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(eval.Category)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 118, Col: 161}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 116, Col: 161}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -359,9 +359,9 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var22 string
-		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.1f", eval.FinalScore))
+		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", eval.FinalScore))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 121, Col: 138}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 119, Col: 138}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -396,7 +396,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("width: %.1f%%", clampEval(eval.FinalScore)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 123, Col: 172}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 121, Col: 172}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -419,7 +419,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var26 string
 				templ_7745c5c3_Var26, templ_7745c5c3_Err = templ.JoinStringErrs(s.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 138, Col: 88}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 136, Col: 88}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var26))
 				if templ_7745c5c3_Err != nil {
@@ -454,7 +454,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var29 string
 				templ_7745c5c3_Var29, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("width: %.1f%%", float64(s.Count)/float64(maxDistCount(eval.StatusDistribution))*100))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 140, Col: 228}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 138, Col: 228}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 				if templ_7745c5c3_Err != nil {
@@ -467,7 +467,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var30 string
 				templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(s.Count)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 142, Col: 100}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 140, Col: 100}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 				if templ_7745c5c3_Err != nil {
@@ -535,7 +535,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var33 string
 				templ_7745c5c3_Var33, templ_7745c5c3_Err = templ.JoinStringErrs(t.Type)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 162, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 160, Col: 87}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var33))
 				if templ_7745c5c3_Err != nil {
@@ -548,7 +548,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var34 string
 				templ_7745c5c3_Var34, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.0f%%", float64(t.Count)/float64(sumTypeCount(eval.TypeDistribution))*100))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 162, Col: 183}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 160, Col: 183}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var34))
 				if templ_7745c5c3_Err != nil {
@@ -586,7 +586,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var35 string
 				templ_7745c5c3_Var35, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("height: %.1f%%", float64(m.Count)/float64(maxMonthlyCount(eval.MonthlyCompletion))*100))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 181, Col: 241}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 179, Col: 241}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 				if templ_7745c5c3_Err != nil {
@@ -609,7 +609,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var36 string
 				templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(monthLabel(m.Month))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 188, Col: 96}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 186, Col: 96}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 				if templ_7745c5c3_Err != nil {
@@ -632,7 +632,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var37 string
 				templ_7745c5c3_Var37, templ_7745c5c3_Err = templ.JoinStringErrs(m.Count)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 195, Col: 74}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 193, Col: 74}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var37))
 				if templ_7745c5c3_Err != nil {
@@ -660,7 +660,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 		var templ_7745c5c3_Var38 string
 		templ_7745c5c3_Var38, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d of %d rules fired", len(eval.ActiveRules), len(services.FuzzyRules())))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 209, Col: 147}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 207, Col: 147}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var38))
 		if templ_7745c5c3_Err != nil {
@@ -671,7 +671,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 			return templ_7745c5c3_Err
 		}
 		if !eval.Evaluable {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<p class=\"text-sm text-muted-foreground py-6 text-center\">Tidak ada tugas pada periode ini, sehingga penilaian tidak dilakukan</p>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 69, "<p class=\"text-sm text-muted-foreground py-6 text-center\">No tasks in this period, so no evaluation is performed</p>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -688,7 +688,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var39 string
 				templ_7745c5c3_Var39, templ_7745c5c3_Err = templ.JoinStringErrs(v.Name)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 232, Col: 73}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 230, Col: 73}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var39))
 				if templ_7745c5c3_Err != nil {
@@ -701,7 +701,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var40 string
 				templ_7745c5c3_Var40, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", v.Value))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 233, Col: 107}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 231, Col: 107}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var40))
 				if templ_7745c5c3_Err != nil {
@@ -714,7 +714,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var41 string
 				templ_7745c5c3_Var41, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.4f", v.Rendah))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 234, Col: 130}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 232, Col: 130}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var41))
 				if templ_7745c5c3_Err != nil {
@@ -727,7 +727,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var42 string
 				templ_7745c5c3_Var42, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.4f", v.Sedang))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 235, Col: 130}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 233, Col: 130}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var42))
 				if templ_7745c5c3_Err != nil {
@@ -740,7 +740,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var43 string
 				templ_7745c5c3_Var43, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.4f", v.Tinggi))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 236, Col: 125}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 234, Col: 125}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var43))
 				if templ_7745c5c3_Err != nil {
@@ -768,7 +768,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 					var templ_7745c5c3_Var44 string
 					templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(r.Code)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 261, Col: 83}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 259, Col: 83}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 					if templ_7745c5c3_Err != nil {
@@ -781,7 +781,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 					var templ_7745c5c3_Var45 string
 					templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(rulePremise(r))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 262, Col: 103}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 260, Col: 103}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 					if templ_7745c5c3_Err != nil {
@@ -816,7 +816,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 					var templ_7745c5c3_Var48 string
 					templ_7745c5c3_Var48, templ_7745c5c3_Err = templ.JoinStringErrs(r.Output)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 264, Col: 174}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 262, Col: 174}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var48))
 					if templ_7745c5c3_Err != nil {
@@ -829,7 +829,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 					var templ_7745c5c3_Var49 string
 					templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.4f", r.Alpha))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 266, Col: 111}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 264, Col: 111}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 					if templ_7745c5c3_Err != nil {
@@ -842,7 +842,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 					var templ_7745c5c3_Var50 string
 					templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", r.Z))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 267, Col: 107}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 265, Col: 107}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 					if templ_7745c5c3_Err != nil {
@@ -855,7 +855,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 					var templ_7745c5c3_Var51 string
 					templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", r.Alpha*r.Z))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 268, Col: 134}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 266, Col: 134}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 					if templ_7745c5c3_Err != nil {
@@ -873,7 +873,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var52 string
 				templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.4f", sumAlpha(eval.ActiveRules)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 275, Col: 126}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 273, Col: 126}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
 				if templ_7745c5c3_Err != nil {
@@ -886,7 +886,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var53 string
 				templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%.2f", sumAlphaZ(eval.ActiveRules)))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 277, Col: 122}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 275, Col: 122}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 				if templ_7745c5c3_Err != nil {
@@ -899,7 +899,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var54 string
 				templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("Z = Σ(α×z) / Σα = %.2f / %.4f = %.2f", sumAlphaZ(eval.ActiveRules), sumAlpha(eval.ActiveRules), eval.FinalScore))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 287, Col: 155}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 285, Col: 155}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
 				if templ_7745c5c3_Err != nil {
@@ -934,7 +934,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var57 string
 				templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(eval.Category)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 289, Col: 167}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 287, Col: 167}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 				if templ_7745c5c3_Err != nil {
@@ -1046,7 +1046,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var58 string
 				templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("/tasks?id=%s", task.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 351, Col: 69}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 349, Col: 69}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var58)
 				if templ_7745c5c3_Err != nil {
@@ -1059,7 +1059,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var59 string
 				templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 358, Col: 81}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 356, Col: 81}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var59))
 				if templ_7745c5c3_Err != nil {
@@ -1077,7 +1077,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 					var templ_7745c5c3_Var60 string
 					templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.JoinStringErrs(task.CompletedAt.Format("Jan 2, 2006"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 361, Col: 85}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 359, Col: 85}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var60))
 					if templ_7745c5c3_Err != nil {
@@ -1095,7 +1095,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var61 string
 				templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(task.Type)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 366, Col: 230}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 364, Col: 230}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 				if templ_7745c5c3_Err != nil {
@@ -1130,7 +1130,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var64 string
 				templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(task.Status.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 369, Col: 198}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 367, Col: 198}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
 				if templ_7745c5c3_Err != nil {
@@ -1168,7 +1168,7 @@ func Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, year
 				var templ_7745c5c3_Var65 string
 				templ_7745c5c3_Var65, templ_7745c5c3_Err = templ.JoinStringErrs(task.Assignee.FullName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 384, Col: 82}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 382, Col: 82}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var65))
 				if templ_7745c5c3_Err != nil {
@@ -1229,7 +1229,7 @@ func kpiCircleCard(title, display, short string, value float64, textColor, bgCol
 		var templ_7745c5c3_Var67 string
 		templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 402, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 400, Col: 72}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
 		if templ_7745c5c3_Err != nil {
@@ -1264,7 +1264,7 @@ func kpiCircleCard(title, display, short string, value float64, textColor, bgCol
 		var templ_7745c5c3_Var70 string
 		templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(short)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 403, Col: 124}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 401, Col: 124}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
 		if templ_7745c5c3_Err != nil {
@@ -1286,7 +1286,7 @@ func kpiCircleCard(title, display, short string, value float64, textColor, bgCol
 		var templ_7745c5c3_Var72 string
 		templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%.1f %d", circumference(value), 100))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 409, Col: 87}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 407, Col: 87}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var72)
 		if templ_7745c5c3_Err != nil {
@@ -1334,7 +1334,7 @@ func kpiCircleCard(title, display, short string, value float64, textColor, bgCol
 		var templ_7745c5c3_Var76 string
 		templ_7745c5c3_Var76, templ_7745c5c3_Err = templ.JoinStringErrs(display)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 413, Col: 70}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 411, Col: 70}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var76))
 		if templ_7745c5c3_Err != nil {
@@ -1369,7 +1369,7 @@ func kpiCircleCard(title, display, short string, value float64, textColor, bgCol
 		var templ_7745c5c3_Var79 string
 		templ_7745c5c3_Var79, templ_7745c5c3_Err = templruntime.SanitizeStyleAttributeValues(fmt.Sprintf("width: %.1f%%", clampPercentage(value)))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 416, Col: 172}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 414, Col: 172}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var79))
 		if templ_7745c5c3_Err != nil {
@@ -1412,7 +1412,7 @@ func donutChartCircles(segs []segmentData) templ.Component {
 			var templ_7745c5c3_Var81 string
 			templ_7745c5c3_Var81, templ_7745c5c3_Err = templ.ResolveAttributeValue(s.Color)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 426, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 424, Col: 66}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var81)
 			if templ_7745c5c3_Err != nil {
@@ -1425,7 +1425,7 @@ func donutChartCircles(segs []segmentData) templ.Component {
 			var templ_7745c5c3_Var82 string
 			templ_7745c5c3_Var82, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%.1f %.1f", s.Length, s.Circumference-s.Length))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 427, Col: 92}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 425, Col: 92}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var82)
 			if templ_7745c5c3_Err != nil {
@@ -1438,7 +1438,7 @@ func donutChartCircles(segs []segmentData) templ.Component {
 			var templ_7745c5c3_Var83 string
 			templ_7745c5c3_Var83, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("%.1f", -s.Offset))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 428, Col: 61}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/achieved.templ`, Line: 426, Col: 61}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var83)
 			if templ_7745c5c3_Err != nil {

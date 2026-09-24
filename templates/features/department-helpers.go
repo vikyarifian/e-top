@@ -21,11 +21,12 @@ func deptTasksScope(deptID string, t dto.DeptTasks) string {
 		"q":        t.Page.Query,
 		"status":   t.Page.Filters["status"],
 		"priority": t.Page.Filters["priority"],
+		"impact":   t.Page.Filters["impact"],
 		"member":   t.Page.Filters["member"],
 	}
 	b, err := json.Marshal(awal)
 	if err != nil {
-		b = []byte(`{"q":"","status":"","priority":"","member":""}`)
+		b = []byte(`{"q":"","status":"","priority":"","impact":"","member":""}`)
 	}
 	return fmt.Sprintf(`Object.assign(%s, {
 		url() {
@@ -36,6 +37,7 @@ func deptTasksScope(deptID string, t dto.DeptTasks) string {
 			if (this.q && this.q.trim()) p.set('q', this.q.trim());
 			if (this.status) p.set('status', this.status);
 			if (this.priority) p.set('priority', this.priority);
+			if (this.impact) p.set('impact', this.impact);
 			if (this.member) p.set('member', this.member);
 			return '/department?' + p.toString();
 		},
@@ -43,18 +45,18 @@ func deptTasksScope(deptID string, t dto.DeptTasks) string {
 			htmx.ajax('POST', this.url(), { target: '#dept-task-list', swap: 'innerHTML' });
 		},
 		bersihkan() {
-			this.q = ''; this.status = ''; this.priority = ''; this.member = '';
+			this.q = ''; this.status = ''; this.priority = ''; this.impact = ''; this.member = '';
 			this.kirim();
 		},
 		menyaring() {
-			return !!((this.q && this.q.trim()) || this.status || this.priority || this.member);
+			return !!((this.q && this.q.trim()) || this.status || this.priority || this.impact || this.member);
 		}
 	})`, string(b), deptID)
 }
 
 // memberOptions menyusun pilihan penyaring anggota departemen.
 func memberOptions(t dto.DeptTasks) []ui.Opsi {
-	opsi := []ui.Opsi{{Nilai: "", Label: "Semua anggota"}}
+	opsi := []ui.Opsi{{Nilai: "", Label: "All members"}}
 	for _, m := range t.Members {
 		nama := m.FullName
 		if nama == "" {

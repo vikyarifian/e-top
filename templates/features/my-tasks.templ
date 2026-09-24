@@ -25,10 +25,11 @@ templ MyTasks(tasks []models.Task, user dto.UserAuth, page models.PageInfo) {
         @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
 
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            @ui.SearchBox("search-my-tasks", "Cari judul atau keterangan")
+            @ui.SearchBox("search-my-tasks", "Search title or description")
             <div class="flex flex-wrap items-center gap-3">
                 @ui.FilterSelect("filter-status", "Status", "status", statusOptions())
                 @ui.FilterSelect("filter-priority", "Priority", "priority", priorityOptions())
+                @ui.FilterSelect("filter-impact", "Impact", "impact", impactOptions())
                 @ui.FilterSelect("filter-type", "Type", "type", typeOptions())
                 <button type="button"
                     x-show="menyaring()"
@@ -37,7 +38,7 @@ templ MyTasks(tasks []models.Task, user dto.UserAuth, page models.PageInfo) {
                     class="inline-flex items-center gap-1 h-9 px-2.5 rounded-md border border-input text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition"
                 >
                     <svg data-lucide="filter-x" class="h-3.5 w-3.5"></svg>
-                    Bersihkan
+                    Clear
                 </button>
             </div>
         </div>
@@ -224,7 +225,7 @@ templ CreateMyTask(class string) {
 templ MyTasksList(tasks []models.Task, page models.PageInfo) {
     if page.Menyaring() {
         <p class="text-xs text-muted-foreground -mt-3">
-            { fmt.Sprintf("%d tugas cocok dengan penyaring yang sedang berlaku.", page.Total) }
+            { fmt.Sprintf("%d tasks match the active filters.", page.Total) }
         </p>
     }
 
@@ -329,8 +330,8 @@ templ MyTasksList(tasks []models.Task, page models.PageInfo) {
         @ui.PaginationTarget("/my-tasks", page, page.Params()+"&part=list", "my-tasks-list")
     } else if page.Menyaring() {
         <div class="text-center py-12 text-muted-foreground">
-            <p class="text-lg">Tidak ada tugas yang cocok</p>
-            <p class="text-sm mt-1">Ubah kata kunci atau penyaringnya, atau tekan Bersihkan.</p>
+            <p class="text-lg">No matching tasks</p>
+            <p class="text-sm mt-1">Change the keyword or filters, or press Clear.</p>
         </div>
     } else {
         <div class="text-center py-12 text-muted-foreground">

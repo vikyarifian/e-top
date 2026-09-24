@@ -114,19 +114,19 @@ func kpiCards(data services.DashboardData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCard("Task Completion Rate", fmt.Sprintf("%.1f%%", data.TCR), "TCR", data.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCard("Task Completion Rate", fmt.Sprintf("%.2f%%", data.TCR), "TCR", data.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCard("On-Time Rate", fmt.Sprintf("%.1f%%", data.OTR), "OTR", data.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCard("On-Time Rate", fmt.Sprintf("%.2f%%", data.OTR), "OTR", data.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCard("Value Score", fmt.Sprintf("%.1f%%", data.TVS), "TVS", data.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCard("Value Score", fmt.Sprintf("%.2f%%", data.TVS), "TVS", data.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = kpiCard("Work Efficiency", fmt.Sprintf("%.1f%%", data.WER), "WER", data.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = kpiCard("Work Efficiency", fmt.Sprintf("%.2f%%", data.WER), "WER", data.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -422,7 +422,7 @@ func summaryCards(data services.DashboardData) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var23 string
-		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d completed (%.0f%%)", data.DoneCount, data.TCR))
+		templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d completed (%.2f%%)", data.DoneCount, data.TCR))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/pages/dashboard.templ`, Line: 103, Col: 108}
 		}
