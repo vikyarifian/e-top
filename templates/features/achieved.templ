@@ -14,8 +14,8 @@ import (
 templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, years []int, selectedYear string, eval services.AchievedEvaluation, viewUsers []models.User, selectedUser string) {
     <div class="mx-auto space-y-6">
         <div>
-            <h2 class="text-3xl font-bold tracking-tight">Penilaian Kinerja</h2>
-            <p class="text-muted-foreground p-1">Evaluasi kinerja berdasarkan tugas yang telah diselesaikan</p>
+            <h2 class="text-3xl font-bold tracking-tight">Performance Evaluation</h2>
+            <p class="text-muted-foreground p-1">Performance evaluated from the tasks that have been completed</p>
         </div>
 
         // <!-- Achieved Tasks Section -->
@@ -37,8 +37,6 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     hx-push-url="true"
                     hx-indicator=".htmx-loader,.loaded-content"
                 >
-                    // Daftar sudah terurut menurut nama pada achievedViewUsers, dan
-                    // pilihan bawaannya ditetapkan pilihTargetPenilaian.
                     for _, vu := range viewUsers {
                         <option value={vu.ID} selected?={selectedUser == vu.ID}>{vu.FullName}</option>
                     }
@@ -72,12 +70,12 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
         @components.DottedSeparator("", "#d4d4d8", "2px", "", "", "horizontal")
 
         <!-- Evaluation Dashboard -->
-        <!-- KPI Cards with Circular Progress (like Dashboard) -->
+        <!-- KPI Cards -->
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            @kpiCircleCard("Task Completion Rate", fmt.Sprintf("%.1f%%", eval.TCR), "TCR", eval.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30")
-            @kpiCircleCard("On-Time Rate", fmt.Sprintf("%.1f%%", eval.OTR), "OTR", eval.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30")
-            @kpiCircleCard("Value Score", fmt.Sprintf("%.1f%%", eval.TVS), "TVS", eval.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
-            @kpiCircleCard("Work Efficiency", fmt.Sprintf("%.1f%%", eval.WER), "WER", eval.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30")
+            @kpiCircleCard("Task Completion Rate", fmt.Sprintf("%.2f%%", eval.TCR), "TCR", eval.TCR, "text-green-600 dark:text-green-400", "bg-green-100 dark:bg-green-900/30")
+            @kpiCircleCard("On-Time Rate", fmt.Sprintf("%.2f%%", eval.OTR), "OTR", eval.OTR, "text-blue-600 dark:text-blue-400", "bg-blue-100 dark:bg-blue-900/30")
+            @kpiCircleCard("Value Score", fmt.Sprintf("%.2f%%", eval.TVS), "TVS", eval.TVS, "text-purple-600 dark:text-purple-400", "bg-purple-100 dark:bg-purple-900/30")
+            @kpiCircleCard("Work Efficiency", fmt.Sprintf("%.2f%%", eval.WER), "WER", eval.WER, "text-amber-600 dark:text-amber-400", "bg-amber-100 dark:bg-amber-900/30")
         </div>
 
         <!-- Summary Cards -->
@@ -89,7 +87,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                 </div>
                 <div class="mt-2">
                     <div class="text-2xl font-bold">{eval.TaskCount}</div>
-                    <p class="text-xs text-muted-foreground">{fmt.Sprintf("%d completed (%.0f%%)", eval.DoneCount, eval.TCR)}</p>
+                    <p class="text-xs text-muted-foreground">{fmt.Sprintf("%d completed (%.2f%%)", eval.DoneCount, eval.TCR)}</p>
                 </div>
             </div>
             <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
@@ -99,7 +97,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                 </div>
                 <div class="mt-2">
                     <div class="text-2xl font-bold">{eval.OnTimeCount}</div>
-                    <p class="text-xs text-muted-foreground">{fmt.Sprintf("%.0f%% of completed tasks", eval.OTR)}</p>
+                    <p class="text-xs text-muted-foreground">{fmt.Sprintf("%.2f%% of completed tasks", eval.OTR)}</p>
                 </div>
             </div>
             <div class="rounded-lg border border-border bg-card text-card-foreground shadow-sm p-6">
@@ -118,7 +116,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
                     <span class={fmt.Sprintf("inline-flex items-center rounded-md px-2 py-1 text-xs font-bold %s", evalBadgeColor(eval.Category))}>{eval.Category}</span>
                 </div>
                 <div class="mt-2 flex items-center gap-3">
-                    <div class={fmt.Sprintf("text-2xl font-bold %s", evalScoreColor(eval.Category))}>{fmt.Sprintf("%.1f", eval.FinalScore)}</div>
+                    <div class={fmt.Sprintf("text-2xl font-bold %s", evalScoreColor(eval.Category))}>{fmt.Sprintf("%.2f", eval.FinalScore)}</div>
                     <div class="flex-1 h-2 rounded-full bg-muted overflow-hidden">
                         <div class={fmt.Sprintf("h-full rounded-full %s", evalProgressColor(eval.Category))} style={fmt.Sprintf("width: %.1f%%", clampEval(eval.FinalScore))}></div>
                     </div>
@@ -211,7 +209,7 @@ templ Achieved(tasks []models.Task, user dto.UserAuth, page models.PageInfo, yea
             <p class="text-xs text-muted-foreground mb-4">Fuzzification, rule inference, and defuzzification behind the final score</p>
 
             if !eval.Evaluable {
-                <p class="text-sm text-muted-foreground py-6 text-center">Tidak ada tugas pada periode ini, sehingga penilaian tidak dilakukan</p>
+                <p class="text-sm text-muted-foreground py-6 text-center">No tasks in this period, so no evaluation is performed</p>
             } else {
             <!-- Step 1: Fuzzification -->
             <h4 class="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">1. Fuzzification</h4>

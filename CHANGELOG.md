@@ -3,6 +3,64 @@
 Seluruh perubahan penting pada aplikasi etop dicatat di berkas ini.
 Format mengikuti [Keep a Changelog](https://keepachangelog.com/id/1.1.0/).
 
+## [Belum dirilis] — 2026-09-24
+
+Seluruh label antarmuka kini berbahasa Inggris, skor dan indikator ditampilkan
+dengan dua angka di belakang koma, catatan masuk tidak lagi muncul sebagai
+pemberitahuan, dan daftar tugas mendapat penyaring luas dampak.
+
+### Ditambahkan
+
+- **Penyaring Impact** pada My Tasks dan pada daftar tugas anggota di halaman
+  Department. Pilihannya dibaca dari tabel acuan `task_impacts`, sehingga ikut
+  berubah bila acuannya disunting lewat Task Config, sama seperti penyaring
+  status dan prioritas. Penyaring baru ini ikut terbawa tombol halaman
+  berikutnya maupun tombol pengurutan tanpa perubahan tambahan, sebab tautannya
+  disusun `PageInfo.Params()` dari peta penyaring.
+
+### Diubah
+
+- **Label dan keterangan antarmuka diterjemahkan ke bahasa Inggris**, 99 label
+  pada sembilan berkas: halaman Simulasi, Department, My Tasks, Settings,
+  Penilaian, kotak pencarian, judul halaman Simulasi, nama bentuk fungsi
+  keanggotaan beserta parameternya, dan nama serta keterangan prasetel. Kode
+  nilai isian formulir seperti `linear-turun` dan `trapesium` tidak diubah
+  karena dipakai sebagai kunci, bukan sebagai teks yang dibaca.
+
+  Istilah linguistik fuzzy sengaja tetap berbahasa Indonesia atas keputusan
+  pemilik proyek, yaitu himpunan Rendah, Sedang, dan Tinggi beserta kategori
+  Sangat Buruk sampai Sangat Baik, supaya cocok dengan naskah penelitian.
+  Keterangan kode, pesan log, dan luaran perkakas `cmd/*` juga tetap berbahasa
+  Indonesia karena ditujukan kepada peneliti, bukan kepada pengguna aplikasi.
+- **Skor dan keempat indikator ditampilkan dengan dua angka di belakang koma.**
+  Sebelumnya Dashboard dan halaman Penilaian memakai satu angka sedangkan
+  keterangan di bawahnya membulatkan ke bilangan bulat, sehingga nilai yang
+  sama tampil sebagai 93,7 persen dan 94 persen pada satu layar. Derajat
+  keanggotaan dan alpha tetap empat angka, sebab keduanya berkisar nol sampai
+  satu dan dua angka akan menghapus perbedaan yang berarti.
+- **Pemberitahuan tidak lagi memuat catatan akun.** Aksi `login_user`,
+  `verified_user`, `registered_user`, `forgot_password_user`, dan
+  `resend_email_user` disaring keluar; pemilik akunnya sendiri yang melakukan
+  semuanya, jadi tidak ada gunanya diberitahukan kembali kepadanya.
+
+### Pengujian
+
+- Lima halaman dirender lalu disisir dengan daftar tiga puluh kata Indonesia;
+  seluruhnya bersih. Yang tersisa hanya istilah linguistik fuzzy yang memang
+  dipertahankan.
+- Penyaring Impact diuji bersama penyaring lain, bukan sendiri-sendiri. Pada
+  My Tasks: High 1.934, Medium 61, Low 415, berjumlah 2.410 sama dengan cacah
+  tugas pemiliknya; High bersama priority Low menyisakan 1.889; kata kunci
+  "email" bersama High menyisakan 9. Pada daftar departemen: High 27.695,
+  Medium 1.572, Low 1.549, berjumlah 30.816.
+- Halaman pemberitahuan diperiksa: nol penyebutan login maupun verifikasi
+  surel, sementara peristiwa tugas tetap tampil.
+- Terjemahan sempat menjatuhkan 19 kasus uji black box karena penandanya
+  memang caption yang diubah. Penandanya disesuaikan tanpa mengubah apa yang
+  diperiksa. Hasil akhir 75 kasus dijalankan, 74 sesuai; satu kasus yang
+  memeriksa keberadaan kategori "Buruk" tetap tidak terpenuhi karena basis data
+  pengujian tidak memuat karyawan pada kategori itu.
+
 ## [Belum dirilis] — 2026-09-22
 
 Empat indikator pada Dashboard selama ini dihitung dengan cara yang berbeda

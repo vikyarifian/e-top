@@ -320,7 +320,7 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models
                             <p class="text-sm text-muted-foreground">Manage all departments</p>
                         </div>
                         <div class="flex items-center gap-2" x-data={ settingsSearchScope("departments", pageInfo.Query) }>
-                            @ui.SearchBox("search-depts", "Cari nama atau keterangan")
+                            @ui.SearchBox("search-depts", "Search name or description")
                             @ui.Button("create-dept-table", "", "sm", "circle-plus", "New Department", "", templ.Attributes{
                                 "type": "button",
                                 "@click":"$store.modal.open('create-department-modal')",
@@ -329,7 +329,7 @@ templ DeptSettings(user dto.UserAuth, depts []models.Department, pageInfo models
                     </div>
                     if len(depts) == 0 {
                         if pageInfo.Menyaring() {
-                            @components.NoData("Tidak ada departemen yang cocok", "Ubah kata kuncinya, atau kosongkan untuk menampilkan seluruh departemen.", nil) {
+                            @components.NoData("No matching departments", "Change the keyword, or clear it to show every department.", nil) {
                             }
                         } else {
                             @components.NoData("No departments found", "Create your first department", nil) {
@@ -423,7 +423,7 @@ templ UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageI
                             <p class="text-sm text-muted-foreground">Manage all users</p>
                         </div>
                         <div class="flex items-center gap-2" x-data={ settingsSearchScope("users", pageInfo.Query) }>
-                            @ui.SearchBox("search-users", "Cari nama, username, atau email")
+                            @ui.SearchBox("search-users", "Search name, username, or email")
                             @ui.Button("create-user-table", "", "sm", "circle-plus", "New User", "", templ.Attributes{
                                 "type": "button",
                                 "@click":"$store.modal.open('create-user-modal')",
@@ -432,7 +432,7 @@ templ UserSettings(user dto.UserAuth, users []models.User, pageInfo models.PageI
                     </div>
                     if len(users) == 0 {
                         if pageInfo.Menyaring() {
-                            @components.NoData("Tidak ada pengguna yang cocok", "Ubah kata kuncinya, atau kosongkan untuk menampilkan seluruh pengguna.", nil) {
+                            @components.NoData("No matching users", "Change the keyword, or clear it to show every user.", nil) {
                             }
                         } else {
                             @components.NoData("No users found", "Create your first user", nil) {
@@ -1285,9 +1285,9 @@ templ TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, im
                                     <tr class="bg-gray-200 hover:bg-gray-200 dark:bg-accent">
                                         <th class="px-3 py-2 text-left font-medium">Code</th>
                                         <th class="px-3 py-2 text-left font-medium">Label</th>
-                                        <th class="px-3 py-2 text-left font-medium">Color</th>
-                                        <th class="px-3 py-2 text-right font-medium">Value</th>
-                                        <th class="px-3 py-2 text-right font-medium">Level</th>
+                                        // <th class="px-3 py-2 text-left font-medium">Color</th>
+                                        // <th class="px-3 py-2 text-right font-medium">Value</th>
+                                        // <th class="px-3 py-2 text-right font-medium">Level</th>
                                         <th class="px-3 py-2 text-right font-medium">Weight</th>
                                         <th class="px-3 py-2 text-right font-medium">Max due (min)</th>
                                         <th class="px-3 py-2 text-left font-medium"></th>
@@ -1296,21 +1296,17 @@ templ TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, im
                                 <tbody>
                                     <template x-for="(p, i) in priorities" :key="i">
                                         <tr class="border-b border-border">
-                                            <td class="px-3 py-1.5">
-                                                <input type="text" x-model="p.priority" class="h-9 w-28 rounded-md border border-input bg-transparent px-2 text-sm uppercase" />
-                                            </td>
-                                            <td class="px-3 py-1.5">
-                                                <input type="text" x-model="p.label" class="h-9 w-32 rounded-md border border-input bg-transparent px-2 text-sm" />
-                                            </td>
-                                            <td class="px-3 py-1.5">
-                                                <input type="text" x-model="p.color" list="color-suggestions" class="h-9 w-56 rounded-md border border-input bg-transparent px-2 text-sm" />
-                                            </td>
-                                            <td class="px-3 py-1.5 text-right">
-                                                <input type="number" step="1" x-model.number="p.value" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
-                                            </td>
-                                            <td class="px-3 py-1.5 text-right">
-                                                <input type="number" step="1" x-model.number="p.level" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
-                                            </td>
+                                            <td class="px-3 py-1.5" x-text="p.priority" class="h-9 w-28 bg-transparent px-2 text-sm uppercase"></td>
+                                            <td class="px-3 py-1.5" x-text="p.label" class="h-9 w-32 bg-transparent px-2 text-sm"></td>
+                                            // <td class="px-3 py-1.5">
+                                            //     <input type="text" x-model="p.color" list="color-suggestions" class="h-9 w-56 rounded-md border border-input bg-transparent px-2 text-sm" />
+                                            // </td>
+                                            // <td class="px-3 py-1.5 text-right">
+                                            //     <input type="number" step="1" x-model.number="p.value" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            // </td>
+                                            // <td class="px-3 py-1.5 text-right">
+                                            //     <input type="number" step="1" x-model.number="p.level" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            // </td>
                                             <td class="px-3 py-1.5 text-right">
                                                 <input type="number" step="0.001" min="0" x-model.number="p.weight" class="h-9 w-24 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
                                             </td>
@@ -1337,30 +1333,26 @@ templ TaskConfigSettings(user dto.UserAuth, priorities []models.TaskPriority, im
                                     <tr class="bg-gray-200 hover:bg-gray-200 dark:bg-accent">
                                         <th class="px-3 py-2 text-left font-medium">Code</th>
                                         <th class="px-3 py-2 text-left font-medium">Label</th>
-                                        <th class="px-3 py-2 text-left font-medium">Color</th>
-                                        <th class="px-3 py-2 text-right font-medium">Value</th>
-                                        <th class="px-3 py-2 text-right font-medium">Level</th>
+                                        // <th class="px-3 py-2 text-left font-medium">Color</th>
+                                        // <th class="px-3 py-2 text-right font-medium">Value</th>
+                                        // <th class="px-3 py-2 text-right font-medium">Level</th>
                                         <th class="px-3 py-2 text-right font-medium">Weight</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <template x-for="(im, i) in impacts" :key="i">
                                         <tr class="border-b border-border">
-                                            <td class="px-3 py-1.5">
-                                                <input type="text" x-model="im.impact" class="h-9 w-28 rounded-md border border-input bg-transparent px-2 text-sm uppercase" />
-                                            </td>
-                                            <td class="px-3 py-1.5">
-                                                <input type="text" x-model="im.label" class="h-9 w-32 rounded-md border border-input bg-transparent px-2 text-sm" />
-                                            </td>
-                                            <td class="px-3 py-1.5">
-                                                <input type="text" x-model="im.color" list="color-suggestions" class="h-9 w-56 rounded-md border border-input bg-transparent px-2 text-sm" />
-                                            </td>
-                                            <td class="px-3 py-1.5 text-right">
-                                                <input type="number" step="1" x-model.number="im.value" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
-                                            </td>
-                                            <td class="px-3 py-1.5 text-right">
-                                                <input type="number" step="1" x-model.number="im.level" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
-                                            </td>
+                                            <td class="px-3 py-1.5" x-text="im.impact" class="h-9 w-28 bg-transparent px-2 text-sm uppercase"></td>
+                                            <td class="px-3 py-1.5" x-text="im.label" class="h-9 w-32 bg-transparent px-2 text-sm"></td>
+                                            // <td class="px-3 py-1.5">
+                                            //     <input type="text" x-model="im.color" list="color-suggestions" class="h-9 w-56 rounded-md border border-input bg-transparent px-2 text-sm" />
+                                            // </td>
+                                            // <td class="px-3 py-1.5 text-right">
+                                            //     <input type="number" step="1" x-model.number="im.value" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            // </td>
+                                            // <td class="px-3 py-1.5 text-right">
+                                            //     <input type="number" step="1" x-model.number="im.level" class="h-9 w-20 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
+                                            // </td>
                                             <td class="px-3 py-1.5 text-right">
                                                 <input type="number" step="0.001" min="0" x-model.number="im.weight" class="h-9 w-24 rounded-md border border-input bg-transparent px-2 text-sm text-right" />
                                             </td>

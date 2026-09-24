@@ -37,13 +37,13 @@ type ShapeOption struct {
 
 // ShapeOptions adalah daftar bentuk yang dapat dipilih pengguna.
 var ShapeOptions = []ShapeOption{
-	{MFLinearTurun, "Linear turun (bahu kiri)", []string{"a", "b"}},
-	{MFLinearNaik, "Linear naik (bahu kanan)", []string{"a", "b"}},
-	{MFSegitiga, "Segitiga", []string{"a", "b", "c"}},
-	{MFTrapesium, "Trapesium", []string{"a", "b", "c", "d"}},
-	{MFGaussian, "Gaussian", []string{"pusat", "sigma"}},
-	{MFGaussKiri, "Gaussian bahu kiri", []string{"pusat", "sigma"}},
-	{MFGaussKanan, "Gaussian bahu kanan", []string{"pusat", "sigma"}},
+	{MFLinearTurun, "Descending linear (left shoulder)", []string{"a", "b"}},
+	{MFLinearNaik, "Ascending linear (right shoulder)", []string{"a", "b"}},
+	{MFSegitiga, "Triangular", []string{"a", "b", "c"}},
+	{MFTrapesium, "Trapezoidal", []string{"a", "b", "c", "d"}},
+	{MFGaussian, "Gaussian", []string{"center", "sigma"}},
+	{MFGaussKiri, "Gaussian left shoulder", []string{"center", "sigma"}},
+	{MFGaussKanan, "Gaussian right shoulder", []string{"center", "sigma"}},
 }
 
 // ShapeParams mengembalikan nama parameter untuk sebuah bentuk.

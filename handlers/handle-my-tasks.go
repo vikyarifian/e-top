@@ -91,6 +91,7 @@ func saringMyTasks(r *http.Request, userID string) (func() *gorm.DB, map[string]
 	filters := map[string]string{
 		"status":   strings.TrimSpace(r.URL.Query().Get("status")),
 		"priority": strings.TrimSpace(r.URL.Query().Get("priority")),
+		"impact":   strings.TrimSpace(r.URL.Query().Get("impact")),
 		"type":     strings.TrimSpace(r.URL.Query().Get("type")),
 	}
 	for k, v := range filters {
@@ -114,6 +115,11 @@ func saringMyTasks(r *http.Request, userID string) (func() *gorm.DB, map[string]
 		if v := filters["priority"]; v != "" {
 			if n, err := strconv.Atoi(v); err == nil {
 				q = q.Where("priority_id = ?", n)
+			}
+		}
+		if v := filters["impact"]; v != "" {
+			if n, err := strconv.Atoi(v); err == nil {
+				q = q.Where("impact_id = ?", n)
 			}
 		}
 		if v := filters["type"]; v != "" {

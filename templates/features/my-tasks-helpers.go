@@ -27,11 +27,12 @@ func myTasksScope(page models.PageInfo) string {
 		"q":        page.Query,
 		"status":   page.Filters["status"],
 		"priority": page.Filters["priority"],
+		"impact":   page.Filters["impact"],
 		"type":     page.Filters["type"],
 	}
 	b, err := json.Marshal(awal)
 	if err != nil {
-		b = []byte(`{"q":"","status":"","priority":"","type":""}`)
+		b = []byte(`{"q":"","status":"","priority":"","impact":"","type":""}`)
 	}
 	return fmt.Sprintf(`Object.assign(%s, {
 		params() {
@@ -40,6 +41,7 @@ func myTasksScope(page models.PageInfo) string {
 			if (this.q && this.q.trim()) p.set('q', this.q.trim());
 			if (this.status) p.set('status', this.status);
 			if (this.priority) p.set('priority', this.priority);
+			if (this.impact) p.set('impact', this.impact);
 			if (this.type) p.set('type', this.type);
 			return p;
 		},
@@ -59,11 +61,11 @@ func myTasksScope(page models.PageInfo) string {
 			} catch (e) {}
 		},
 		bersihkan() {
-			this.q = ''; this.status = ''; this.priority = ''; this.type = '';
+			this.q = ''; this.status = ''; this.priority = ''; this.impact = ''; this.type = '';
 			this.kirim();
 		},
 		menyaring() {
-			return !!((this.q && this.q.trim()) || this.status || this.priority || this.type);
+			return !!((this.q && this.q.trim()) || this.status || this.priority || this.impact || this.type);
 		}
 	})`, string(b))
 }
@@ -71,7 +73,7 @@ func myTasksScope(page models.PageInfo) string {
 // statusOptions menyusun pilihan penyaring status dari tabel acuan, sehingga
 // daftarnya ikut berubah bila acuannya disunting lewat Task Config.
 func statusOptions() []ui.Opsi {
-	opsi := []ui.Opsi{{Nilai: "", Label: "Semua"}}
+	opsi := []ui.Opsi{{Nilai: "", Label: "All"}}
 	for _, s := range services.GetTaskStatuses() {
 		opsi = append(opsi, ui.Opsi{Nilai: fmt.Sprintf("%d", s.No), Label: s.Label})
 	}
@@ -80,9 +82,18 @@ func statusOptions() []ui.Opsi {
 
 // priorityOptions menyusun pilihan penyaring prioritas dari tabel acuan.
 func priorityOptions() []ui.Opsi {
-	opsi := []ui.Opsi{{Nilai: "", Label: "Semua"}}
+	opsi := []ui.Opsi{{Nilai: "", Label: "All"}}
 	for _, p := range services.GetTaskPriorities() {
 		opsi = append(opsi, ui.Opsi{Nilai: fmt.Sprintf("%d", p.No), Label: p.Label})
+	}
+	return opsi
+}
+
+// impactOptions menyusun pilihan penyaring luas dampak dari tabel acuan.
+func impactOptions() []ui.Opsi {
+	opsi := []ui.Opsi{{Nilai: "", Label: "All"}}
+	for _, i := range services.GetTaskImpacts() {
+		opsi = append(opsi, ui.Opsi{Nilai: fmt.Sprintf("%d", i.No), Label: i.Label})
 	}
 	return opsi
 }
@@ -91,7 +102,7 @@ func priorityOptions() []ui.Opsi {
 // karena kolom type pada tabel tasks tidak memiliki tabel acuan tersendiri.
 func typeOptions() []ui.Opsi {
 	return []ui.Opsi{
-		{Nilai: "", Label: "Semua"},
+		{Nilai: "", Label: "All"},
 		{Nilai: "DAILY", Label: "Daily"},
 		{Nilai: "PROJECT", Label: "Project"},
 		{Nilai: "TICKET", Label: "Ticket"},

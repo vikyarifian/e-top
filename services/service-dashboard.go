@@ -14,10 +14,8 @@ type DashboardData struct {
 	ProjectCount   int64
 	TaskCount      int64
 	DoneCount      int64
-	// JudgedCount ialah cacah tugas yang nasibnya sudah pasti, yaitu penyebut
-	// OTR. Lihat keterangannya pada GetDashboardData.
-	JudgedCount int64
-	MemberCount int64
+	JudgedCount    int64
+	MemberCount    int64
 
 	TCR float64
 	OTR float64
@@ -54,42 +52,22 @@ type AchievedEvaluation struct {
 	FinalScore  float64
 	Category    string
 	ActiveRules []FuzzyRule
-	// Evaluable bernilai false bila tidak ada tugas pada periode evaluasi.
-	// Dalam keadaan itu seluruh indikator bernilai 0 dan inferensi akan
-	// menghasilkan Sangat Buruk, padahal ketiadaan data bukan kinerja buruk.
-	Evaluable bool
+	Evaluable   bool
 
 	TaskCount    int64
 	DoneCount    int64
 	OnTimeCount  int64
 	ProjectCount int64
-	// JudgedCount adalah cacah tugas yang nasib ketepatan waktunya sudah
-	// pasti, yaitu tugas yang sudah selesai ditambah tugas yang belum selesai
-	// padahal tenggatnya telah lewat. Angka ini menjadi penyebut OTR.
-	JudgedCount int64
+	JudgedCount  int64
 
 	StatusDistribution []StatusCount
 	TypeDistribution   []TypeCount
 	MonthlyCompletion  []MonthlyCount
 }
 
-// Task Value Score menimbang setiap tugas dengan dua dimensi yang keduanya
-// tersimpan sebagai kolom weight pada tabel acuannya masing-masing:
-//
-//	task_priorities.weight  High 1,000  Medium 0,900  Low 0,800
-//	task_impacts.weight     High 1,000  Medium 0,900  Low 0,800
-//
-// Nilai sebuah tugas adalah hasil kali kedua bobot itu, sehingga berkisar
-// antara 0,640 dan 1,000. Tugas yang tidak memiliki acuan diabaikan dari
-// perhitungan, bukan diberi bobot bawaan, agar tidak memihak.
 const tvsWeightSQL = `COALESCE(tp.weight, 0) * COALESCE(ti.weight, 0)`
 
-// sumTaskValue menjumlahkan nilai seluruh tugas yang cocok dengan syarat
-// tambahan yang diberikan. Galat kueri dilaporkan, bukan dibiarkan menjadi
-// nol diam-diam: bila migrasi 001_task_value_score.sql belum dijalankan pada
-// basis data, tabel task_impacts tidak ada dan penjumlahan akan gagal. Tanpa
-// pelaporan, kegagalan itu tampak sebagai TVS nol seolah-olah karyawan tidak
-// menuntaskan satu tugas pun.
+// sumTaskValue menjumlahkan nilai seluruh tugas yang cocok
 func sumTaskValue(where string, args ...any) float64 {
 	var row struct{ TotalWeight float64 }
 	q := `
@@ -110,7 +88,7 @@ func sumTaskValue(where string, args ...any) float64 {
 func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 	var e AchievedEvaluation
 
-	// Periode evaluasi ditentukan oleh tahun penugasan (created_at). .
+	// Periode evaluasi ditentukan oleh tahun penugasan (created_at)
 	doneQuery := db.PgSql.Model(&models.Task{}).
 		Where("user_id = ? AND completed_at IS NOT NULL", userID)
 	if year != "" {
@@ -138,10 +116,6 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 	}
 	onTimeQuery.Count(&e.OnTimeCount)
 
-	// Penyebut OTR mencakup tugas yang sudah selesai dan tugas yang belum
-	// selesai padahal tenggatnya sudah lewat. Yang kedua sudah pasti terlambat,
-	// jadi tidak pantas dikecualikan. Tugas yang belum selesai dan tenggatnya
-	// belum tiba masih mungkin tepat waktu, sehingga belum dinilai.
 	judgedQuery := db.PgSql.Model(&models.Task{}).
 		Where("user_id = ? AND (completed_at IS NOT NULL OR (due_date IS NOT NULL AND due_date < ?))",
 			userID, time.Now())
@@ -173,14 +147,11 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 	if year != "" {
 		if _, err := strconv.Atoi(year); err == nil {
 			yearFilterTask = " AND EXTRACT(YEAR FROM t.created_at) = " + year
-			// kohor yang sama dipakai untuk agregasi tugas selesai
 			yearFilterDone = yearFilterTask
 		}
 	}
 
-	// Task Value Score: perbandingan nilai tugas yang tuntas terhadap
-	// jumlah seluruh tugas. Pembilang ialah jumlah nilai (bobot) tugas selesai;
-	// penyebut ialah cacah semua tugas milik karyawan pada periode itu.
+	// Task Value Score: perbandingan nilai tugas yang tuntas terhadap nilai seluruh tugas yang dipikul karyawan.
 	tvsDoneWeight := sumTaskValue("t.user_id = ? AND t.completed_at IS NOT NULL"+yearFilterDone, userID)
 	if e.TaskCount > 0 {
 		e.TVS = tvsDoneWeight / float64(e.TaskCount) * 100
@@ -197,8 +168,7 @@ func GetAchievedEvaluation(userID string, year string) AchievedEvaluation {
 			AND t.completed_at IS NOT NULL
 			AND t.estimated_hours > 0
 			AND t.actual_hours > 0`+yearFilterDone, userID).Scan(&werResult)
-	// LEAST sudah membatasi tiap tugas pada 1, sehingga rata-ratanya mustahil
-	// melewati 100 dan tidak perlu dipotong lagi di sini.
+
 	e.WER = werResult.Value
 
 	e.Evaluable = e.TaskCount > 0
@@ -269,11 +239,6 @@ func GetDashboardData(userID string) DashboardData {
 		Where("project_members.user_id = ?", userID).
 		Count(&d.ProjectCount)
 
-	// Cakupan indikator ialah tugas yang dipikul karyawan, yaitu user_id saja.
-	// Sebelumnya created_by ikut disertakan, sehingga tiket yang dilaporkan
-	// karyawan tetapi dikerjakan orang lain ikut terhitung sebagai tugasnya.
-	// Halaman Penilaian tidak pernah menyertakannya, dan keduanya mengukur hal
-	// yang sama, jadi angkanya tidak boleh berbeda.
 	db.PgSql.Model(&models.Task{}).
 		Where("user_id = ? AND completed_at IS NOT NULL", userID).
 		Count(&d.DoneCount)
@@ -298,11 +263,6 @@ func GetDashboardData(userID string) DashboardData {
 		Where("user_id = ? AND completed_at IS NOT NULL AND completed_at <= due_date", userID).
 		Count(&onTimeCount)
 
-	// Penyebut OTR mencakup tugas yang sudah selesai dan tugas yang belum
-	// selesai padahal tenggatnya sudah lewat, sama seperti halaman Penilaian.
-	// Sebelumnya hanya tugas selesai yang dihitung, sehingga tugas terlambat
-	// yang dibiarkan menggantung justru lenyap dari penyebut dan ketepatan
-	// waktu terbaca lebih tinggi daripada yang sebenarnya.
 	db.PgSql.Model(&models.Task{}).
 		Where("user_id = ? AND (completed_at IS NOT NULL OR (due_date IS NOT NULL AND due_date < ?))",
 			userID, time.Now()).
@@ -311,8 +271,6 @@ func GetDashboardData(userID string) DashboardData {
 		d.OTR = float64(onTimeCount) / float64(d.JudgedCount) * 100
 	}
 
-	// Pembilang dan penyebut harus memakai skala bobot yang sama, yaitu hasil
-	// kali bobot prioritas dan bobot dampak.
 	doneWeight := sumTaskValue("t.user_id = ? AND t.completed_at IS NOT NULL", userID)
 	if d.TaskCount > 0 {
 		d.TVS = doneWeight / float64(d.TaskCount) * 100
@@ -330,8 +288,7 @@ func GetDashboardData(userID string) DashboardData {
 			AND t.estimated_hours > 0
 			AND t.actual_hours > 0
 	`, userID).Scan(&werResult)
-	// LEAST sudah membatasi tiap tugas pada 1, jadi rata-ratanya mustahil
-	// melewati 100.
+
 	d.WER = werResult.Value
 
 	db.PgSql.Raw(`

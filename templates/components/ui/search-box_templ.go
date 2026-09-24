@@ -71,7 +71,7 @@ func SearchBox(id string, placeholder string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" x-model=\"q\" @input.debounce.400ms=\"kirim()\" @search=\"kirim()\" @keydown.enter.prevent=\"kirim()\" class=\"flex h-9 w-full rounded-md border border-input bg-background pl-8 pr-8 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50\"> <button type=\"button\" x-show=\"q.length > 0\" x-cloak @click=\"q=''; $nextTick(() => kirim())\" class=\"absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground\" aria-label=\"Bersihkan pencarian\"><svg data-lucide=\"x\" class=\"h-4 w-4\"></svg></button></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\" x-model=\"q\" @input.debounce.400ms=\"kirim()\" @search=\"kirim()\" @keydown.enter.prevent=\"kirim()\" class=\"flex h-9 w-full rounded-md border border-input bg-background pl-8 pr-8 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50\"> <button type=\"button\" x-show=\"q.length > 0\" x-cloak @click=\"q=''; $nextTick(() => kirim())\" class=\"absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground\" aria-label=\"Clear search\"><svg data-lucide=\"x\" class=\"h-4 w-4\"></svg></button></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

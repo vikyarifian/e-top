@@ -77,7 +77,7 @@ func MyTasks(tasks []models.Task, user dto.UserAuth, page models.PageInfo) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ui.SearchBox("search-my-tasks", "Cari judul atau keterangan").Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = ui.SearchBox("search-my-tasks", "Search title or description").Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -93,11 +93,15 @@ func MyTasks(tasks []models.Task, user dto.UserAuth, page models.PageInfo) templ
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
+		templ_7745c5c3_Err = ui.FilterSelect("filter-impact", "Impact", "impact", impactOptions()).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		templ_7745c5c3_Err = ui.FilterSelect("filter-type", "Type", "type", typeOptions()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<button type=\"button\" x-show=\"menyaring()\" x-cloak @click=\"bersihkan()\" class=\"inline-flex items-center gap-1 h-9 px-2.5 rounded-md border border-input text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition\"><svg data-lucide=\"filter-x\" class=\"h-3.5 w-3.5\"></svg> Bersihkan</button></div></div><div id=\"my-tasks-list\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<button type=\"button\" x-show=\"menyaring()\" x-cloak @click=\"bersihkan()\" class=\"inline-flex items-center gap-1 h-9 px-2.5 rounded-md border border-input text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition\"><svg data-lucide=\"filter-x\" class=\"h-3.5 w-3.5\"></svg> Clear</button></div></div><div id=\"my-tasks-list\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -154,14 +158,14 @@ func CreateMyTask(class string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div x-data=\"{\n                today: new Date(),\n                task_statuses: [],\n                task_priorities: [],\n                users: [],\n                typ: 'DAILY',\n                title: '',\n                description: '',\n                status_id: 1,\n                priority_id: 1,\n                due_date: '',\n                titleError: '',\n                descriptionError: '',\n                statusError: '',\n                priorityError: '',\n                validateTitle() {\n                    this.titleError = (this.title.trim() === '') ? 'Title is required' : '';\n                    this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);\n                },\n                validateStatus() {\n                    this.statusError = (this.status_id==0)\n                        ? 'Status is required'\n                        : '';\n                },\n                validatePriority() {\n                    this.priorityError = (this.priority_id == 0)\n                        ? 'Priority is required'\n                        : '';\n                },\n                validateForm(e) {\n                    e.preventDefault();\n                    this.validateTitle();\n                    this.validateStatus();\n                    \n                    if (this.titleError || this.statusError) {\n                        return; \n                    }\n                },\n                init() {\n                    this._watchInterval = setInterval(() => {\n                        const el = document.getElementById('assignee');\n                        if (el && el.value !== undefined) {\n                            const val = el.value;\n                            this.typ = (val && val !== auth_id) ? 'TICKET' : 'DAILY';\n                        }\n                    }, 200);\n                    document.body.addEventListener('htmx:afterRequest', (evt) => {\n                        if (evt.detail.successful && evt.detail.pathInfo.requestPath === '/task' && evt.detail.requestConfig.verb === 'post') {\n                            $store.modal.close('create-my-task-modal');\n                            this.title = '';\n                            this.description = '';\n                            this.due_date = '';\n                            this.status_id = this.task_statuses.filter(t=>t.level==1)[0]?.no || 1;\n                            this.priority_id = 1;\n                            this.typ = 'DAILY';\n                            this.titleError = '';\n                            htmx.ajax('POST', '/my-tasks', { target: '#content', swap: 'innerHTML' });\n                        }\n                    });\n                }\n            }\" x-init=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<div x-data=\"{\r\n                today: new Date(),\r\n                task_statuses: [],\r\n                task_priorities: [],\r\n                users: [],\r\n                typ: 'DAILY',\r\n                title: '',\r\n                description: '',\r\n                status_id: 1,\r\n                priority_id: 1,\r\n                due_date: '',\r\n                titleError: '',\r\n                descriptionError: '',\r\n                statusError: '',\r\n                priorityError: '',\r\n                validateTitle() {\r\n                    this.titleError = (this.title.trim() === '') ? 'Title is required' : '';\r\n                    this.title = this.title.charAt(0).toUpperCase() + this.title.slice(1);\r\n                },\r\n                validateStatus() {\r\n                    this.statusError = (this.status_id==0)\r\n                        ? 'Status is required'\r\n                        : '';\r\n                },\r\n                validatePriority() {\r\n                    this.priorityError = (this.priority_id == 0)\r\n                        ? 'Priority is required'\r\n                        : '';\r\n                },\r\n                validateForm(e) {\r\n                    e.preventDefault();\r\n                    this.validateTitle();\r\n                    this.validateStatus();\r\n                    \r\n                    if (this.titleError || this.statusError) {\r\n                        return; \r\n                    }\r\n                },\r\n                init() {\r\n                    this._watchInterval = setInterval(() => {\r\n                        const el = document.getElementById('assignee');\r\n                        if (el && el.value !== undefined) {\r\n                            const val = el.value;\r\n                            this.typ = (val && val !== auth_id) ? 'TICKET' : 'DAILY';\r\n                        }\r\n                    }, 200);\r\n                    document.body.addEventListener('htmx:afterRequest', (evt) => {\r\n                        if (evt.detail.successful && evt.detail.pathInfo.requestPath === '/task' && evt.detail.requestConfig.verb === 'post') {\r\n                            $store.modal.close('create-my-task-modal');\r\n                            this.title = '';\r\n                            this.description = '';\r\n                            this.due_date = '';\r\n                            this.status_id = this.task_statuses.filter(t=>t.level==1)[0]?.no || 1;\r\n                            this.priority_id = 1;\r\n                            this.typ = 'DAILY';\r\n                            this.titleError = '';\r\n                            htmx.ajax('POST', '/my-tasks', { target: '#content', swap: 'innerHTML' });\r\n                        }\r\n                    });\r\n                }\r\n            }\" x-init=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("task_statuses= %s; task_priorities= %s; users= %s; this.status_id= task_statuses.filter(t=>t.level==1)[0].no; this.due_date= '%s';", string(utils.MustJSON(services.GetTaskStatuses())), string(utils.MustJSON(services.GetTaskPriorities())), string(utils.MustJSON(services.GetAllUserRole())), utils.FormatDate(time.Now())))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 117, Col: 352}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 118, Col: 352}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var5)
 			if templ_7745c5c3_Err != nil {
@@ -513,9 +517,9 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var15 string
-			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d tugas cocok dengan penyaring yang sedang berlaku.", page.Total))
+			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d tasks match the active filters.", page.Total))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 227, Col: 93}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 228, Col: 75}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 			if templ_7745c5c3_Err != nil {
@@ -609,7 +613,7 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 				var templ_7745c5c3_Var16 string
 				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("/tasks?id=%s", task.ID))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 282, Col: 65}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 283, Col: 65}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 				if templ_7745c5c3_Err != nil {
@@ -622,7 +626,7 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(task.Title)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 289, Col: 77}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 290, Col: 77}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -640,7 +644,7 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 					var templ_7745c5c3_Var18 string
 					templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(task.DueDate.Format("Jan 2"))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 292, Col: 65}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 293, Col: 65}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 					if templ_7745c5c3_Err != nil {
@@ -658,7 +662,7 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(task.Type)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 298, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 299, Col: 38}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -671,7 +675,7 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 				var templ_7745c5c3_Var20 string
 				templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.ResolveAttributeValue(fmt.Sprintf("task_statuses.filter(s=>s.no==%v)[0]?.color||'bg-gray-100'", task.Status.No))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 303, Col: 125}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 304, Col: 125}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var20)
 				if templ_7745c5c3_Err != nil {
@@ -684,7 +688,7 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 				var templ_7745c5c3_Var21 string
 				templ_7745c5c3_Var21, templ_7745c5c3_Err = templ.JoinStringErrs(task.Status.Label)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 304, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 305, Col: 46}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var21))
 				if templ_7745c5c3_Err != nil {
@@ -722,7 +726,7 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 				var templ_7745c5c3_Var22 string
 				templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(task.Assignee.FullName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 324, Col: 78}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/features/my-tasks.templ`, Line: 325, Col: 78}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 				if templ_7745c5c3_Err != nil {
@@ -742,7 +746,7 @@ func MyTasksList(tasks []models.Task, page models.PageInfo) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		} else if page.Menyaring() {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<div class=\"text-center py-12 text-muted-foreground\"><p class=\"text-lg\">Tidak ada tugas yang cocok</p><p class=\"text-sm mt-1\">Ubah kata kunci atau penyaringnya, atau tekan Bersihkan.</p></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<div class=\"text-center py-12 text-muted-foreground\"><p class=\"text-lg\">No matching tasks</p><p class=\"text-sm mt-1\">Change the keyword or filters, or press Clear.</p></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
